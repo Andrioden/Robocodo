@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 
-public class WorldController : MonoBehaviour
+public class WorldController : NetworkBehaviour
 {
 
     public Transform groundTransform;
@@ -19,9 +20,14 @@ public class WorldController : MonoBehaviour
 	private void Start ()
     {
         tiles = new int[width, height];
-
         AdjustGround();
 
+        if (isServer)
+            BuildWorld();
+    }
+
+    private void BuildWorld()
+    {
         WorldBuilder worldBuilder = new WorldBuilder(width, height, 2, 10, 10);
 
         Vector3 p1position = new Vector3(worldBuilder.playerCoordinates[0].x, 0, worldBuilder.playerCoordinates[0].z);
@@ -49,13 +55,15 @@ public class WorldController : MonoBehaviour
 
     private GameObject SpawnObject(GameObject prefab, string name, float x, float z, GameObject parent = null)
     {
-        GameObject gameObject = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
-        gameObject.name = name;
+        GameObject newGameObject = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
+        newGameObject.name = name;
 
         if (parent != null)
-            gameObject.transform.parent = parent.transform;
+            newGameObject.transform.parent = parent.transform;
 
-        return gameObject;
+        NetworkServer.Spawn(newGameObject);
+
+        return newGameObject;
     }
 
     private void AdjustGround()
