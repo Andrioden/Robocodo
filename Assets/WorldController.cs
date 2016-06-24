@@ -9,6 +9,7 @@ public class WorldController : NetworkBehaviour
     public GameObject playerCityPrefab;
     public GameObject copperNodePrefab;
     public GameObject ironNodePrefab;
+    public GameObject harvesterRobotPrefab;
 
     private int width = 100;
     private int height = 100;
@@ -34,6 +35,9 @@ public class WorldController : NetworkBehaviour
         SpawnPlayerCity(p1position, "Andriod");
         Vector3 p2position = new Vector3(worldBuilder.playerCoordinates[1].x, 0, worldBuilder.playerCoordinates[1].z);
         SpawnPlayerCity(p2position, "Shrubbz");
+
+        SpawnObject(harvesterRobotPrefab, "Robot1", p1position.x, p1position.z);
+        SpawnObject(harvesterRobotPrefab, "Robot2", p1position.x, p1position.z);
 
         foreach (Coordinate coord in worldBuilder.copperNodeCoordinates)
             SpawnObject(copperNodePrefab, "CopperNode_" + coord.x + "_" + coord.z, coord.x, coord.z);

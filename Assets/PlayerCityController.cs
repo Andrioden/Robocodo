@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
+using System;
 
-public class PlayerCityController : NetworkBehaviour
+public class PlayerCityController : NetworkBehaviour, IClickable
 {
-
     // Use this for initialization
     void Start()
     {
@@ -15,5 +15,21 @@ public class PlayerCityController : NetworkBehaviour
     void Update()
     {
 
+    }
+
+    public void Click()
+    {
+        if(isLocalPlayer)
+        {            
+            //CmdStartRobot(string code);
+        }
+
+        
+    }
+
+    [Command]
+    void CmdStartRobot()
+    {
+        //PER DEF SERVER
     }
 }

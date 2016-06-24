@@ -26,8 +26,8 @@ GameObject:
   m_Component:
   - 4: {fileID: 456370}
   - 33: {fileID: 3358282}
-  - 65: {fileID: 6518650}
   - 23: {fileID: 2350100}
+  - 65: {fileID: 6536836}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -93,7 +93,7 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 133642}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!65 &6518650
+--- !u!65 &6536836
 BoxCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
