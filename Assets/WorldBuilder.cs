@@ -16,7 +16,7 @@ public class WorldBuilder
     public List<Coordinate> copperNodeCoordinates = new List<Coordinate>();
     public List<Coordinate> ironNodeCoordinates = new List<Coordinate>();
 
-    public bool Build(int width, int height, int playerCount, int copperNodeCount, int ironNodeCount)
+    public WorldBuilder(int width, int height, int playerCount, int copperNodeCount, int ironNodeCount)
     {
         this.width = width;
         this.height = height;
@@ -31,8 +31,6 @@ public class WorldBuilder
 
         for (int i = 0; i < ironNodeCount; i++)
             ironNodeCoordinates.Add(GetRandomOpenCoordinate());
-
-        return true;
     }
 
     public Coordinate GetRandomOpenCoordinate()

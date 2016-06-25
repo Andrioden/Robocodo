@@ -75,7 +75,7 @@ MonoBehaviour:
     i13: 33
     i14: 86
     i15: 197
-  m_ServerOnly: 1
+  m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
 --- !u!1001 &100100000
 Prefab:

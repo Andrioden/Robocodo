@@ -6,6 +6,8 @@ using UnityEngine.Networking.Match;
 public class CustomNetworkManager : NetworkManager
 {
 
+    public GameObject worldControllerPrefab;
+
     // Use this for initialization
     void Start()
     {
@@ -27,7 +29,12 @@ public class CustomNetworkManager : NetworkManager
     public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
     {
         if (numPlayers == 0)
-            WorldController.instance.BuildWorld();
+        {
+            GameObject worldControllerGameObject = (GameObject)Instantiate(worldControllerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            NetworkServer.Spawn(worldControllerGameObject);
+
+            WorldController.instance.BuildWorld(100, 100);
+        }
         WorldController.instance.SpawnPlayerCity(conn, playerControllerId);
     }
 }

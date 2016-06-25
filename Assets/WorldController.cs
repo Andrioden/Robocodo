@@ -13,10 +13,11 @@ public class WorldController : NetworkBehaviour
     public GameObject harvesterRobotPrefab;
 
 
-    private static WorldBuilder worldBuilder;
-    private static int width = 100;
-    private static int height = 100;
-    private static bool isWorldBuilt = false;
+    private WorldBuilder worldBuilder;
+    [SyncVar]
+    private int width;
+    [SyncVar]
+    private int height;
 
     private void Awake()
     {
@@ -33,7 +34,7 @@ public class WorldController : NetworkBehaviour
     // Use this for initialization
     private void Start()
     {
-
+        SpawnAndAdjustGround();
     }
 
     // Update is called once per frame
@@ -42,11 +43,12 @@ public class WorldController : NetworkBehaviour
 
     }
 
-    public void BuildWorld()
+    public void BuildWorld(int width, int height)
     {
-        worldBuilder = new WorldBuilder();
-        isWorldBuilt = worldBuilder.Build(width, height, 10, 10, 10);
-        AdjustAndSpawnGround();
+        this.width = width;
+        this.height = height;
+
+        worldBuilder = new WorldBuilder(width, height, 10, 10, 10);
 
         foreach (Coordinate coord in worldBuilder.copperNodeCoordinates)
             SpawnObject(copperNodePrefab, coord.x, coord.z);
@@ -84,17 +86,17 @@ public class WorldController : NetworkBehaviour
         return newGameObject;
     }
 
-    private void AdjustAndSpawnGround()
+    private void SpawnAndAdjustGround()
     {
+        Debug.Log("Spawning and adjusting ground");
+
         float xPosition = (width / 2) - 0.5f; // Hack: The -0.5f is an offset we have to set to align the ground to the tiles
         float zPosition = (height / 2) - 0.5f; // Hack: The -0.5f is an offset we have to set to align the ground to the tiles
 
         GameObject groundGameObject = (GameObject)Instantiate(groundPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-        groundGameObject.name = "Ground";
+        groundGameObject.name = "Ground_NotNetwork";
 
         groundGameObject.transform.position = new Vector3(xPosition, -0.001f, zPosition);
         groundGameObject.transform.localScale = new Vector3(width / 10, 1, height / 10);
-
-        NetworkServer.Spawn(groundGameObject);
     }
 }

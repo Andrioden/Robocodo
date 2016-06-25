@@ -212,7 +212,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 627eb305bdb303b4ebc3fa6c06084698, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bodyMeshRenderer: {fileID: 2317704}
+  visirMeshRenderer: {fileID: 2317704}
 --- !u!136 &13605290
 CapsuleCollider:
   m_ObjectHideFlags: 1
