@@ -22,6 +22,8 @@ public class PlayerCityController : NetworkBehaviour, IClickable
     {
         base.OnStartAuthority();
         bodyMeshRenderer.material.color = Color.blue;
+
+        Camera.main.transform.parent.GetComponent<RTSCamera>().PositionRelativeToPlayer(transform);
     }
 
     public void Click()
