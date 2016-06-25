@@ -8,7 +8,6 @@ using System.Collections;
 public class HarvesterRobotController : NetworkBehaviour, IClickable
 {
     public MeshRenderer bodyMeshRenderer;
-    bool firstUpdate = true;
 
     [SyncVar]
     float posX;
@@ -23,9 +22,6 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
 
     private void Start()
     {
-        if (hasAuthority)
-            bodyMeshRenderer.material.color = Color.blue;
-
         posX = transform.position.x;
         posZ = transform.position.z;
     }
@@ -33,14 +29,15 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
     // Update is called once per frame
     private void Update()
     {
-        if (hasAuthority && firstUpdate) { 
-            bodyMeshRenderer.material.color = Color.blue;
-            firstUpdate = false;
-        }
-
         var newPos = new Vector3(posX, transform.position.y, posZ);
         transform.LookAt(newPos);
         transform.position = Vector3.MoveTowards(transform.position, newPos, 1.05f * Time.deltaTime);
+    }
+
+    public override void OnStartAuthority()
+    {
+        base.OnStartAuthority();
+        bodyMeshRenderer.material.color = Color.blue;
     }
 
     public void Click()

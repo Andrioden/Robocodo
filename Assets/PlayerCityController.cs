@@ -10,14 +10,18 @@ public class PlayerCityController : NetworkBehaviour, IClickable
     // Use this for initialization
     void Start()
     {
-        if (hasAuthority)
-            bodyMeshRenderer.material.color = Color.blue;
     }
 
     // Update is called once per frame
     void Update()
     {
 
+    }
+
+    public override void OnStartAuthority()
+    {
+        base.OnStartAuthority();
+        bodyMeshRenderer.material.color = Color.blue;
     }
 
     public void Click()
