@@ -4,46 +4,50 @@ using UnityEngine.Networking;
 
 public class WorldController : NetworkBehaviour
 {
+    public static WorldController instance;
 
-    public Transform groundTransform;
+    public GameObject groundPrefab;
     public GameObject playerCityPrefab;
     public GameObject copperNodePrefab;
     public GameObject ironNodePrefab;
     public GameObject harvesterRobotPrefab;
 
-    private int width = 100;
-    private int height = 100;
 
-    private int[,] tiles;
+    private static WorldBuilder worldBuilder;
+    private static int width = 100;
+    private static int height = 100;
+    private static bool isWorldBuilt = false;
 
-
-	// Use this for initialization
-	private void Start ()
+    private void Awake()
     {
-        tiles = new int[width, height];
-        AdjustGround();
+        if (instance == null)
+            instance = this;
 
-        if (isServer)
-            BuildWorld();
+        else if (instance != this)
+        {
+            Debug.LogError("Tried to created another instance of " + GetType() + ". Destroying.");
+            Destroy(gameObject);
+        }
     }
 
-    private void BuildWorld()
+    // Use this for initialization
+    private void Start()
     {
-        WorldBuilder worldBuilder = new WorldBuilder(width, height, 2, 10, 10);
+        
+    }
 
-        Vector3 p1position = new Vector3(worldBuilder.playerCoordinates[0].x, 0, worldBuilder.playerCoordinates[0].z);
-        SpawnPlayerCity(p1position, "Andriod");
-        Vector3 p2position = new Vector3(worldBuilder.playerCoordinates[1].x, 0, worldBuilder.playerCoordinates[1].z);
-        SpawnPlayerCity(p2position, "Shrubbz");
+    public void BuildWorld()
+    {
+            worldBuilder = new WorldBuilder();
+            isWorldBuilt = worldBuilder.Build(width, height, 10, 10, 10);
+            AdjustAndSpawnGround();
+        //foreach (Coordinate coord in worldBuilder.copperNodeCoordinates)
+        //    SpawnObject(copperNodePrefab, "CopperNode_" + coord.x + "_" + coord.z, coord.x, coord.z);
 
-        SpawnObject(harvesterRobotPrefab, "Robot1", p1position.x, p1position.z);
-        SpawnObject(harvesterRobotPrefab, "Robot2", p1position.x, p1position.z);
+        //foreach (Coordinate coord in worldBuilder.ironNodeCoordinates)
+        //    SpawnObject(ironNodePrefab, "IronNode_" + coord.x + "_" + coord.z, coord.x, coord.z);
 
-        foreach (Coordinate coord in worldBuilder.copperNodeCoordinates)
-            SpawnObject(copperNodePrefab, "CopperNode_" + coord.x + "_" + coord.z, coord.x, coord.z);
 
-        foreach (Coordinate coord in worldBuilder.ironNodeCoordinates)
-            SpawnObject(ironNodePrefab, "IronNode_" + coord.x + "_" + coord.z, coord.x, coord.z);
     }
 
     // Update is called once per frame
@@ -52,33 +56,35 @@ public class WorldController : NetworkBehaviour
 
     }
 
-    private void SpawnPlayerCity(Vector3 position, string playerName)
+    public void SpawnPlayerCity(NetworkConnection conn, short playerControllerId)
     {
-        SpawnObject(playerCityPrefab, playerName+"_City", position.x, position.z);
+        var nextPos = worldBuilder.GetNextPlayerPosition();
+        GameObject newGameObject = (GameObject)Instantiate(playerCityPrefab, new Vector3(nextPos.x, 0, nextPos.z), Quaternion.identity);
+
+        if (NetworkServer.AddPlayerForConnection(conn, newGameObject, playerControllerId))
+            SpawnObjectWithClientAuthority(conn, playerControllerId, harvesterRobotPrefab, "Harvester", nextPos);
     }
 
-    private GameObject SpawnObject(GameObject prefab, string name, float x, float z, GameObject parent = null)
+    public static GameObject SpawnObjectWithClientAuthority(NetworkConnection conn, short playerControllerId, GameObject prefab, string name, Coordinate position)
     {
-        GameObject newGameObject = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
-        newGameObject.name = name;
+        GameObject newGameObject = (GameObject)Instantiate(prefab, new Vector3(position.x, 0, position.z), Quaternion.identity);
 
-        if (parent != null)
-            newGameObject.transform.parent = parent.transform;
-
-        NetworkServer.Spawn(newGameObject);
+        NetworkServer.SpawnWithClientAuthority(newGameObject, conn);
 
         return newGameObject;
     }
 
-    private void AdjustGround()
+    private void AdjustAndSpawnGround()
     {
         float xPosition = (width / 2) - 0.5f; // Hack: The -0.5f is an offset we have to set to align the ground to the tiles
         float zPosition = (height / 2) - 0.5f; // Hack: The -0.5f is an offset we have to set to align the ground to the tiles
 
-        groundTransform.position = new Vector3(xPosition, -0.001f, zPosition);
-        groundTransform.localScale = new Vector3(width / 10, 1, height / 10);
+        GameObject groundGameObject = (GameObject)Instantiate(groundPrefab, new Vector3(0,0,0), Quaternion.identity);
+        groundGameObject.name = "Ground";
+
+        groundGameObject.transform.position = new Vector3(xPosition, -0.001f, zPosition);
+        groundGameObject.transform.localScale = new Vector3(width / 10, 1, height / 10);
+
+        NetworkServer.Spawn(groundGameObject);
     }
-
-
-
 }

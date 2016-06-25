@@ -7,25 +7,31 @@ public class WorldBuilder
     private int width;
     private int height;
 
+    int playerCordIncrement = 0;
+
     public bool[,] tiles;
-    public List<Coordinate> playerCoordinates = new List<Coordinate>();
+    List<Coordinate> playerCoordinates = new List<Coordinate>();
     public List<Coordinate> copperNodeCoordinates = new List<Coordinate>();
     public List<Coordinate> ironNodeCoordinates = new List<Coordinate>();
 
-    public WorldBuilder(int width, int height, int playerCount, int copperNodeCount, int ironNodeCount)
+    public bool Build(int width, int height, int playerCount, int copperNodeCount, int ironNodeCount)
     {
         this.width = width;
         this.height = height;
         tiles = new bool[width, height];
 
+        /* Reserve <playerCount> number of spots for playerCities before allocating any other tiles */
         for (int i = 0; i < playerCount; i++)
             playerCoordinates.Add(GetRandomOpenCoordinate());
 
+        /* Reserve spots for world objects */
         for (int i = 0; i < copperNodeCount; i++)
             copperNodeCoordinates.Add(GetRandomOpenCoordinate());
 
         for (int i = 0; i < ironNodeCount; i++)
             ironNodeCoordinates.Add(GetRandomOpenCoordinate());
+
+        return true;
     }
 
     public Coordinate GetRandomOpenCoordinate()
@@ -47,7 +53,15 @@ public class WorldBuilder
         }
     }
 
+    public Coordinate GetNextPlayerPosition()
+    {
+        if (playerCordIncrement > playerCoordinates.Count)
+            return GetRandomOpenCoordinate();
 
+        var nextPos = playerCoordinates[playerCordIncrement];
+        playerCordIncrement++;
+        return nextPos;
+    }
 }
 
 public class Coordinate

@@ -5,10 +5,13 @@ using System;
 
 public class PlayerCityController : NetworkBehaviour, IClickable
 {
+    public MeshRenderer bodyMeshRenderer;
+
     // Use this for initialization
     void Start()
     {
-
+        if (hasAuthority)
+            bodyMeshRenderer.material.color = Color.blue;
     }
 
     // Update is called once per frame
@@ -32,4 +35,5 @@ public class PlayerCityController : NetworkBehaviour, IClickable
     {
         //PER DEF SERVER
     }
+
 }

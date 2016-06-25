@@ -24,7 +24,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 136270}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.7275534, y: -15.703897, z: -7.6799455}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -52,7 +52,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 136270}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -822479833, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
+  m_Script: {fileID: 11500000, guid: 21b0f168bae4d6e42bda981c47682ae1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_NetworkPort: 7777
@@ -67,11 +67,14 @@ MonoBehaviour:
   m_PlayerPrefab: {fileID: 107340, guid: b7f3d2acfc9ba2c47a89b75545e00eeb, type: 2}
   m_AutoCreatePlayer: 0
   m_PlayerSpawnMethod: 0
-  m_OfflineScene: Menu
+  m_OfflineScene: MainScene
   m_OnlineScene: MainScene
   m_SpawnPrefabs:
   - {fileID: 157114, guid: 1cc4c27114911bc449b6fa845ebbd524, type: 2}
   - {fileID: 162768, guid: 30884e0b2f8c9014e8fba6f006b16d3e, type: 2}
+  - {fileID: 162562, guid: 3f0a199a0b1d5764693c9117987a91cc, type: 2}
+  - {fileID: 107340, guid: b7f3d2acfc9ba2c47a89b75545e00eeb, type: 2}
+  - {fileID: 129646, guid: 8733bb8be9d467e4ab6aefd6ba802e3f, type: 2}
   m_CustomConfig: 0
   m_MaxConnections: 4
   m_ConnectionConfig:
