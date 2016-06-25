@@ -1,30 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/* Source and credit: C Sharp Accent Tutorials - Unity 3d Quick Tutorial RTS Camera with Automatic Height Adjustment https://youtu.be/QLOcykNgl7M */
+
 public class RTSCamera : MonoBehaviour
 {
-
     public float horizontalSpeed = 40;
     public float verticalSpeed = 40;
-    //public float cameraRorateSpeed = 80;
     public float cameraDistance = 30;
-
-    private float curDistance;
-
 
     void Update()
     {
         float horizontal = Input.GetAxis("Horizontal") * horizontalSpeed * Time.deltaTime;
         float vertical = Input.GetAxis("Vertical") * verticalSpeed * Time.deltaTime;
-        //float rotation = Input.GetAxis("Rotation");
 
         transform.Translate(Vector3.forward * vertical);
         transform.Translate(Vector3.right * horizontal);
-
-        //if(Roration != 0)
-        //{
-        //    transform.Rotate(Vector3.up, Roration * cameraRorateSpeed * Time.deltaTime, Space.World);
-        //}
 
         MoveCameraUpDownDetector();
     }

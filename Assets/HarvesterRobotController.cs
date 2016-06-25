@@ -7,7 +7,7 @@ using System.Collections;
 
 public class HarvesterRobotController : NetworkBehaviour, IClickable
 {
-    public MeshRenderer bodyMeshRenderer;
+    public MeshRenderer visirMeshRenderer;
 
     [SyncVar]
     float posX;
@@ -16,8 +16,6 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
     float posZ;
 
     private List<string> instructions = new List<string>();
-
-    private int speed = 2;
     private bool executingInstructions = false;
 
     private void Start()
@@ -37,7 +35,7 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
     public override void OnStartAuthority()
     {
         base.OnStartAuthority();
-        bodyMeshRenderer.material.color = Color.blue;
+        visirMeshRenderer.material.color = Color.blue;
     }
 
     public void Click()

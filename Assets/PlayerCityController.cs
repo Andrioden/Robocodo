@@ -10,6 +10,7 @@ public class PlayerCityController : NetworkBehaviour, IClickable
     // Use this for initialization
     void Start()
     {
+
     }
 
     // Update is called once per frame
@@ -28,18 +29,13 @@ public class PlayerCityController : NetworkBehaviour, IClickable
 
     public void Click()
     {
-        if(isLocalPlayer)
-        {            
-            //CmdStartRobot(string code);
-        }
-
-        
+        if(hasAuthority)
+            CmdSpawnHarvester((int)transform.position.x, (int)transform.position.z);    
     }
 
     [Command]
-    void CmdStartRobot()
+    public void CmdSpawnHarvester(int x, int z)
     {
-        //PER DEF SERVER
+        WorldController.instance.SpawnHarvesterWithClientAuthority(connectionToClient, x, z);
     }
-
 }

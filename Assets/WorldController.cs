@@ -33,20 +33,6 @@ public class WorldController : NetworkBehaviour
     // Use this for initialization
     private void Start()
     {
-        
-    }
-
-    public void BuildWorld()
-    {
-            worldBuilder = new WorldBuilder();
-            isWorldBuilt = worldBuilder.Build(width, height, 10, 10, 10);
-            AdjustAndSpawnGround();
-        //foreach (Coordinate coord in worldBuilder.copperNodeCoordinates)
-        //    SpawnObject(copperNodePrefab, "CopperNode_" + coord.x + "_" + coord.z, coord.x, coord.z);
-
-        //foreach (Coordinate coord in worldBuilder.ironNodeCoordinates)
-        //    SpawnObject(ironNodePrefab, "IronNode_" + coord.x + "_" + coord.z, coord.x, coord.z);
-
 
     }
 
@@ -56,20 +42,44 @@ public class WorldController : NetworkBehaviour
 
     }
 
+    public void BuildWorld()
+    {
+        worldBuilder = new WorldBuilder();
+        isWorldBuilt = worldBuilder.Build(width, height, 10, 10, 10);
+        AdjustAndSpawnGround();
+
+        foreach (Coordinate coord in worldBuilder.copperNodeCoordinates)
+            SpawnObject(copperNodePrefab, coord.x, coord.z);
+
+        foreach (Coordinate coord in worldBuilder.ironNodeCoordinates)
+            SpawnObject(ironNodePrefab, coord.x, coord.z);
+    }
+
     public void SpawnPlayerCity(NetworkConnection conn, short playerControllerId)
     {
         var nextPos = worldBuilder.GetNextPlayerPosition();
         GameObject newGameObject = (GameObject)Instantiate(playerCityPrefab, new Vector3(nextPos.x, 0, nextPos.z), Quaternion.identity);
 
-        if (NetworkServer.AddPlayerForConnection(conn, newGameObject, playerControllerId))
-            SpawnObjectWithClientAuthority(conn, playerControllerId, harvesterRobotPrefab, "Harvester", nextPos);
+        NetworkServer.AddPlayerForConnection(conn, newGameObject, playerControllerId);            
     }
 
-    public static GameObject SpawnObjectWithClientAuthority(NetworkConnection conn, short playerControllerId, GameObject prefab, string name, Coordinate position)
+    public void SpawnHarvesterWithClientAuthority(NetworkConnection conn, int x, int z)
     {
-        GameObject newGameObject = (GameObject)Instantiate(prefab, new Vector3(position.x, 0, position.z), Quaternion.identity);
+        SpawnObjectWithClientAuthority(conn, harvesterRobotPrefab, x, z);
+    }
 
+    public GameObject SpawnObjectWithClientAuthority(NetworkConnection conn, GameObject prefab, int x, int z)
+    {
+        GameObject newGameObject = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
         NetworkServer.SpawnWithClientAuthority(newGameObject, conn);
+
+        return newGameObject;
+    }
+
+    public GameObject SpawnObject(GameObject prefab, int x, int z)
+    {
+        GameObject newGameObject = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
+        NetworkServer.Spawn(newGameObject);
 
         return newGameObject;
     }
@@ -79,7 +89,7 @@ public class WorldController : NetworkBehaviour
         float xPosition = (width / 2) - 0.5f; // Hack: The -0.5f is an offset we have to set to align the ground to the tiles
         float zPosition = (height / 2) - 0.5f; // Hack: The -0.5f is an offset we have to set to align the ground to the tiles
 
-        GameObject groundGameObject = (GameObject)Instantiate(groundPrefab, new Vector3(0,0,0), Quaternion.identity);
+        GameObject groundGameObject = (GameObject)Instantiate(groundPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         groundGameObject.name = "Ground";
 
         groundGameObject.transform.position = new Vector3(xPosition, -0.001f, zPosition);
