@@ -18,11 +18,10 @@ public class HarvesterRobotSetupPanel : MonoBehaviour
     public Text helpTextLabel;
     public Text helpTextText;
 
-    public HarvesterRobotController harvesterRobotController;
-
     public static HarvesterRobotSetupPanel instance;
 
     private Animator animator;
+    private HarvesterRobotController harvesterRobotController;
 
     private void Awake()
     {
@@ -80,15 +79,8 @@ public class HarvesterRobotSetupPanel : MonoBehaviour
             codeInputField.onEndEdit.AddListener(KeyboardManager.KeyboardLockOff);
 
             /* Pre filled demo data */
-            codeInputField.text =
-                Instructions.MoveUp + "\n" +
-                Instructions.MoveUp + "\n" +
-                Instructions.MoveUp + "\n" +
-                Instructions.MoveRight + "\n" +
-                Instructions.MoveRight + "\n" +
-                Instructions.MoveUp + "\n" +
-                Instructions.MoveUp + "\n" +
-                Instructions.MoveHome;
+            codeInputField.text = harvesterRobotController.GetDemoInstructions();
+
         }
 
         animator.Play("RobotMenuSlideIn");

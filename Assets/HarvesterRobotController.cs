@@ -58,7 +58,7 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
             {
                 CmdAddInstruction(x);
             });
-             
+
             CmdStartRobot();
         }
     }
@@ -161,6 +161,19 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
         }
 
         InstructionCompleted();
+    }
+
+    public string GetDemoInstructions()
+    {
+        List<string> demoInstructions = new List<string>()
+        {
+            Instructions.MoveUp,
+            Instructions.Harvest,
+            Instructions.MoveHome,
+            Instructions.DropInventory
+        };
+
+        return string.Join("\n", demoInstructions.ToArray());
     }
 
     [Server]
