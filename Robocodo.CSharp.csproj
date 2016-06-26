@@ -76,7 +76,7 @@
     <Compile Include="Assets\RTSCamera.cs" />
     <Compile Include="Assets\Settings.cs" />
     <Compile Include="Assets\Utils.cs" />
-    <Compile Include="Assets\WorldBuilder.cs" />
+    <Compile Include="Assets\World.cs" />
     <Compile Include="Assets\WorldController.cs" />
     <Compile Include="Assets\WorldTickController.cs" />
   </ItemGroup>

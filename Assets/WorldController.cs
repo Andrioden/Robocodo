@@ -11,7 +11,7 @@ public class WorldController : NetworkBehaviour
     public GameObject ironNodePrefab;
     public GameObject harvesterRobotPrefab;
 
-    private WorldBuilder worldBuilder;
+    public World world;
     [SyncVar]
     private int width;
     [SyncVar]
@@ -48,22 +48,25 @@ public class WorldController : NetworkBehaviour
         this.width = width;
         this.height = height;
 
-        worldBuilder = new WorldBuilder(width, height, 10, 10, 10);
+        world = new World(width, height, 10, 10, 10);
 
-        foreach (Coordinate coord in worldBuilder.copperNodeCoordinates)
+        foreach (Coordinate coord in world.copperNodeCoordinates)
             SpawnObject(copperNodePrefab, coord.x, coord.z);
 
-        foreach (Coordinate coord in worldBuilder.ironNodeCoordinates)
+        foreach (Coordinate coord in world.ironNodeCoordinates)
             SpawnObject(ironNodePrefab, coord.x, coord.z);
     }
 
     [Server]
-    public void SpawnPlayerCity(NetworkConnection conn, short playerControllerId)
+    public void SpawnPlayer(NetworkConnection conn, short playerControllerId)
     {
-        var nextPos = worldBuilder.GetNextPlayerPosition();
+        var nextPos = world.GetNextPlayerPosition();
         GameObject newGameObject = (GameObject)Instantiate(playerCityPrefab, new Vector3(nextPos.x, 0, nextPos.z), Quaternion.identity);
 
-        NetworkServer.AddPlayerForConnection(conn, newGameObject, playerControllerId);            
+        NetworkServer.AddPlayerForConnection(conn, newGameObject, playerControllerId);
+
+        for (int i = 0; i < Settings.Player_AmountOfStartingHarvesterRobots; i++)
+            SpawnHarvesterWithClientAuthority(conn, nextPos.x, nextPos.z);
     }
 
     [Server]

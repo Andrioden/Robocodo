@@ -2,10 +2,14 @@
 using UnityEngine.Networking;
 using System.Collections;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 public class PlayerCityController : NetworkBehaviour, IClickable
 {
     public MeshRenderer bodyMeshRenderer;
+
+    public List<InventoryItem> inventory = new List<InventoryItem>();
 
     // Use this for initialization
     void Start()
@@ -17,6 +21,26 @@ public class PlayerCityController : NetworkBehaviour, IClickable
     void Update()
     {
 
+    }
+
+    [Server]
+    public void AddToInventory(List<InventoryItem> items)
+    {
+        RpcAddToInventory(items.Select(i => i.Serialize()).ToArray());
+    }
+    [ClientRpc]
+    private void RpcAddToInventory(string[] itemStrings)
+    {
+        foreach(string itemString in itemStrings)
+        {
+            if (itemString == CopperItem.SerializedType)
+                inventory.Add(new CopperItem());
+            else if (itemString == IronItem.SerializedType)
+                inventory.Add(new IronItem());
+            else
+                throw new Exception("Forgot to add deserialization support for InventoryType: " + itemString);
+        }
+        Debug.Log("Inventory in someones city now: " + inventory.Count);
     }
 
     public override void OnStartAuthority()
