@@ -4,8 +4,8 @@ using UnityEngine.Networking;
 
 public class KeyboardManager : NetworkBehaviour
 {
+    public static bool KeyboardLock = false;
 
-    // Update is called once per frame
     void Update()
     {
         if (isServer)
@@ -21,5 +21,15 @@ public class KeyboardManager : NetworkBehaviour
     private void RpcAdjustTimeScale(float newTimeScale)
     {
         Time.timeScale = newTimeScale;
+    }
+
+    public static void KeyboardLockOn(string arg0 = "")
+    {
+        KeyboardLock = true;
+    }
+
+    public static void KeyboardLockOff(string arg0 = "")
+    {
+        KeyboardLock = false;
     }
 }

@@ -11,11 +11,8 @@ public class RTSCamera : MonoBehaviour
 
     void Update()
     {
-        float horizontal = Input.GetAxis("Horizontal") * horizontalSpeed * Time.deltaTime;
-        float vertical = Input.GetAxis("Vertical") * verticalSpeed * Time.deltaTime;
-
-        transform.Translate(Vector3.forward * vertical);
-        transform.Translate(Vector3.right * horizontal);
+        if (!KeyboardManager.KeyboardLock)
+            MoveCameraVertifalHorizontalDetector();
 
         MoveCameraUpDownDetector();
     }
@@ -23,6 +20,15 @@ public class RTSCamera : MonoBehaviour
     public void PositionRelativeToPlayer(Transform player)
     {
         transform.position = new Vector3(player.transform.position.x, cameraDistance, player.transform.position.z + 5f);
+    }
+
+    private void MoveCameraVertifalHorizontalDetector()
+    {
+        float horizontal = Input.GetAxis("Horizontal") * horizontalSpeed * Time.deltaTime;
+        float vertical = Input.GetAxis("Vertical") * verticalSpeed * Time.deltaTime;
+
+        transform.Translate(Vector3.forward * vertical);
+        transform.Translate(Vector3.right * horizontal);
     }
 
     private void MoveCameraUpDownDetector()

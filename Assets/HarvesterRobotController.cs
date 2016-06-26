@@ -20,7 +20,8 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
     private List<string> instructions = new List<string>();
     private int currentInstructionIndex = 0;
 
-    private bool robotStarted = false;
+    private bool isStarted = false;
+    public bool IsStarted { get { return isStarted; } }
 
     private void Start()
     {
@@ -45,28 +46,31 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
         visirMeshRenderer.material.color = Color.blue;
     }
 
-    public void Click()
+    public void RunCode(List<string> newInstructions)
     {
-        if (hasAuthority && !robotStarted)
+        if (hasAuthority && !isStarted)
         {
-            robotStarted = true;
-            Debug.Log("Client: Starting robot");
+            isStarted = true;
+            CmdClearInstruction();
+
+            newInstructions.ForEach(x =>
+            {
+                CmdAddInstruction(x);
+            });
+             
             CmdStartRobot();
         }
+    }
+
+    public List<string> GetInstructions()
+    {
+        return instructions;
     }
 
     [Command]
     private void CmdStartRobot()
     {
         Debug.Log("Server: Starting robot");
-        CmdClearInstruction();
-        CmdAddInstruction(Instructions.MoveUp);
-        CmdAddInstruction(Instructions.MoveUp);
-        CmdAddInstruction(Instructions.MoveUp);
-        CmdAddInstruction(Instructions.MoveRight);
-        CmdAddInstruction(Instructions.MoveRight);
-        CmdAddInstruction(Instructions.MoveHome);
-
         WorldTickController.instance.TickEvent += RunNextInstruction;
     }
 
@@ -157,6 +161,12 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
         if ((number % 1) != 0)
             throw new Exception("Robot " + friendlyName + " is not a whole number");
     }
+
+    public void Click()
+    {
+        if (hasAuthority)
+            HarvesterRobotSetupPanel.instance.ShowPanel(this);
+    }
 }
 
 public static class Instructions
@@ -184,7 +194,7 @@ public static class Instructions
 
     public static bool IsValidInstructionList(List<string> instructions)
     {
-        foreach(string instructionString in instructions)
+        foreach (string instructionString in instructions)
         {
             if (!IsValidInstruction(instructionString))
                 return false;

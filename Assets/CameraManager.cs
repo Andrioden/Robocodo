@@ -15,7 +15,9 @@ public class CameraManager : MonoBehaviour
 
     private void Update()
     {
-        MoveCameraVertifalHorizontalDetector();
+        if(!KeyboardManager.KeyboardLock)
+            MoveCameraVertifalHorizontalDetector();
+
         MoveCameraUpDownDetector();
     }
 
