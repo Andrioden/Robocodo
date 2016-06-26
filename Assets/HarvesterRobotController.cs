@@ -63,12 +63,12 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
     {
         Debug.Log("Server: Starting robot");
         CmdClearInstruction();
-        CmdAddInstruction("MOVE UP");
-        CmdAddInstruction("MOVE UP");
-        CmdAddInstruction("MOVE UP");
-        CmdAddInstruction("MOVE RIGHT");
-        CmdAddInstruction("MOVE RIGHT");
-        CmdAddInstruction("MOVE HOME");
+        CmdAddInstruction(Instructions.MoveUp);
+        CmdAddInstruction(Instructions.MoveUp);
+        CmdAddInstruction(Instructions.MoveUp);
+        CmdAddInstruction(Instructions.MoveRight);
+        CmdAddInstruction(Instructions.MoveRight);
+        CmdAddInstruction(Instructions.MoveHome);
 
         WorldTickController.instance.TickEvent += Server_RunNextInstruction;
     }
@@ -97,17 +97,17 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
 
         Debug.Log("Running instruction: " + instruction);
 
-        if (!Instruction.IsValidInstruction(instruction))
+        if (!Instructions.IsValidInstruction(instruction))
             Debug.Log("Robot does not understand instruction: " + instruction); // Later the player should be informed about this
-        else if (instruction == Instruction.MoveUp)
+        else if (instruction == Instructions.MoveUp)
             posZ++;
-        else if (instruction == Instruction.MoveDown)
+        else if (instruction == Instructions.MoveDown)
             posZ--;
-        else if (instruction == Instruction.MoveRight)
+        else if (instruction == Instructions.MoveRight)
             posX++;
-        else if (instruction == Instruction.MoveLeft)
+        else if (instruction == Instructions.MoveLeft)
             posX--;
-        else if (instruction == Instruction.MoveHome)
+        else if (instruction == Instructions.MoveHome)
         {
             //Debug.LogFormat("MoveHome - Pos: {0},{1}, Home: {2},{3}", posX, posZ, homeX, homeZ);
             Server_SanityCheckIsWholeNumber("position X", posX);
@@ -157,7 +157,7 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
     }
 }
 
-public static class Instruction
+public static class Instructions
 {
 
     public static string MoveUp { get { return "MOVE UP"; } }
