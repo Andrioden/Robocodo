@@ -17,8 +17,6 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
     private float homeX;
     private float homeZ;
 
-    private bool robotStarted = false;
-
     private List<string> instructions = new List<string>();
     private int currentInstructionIndex = 0;
 
