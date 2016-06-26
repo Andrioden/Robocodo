@@ -43,16 +43,16 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
         if (hasAuthority)
         {
             CmdClearInstruction();
-            CmdAddInstruction("WALK UP");
-            CmdAddInstruction("WALK UP");
-            CmdAddInstruction("WALK UP");
-            CmdAddInstruction("WALK UP");
-            CmdAddInstruction("WALK RIGHT");
-            CmdAddInstruction("WALK RIGHT");
-            CmdAddInstruction("WALK DOWN");
-            CmdAddInstruction("WALK LEFT");
-            CmdAddInstruction("WALK LEFT");
-            CmdAddInstruction("WALK UP");
+            CmdAddInstruction("MOVE UP");
+            CmdAddInstruction("MOVE UP");
+            CmdAddInstruction("MOVE UP");
+            CmdAddInstruction("MOVE UP");
+            CmdAddInstruction("MOVE RIGHT");
+            CmdAddInstruction("MOVE RIGHT");
+            CmdAddInstruction("MOVE DOWN");
+            CmdAddInstruction("MOVE LEFT");
+            CmdAddInstruction("MOVE LEFT");
+            CmdAddInstruction("MOVE UP");
             CmdStartRobot();
         }
     }
@@ -72,14 +72,17 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
 
         foreach (string instruction in instructions)
         {
-            Debug.Log(instruction);
-            if (instruction == "WALK UP")
+            Debug.Log("Running instruction: " + instruction);
+            
+            if (!Instruction.IsValidInstruction(instruction))
+                Debug.Log("Robot does not understand instruction: " + instruction); // Later the player should be informed about this
+            else if (instruction == Instruction.MoveUp)
                 posZ++;
-            else if (instruction == "WALK DOWN")
+            else if (instruction == Instruction.MoveDown)
                 posZ--;
-            else if (instruction == "WALK RIGHT")
+            else if (instruction == Instruction.MoveRight)
                 posX++;
-            else if (instruction == "WALK LEFT")
+            else if (instruction == Instruction.MoveLeft)
                 posX--;
 
             yield return new WaitForSeconds(1f);
@@ -99,4 +102,38 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
     {
         instructions = new List<string>();
     }
+}
+
+public static class Instruction
+{
+
+    public static string MoveUp { get { return "MOVE UP"; } }
+    public static string MoveDown { get { return "MOVE DOWN"; } }
+    public static string MoveLeft { get { return "MOVE LEFT"; } }
+    public static string MoveRight { get { return "MOVE RIGHT"; } }
+
+    public static List<string> AllInstructions = new List<string>
+    {
+        MoveUp,
+        MoveDown,
+        MoveLeft,
+        MoveRight
+    };
+
+    public static bool IsValidInstruction(string instruction)
+    {
+        return AllInstructions.Contains(instruction);
+    }
+
+    public static bool IsValidInstructionList(List<string> instructions)
+    {
+        foreach(string instructionString in instructions)
+        {
+            if (!IsValidInstruction(instructionString))
+                return false;
+        }
+
+        return true;
+    }
+
 }
