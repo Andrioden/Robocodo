@@ -4,7 +4,6 @@ using UnityEngine.Networking;
 
 public class WorldController : NetworkBehaviour
 {
-    public static WorldController instance;
 
     public GameObject groundPrefab;
     public GameObject playerCityPrefab;
@@ -12,13 +11,13 @@ public class WorldController : NetworkBehaviour
     public GameObject ironNodePrefab;
     public GameObject harvesterRobotPrefab;
 
-
     private WorldBuilder worldBuilder;
     [SyncVar]
     private int width;
     [SyncVar]
     private int height;
 
+    public static WorldController instance;
     private void Awake()
     {
         if (instance == null)

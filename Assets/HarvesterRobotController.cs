@@ -17,9 +17,10 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
     private float homeX;
     private float homeZ;
 
-
     private List<string> instructions = new List<string>();
-    private bool executingInstructions = false;
+    private int currentInstructionIndex = 0;
+
+    private bool robotStarted = false;
 
     private void Start()
     {
@@ -33,9 +34,12 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
     // Update is called once per frame
     private void Update()
     {
+        //if (isServer)
+        //    ExecuteInstructionIfNewTick();
+
         var newPos = new Vector3(posX, transform.position.y, posZ);
         transform.LookAt(newPos);
-        transform.position = Vector3.MoveTowards(transform.position, newPos, 1.05f * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, newPos, (1.0f / Settings.World_IrlSecondsPerTick) * Time.deltaTime);
     }
 
     public override void OnStartAuthority()
@@ -46,15 +50,10 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
 
     public void Click()
     {
-        if (hasAuthority)
+        if (hasAuthority && !robotStarted)
         {
-            CmdClearInstruction();
-            CmdAddInstruction("MOVE UP");
-            CmdAddInstruction("MOVE UP");
-            CmdAddInstruction("MOVE UP");
-            CmdAddInstruction("MOVE RIGHT");
-            CmdAddInstruction("MOVE RIGHT");
-            CmdAddInstruction("MOVE HOME");
+            robotStarted = true;
+            Debug.Log("Client: Starting robot");
             CmdStartRobot();
         }
     }
@@ -62,73 +61,23 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
     [Command]
     private void CmdStartRobot()
     {
-        if (!executingInstructions)
-            StartCoroutine(ExecuteInstructionsCoroutine());
-        else
-            Debug.Log("Already executing instructions!!");
+        Debug.Log("Server: Starting robot");
+        CmdClearInstruction();
+        CmdAddInstruction("MOVE UP");
+        CmdAddInstruction("MOVE UP");
+        CmdAddInstruction("MOVE UP");
+        CmdAddInstruction("MOVE RIGHT");
+        CmdAddInstruction("MOVE RIGHT");
+        CmdAddInstruction("MOVE HOME");
+
+        WorldTickController.instance.TickEvent += Server_RunNextInstruction;
     }
 
-    IEnumerator ExecuteInstructionsCoroutine()
-    {
-        executingInstructions = true;
-
-        foreach (string instruction in instructions)
-        {
-            Debug.Log("Running instruction: " + instruction);
-            
-            if (!Instruction.IsValidInstruction(instruction))
-                Debug.Log("Robot does not understand instruction: " + instruction); // Later the player should be informed about this
-            else if (instruction == Instruction.MoveUp)
-                posZ++;
-            else if (instruction == Instruction.MoveDown)
-                posZ--;
-            else if (instruction == Instruction.MoveRight)
-                posX++;
-            else if (instruction == Instruction.MoveLeft)
-                posX--;
-            else if (instruction == Instruction.MoveHome)
-            {
-                SanityCheckIsWholeNumber("position X", posX);
-                SanityCheckIsWholeNumber("position Z", posZ);
-                SanityCheckIsWholeNumber("home X", homeX);
-                SanityCheckIsWholeNumber("home Z", homeZ);
-
-                int avoidEndlessWhileCounter = 0;
-                while (posX != homeX || posZ != homeZ)
-                {
-                    avoidEndlessWhileCounter++;
-                    if (avoidEndlessWhileCounter > 100000)
-                        throw new Exception("Instruction.MoveHome endless while loop. #ProgrammerFail");
-
-                    float difX = Math.Abs(posX - homeX);
-                    float difZ = Math.Abs(posZ - homeZ);
-
-                    if (difX >= difZ)
-                        posX += GetIncremementOrDecrementToGetCloser(posX, homeX);
-                    else
-                        posZ += GetIncremementOrDecrementToGetCloser(posZ, homeZ);
-
-                    yield return new WaitForSeconds(1f);
-                }
-            }
-
-            yield return new WaitForSeconds(1f);
-        }
-
-        executingInstructions = false;
-
-        Debug.Log("Finished running instructions for robot");
-    }
-
-    private int GetIncremementOrDecrementToGetCloser(float posValue, float homeValue)
-    {
-        if (posValue > homeValue)
-            return -1;
-        else if (posValue < homeValue)
-            return 1;
-        else
-            throw new Exception("Should not call this method withot a value difference");
-    }
+    //private void Server_StopRobot()
+    //{
+    //    Debug.Log("Server: Stopping Robot");
+    //    WorldTickController.instance.TickEvent -= Server_RunNextInstruction;
+    //}
 
     [Command]
     private void CmdAddInstruction(string instruction)
@@ -142,7 +91,66 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
         instructions = new List<string>();
     }
 
-    private void SanityCheckIsWholeNumber(string friendlyName, float number)
+    private void Server_RunNextInstruction(object sender)
+    {
+        string instruction = instructions[currentInstructionIndex];
+
+        Debug.Log("Running instruction: " + instruction);
+
+        if (!Instruction.IsValidInstruction(instruction))
+            Debug.Log("Robot does not understand instruction: " + instruction); // Later the player should be informed about this
+        else if (instruction == Instruction.MoveUp)
+            posZ++;
+        else if (instruction == Instruction.MoveDown)
+            posZ--;
+        else if (instruction == Instruction.MoveRight)
+            posX++;
+        else if (instruction == Instruction.MoveLeft)
+            posX--;
+        else if (instruction == Instruction.MoveHome)
+        {
+            //Debug.LogFormat("MoveHome - Pos: {0},{1}, Home: {2},{3}", posX, posZ, homeX, homeZ);
+            Server_SanityCheckIsWholeNumber("position X", posX);
+            Server_SanityCheckIsWholeNumber("position Z", posZ);
+            Server_SanityCheckIsWholeNumber("home X", homeX);
+            Server_SanityCheckIsWholeNumber("home Z", homeZ);
+
+            float difX = Math.Abs(posX - homeX);
+            float difZ = Math.Abs(posZ - homeZ);
+
+            if (difX >= difZ)
+                posX += Server_GetIncremementOrDecrementToGetCloser(posX, homeX);
+            else
+                posZ += Server_GetIncremementOrDecrementToGetCloser(posZ, homeZ);
+
+            if (posX == homeX && posZ == homeZ)
+                Server_InstructionCompleted();
+
+            return;
+        }
+
+        Server_InstructionCompleted();
+    }
+
+    private void Server_InstructionCompleted()
+    {
+        currentInstructionIndex++;
+
+        if (currentInstructionIndex == instructions.Count)
+            currentInstructionIndex = 0;
+    }
+
+    private int Server_GetIncremementOrDecrementToGetCloser(float posValue, float homeValue)
+    {
+        if (posValue > homeValue)
+            return -1;
+        else if (posValue < homeValue)
+            return 1;
+        else
+            throw new Exception("Should not call this method withot a value difference");
+    }
+
+    private void Server_SanityCheckIsWholeNumber(string friendlyName, float number)
     {
         if ((number % 1) != 0)
             throw new Exception("Robot " + friendlyName + " is not a whole number");

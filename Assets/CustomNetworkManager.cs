@@ -34,6 +34,8 @@ public class CustomNetworkManager : NetworkManager
             NetworkServer.Spawn(worldControllerGameObject);
 
             WorldController.instance.BuildWorld(100, 100);
+
+            WorldTickController.instance.StartGame();
         }
         WorldController.instance.SpawnPlayerCity(conn, playerControllerId);
     }
