@@ -17,10 +17,12 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
     private float homeX;
     private float homeZ;
 
+    private bool robotStarted = false;
+
     private List<string> instructions = new List<string>();
     private int currentInstructionIndex = 0;
 
-    private bool robotStarted = false;
+    private List<InventoryItem> inventory = new List<InventoryItem>();
 
     private void Start()
     {
@@ -61,12 +63,11 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
         Debug.Log("Server: Starting robot");
         CmdClearInstruction();
         CmdAddInstruction(Instructions.MoveUp);
-        CmdAddInstruction(Instructions.MoveUp);
-        CmdAddInstruction(Instructions.MoveUp);
-        CmdAddInstruction(Instructions.MoveRight);
-        CmdAddInstruction(Instructions.MoveRight);
+        //CmdAddInstruction(Instructions.MoveUp);
+        CmdAddInstruction(Instructions.Harvest);
+        //CmdAddInstruction(Instructions.Harvest);
         CmdAddInstruction(Instructions.MoveHome);
-
+        CmdAddInstruction(Instructions.DropInventory);
         WorldTickController.instance.TickEvent += RunNextInstruction;
     }
 
@@ -94,10 +95,10 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
     {
         string instruction = instructions[currentInstructionIndex];
 
-        Debug.Log("Running instruction: " + instruction);
+        Debug.Log("SERVER: Running instruction: " + instruction);
 
         if (!Instructions.IsValidInstruction(instruction))
-            Debug.Log("Robot does not understand instruction: " + instruction); // Later the player should be informed about this
+            Debug.Log("SERVER: Robot does not understand instruction: " + instruction); // Later the player should be informed about this
         else if (instruction == Instructions.MoveUp)
             posZ++;
         else if (instruction == Instructions.MoveDown)
@@ -127,8 +128,45 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
 
             return;
         }
+        else if (instruction == Instructions.Harvest)
+        {
+            if (WorldController.instance.world.HasCopperNodeAt((int)posX, (int)posZ))
+                inventory.Add(new CopperItem());
+            else if (WorldController.instance.world.HasIronNodeAt((int)posX, (int)posZ))
+                inventory.Add(new IronItem());
+            else
+                Debug.LogFormat("SERVER: Robot did not manage to harvest, no resource on {0},{1}", posX, posZ); // Might want to warn player about this, dunno, gameplay decision
+
+        }
+        else if (instruction == Instructions.DropInventory)
+        {
+            Debug.Log("SERVER: Dropping inventory items count: " + inventory.Count);
+
+            PlayerCityController playerCity = FindPlayerCityControllerOnPosition();
+            if (playerCity != null)
+            {
+                Debug.Log("SERVER: Found city, dropping inventory on city");
+                playerCity.AddToInventory(inventory);
+            }
+            else
+            {
+                Debug.Log("SERVER: No city found, should drop items on ground. Not fully implemented.");
+            }
+
+            inventory = new List<InventoryItem>();
+        }
 
         InstructionCompleted();
+    }
+
+    [Server]
+    private PlayerCityController FindPlayerCityControllerOnPosition()
+    {
+        foreach (GameObject go in GameObject.FindGameObjectsWithTag("PlayerCity"))
+            if (go.transform.position.x == posX && go.transform.position.z == posZ)
+                return go.GetComponent<PlayerCityController>();
+
+        return null;
     }
 
     [Server]
@@ -167,6 +205,8 @@ public static class Instructions
     public static string MoveLeft { get { return "MOVE LEFT"; } }
     public static string MoveRight { get { return "MOVE RIGHT"; } }
     public static string MoveHome { get { return "MOVE HOME"; } }
+    public static string Harvest { get { return "HARVEST"; } }
+    public static string DropInventory { get { return "DROP INVENTORY"; } }
 
     public static List<string> AllInstructions = new List<string>
     {
@@ -174,7 +214,9 @@ public static class Instructions
         MoveDown,
         MoveLeft,
         MoveRight,
-        MoveHome
+        MoveHome,
+        Harvest,
+        DropInventory
     };
 
     public static bool IsValidInstruction(string instruction)
@@ -193,4 +235,27 @@ public static class Instructions
         return true;
     }
 
+}
+
+public abstract class InventoryItem
+{
+    public abstract string Serialize();
+}
+
+public class CopperItem : InventoryItem
+{
+    public static readonly string SerializedType = "CopperItem";
+    public override string Serialize()
+    {
+        return SerializedType;
+    }
+}
+
+public class IronItem : InventoryItem
+{
+    public static readonly string SerializedType = "IronItem";
+    public override string Serialize()
+    {
+        return SerializedType;
+    }
 }

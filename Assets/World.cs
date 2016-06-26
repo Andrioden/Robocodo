@@ -4,11 +4,10 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 
-public class WorldBuilder
+public class World
 {
     private int width;
     private int height;
-
 
     public bool[,] tiles;
 
@@ -18,7 +17,7 @@ public class WorldBuilder
     public List<Coordinate> copperNodeCoordinates = new List<Coordinate>(); // Should never be manipulated directly, only through the designated method
     public List<Coordinate> ironNodeCoordinates = new List<Coordinate>(); // Should never be manipulated directly, only through the designated method
 
-    public WorldBuilder(int width, int height, int reservedPlayerCount, int extraCopperNodeCount, int extraIronNodeCount)
+    public World(int width, int height, int reservedPlayerCount, int extraCopperNodeCount, int extraIronNodeCount)
     {
         this.width = width;
         this.height = height;
@@ -43,6 +42,16 @@ public class WorldBuilder
         var nextPos = reservedPlayerCoordinates[playerCordIncrement];
         playerCordIncrement++;
         return nextPos;
+    }
+
+    public bool HasCopperNodeAt(int x, int z)
+    {
+        return copperNodeCoordinates.Exists(c => c.x == x && c.z == z);
+    }
+
+    public bool HasIronNodeAt(int x, int z)
+    {
+        return ironNodeCoordinates.Exists(c => c.x == x && c.z == z);
     }
 
     private void ReservePlayerCoordinate(Coordinate playerCityCoordinate)
