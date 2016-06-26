@@ -42,6 +42,7 @@ public class WorldController : NetworkBehaviour
 
     }
 
+    [Server]
     public void BuildWorld(int width, int height)
     {
         this.width = width;
@@ -56,6 +57,7 @@ public class WorldController : NetworkBehaviour
             SpawnObject(ironNodePrefab, coord.x, coord.z);
     }
 
+    [Server]
     public void SpawnPlayerCity(NetworkConnection conn, short playerControllerId)
     {
         var nextPos = worldBuilder.GetNextPlayerPosition();
@@ -64,11 +66,13 @@ public class WorldController : NetworkBehaviour
         NetworkServer.AddPlayerForConnection(conn, newGameObject, playerControllerId);            
     }
 
+    [Server]
     public void SpawnHarvesterWithClientAuthority(NetworkConnection conn, int x, int z)
     {
         SpawnObjectWithClientAuthority(conn, harvesterRobotPrefab, x, z);
     }
 
+    [Server]
     public GameObject SpawnObjectWithClientAuthority(NetworkConnection conn, GameObject prefab, int x, int z)
     {
         GameObject newGameObject = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);

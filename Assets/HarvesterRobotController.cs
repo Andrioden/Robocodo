@@ -34,9 +34,6 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
     // Update is called once per frame
     private void Update()
     {
-        //if (isServer)
-        //    ExecuteInstructionIfNewTick();
-
         var newPos = new Vector3(posX, transform.position.y, posZ);
         transform.LookAt(newPos);
         transform.position = Vector3.MoveTowards(transform.position, newPos, (1.0f / Settings.World_IrlSecondsPerTick) * Time.deltaTime);
@@ -70,10 +67,11 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
         CmdAddInstruction(Instructions.MoveRight);
         CmdAddInstruction(Instructions.MoveHome);
 
-        WorldTickController.instance.TickEvent += Server_RunNextInstruction;
+        WorldTickController.instance.TickEvent += RunNextInstruction;
     }
 
-    //private void Server_StopRobot()
+    //[Server]
+    //private void StopRobot()
     //{
     //    Debug.Log("Server: Stopping Robot");
     //    WorldTickController.instance.TickEvent -= Server_RunNextInstruction;
@@ -91,7 +89,8 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
         instructions = new List<string>();
     }
 
-    private void Server_RunNextInstruction(object sender)
+    [Server]
+    private void RunNextInstruction(object sender)
     {
         string instruction = instructions[currentInstructionIndex];
 
@@ -110,29 +109,30 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
         else if (instruction == Instructions.MoveHome)
         {
             //Debug.LogFormat("MoveHome - Pos: {0},{1}, Home: {2},{3}", posX, posZ, homeX, homeZ);
-            Server_SanityCheckIsWholeNumber("position X", posX);
-            Server_SanityCheckIsWholeNumber("position Z", posZ);
-            Server_SanityCheckIsWholeNumber("home X", homeX);
-            Server_SanityCheckIsWholeNumber("home Z", homeZ);
+            SanityCheckIsWholeNumber("position X", posX);
+            SanityCheckIsWholeNumber("position Z", posZ);
+            SanityCheckIsWholeNumber("home X", homeX);
+            SanityCheckIsWholeNumber("home Z", homeZ);
 
             float difX = Math.Abs(posX - homeX);
             float difZ = Math.Abs(posZ - homeZ);
 
             if (difX >= difZ)
-                posX += Server_GetIncremementOrDecrementToGetCloser(posX, homeX);
+                posX += GetIncremementOrDecrementToGetCloser(posX, homeX);
             else
-                posZ += Server_GetIncremementOrDecrementToGetCloser(posZ, homeZ);
+                posZ += GetIncremementOrDecrementToGetCloser(posZ, homeZ);
 
             if (posX == homeX && posZ == homeZ)
-                Server_InstructionCompleted();
+                InstructionCompleted();
 
             return;
         }
 
-        Server_InstructionCompleted();
+        InstructionCompleted();
     }
 
-    private void Server_InstructionCompleted()
+    [Server]
+    private void InstructionCompleted()
     {
         currentInstructionIndex++;
 
@@ -140,7 +140,8 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
             currentInstructionIndex = 0;
     }
 
-    private int Server_GetIncremementOrDecrementToGetCloser(float posValue, float homeValue)
+    [Server]
+    private int GetIncremementOrDecrementToGetCloser(float posValue, float homeValue)
     {
         if (posValue > homeValue)
             return -1;
@@ -150,7 +151,8 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
             throw new Exception("Should not call this method withot a value difference");
     }
 
-    private void Server_SanityCheckIsWholeNumber(string friendlyName, float number)
+    [Server]
+    private void SanityCheckIsWholeNumber(string friendlyName, float number)
     {
         if ((number % 1) != 0)
             throw new Exception("Robot " + friendlyName + " is not a whole number");
