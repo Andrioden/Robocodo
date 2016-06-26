@@ -24,7 +24,7 @@ public class PlayerCityController : NetworkBehaviour, IClickable
         base.OnStartAuthority();
         bodyMeshRenderer.material.color = Color.blue;
 
-        Camera.main.transform.parent.GetComponent<RTSCamera>().PositionRelativeToPlayer(transform);
+        AdjustCamera();
     }
 
     public void Click()
@@ -38,4 +38,12 @@ public class PlayerCityController : NetworkBehaviour, IClickable
     {
         WorldController.instance.SpawnHarvesterWithClientAuthority(connectionToClient, x, z);
     }
+
+    private void AdjustCamera()
+    {
+        RTSCamera camera = Camera.main.transform.parent.GetComponent<RTSCamera>();
+        camera.PositionRelativeToPlayer(transform);
+        camera.transform.localPosition += new Vector3(0, -15, 0);
+    }
+
 }
