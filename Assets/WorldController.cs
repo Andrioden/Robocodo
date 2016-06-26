@@ -58,12 +58,15 @@ public class WorldController : NetworkBehaviour
     }
 
     [Server]
-    public void SpawnPlayerCity(NetworkConnection conn, short playerControllerId)
+    public void SpawnPlayer(NetworkConnection conn, short playerControllerId)
     {
         var nextPos = worldBuilder.GetNextPlayerPosition();
         GameObject newGameObject = (GameObject)Instantiate(playerCityPrefab, new Vector3(nextPos.x, 0, nextPos.z), Quaternion.identity);
 
-        NetworkServer.AddPlayerForConnection(conn, newGameObject, playerControllerId);            
+        NetworkServer.AddPlayerForConnection(conn, newGameObject, playerControllerId);
+
+        for (int i = 0; i < Settings.Player_AmountOfStartingHarvesterRobots; i++)
+            SpawnHarvesterWithClientAuthority(conn, nextPos.x, nextPos.z);
     }
 
     [Server]
