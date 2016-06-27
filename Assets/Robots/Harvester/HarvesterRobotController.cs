@@ -225,7 +225,7 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
     public void Click()
     {
         if (hasAuthority)
-            HarvesterPanel.instance.ShowPanel(this);
+            RobotPanel.instance.ShowPanel(this);
     }
 }
 

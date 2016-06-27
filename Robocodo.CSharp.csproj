@@ -63,21 +63,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\CameraManager.cs" />
-    <Compile Include="Assets\CustomNetworkManager.cs" />
-    <Compile Include="Assets\HarvesterRobotController.cs" />
-    <Compile Include="Assets\IClickable.cs" />
-    <Compile Include="Assets\KeyboardManager.cs" />
-    <Compile Include="Assets\MouseManager.cs" />
-    <Compile Include="Assets\PlayerCityController.cs" />
-    <Compile Include="Assets\RTSCamera.cs" />
-    <Compile Include="Assets\Settings.cs" />
-    <Compile Include="Assets\UI\HarvesterPanel.cs" />
-    <Compile Include="Assets\UI\ResourcePanel.cs" />
-    <Compile Include="Assets\Utils.cs" />
-    <Compile Include="Assets\World.cs" />
-    <Compile Include="Assets\WorldController.cs" />
-    <Compile Include="Assets\WorldTickController.cs" />
+    <Compile Include="Assets\GameLogic\CustomNetworkManager.cs" />
+    <Compile Include="Assets\GameLogic\IClickable.cs" />
+    <Compile Include="Assets\GameLogic\Settings.cs" />
+    <Compile Include="Assets\GameLogic\Utils.cs" />
+    <Compile Include="Assets\GameLogic\World.cs" />
+    <Compile Include="Assets\GameLogic\WorldController.cs" />
+    <Compile Include="Assets\GameLogic\WorldTickController.cs" />
+    <Compile Include="Assets\Player\PlayerCityController.cs" />
+    <Compile Include="Assets\Robots\Harvester\HarvesterRobotController.cs" />
+    <Compile Include="Assets\UI\KeyboardManager.cs" />
+    <Compile Include="Assets\UI\MouseManager.cs" />
+    <Compile Include="Assets\UI\RTSCamera.cs" />
+    <Compile Include="Assets\UI\ResourcePanel\ResourcePanel.cs" />
+    <Compile Include="Assets\UI\RobotPanel\RobotPanel.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>
