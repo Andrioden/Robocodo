@@ -14,7 +14,17 @@ public class PlayerCityController : NetworkBehaviour, IClickable
     // Use this for initialization
     void Start()
     {
+        if (isLocalPlayer)
+            ResourcePanel.instance.RegisterLocalPlayerCity(this);
 
+        if (isServer)
+            AddToInventory(new List<InventoryItem>()
+            {
+                new CopperItem(),
+                new CopperItem(),
+                new CopperItem(),
+                new IronItem(),
+            });
     }
 
     // Update is called once per frame
@@ -40,7 +50,6 @@ public class PlayerCityController : NetworkBehaviour, IClickable
             else
                 throw new Exception("Forgot to add deserialization support for InventoryType: " + itemString);
         }
-        Debug.Log("Inventory in someones city now: " + inventory.Count);
     }
 
     public override void OnStartAuthority()
