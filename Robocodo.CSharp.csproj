@@ -66,13 +66,13 @@
     <Compile Include="Assets\CameraManager.cs" />
     <Compile Include="Assets\CustomNetworkManager.cs" />
     <Compile Include="Assets\HarvesterRobotController.cs" />
-    <Compile Include="Assets\HarvesterRobotSetupPanel.cs" />
     <Compile Include="Assets\IClickable.cs" />
     <Compile Include="Assets\KeyboardManager.cs" />
     <Compile Include="Assets\MouseManager.cs" />
     <Compile Include="Assets\PlayerCityController.cs" />
     <Compile Include="Assets\RTSCamera.cs" />
     <Compile Include="Assets\Settings.cs" />
+    <Compile Include="Assets\UI\HarvesterPanel.cs" />
     <Compile Include="Assets\UI\ResourcePanel.cs" />
     <Compile Include="Assets\Utils.cs" />
     <Compile Include="Assets\World.cs" />

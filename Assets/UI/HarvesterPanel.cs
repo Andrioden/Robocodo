@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
 
-public class HarvesterRobotSetupPanel : MonoBehaviour
+public class HarvesterPanel : MonoBehaviour
 {
     public int TEST = 0;
     public Text title;
@@ -23,7 +23,7 @@ public class HarvesterRobotSetupPanel : MonoBehaviour
     public Text helpTextLabel;
     public Text helpTextText;
 
-    public static HarvesterRobotSetupPanel instance;
+    public static HarvesterPanel instance;
 
     private Animator animator;
     private HarvesterRobotController harvesterRobotController;
