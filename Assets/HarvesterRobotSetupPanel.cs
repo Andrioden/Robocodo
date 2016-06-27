@@ -6,14 +6,19 @@ using System.Linq;
 
 public class HarvesterRobotSetupPanel : MonoBehaviour
 {
-
+    public int TEST = 0;
     public Text title;
 
-    public Text runButtonLabel;
     public Button runButton;
+    public Button closeButton;
 
     public Text codeInputLabel;
     public InputField codeInputField;
+    public GameObject codeInput;
+
+    public Text codeOutputLabel;
+    public Text codeOutputField;
+    public GameObject codeOutput;
 
     public Text helpTextLabel;
     public Text helpTextText;
@@ -22,6 +27,7 @@ public class HarvesterRobotSetupPanel : MonoBehaviour
 
     private Animator animator;
     private HarvesterRobotController harvesterRobotController;
+    private List<string> listCopy;
 
     private void Awake()
     {
@@ -40,47 +46,54 @@ public class HarvesterRobotSetupPanel : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
+    private void Update()
+    {
+        if (harvesterRobotController != null)
+        {
+            if (harvesterRobotController.IsStarted && harvesterRobotController.GetInstructions().Count > 0)
+            {
+                listCopy = harvesterRobotController.GetInstructions().Select(instruction => instruction.ToString()).ToList();
+                if(harvesterRobotController.InstructionBeingExecutedIsValid)
+                    listCopy[harvesterRobotController.InstructionBeingExecuted] = "<color=#D5A042FF>" + listCopy[harvesterRobotController.InstructionBeingExecuted] + "</color>";
+                else
+                    listCopy[harvesterRobotController.InstructionBeingExecuted] = "<color=red>" + listCopy[harvesterRobotController.InstructionBeingExecuted] + "</color>";
+                codeOutputField.text = string.Join("\n", listCopy.ToArray());
+            }
+        }
+    }
+
     public void ShowPanel(HarvesterRobotController harvesterRobotController)
     {
         this.harvesterRobotController = harvesterRobotController;
+        KeyboardManager.KeyboardLockOff();
 
         if (harvesterRobotController.IsStarted)
         {
-            title.text = "ROBOT";
+            title.text = "HARVESTER";
             helpTextLabel.text = "";
             helpTextText.text = "";
-            codeInputLabel.text = "RUNNING CODE";
 
-            runButtonLabel.text = "Close";
-            runButtonLabel.color = Color.white;
-            runButton.GetComponent<Image>().color = Color.gray;
-            runButton.onClick.RemoveAllListeners();
-            runButton.onClick.AddListener(ClosePanel);
+            closeButton.onClick.RemoveAllListeners();
+            closeButton.onClick.AddListener(ClosePanel);
 
-            codeInputField.enabled = false;
-            string instructionsConcat = string.Join("\n", harvesterRobotController.GetInstructions().ToArray());
-            codeInputField.text = instructionsConcat;
+            codeOutput.SetActive(true);
+            codeInput.SetActive(false);
         }
         else {
-            title.text = "ROBOT SETUP";
-            runButtonLabel.text = "Run";
+            title.text = "HARVESTER SETUP";
             helpTextLabel.text = "POSSIBLE COMMANDS";
             helpTextText.text = string.Join("\n", Instructions.AllInstructions.ToArray());
-            codeInputLabel.text = "CODE INPUT";
 
-            runButtonLabel.color = Color.black;
-            runButton.GetComponent<Image>().color = new Color(0f, 236f, 226f, 255f);
             runButton.onClick.RemoveAllListeners();
             runButton.onClick.AddListener(RunCode);
             runButton.onClick.AddListener(ClosePanel);
 
-            codeInputField.enabled = true;
+            codeOutput.SetActive(false);
+            codeInput.SetActive(true);
             codeInputField.onValueChanged.AddListener(KeyboardManager.KeyboardLockOn);
-            codeInputField.onEndEdit.AddListener(KeyboardManager.KeyboardLockOff);
-
-            /* Pre filled demo data */
-            codeInputField.text = harvesterRobotController.GetDemoInstructions();
-
+            codeInputField.onValueChanged.AddListener(CodeInputToUpper);
+            codeInputField.onEndEdit.AddListener(KeyboardManager.KeyboardLockOff);           
+            codeInputField.text = harvesterRobotController.GetDemoInstructions();  /* Pre filled demo data */
         }
 
         animator.Play("RobotMenuSlideIn");
@@ -98,6 +111,11 @@ public class HarvesterRobotSetupPanel : MonoBehaviour
         KeyboardManager.KeyboardLockOff();
         harvesterRobotController = null;
         animator.Play("RobotMenuSlideOut");
+    }
+
+    private void CodeInputToUpper(string arg0 = "")
+    {
+        codeInputField.text = codeInputField.text.ToUpper();
     }
 }
 

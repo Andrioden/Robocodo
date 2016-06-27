@@ -14,14 +14,25 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
     [SyncVar]
     private float posZ;
 
-    private float homeX;
-    private float homeZ;
-
-    private List<string> instructions = new List<string>();
+    [SyncVar]
     private int currentInstructionIndex = 0;
 
+    [SyncVar]
+    private int instructionBeingExecuted = 0;
+    public int InstructionBeingExecuted { get { return instructionBeingExecuted; } }
+
+    [SyncVar]
+    private bool instructionBeingExecutedIsValid = true;
+    public bool InstructionBeingExecutedIsValid { get { return instructionBeingExecutedIsValid; } }
+
+    [SyncVar]
     private bool isStarted = false;
     public bool IsStarted { get { return isStarted; } }
+
+    private SyncListString instructions = new SyncListString();
+
+    private float homeX;
+    private float homeZ;
     private List<InventoryItem> inventory = new List<InventoryItem>();
 
     private void Start()
@@ -52,8 +63,6 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
         if (hasAuthority && !isStarted)
         {
             isStarted = true;
-            CmdClearInstruction();
-
             newInstructions.ForEach(x =>
             {
                 CmdAddInstruction(x);
@@ -63,7 +72,7 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
         }
     }
 
-    public List<string> GetInstructions()
+    public SyncListString GetInstructions()
     {
         return instructions;
     }
@@ -88,21 +97,19 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
         instructions.Add(instruction);
     }
 
-    [Command]
-    private void CmdClearInstruction()
-    {
-        instructions = new List<string>();
-    }
-
     [Server]
     private void RunNextInstruction(object sender)
     {
+        instructionBeingExecutedIsValid = true;
+        instructionBeingExecuted = currentInstructionIndex;
         string instruction = instructions[currentInstructionIndex];
 
         Debug.Log("SERVER: Running instruction: " + instruction);
 
-        if (!Instructions.IsValidInstruction(instruction))
+        if (!Instructions.IsValidInstruction(instruction)) { 
             Debug.Log("SERVER: Robot does not understand instruction: " + instruction); // Later the player should be informed about this
+            instructionBeingExecutedIsValid = false;
+        }
         else if (instruction == Instructions.MoveUp)
             posZ++;
         else if (instruction == Instructions.MoveDown)
@@ -138,8 +145,10 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
                 inventory.Add(new CopperItem());
             else if (WorldController.instance.world.HasIronNodeAt((int)posX, (int)posZ))
                 inventory.Add(new IronItem());
-            else
+            else {
                 Debug.LogFormat("SERVER: Robot did not manage to harvest, no resource on {0},{1}", posX, posZ); // Might want to warn player about this, dunno, gameplay decision
+                instructionBeingExecutedIsValid = false;
+            }
 
         }
         else if (instruction == Instructions.DropInventory)
