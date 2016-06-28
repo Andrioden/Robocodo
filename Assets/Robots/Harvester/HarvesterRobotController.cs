@@ -15,9 +15,6 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
     private float posZ;
 
     [SyncVar]
-    private int currentInstructionIndex = 0;
-
-    [SyncVar]
     private int instructionBeingExecuted = 0;
     public int InstructionBeingExecuted { get { return instructionBeingExecuted; } }
 
@@ -31,9 +28,17 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
 
     private SyncListString instructions = new SyncListString();
 
+    [SyncVar]
+    private int currentInstructionIndex = 0;
+
     private float homeX;
     private float homeZ;
+
     private List<InventoryItem> inventory = new List<InventoryItem>();
+
+    // SETTINGS
+    public static int CopperCost = 1;
+    public static int IronCost = 3;
 
     private void Start()
     {
