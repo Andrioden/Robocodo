@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="Assets\GameLogic\CustomNetworkManager.cs" />
     <Compile Include="Assets\GameLogic\IClickable.cs" />
+    <Compile Include="Assets\GameLogic\ISelectable.cs" />
     <Compile Include="Assets\GameLogic\Settings.cs" />
     <Compile Include="Assets\GameLogic\Utils.cs" />
     <Compile Include="Assets\GameLogic\World.cs" />

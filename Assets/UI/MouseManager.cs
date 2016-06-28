@@ -7,13 +7,13 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class MouseManager : MonoBehaviour
 {
-
+    public static GameObject currentlySelected = null;
     // Update is called once per frame
     void Update()
     {
         //Add this when we start creating GUI elements aka have an EventSystem
-        //if (EventSystem.current.IsPointerOverGameObject())
-        //    return;
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -23,18 +23,32 @@ public class MouseManager : MonoBehaviour
         {
             GameObject ourHitObject = hitInfo.collider.transform.gameObject;
 
-            if (ourHitObject.transform.parent == null)
-                return;
-            else
-                ourHitObject = ourHitObject.transform.parent.gameObject;
-
             if (Input.GetMouseButtonDown(0))
             {
+                if (ourHitObject.transform.parent == null)
+                {
+                    Debug.Log("Currently selected cleared" );
+                    currentlySelected = null;
+                    return;
+                }
+                else
+                    ourHitObject = ourHitObject.transform.parent.gameObject;
+
                 IClickable clickableObject = ourHitObject.GetComponent<IClickable>();
                 if (clickableObject != null)
                 {
                     clickableObject.Click();
+                    if (clickableObject is ISelectable)
+                        currentlySelected = ourHitObject;
+                    else {
+                        Debug.Log("Currently selected cleared");
+                        currentlySelected = null;
+                    }
                     return;
+                }
+                else {
+                    Debug.Log("Currently selected cleared");
+                    currentlySelected = null;
                 }
             }
 

@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Collections;
 
-public class HarvesterRobotController : NetworkBehaviour, IClickable
+public class HarvesterRobotController : NetworkBehaviour, ISelectable
 {
     public MeshRenderer visirMeshRenderer;
 
@@ -26,14 +26,29 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
     public bool InstructionBeingExecutedIsValid { get { return instructionBeingExecutedIsValid; } }
 
     [SyncVar]
+    private string feedback = "";
+    public string Feedback { get { return feedback; } }
+
+    [SyncVar]
     private bool isStarted = false;
     public bool IsStarted { get { return isStarted; } }
 
     private SyncListString instructions = new SyncListString();
 
+    private int memory = 10;
+    public int Memory {  get { return memory; } }
+
     private float homeX;
     private float homeZ;
+
+    private int inventoryCapacity = 2;
+    public int InventoryCapacity {  get { return inventoryCapacity; } }
+
     private List<InventoryItem> inventory = new List<InventoryItem>();
+    public List<InventoryItem> Inventory { get { return inventory; } }
+
+    public delegate void InventoryChanged(HarvesterRobotController robot);
+    public static event InventoryChanged OnInventoryChanged;
 
     private void Start()
     {
@@ -58,10 +73,16 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
         visirMeshRenderer.material.color = Color.blue;
     }
 
-    public void RunCode(List<string> newInstructions)
+    [Client]
+    public bool RunCode(List<string> newInstructions)
     {
         if (hasAuthority && !isStarted)
         {
+            if (newInstructions.Count > memory) {
+                feedback = "NOT ENOUGH MEMORY";
+                return false;
+            }
+
             isStarted = true;
             newInstructions.ForEach(x =>
             {
@@ -69,7 +90,10 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
             });
 
             CmdStartRobot();
+            return true;
         }
+
+        return false;
     }
 
     public SyncListString GetInstructions()
@@ -109,6 +133,7 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
         if (!Instructions.IsValidInstruction(instruction)) { 
             Debug.Log("SERVER: Robot does not understand instruction: " + instruction); // Later the player should be informed about this
             instructionBeingExecutedIsValid = false;
+            feedback = "Unknown command";
         }
         else if (instruction == Instructions.MoveUp)
             posZ++;
@@ -142,13 +167,16 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
         else if (instruction == Instructions.Harvest)
         {
             if (WorldController.instance.world.HasCopperNodeAt((int)posX, (int)posZ))
-                inventory.Add(new CopperItem());
-            else if (WorldController.instance.world.HasIronNodeAt((int)posX, (int)posZ))
-                inventory.Add(new IronItem());
-            else {
-                Debug.LogFormat("SERVER: Robot did not manage to harvest, no resource on {0},{1}", posX, posZ); // Might want to warn player about this, dunno, gameplay decision
-                instructionBeingExecutedIsValid = false;
-            }
+                if(!AddInventoryItem(new CopperItem()))
+                    instructionBeingExecutedIsValid = false;
+                else if (WorldController.instance.world.HasIronNodeAt((int)posX, (int)posZ))
+                if (!AddInventoryItem(new IronItem()))
+                    instructionBeingExecutedIsValid = false;
+                else {
+                    Debug.LogFormat("SERVER: Robot did not manage to harvest, no resource on {0},{1}", posX, posZ); // Might want to warn player about this, dunno, gameplay decision
+                    instructionBeingExecutedIsValid = false;
+                    feedback = "NOTHING TO HARVEST";
+                }
 
         }
         else if (instruction == Instructions.DropInventory)
@@ -160,17 +188,37 @@ public class HarvesterRobotController : NetworkBehaviour, IClickable
             {
                 Debug.Log("SERVER: Found city, dropping inventory on city");
                 playerCity.AddToInventory(inventory);
+                //ClearInventory();
             }
             else
             {
                 Debug.Log("SERVER: No city found, should drop items on ground. Not fully implemented.");
-            }
-
-            inventory = new List<InventoryItem>();
+            }            
         }
 
         InstructionCompleted();
     }
+
+    [Server]
+    private bool AddInventoryItem(InventoryItem item)
+    {
+        if (inventory.Count >= InventoryCapacity) { 
+            feedback = "INVENTORY FULL";
+            return false;
+        }
+
+        inventory.Add(item);
+        OnInventoryChanged(this);
+        return true;
+    }
+
+    //[Server]
+    //private void ClearInventory()
+    //{
+    //    inventory = new List<InventoryItem>();
+    //    if (OnInventoryChanged != null)
+    //        OnInventoryChanged(this);
+    //}
 
     public string GetDemoInstructions()
     {

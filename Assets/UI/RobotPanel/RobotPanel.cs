@@ -3,11 +3,14 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 public class RobotPanel : MonoBehaviour
 {
-    public int TEST = 0;
-    public Text title;
+    public Text titleText;
+
+    public Text memoryText;
+    public Text feedbackText;
 
     public Button runButton;
     public Button closeButton;
@@ -23,11 +26,17 @@ public class RobotPanel : MonoBehaviour
     public Text helpTextLabel;
     public Text helpTextText;
 
+    public Text inventoryLabel;
+    public GameObject inventoryContainer;
+    public GameObject ironPrefab;
+    public GameObject copperPrefab;
+
     public static RobotPanel instance;
 
     private Animator animator;
     private HarvesterRobotController harvesterRobotController;
-    private List<string> listCopy;
+    private List<string> instructionListCopy;
+    private IEnumerator feedbackClearCoroutine;
 
     private void Awake()
     {
@@ -44,21 +53,39 @@ public class RobotPanel : MonoBehaviour
     private void Start()
     {
         animator = GetComponent<Animator>();
+
+        HarvesterRobotController.OnInventoryChanged += InventoryUpdated;
     }
 
     private void Update()
     {
         if (harvesterRobotController != null)
         {
-            if (harvesterRobotController.IsStarted && harvesterRobotController.GetInstructions().Count > 0)
-            {
-                listCopy = harvesterRobotController.GetInstructions().Select(instruction => instruction.ToString()).ToList();
-                if(harvesterRobotController.InstructionBeingExecutedIsValid)
-                    listCopy[harvesterRobotController.InstructionBeingExecuted] = "<color=#D5A042FF>" + listCopy[harvesterRobotController.InstructionBeingExecuted] + "</color>";
-                else
-                    listCopy[harvesterRobotController.InstructionBeingExecuted] = "<color=red>" + listCopy[harvesterRobotController.InstructionBeingExecuted] + "</color>";
-                codeOutputField.text = string.Join("\n", listCopy.ToArray());
+            if (MouseManager.currentlySelected == null || MouseManager.currentlySelected != harvesterRobotController.gameObject) { 
+                ClosePanel();
+                return;
             }
+
+            instructionListCopy = harvesterRobotController.GetInstructions().Select(instruction => instruction.ToString()).ToList();
+
+            if (harvesterRobotController.IsStarted)
+            {
+                if (harvesterRobotController.InstructionBeingExecutedIsValid)
+                    instructionListCopy[harvesterRobotController.InstructionBeingExecuted] = "<color=#D5A042FF>" + instructionListCopy[harvesterRobotController.InstructionBeingExecuted] + "</color>";
+                else {
+                    instructionListCopy[harvesterRobotController.InstructionBeingExecuted] = "<color=red>" + instructionListCopy[harvesterRobotController.InstructionBeingExecuted] + "</color>";
+                    SetFeedbackText("<color=red>" + harvesterRobotController.Feedback + "</color>", 0);
+                }
+                codeOutputField.text = string.Join("\n", instructionListCopy.ToArray());
+
+                inventoryLabel.text = harvesterRobotController.Inventory.Count > 0 ? "INVENTORY" + harvesterRobotController.Inventory.Count + "/" + harvesterRobotController.InventoryCapacity : "INVENTORY";
+            }
+
+            var instructions = instructionListCopy.Count > 0 ? instructionListCopy : codeInputField.text.Split('\n').ToList();
+            bool memoryExceeded = instructions.Count > harvesterRobotController.Memory;
+            string colorPrefix = memoryExceeded ? "<color=red>" : "";
+            string colorSuffix = memoryExceeded ? "</color>" : "";
+            memoryText.text = colorPrefix + "MEMORY: " + instructions.Count + "/" + harvesterRobotController.Memory + colorSuffix;
         }
     }
 
@@ -69,7 +96,7 @@ public class RobotPanel : MonoBehaviour
 
         if (harvesterRobotController.IsStarted)
         {
-            title.text = "HARVESTER";
+            titleText.text = "HARVESTER";
             helpTextLabel.text = "";
             helpTextText.text = "";
 
@@ -77,22 +104,21 @@ public class RobotPanel : MonoBehaviour
             closeButton.onClick.AddListener(ClosePanel);
 
             codeOutput.SetActive(true);
-            codeInput.SetActive(false);
+            codeInput.SetActive(false);            
         }
         else {
-            title.text = "HARVESTER SETUP";
+            titleText.text = "HARVESTER SETUP";
             helpTextLabel.text = "POSSIBLE COMMANDS";
             helpTextText.text = string.Join("\n", Instructions.AllInstructions.ToArray());
 
             runButton.onClick.RemoveAllListeners();
             runButton.onClick.AddListener(RunCode);
-            runButton.onClick.AddListener(ClosePanel);
 
             codeOutput.SetActive(false);
             codeInput.SetActive(true);
             codeInputField.onValueChanged.AddListener(KeyboardManager.KeyboardLockOn);
             codeInputField.onValueChanged.AddListener(CodeInputToUpper);
-            codeInputField.onEndEdit.AddListener(KeyboardManager.KeyboardLockOff);           
+            codeInputField.onEndEdit.AddListener(KeyboardManager.KeyboardLockOff);
             codeInputField.text = harvesterRobotController.GetDemoInstructions();  /* Pre filled demo data */
         }
 
@@ -103,7 +129,13 @@ public class RobotPanel : MonoBehaviour
     {
         KeyboardManager.KeyboardLockOff();
         List<string> instructions = codeInputField.text.Split('\n').ToList();
-        harvesterRobotController.RunCode(instructions);
+
+        if (harvesterRobotController.RunCode(instructions))
+            ClosePanel();
+        else
+        {
+            SetFeedbackText("<color=red>" + harvesterRobotController.Feedback + "</color>", 1);
+        }
     }
 
     private void ClosePanel()
@@ -117,5 +149,61 @@ public class RobotPanel : MonoBehaviour
     {
         codeInputField.text = codeInputField.text.ToUpper();
     }
+
+    private void SetFeedbackText(string feedback, float durationSeconds)
+    {
+        feedbackText.text = feedback;
+
+        if (feedbackClearCoroutine != null)
+            StopCoroutine(feedbackClearCoroutine);
+
+        feedbackClearCoroutine = RemoveFeedbackAfterSeconds(durationSeconds);
+        StartCoroutine(feedbackClearCoroutine);
+    }
+
+    IEnumerator RemoveFeedbackAfterSeconds(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        feedbackText.text = "";
+    }
+
+    private void InventoryUpdated(HarvesterRobotController robot)
+    {
+        if(harvesterRobotController != null && robot == harvesterRobotController)
+        {
+            Debug.Log("InventoryUpdated: " + harvesterRobotController.Inventory);
+
+            foreach (Transform child in inventoryContainer.transform)
+            {
+                GameObject.Destroy(child.gameObject);
+            }
+
+            var currentInventory = harvesterRobotController.Inventory;
+            currentInventory.ForEach(item => AddInventoryItem(item));
+        }
+    }
+
+    private void AddInventoryItem(InventoryItem item)
+    {
+        GameObject prefab = null;
+        if (item is IronItem)
+            prefab = ironPrefab;
+        else if (item is CopperItem)
+            prefab = copperPrefab;
+
+        var inventoryImage = Instantiate(prefab) as GameObject;
+        inventoryImage.transform.SetParent(inventoryContainer.transform, false);
+    }
+
+    //private void InventoryDropped(HarvesterRobotController robot)
+    //{
+    //    if (harvesterRobotController != null && robot == harvesterRobotController)
+    //    {
+    //        foreach (Transform child in inventoryContainer.transform)
+    //        {
+    //            GameObject.Destroy(child.gameObject);
+    //        }
+    //    }
+    //}
 }
 
