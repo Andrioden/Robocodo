@@ -40,8 +40,8 @@ public class ResourcePanel : MonoBehaviour
     {
         if (localPlayerCity != null)
         {
-            copperLabel.text = "Copper: " + localPlayerCity.inventory.Count(i => i.GetType() == typeof(CopperItem));
-            ironLabel.text = "Iron: " + localPlayerCity.inventory.Count(i => i.GetType() == typeof(IronItem));
+            copperLabel.text = "Copper: " + localPlayerCity.GetCopperCount();
+            ironLabel.text = "Iron: " + localPlayerCity.GetIronCount();
         }
     }
 

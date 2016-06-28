@@ -50,6 +50,10 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
     public delegate void InventoryChanged(HarvesterRobotController robot);
     public static event InventoryChanged OnInventoryChanged;
 
+    // SETTINGS
+    public static int CopperCost = 1;
+    public static int IronCost = 3;
+
     private void Start()
     {
         posX = transform.position.x;
