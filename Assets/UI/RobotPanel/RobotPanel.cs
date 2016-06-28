@@ -78,14 +78,14 @@ public class RobotPanel : MonoBehaviour
                 }
                 codeOutputField.text = string.Join("\n", instructionListCopy.ToArray());
 
-                inventoryLabel.text = harvesterRobotController.Inventory.Count > 0 ? "INVENTORY" + harvesterRobotController.Inventory.Count + "/" + harvesterRobotController.InventoryCapacity : "INVENTORY";
+                inventoryLabel.text = harvesterRobotController.Inventory.Count > 0 ? "INVENTORY" + harvesterRobotController.Inventory.Count + "/" + HarvesterRobotController.InventoryCapacity : "INVENTORY";
             }
 
             var instructions = instructionListCopy.Count > 0 ? instructionListCopy : codeInputField.text.Split('\n').ToList();
-            bool memoryExceeded = instructions.Count > harvesterRobotController.Memory;
+            bool memoryExceeded = instructions.Count > HarvesterRobotController.Memory;
             string colorPrefix = memoryExceeded ? "<color=red>" : "";
             string colorSuffix = memoryExceeded ? "</color>" : "";
-            memoryText.text = colorPrefix + "MEMORY: " + instructions.Count + "/" + harvesterRobotController.Memory + colorSuffix;
+            memoryText.text = colorPrefix + "MEMORY: " + instructions.Count + "/" + HarvesterRobotController.Memory + colorSuffix;
         }
     }
 

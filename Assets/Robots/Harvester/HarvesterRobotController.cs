@@ -15,9 +15,6 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
     private float posZ;
 
     [SyncVar]
-    private int currentInstructionIndex = 0;
-
-    [SyncVar]
     private int instructionBeingExecuted = 0;
     public int InstructionBeingExecuted { get { return instructionBeingExecuted; } }
 
@@ -34,15 +31,11 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
     public bool IsStarted { get { return isStarted; } }
 
     private SyncListString instructions = new SyncListString();
-
-    private int memory = 10;
-    public int Memory {  get { return memory; } }
+    [SyncVar]
+    private int currentInstructionIndex = 0;
 
     private float homeX;
     private float homeZ;
-
-    private int inventoryCapacity = 2;
-    public int InventoryCapacity {  get { return inventoryCapacity; } }
 
     private List<InventoryItem> inventory = new List<InventoryItem>();
     public List<InventoryItem> Inventory { get { return inventory; } }
@@ -53,6 +46,8 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
     // SETTINGS
     public static int CopperCost = 1;
     public static int IronCost = 3;
+    public static int Memory = 10;
+    public static int InventoryCapacity = 2;
 
     private void Start()
     {
@@ -82,7 +77,7 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
     {
         if (hasAuthority && !isStarted)
         {
-            if (newInstructions.Count > memory) {
+            if (newInstructions.Count > Memory) {
                 feedback = "NOT ENOUGH MEMORY";
                 return false;
             }
