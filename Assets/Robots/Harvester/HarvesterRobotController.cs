@@ -50,9 +50,9 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
     // SETTINGS
     public static int CopperCost = 1;
     public static int IronCost = 3;
-    public static int Memory = 10;
+    public static int Memory = 20;
     public static int IPT = 1; // Instructions Per Tick. Cant call it speed because it can be confused with move speed.
-    public static int MaxEnergy = 15;
+    public static int MaxEnergy = 50;
     public static int InventoryCapacity = 2;
 
     private void Start()
@@ -110,6 +110,37 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
         return false;
     }
 
+
+    public string GetDemoInstructions()
+    {
+        List<string> demoInstructions = new List<string>()
+        {
+            Instructions.MoveUp,
+            Instructions.Harvest,
+            Instructions.MoveHome,
+            Instructions.DropInventory
+        };
+
+        //List<string> demoInstructions = new List<string>()
+        //{
+        //    Instructions.MoveLeft,
+        //    Instructions.LoopStartPlain,
+        //        Instructions.LoopStartNumbered(0, 2),
+        //            Instructions.MoveUp,
+        //            Instructions.LoopStartNumbered(0, 1),
+        //                Instructions.MoveRight,
+        //            Instructions.LoopEnd,
+        //            Instructions.LoopStartNumbered(0, 1),
+        //                Instructions.MoveRight,
+        //            Instructions.LoopEnd,
+        //        Instructions.LoopEnd,
+        //    Instructions.LoopEnd,
+        //    Instructions.MoveLeft
+        //};
+
+        return string.Join("\n", demoInstructions.ToArray());
+    }
+
     public SyncListString GetInstructions()
     {
         return instructions;
@@ -143,27 +174,21 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
     [Server]
     private void RunNextInstruction(object sender)
     {
-        energy--;
+        instructionBeingExecutedIsValid = true;
+        instructionBeingExecuted = currentInstructionIndex;
+        string instruction = instructions[currentInstructionIndex];
+
         if (energy <= 0)
         {
             instructionBeingExecutedIsValid = false;
             feedback = "Not enough energy";
             return;
         }
-
-        instructionBeingExecutedIsValid = true;
-        instructionBeingExecuted = currentInstructionIndex;
-        string instruction = instructions[currentInstructionIndex];
+        energy--;
 
         Debug.Log("SERVER: Running instruction: " + instruction);
 
-        if (!Instructions.IsValidInstruction(instruction))
-        {
-            Debug.Log("SERVER: Robot does not understand instruction: " + instruction);
-            instructionBeingExecutedIsValid = false;
-            feedback = "Unknown command";
-        }
-        else if (instruction == Instructions.MoveUp)
+        if (instruction == Instructions.MoveUp)
             posZ++;
         else if (instruction == Instructions.MoveDown)
             posZ--;
@@ -212,25 +237,138 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
             //    }
         }
         else if (instruction == Instructions.DropInventory)
+            DropInventory();
+        else if (Instructions.IsValidLoopStart(instruction))
         {
-            Debug.Log("SERVER: Dropping inventory items count: " + inventory.Count);
-
-            PlayerCityController playerCity = FindPlayerCityControllerOnPosition();
-            if (playerCity != null)
-            {
-                Debug.Log("SERVER: Found city, dropping inventory on city");
-                playerCity.AddToInventory(inventory);
-                ClearInventory();
-            }
-            else
-            {
-                Debug.Log("SERVER: No city found, should drop items on ground. Not fully implemented.");
-            }
+            IterateLoopStartCounterIfNeeded(instruction);
+            ResetAllInnerLoopStarts(currentInstructionIndex + 1);
+        }
+        else if (instruction == Instructions.LoopEnd)
+            SetInstructionToMatchingLoopStart();
+        else
+        {
+            Debug.Log("SERVER: Robot does not understand instruction: " + instruction);
+            instructionBeingExecutedIsValid = false;
+            feedback = "Unknown command";
         }
 
         InstructionCompleted();
     }
 
+    [Server]
+    private void DropInventory()
+    {
+        Debug.Log("SERVER: Dropping inventory items count: " + inventory.Count);
+
+        PlayerCityController playerCity = FindPlayerCityControllerOnPosition();
+        if (playerCity != null)
+        {
+            Debug.Log("SERVER: Found city, dropping inventory on city");
+            playerCity.AddToInventory(inventory);
+            ClearInventory();
+        }
+        else
+        {
+            Debug.Log("SERVER: No city found, should drop items on ground. Not fully implemented.");
+        }
+    }
+
+    [Server]
+    private void IterateLoopStartCounterIfNeeded(string instruction)
+    {
+        if (instruction == Instructions.LoopStartPlain)
+            return;
+
+        string paraContent = Instructions.GetParenthesesContent(instruction);
+        string[] paraContentSlashSplit = paraContent.Split('/');
+
+        int currentLoopCount = -1;
+        int totalLoopCount = -1;
+
+        if (paraContentSlashSplit.Length == 1)
+        {
+            // First time running Loop
+            currentLoopCount = 1;
+            totalLoopCount = Convert.ToInt32(paraContentSlashSplit[0]);
+        }
+        else if (paraContentSlashSplit.Length == 2)
+        {
+            // Loop has been run before, example 'LOOP START (1/2)' means that it has been run 1 of 2 times
+            currentLoopCount = Convert.ToInt32(paraContentSlashSplit[0]) + 1;
+            totalLoopCount = Convert.ToInt32(paraContentSlashSplit[1]);
+        }
+        else
+            throw new Exception("Illegal amount of forward slashes in instruction: " + instruction);
+
+        instructions[currentInstructionIndex] = Instructions.LoopStartNumbered(currentLoopCount, totalLoopCount);
+    }
+
+    [Server]
+    private void ResetAllInnerLoopStarts(int startingIndex)
+    {
+        int loopEndSkippingUntilDone = 0;
+        for (int i = startingIndex; i < instructions.Count; i++)
+        {
+            if (Instructions.IsValidLoopStart(instructions[i]))
+            {
+                loopEndSkippingUntilDone++;
+                instructions[i] = Instructions.LoopStartReset(instructions[i]);
+            }
+            else if (instructions[i] == Instructions.LoopEnd)
+            {
+                if (loopEndSkippingUntilDone == 0)
+                    return;
+                else
+                    loopEndSkippingUntilDone--;
+            }
+        }
+    }
+
+    [Server]
+    private void SetInstructionToMatchingLoopStart()
+    {
+        int skippingLoopStarts = 0;
+        for (int i = currentInstructionIndex-1; i >= 0; i--)
+        {
+            if (instructions[i] == Instructions.LoopEnd)
+                skippingLoopStarts++;
+            else if (Instructions.IsValidLoopStart(instructions[i]))
+            {
+                if (skippingLoopStarts == 0)
+                {
+                    if (Instructions.IsLoopStartCompleted(instructions[i]))
+                        return;
+                    else
+                    {
+                        currentInstructionIndex = i - 1;
+                        return;
+                    }
+                }
+                else
+                    skippingLoopStarts--;
+            }
+        }
+
+        instructionBeingExecutedIsValid = false;
+        feedback = "Could not find matching LOOP START";
+    }
+
+    [Server]
+    private void InstructionCompleted()
+    {
+        currentInstructionIndex++;
+
+        if (currentInstructionIndex == instructions.Count)
+        {
+            currentInstructionIndex = 0;
+            ResetAllInnerLoopStarts(currentInstructionIndex);
+        }
+
+        if (IsHome())
+            energy = MaxEnergy;
+    }
+
+    [Server]
     private bool IsHome()
     {
         return posX == homeX && posZ == homeZ;
@@ -258,19 +396,6 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
         //    OnInventoryChanged(this);
     }
 
-    public string GetDemoInstructions()
-    {
-        List<string> demoInstructions = new List<string>()
-        {
-            Instructions.MoveUp,
-            Instructions.Harvest,
-            Instructions.MoveHome,
-            Instructions.DropInventory
-        };
-
-        return string.Join("\n", demoInstructions.ToArray());
-    }
-
     [Server]
     private PlayerCityController FindPlayerCityControllerOnPosition()
     {
@@ -279,18 +404,6 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
                 return go.GetComponent<PlayerCityController>();
 
         return null;
-    }
-
-    [Server]
-    private void InstructionCompleted()
-    {
-        currentInstructionIndex++;
-
-        if (currentInstructionIndex == instructions.Count)
-            currentInstructionIndex = 0;
-
-        if (IsHome())
-            energy = MaxEnergy;
     }
 
     [Server]
