@@ -5,13 +5,18 @@ using System;
 public class ResourceController : MonoBehaviour, IClickable
 {
 
-    public int remainingItems;
+    private int remainingItems;
     public Type resourceType;
+
+    private Vector3 originalTransformScale;
 
     // Use this for initialization
     private void Start()
     {
+        originalTransformScale = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z);
+
         remainingItems = Utils.RandomInt(Settings.Resource_MinItemsPerNode, Settings.Resource_MaxItemsPerNode);
+        UpdateTransformHeight();
     }
 
     // Update is called once per frame
@@ -23,6 +28,24 @@ public class ResourceController : MonoBehaviour, IClickable
     public void Click()
     {
         Debug.LogFormat("This node of resouce type {0} has {1} remaining items", resourceType, remainingItems);
+    }
+
+    public void HarvestOneResourceItem()
+    {
+        remainingItems--;
+        UpdateTransformHeight();
+    }
+
+    public int GetRemainingResourceItems()
+    {
+        return remainingItems;
+    }
+
+    private void UpdateTransformHeight()
+    {
+        int scalePercentage = MathUtils.LinearConversion(0, Settings.Resource_MaxItemsPerNode, 0, 100, remainingItems);
+        float scaleFactor = scalePercentage / 100.0f;
+        transform.localScale = new Vector3(originalTransformScale.x * scaleFactor, originalTransformScale.y * scaleFactor, originalTransformScale.z * scaleFactor);
     }
 
 }

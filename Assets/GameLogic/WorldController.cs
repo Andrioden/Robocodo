@@ -118,9 +118,9 @@ public class WorldController : NetworkBehaviour
         ResourceController resourceController = resourceControllers.Find(r => r.resourceType == resourceType && r.transform.position.x == x && r.transform.position.z == z);
         if (resourceController != null)
         {
-            resourceController.remainingItems--;
-            Debug.LogFormat("Server: HARVESTED! Resource node at {0},{1} has {2} items left", x, z, resourceController.remainingItems);
-            if (resourceController.remainingItems <= 0)
+            resourceController.HarvestOneResourceItem();
+            Debug.LogFormat("Server: HARVESTED! Resource node at {0},{1} has {2} items left", x, z, resourceController.GetRemainingResourceItems());
+            if (resourceController.GetRemainingResourceItems() <= 0)
             {
                 resourceControllers.Remove(resourceController);
                 Destroy(resourceController.gameObject);
