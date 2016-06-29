@@ -9,8 +9,10 @@ public class RobotPanel : MonoBehaviour
 {
     public Text titleText;
 
-    public Text memoryText;
     public Text feedbackText;
+
+    public Text memoryText;
+    public Text energyText;
 
     public Button runButton;
     public Button closeButton;
@@ -86,6 +88,7 @@ public class RobotPanel : MonoBehaviour
             string colorPrefix = memoryExceeded ? "<color=red>" : "";
             string colorSuffix = memoryExceeded ? "</color>" : "";
             memoryText.text = colorPrefix + "MEMORY: " + instructions.Count + "/" + HarvesterRobotController.Memory + colorSuffix;
+            energyText.text = string.Format("ENERGY: {0}/{1}", harvesterRobotController.Energy, HarvesterRobotController.MaxEnergy);
         }
     }
 

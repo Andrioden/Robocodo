@@ -39,16 +39,21 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
 
     private List<InventoryItem> inventory = new List<InventoryItem>();
     public List<InventoryItem> Inventory { get { return inventory; } }
-
     public delegate void InventoryChanged(HarvesterRobotController robot);
     public static event InventoryChanged OnInventoryChanged;
+
+    [SyncVar]
+    private int energy;
+    public int Energy { get { return energy; } }
+
 
     // SETTINGS
     public static int CopperCost = 1;
     public static int IronCost = 3;
     public static int Memory = 10;
-    public static int InventoryCapacity = 2;
     public static int IPT = 1; // Instructions Per Tick. Cant call it speed because it can be confused with move speed.
+    public static int MaxEnergy = 15;
+    public static int InventoryCapacity = 2;
 
     private void Start()
     {
@@ -57,6 +62,8 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
 
         homeX = transform.position.x;
         homeZ = transform.position.z;
+
+        energy = MaxEnergy;
     }
 
     // Update is called once per frame
@@ -136,6 +143,14 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
     [Server]
     private void RunNextInstruction(object sender)
     {
+        energy--;
+        if (energy <= 0)
+        {
+            instructionBeingExecutedIsValid = false;
+            feedback = "Not enough energy";
+            return;
+        }
+
         instructionBeingExecutedIsValid = true;
         instructionBeingExecuted = currentInstructionIndex;
         string instruction = instructions[currentInstructionIndex];
@@ -169,7 +184,7 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
             else
                 posZ += GetIncremementOrDecrementToGetCloser(posZ, homeZ);
 
-            if (posX == homeX && posZ == homeZ)
+            if (IsHome())
                 InstructionCompleted();
 
             return;
@@ -214,6 +229,11 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
         }
 
         InstructionCompleted();
+    }
+
+    private bool IsHome()
+    {
+        return posX == homeX && posZ == homeZ;
     }
 
     [Server]
@@ -268,6 +288,9 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
 
         if (currentInstructionIndex == instructions.Count)
             currentInstructionIndex = 0;
+
+        if (IsHome())
+            energy = MaxEnergy;
     }
 
     [Server]
