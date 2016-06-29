@@ -48,6 +48,7 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
     public static int IronCost = 3;
     public static int Memory = 10;
     public static int InventoryCapacity = 2;
+    public static int IPT = 1; // Instructions Per Tick. Cant call it speed because it can be confused with move speed.
 
     private void Start()
     {
@@ -63,7 +64,7 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
     {
         var newPos = new Vector3(posX, transform.position.y, posZ);
         transform.LookAt(newPos);
-        transform.position = Vector3.MoveTowards(transform.position, newPos, (1.0f / Settings.World_IrlSecondsPerTick) * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, newPos, (1.0f / Settings.World_IrlSecondsPerTick) * Time.deltaTime * IPT);
     }
 
     public void Click()
@@ -92,7 +93,7 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
             isStarted = true;
             newInstructions.ForEach(x =>
             {
-                CmdAddInstruction(x);
+                CmdAddInstruction(x); // TODO: Do more effective, cant we add all at once? string list, csv?
             });
 
             CmdStartRobot();
@@ -111,7 +112,12 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
     private void CmdStartRobot()
     {
         Debug.Log("Server: Starting robot");
-        WorldTickController.instance.TickEvent += RunNextInstruction;
+        if (IPT == 1)
+            WorldTickController.instance.TickEvent += RunNextInstruction;
+        else if (IPT == 2)
+            WorldTickController.instance.HalfTickEvent += RunNextInstruction;
+        else
+            throw new Exception("IPT value not supported: " + IPT);
     }
 
     //[Server]
