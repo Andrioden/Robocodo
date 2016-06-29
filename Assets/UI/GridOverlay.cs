@@ -84,7 +84,6 @@ public class GridOverlay : MonoBehaviour
             }
         }
 
-
         GL.End();
     }
 }

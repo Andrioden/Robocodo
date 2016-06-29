@@ -68,11 +68,14 @@
     <Compile Include="Assets\GameLogic\ISelectable.cs" />
     <Compile Include="Assets\GameLogic\Settings.cs" />
     <Compile Include="Assets\GameLogic\Utils.cs" />
-    <Compile Include="Assets\GameLogic\World.cs" />
+    <Compile Include="Assets\GameLogic\WorldBuilder.cs" />
     <Compile Include="Assets\GameLogic\WorldController.cs" />
     <Compile Include="Assets\GameLogic\WorldTickController.cs" />
     <Compile Include="Assets\Player\PlayerCityController.cs" />
+    <Compile Include="Assets\ResourceNodes\ResourceController.cs" />
     <Compile Include="Assets\Robots\Harvester\HarvesterRobotController.cs" />
+    <Compile Include="Assets\Robots\Instructions.cs" />
+    <Compile Include="Assets\Robots\InventoryItems.cs" />
     <Compile Include="Assets\UI\GridOverlay.cs" />
     <Compile Include="Assets\UI\KeyboardManager.cs" />
     <Compile Include="Assets\UI\MouseManager.cs" />

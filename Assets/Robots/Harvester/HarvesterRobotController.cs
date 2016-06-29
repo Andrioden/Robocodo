@@ -66,6 +66,12 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
         transform.position = Vector3.MoveTowards(transform.position, newPos, (1.0f / Settings.World_IrlSecondsPerTick) * Time.deltaTime);
     }
 
+    public void Click()
+    {
+        if (hasAuthority)
+            RobotPanel.instance.ShowPanel(this);
+    }
+
     public override void OnStartAuthority()
     {
         base.OnStartAuthority();
@@ -77,7 +83,8 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
     {
         if (hasAuthority && !isStarted)
         {
-            if (newInstructions.Count > Memory) {
+            if (newInstructions.Count > Memory)
+            {
                 feedback = "NOT ENOUGH MEMORY";
                 return false;
             }
@@ -129,8 +136,9 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
 
         Debug.Log("SERVER: Running instruction: " + instruction);
 
-        if (!Instructions.IsValidInstruction(instruction)) { 
-            Debug.Log("SERVER: Robot does not understand instruction: " + instruction); // Later the player should be informed about this
+        if (!Instructions.IsValidInstruction(instruction))
+        {
+            Debug.Log("SERVER: Robot does not understand instruction: " + instruction);
             instructionBeingExecutedIsValid = false;
             feedback = "Unknown command";
         }
@@ -145,10 +153,7 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
         else if (instruction == Instructions.MoveHome)
         {
             //Debug.LogFormat("MoveHome - Pos: {0},{1}, Home: {2},{3}", posX, posZ, homeX, homeZ);
-            SanityCheckIsWholeNumber("position X", posX);
-            SanityCheckIsWholeNumber("position Z", posZ);
-            SanityCheckIsWholeNumber("home X", homeX);
-            SanityCheckIsWholeNumber("home Z", homeZ);
+            SanityCheckIfPositionNumbersAreWhole();
 
             float difX = Math.Abs(posX - homeX);
             float difZ = Math.Abs(posZ - homeZ);
@@ -165,18 +170,25 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
         }
         else if (instruction == Instructions.Harvest)
         {
-            if (WorldController.instance.world.HasCopperNodeAt((int)posX, (int)posZ))
-                if(!AddInventoryItem(new CopperItem()))
-                    instructionBeingExecutedIsValid = false;
-                else if (WorldController.instance.world.HasIronNodeAt((int)posX, (int)posZ))
-                if (!AddInventoryItem(new IronItem()))
-                    instructionBeingExecutedIsValid = false;
-                else {
-                    Debug.LogFormat("SERVER: Robot did not manage to harvest, no resource on {0},{1}", posX, posZ); // Might want to warn player about this, dunno, gameplay decision
-                    instructionBeingExecutedIsValid = false;
-                    feedback = "NOTHING TO HARVEST";
-                }
+            if (WorldController.instance.HarvestFromNode(typeof(CopperItem), posX, posZ))
+                AddInventoryItem(new CopperItem());
+            else if (WorldController.instance.HarvestFromNode(typeof(IronItem), posX, posZ))
+                AddInventoryItem(new IronItem());
 
+
+            //if (WorldController.instance.world.HasCopperNodeAt((int)posX, (int)posZ))
+            //    if (!AddInventoryItem(new CopperItem()))
+            //        instructionBeingExecutedIsValid = false;
+            //    else if (WorldController.instance.world.HasIronNodeAt((int)posX, (int)posZ))
+            //    {
+            //        if (!AddInventoryItem(new IronItem()))
+            //            instructionBeingExecutedIsValid = false;
+            //        else {
+            //            Debug.LogFormat("SERVER: Robot did not manage to harvest, no resource on {0},{1}", posX, posZ); // Might want to warn player about this, dunno, gameplay decision
+            //            instructionBeingExecutedIsValid = false;
+            //            feedback = "NOTHING TO HARVEST";
+            //        }
+            //    }
         }
         else if (instruction == Instructions.DropInventory)
         {
@@ -187,12 +199,12 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
             {
                 Debug.Log("SERVER: Found city, dropping inventory on city");
                 playerCity.AddToInventory(inventory);
-                //ClearInventory();
+                ClearInventory();
             }
             else
             {
                 Debug.Log("SERVER: No city found, should drop items on ground. Not fully implemented.");
-            }            
+            }
         }
 
         InstructionCompleted();
@@ -201,7 +213,8 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
     [Server]
     private bool AddInventoryItem(InventoryItem item)
     {
-        if (inventory.Count >= InventoryCapacity) { 
+        if (inventory.Count >= InventoryCapacity)
+        {
             feedback = "INVENTORY FULL";
             return false;
         }
@@ -211,13 +224,13 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
         return true;
     }
 
-    //[Server]
-    //private void ClearInventory()
-    //{
-    //    inventory = new List<InventoryItem>();
-    //    if (OnInventoryChanged != null)
-    //        OnInventoryChanged(this);
-    //}
+    [Server]
+    private void ClearInventory()
+    {
+        inventory = new List<InventoryItem>();
+        //if (OnInventoryChanged != null)
+        //    OnInventoryChanged(this);
+    }
 
     public string GetDemoInstructions()
     {
@@ -263,78 +276,19 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
     }
 
     [Server]
+    private void SanityCheckIfPositionNumbersAreWhole()
+    {
+        SanityCheckIsWholeNumber("position X", posX);
+        SanityCheckIsWholeNumber("position Z", posZ);
+        SanityCheckIsWholeNumber("home X", homeX);
+        SanityCheckIsWholeNumber("home Z", homeZ);
+    }
+
+    [Server]
     private void SanityCheckIsWholeNumber(string friendlyName, float number)
     {
         if ((number % 1) != 0)
             throw new Exception("Robot " + friendlyName + " is not a whole number");
     }
 
-    public void Click()
-    {
-        if (hasAuthority)
-            RobotPanel.instance.ShowPanel(this);
-    }
-}
-
-public static class Instructions
-{
-
-    public static string MoveUp { get { return "MOVE UP"; } }
-    public static string MoveDown { get { return "MOVE DOWN"; } }
-    public static string MoveLeft { get { return "MOVE LEFT"; } }
-    public static string MoveRight { get { return "MOVE RIGHT"; } }
-    public static string MoveHome { get { return "MOVE HOME"; } }
-    public static string Harvest { get { return "HARVEST"; } }
-    public static string DropInventory { get { return "DROP INVENTORY"; } }
-
-    public static List<string> AllInstructions = new List<string>
-    {
-        MoveUp,
-        MoveDown,
-        MoveLeft,
-        MoveRight,
-        MoveHome,
-        Harvest,
-        DropInventory
-    };
-
-    public static bool IsValidInstruction(string instruction)
-    {
-        return AllInstructions.Contains(instruction);
-    }
-
-    public static bool IsValidInstructionList(List<string> instructions)
-    {
-        foreach (string instructionString in instructions)
-        {
-            if (!IsValidInstruction(instructionString))
-                return false;
-        }
-
-        return true;
-    }
-
-}
-
-public abstract class InventoryItem
-{
-    public abstract string Serialize();
-}
-
-public class CopperItem : InventoryItem
-{
-    public static readonly string SerializedType = "CopperItem";
-    public override string Serialize()
-    {
-        return SerializedType;
-    }
-}
-
-public class IronItem : InventoryItem
-{
-    public static readonly string SerializedType = "IronItem";
-    public override string Serialize()
-    {
-        return SerializedType;
-    }
 }

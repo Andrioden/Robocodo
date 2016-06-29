@@ -27,6 +27,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 459878}
   - 114: {fileID: 11429948}
+  - 114: {fileID: 11441970}
   m_Layer: 0
   m_Name: IronNode
   m_TagString: Untagged
@@ -136,6 +137,17 @@ MonoBehaviour:
     i15: 62
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
+--- !u!114 &11441970
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 162768}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 388d004d65c51084583e9c0ef5003299, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

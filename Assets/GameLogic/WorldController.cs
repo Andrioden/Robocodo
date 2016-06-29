@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.Networking;
 
 public class WorldController : NetworkBehaviour
@@ -11,11 +13,13 @@ public class WorldController : NetworkBehaviour
     public GameObject ironNodePrefab;
     public GameObject harvesterRobotPrefab;
 
-    public World world;
+    private WorldBuilder worldBuilder;
     [SyncVar]
     private int width;
     [SyncVar]
     private int height;
+
+    private List<ResourceController> resourceControllers = new List<ResourceController>();
 
     public static WorldController instance;
     private void Awake()
@@ -48,19 +52,19 @@ public class WorldController : NetworkBehaviour
         this.width = width;
         this.height = height;
 
-        world = new World(width, height, 10, 10, 10);
+        worldBuilder = new WorldBuilder(width, height, 10, 10, 10);
 
-        foreach (Coordinate coord in world.copperNodeCoordinates)
-            SpawnObject(copperNodePrefab, coord.x, coord.z);
+        foreach (Coordinate coord in worldBuilder.copperNodeCoordinates)
+            SpawnResourceNode(copperNodePrefab, coord.x, coord.z);
 
-        foreach (Coordinate coord in world.ironNodeCoordinates)
-            SpawnObject(ironNodePrefab, coord.x, coord.z);
+        foreach (Coordinate coord in worldBuilder.ironNodeCoordinates)
+            SpawnResourceNode(ironNodePrefab, coord.x, coord.z);
     }
 
     [Server]
     public void SpawnPlayer(NetworkConnection conn, short playerControllerId)
     {
-        var nextPos = world.GetNextPlayerPosition();
+        var nextPos = worldBuilder.GetNextPlayerPosition();
         GameObject newGameObject = (GameObject)Instantiate(playerCityPrefab, new Vector3(nextPos.x, 0, nextPos.z), Quaternion.identity);
 
         NetworkServer.AddPlayerForConnection(conn, newGameObject, playerControllerId);
@@ -76,12 +80,25 @@ public class WorldController : NetworkBehaviour
     }
 
     [Server]
-    public GameObject SpawnObjectWithClientAuthority(NetworkConnection conn, GameObject prefab, int x, int z)
+    private void SpawnObjectWithClientAuthority(NetworkConnection conn, GameObject prefab, int x, int z)
     {
         GameObject newGameObject = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
         NetworkServer.SpawnWithClientAuthority(newGameObject, conn);
+    }
 
-        return newGameObject;
+    [Server]
+    private void SpawnResourceNode(GameObject prefab, int x, int z)
+    {
+        ResourceController resourceController = SpawnObject(prefab, x, z).GetComponent<ResourceController>();
+
+        if (prefab == ironNodePrefab)
+            resourceController.resourceType = typeof(IronItem);
+        else if (prefab == copperNodePrefab)
+            resourceController.resourceType = typeof(CopperItem);
+        else
+            throw new Exception("Not added support for given resource prefab. Get coding!");
+
+        resourceControllers.Add(resourceController);
     }
 
     public GameObject SpawnObject(GameObject prefab, int x, int z)
@@ -90,6 +107,31 @@ public class WorldController : NetworkBehaviour
         NetworkServer.Spawn(newGameObject);
 
         return newGameObject;
+    }
+
+    /// <summary>
+    /// Returns false if no node was found
+    /// </summary>
+    [Server]
+    public bool HarvestFromNode(Type resourceType, float x, float z)
+    {
+        ResourceController resourceController = resourceControllers.Find(r => r.resourceType == resourceType && r.transform.position.x == x && r.transform.position.z == z);
+        if (resourceController != null)
+        {
+            resourceController.remainingItems--;
+            Debug.LogFormat("Server: HARVESTED! Resource node at {0},{1} has {2} items left", x, z, resourceController.remainingItems);
+            if (resourceController.remainingItems <= 0)
+            {
+                resourceControllers.Remove(resourceController);
+                Destroy(resourceController.gameObject);
+            }
+            return true;
+        }
+        else
+        {
+            Debug.LogFormat("Server: No resource found at {0},{1}", x, z);
+            return false;
+        }
     }
 
     private void SpawnAndAdjustGround()
