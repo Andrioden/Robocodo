@@ -92,9 +92,9 @@ public class WorldController : NetworkBehaviour
         ResourceController resourceController = SpawnObject(prefab, x, z).GetComponent<ResourceController>();
 
         if (prefab == ironNodePrefab)
-            resourceController.resourceType = typeof(IronItem);
+            resourceController.resourceType = IronItem.SerializedType;
         else if (prefab == copperNodePrefab)
-            resourceController.resourceType = typeof(CopperItem);
+            resourceController.resourceType = CopperItem.SerializedType;
         else
             throw new Exception("Not added support for given resource prefab. Get coding!");
 
@@ -113,7 +113,7 @@ public class WorldController : NetworkBehaviour
     /// Returns false if no node was found
     /// </summary>
     [Server]
-    public bool HarvestFromNode(Type resourceType, float x, float z)
+    public bool HarvestFromNode(string resourceType, float x, float z)
     {
         ResourceController resourceController = resourceControllers.Find(r => r.resourceType == resourceType && r.transform.position.x == x && r.transform.position.z == z);
         if (resourceController != null)

@@ -170,9 +170,9 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
         }
         else if (instruction == Instructions.Harvest)
         {
-            if (WorldController.instance.HarvestFromNode(typeof(CopperItem), posX, posZ))
+            if (WorldController.instance.HarvestFromNode(CopperItem.SerializedType, posX, posZ))
                 AddInventoryItem(new CopperItem());
-            else if (WorldController.instance.HarvestFromNode(typeof(IronItem), posX, posZ))
+            else if (WorldController.instance.HarvestFromNode(IronItem.SerializedType, posX, posZ))
                 AddInventoryItem(new IronItem());
 
 

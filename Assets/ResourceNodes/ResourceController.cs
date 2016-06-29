@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 using System;
 
-public class ResourceController : MonoBehaviour, IClickable
+public class ResourceController : NetworkBehaviour, IClickable
 {
 
+    [SyncVar(hook = "OnRemainingItemsUpdated")]
     private int remainingItems;
-    public Type resourceType;
+    [SyncVar]
+    public string resourceType;
 
     private Vector3 originalTransformScale;
 
@@ -30,6 +33,7 @@ public class ResourceController : MonoBehaviour, IClickable
         Debug.LogFormat("This node of resouce type {0} has {1} remaining items", resourceType, remainingItems);
     }
 
+    [Server]
     public void HarvestOneResourceItem()
     {
         remainingItems--;
@@ -39,6 +43,12 @@ public class ResourceController : MonoBehaviour, IClickable
     public int GetRemainingResourceItems()
     {
         return remainingItems;
+    }
+
+    private void OnRemainingItemsUpdated(int newRemainingItems)
+    {
+        remainingItems = newRemainingItems; // TODO FInd out why we have to set it, doesnt it update as part of SyncVar? Does hook stop that?
+        UpdateTransformHeight();
     }
 
     private void UpdateTransformHeight()
