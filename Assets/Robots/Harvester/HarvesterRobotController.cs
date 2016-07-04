@@ -123,6 +123,7 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
 
             CmdAddInstructions(string.Join(",", newInstructions.ToArray()));
             CmdStartRobot();
+            isStarted = true;
         }
     }
 
@@ -172,8 +173,6 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
             WorldTickController.instance.HalfTickEvent += RunNextInstruction;
         else
             throw new Exception("IPT value not supported: " + IPT);
-
-        isStarted = true;
     }
 
     //[Server]
@@ -398,12 +397,35 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
         inventory.Add(item);
         if (OnInventoryChanged != null)
             OnInventoryChanged(this);
+
+        RpcSyncInventory(inventory.Select(i => i.Serialize()).ToArray());
     }
 
     [Server]
     private void ClearInventory()
     {
         inventory = new List<InventoryItem>();
+        if (OnInventoryChanged != null)
+            OnInventoryChanged(this);
+
+        RpcSyncInventory(inventory.Select(i => i.Serialize()).ToArray());
+    }
+
+    [ClientRpc]
+    private void RpcSyncInventory(string[] itemStrings)
+    {
+        inventory = new List<InventoryItem>();
+
+        foreach (string itemString in itemStrings)
+        {
+            if (itemString == CopperItem.SerializedType)
+                inventory.Add(new CopperItem());
+            else if (itemString == IronItem.SerializedType)
+                inventory.Add(new IronItem());
+            else
+                throw new Exception("Forgot to add deserialization support for InventoryType: " + itemString);
+        }
+
         if (OnInventoryChanged != null)
             OnInventoryChanged(this);
     }
