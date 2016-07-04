@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class PlayerCityController : NetworkBehaviour, IClickable
+public class PlayerCityController : NetworkBehaviour, ISelectable
 {
     public MeshRenderer bodyMeshRenderer;
 
@@ -44,7 +44,9 @@ public class PlayerCityController : NetworkBehaviour, IClickable
     public void Click()
     {
         if (hasAuthority)
-            CmdBuyHarvesterRobot();
+        {
+            PlayerCityPanel.instance.ShowPanel(this);
+        }
     }
 
     public int GetCopperCount()
@@ -55,6 +57,15 @@ public class PlayerCityController : NetworkBehaviour, IClickable
     public int GetIronCount()
     {
         return inventory.Count(i => i.GetType() == typeof(IronItem));
+    }
+
+    [Client]
+    public void BuyBuildableItem(BuildableItem.Type type)
+    {
+        if (type == BuildableItem.Type.HARVESTER)
+            CmdBuyHarvesterRobot();
+        else
+            throw new Exception("BuyBuildableItem: Chosen BuildableItem.Type not implemented.");
     }
 
     [Command]

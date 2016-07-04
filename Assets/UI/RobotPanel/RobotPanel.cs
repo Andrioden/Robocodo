@@ -119,7 +119,7 @@ public class RobotPanel : MonoBehaviour
             EnableRunnningModePanel();
     }
 
-    private void ClosePanel()
+    public void ClosePanel()
     {
         KeyboardManager.KeyboardLockOff();
         harvesterRobotController = null;
