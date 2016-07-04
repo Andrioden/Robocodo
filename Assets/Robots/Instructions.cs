@@ -6,17 +6,16 @@ using System.Text.RegularExpressions;
 
 public static class Instructions
 {
-
-    public static string MoveUp { get { return "MOVE UP"; } }
-    public static string MoveDown { get { return "MOVE DOWN"; } }
-    public static string MoveLeft { get { return "MOVE LEFT"; } }
-    public static string MoveRight { get { return "MOVE RIGHT"; } }
-    public static string MoveHome { get { return "MOVE HOME"; } }
-    public static string Harvest { get { return "HARVEST"; } }
-    public static string DropInventory { get { return "DROP INVENTORY"; } }
-    public static string LoopStart { get { return "LOOP START (NUMBER)"; } }
-    public static string LoopStartPlain { get { return "LOOP START"; } }
-    public static string LoopEnd { get { return "LOOP END"; } }
+    public const string MoveUp = "MOVE UP";
+    public const string MoveDown = "MOVE DOWN";
+    public const string MoveLeft = "MOVE LEFT";
+    public const string MoveRight = "MOVE RIGHT";
+    public const string MoveHome = "MOVE HOME";
+    public const string Harvest = "HARVEST";
+    public const string DropInventory = "DROP INVENTORY";
+    public const string LoopStart = "LOOP START (NUMBER)";
+    public const string LoopStartPlain = "LOOP START";
+    public const string LoopEnd = "LOOP END";
 
     public static List<string> AllInstructions = new List<string>
     {

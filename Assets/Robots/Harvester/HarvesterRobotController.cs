@@ -9,6 +9,7 @@ using System.Linq;
 public class HarvesterRobotController : NetworkBehaviour, ISelectable
 {
     public MeshRenderer visirMeshRenderer;
+    public Animator animator;
 
     [SyncVar]
     private float posX;
@@ -69,9 +70,32 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
 
     private void Update()
     {
+        Move();
+        Animate();
+    }
+
+    [Client]
+    private void Move()
+    {
         var newPos = new Vector3(posX, transform.position.y, posZ);
         transform.LookAt(newPos);
         transform.position = Vector3.MoveTowards(transform.position, newPos, (1.0f / Settings.World_IrlSecondsPerTick) * Time.deltaTime * IPT);
+    }
+
+    [Client]
+    private void Animate()
+    {
+        string instruction = instructions[instructionBeingExecuted];
+        switch (instruction)
+        {
+            case Instructions.Harvest:
+                animator.Play("HarvesterHarvest");
+                break;
+
+            default:
+                animator.Play("HarvesterIdle");
+                break;
+        }
     }
 
     public void Click()
@@ -91,7 +115,8 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
     {
         if (hasAuthority && !isStarted)
         {
-            if (newInstructions.Count > Memory) { 
+            if (newInstructions.Count > Memory)
+            {
                 SetFeedback("NOT ENOUGH MEMORY");
                 return;
             }
