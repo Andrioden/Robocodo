@@ -6,6 +6,8 @@ public class PlayerCityPanel : MonoBehaviour
 {
 
     public static PlayerCityPanel instance;
+    public BuildMenu buildMenu;
+    public Sprite harvesterRobotSprite;
 
     private Animator animator;
     private PlayerCityController playerCityController;
@@ -25,6 +27,10 @@ public class PlayerCityPanel : MonoBehaviour
     void Start()
     {
         animator = GetComponent<Animator>();
+
+        /* THIS IS WHERE WE ENABLE BUILDING NEW ITEMS */
+        buildMenu.AddBuildableItem(BuyHarvesterRobot, HarvesterRobotController.CopperCost, HarvesterRobotController.IronCost, harvesterRobotSprite);
+        //buildMenu.AddBuildableItem(BuyCombatRobot, CombatRobotController.CopperCost, CombatRobotController.IronCost, combatRobotSprite);
     }
 
     void Update()
@@ -53,8 +59,13 @@ public class PlayerCityPanel : MonoBehaviour
         animator.Play("RobotMenuSlideOut");
     }
 
-    public PlayerCityController GetCurrentlySelectedPlayerCity()
+    public void BuyHarvesterRobot()
     {
-        return playerCityController;
+        instance.playerCityController.CmdBuyHarvesterRobot();
+    }
+
+    public void BuyCombatRobot()
+    {
+        //instance.playerCityController.CmdBuyCombatRobot();
     }
 }

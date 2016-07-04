@@ -6,7 +6,6 @@ using UnityEngine.Networking;
 
 public class WorldController : NetworkBehaviour
 {
-
     public GameObject groundPrefab;
     public GameObject playerCityPrefab;
     public GameObject copperNodePrefab;
