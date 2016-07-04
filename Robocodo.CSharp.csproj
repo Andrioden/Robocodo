@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="Assets\BuildableItem.cs" />
     <Compile Include="Assets\GameLogic\CustomNetworkManager.cs" />
+    <Compile Include="Assets\GameLogic\IAttackable.cs" />
     <Compile Include="Assets\GameLogic\IClickable.cs" />
     <Compile Include="Assets\GameLogic\ISelectable.cs" />
     <Compile Include="Assets\GameLogic\MathUtils.cs" />
@@ -75,9 +76,11 @@
     <Compile Include="Assets\GameLogic\WorldTickController.cs" />
     <Compile Include="Assets\Player\PlayerCityController.cs" />
     <Compile Include="Assets\ResourceNodes\ResourceController.cs" />
+    <Compile Include="Assets\Robots\Combat\CombatRobotController.cs" />
     <Compile Include="Assets\Robots\Harvester\HarvesterRobotController.cs" />
     <Compile Include="Assets\Robots\Instructions.cs" />
     <Compile Include="Assets\Robots\InventoryItems.cs" />
+    <Compile Include="Assets\Robots\Robot.cs" />
     <Compile Include="Assets\UI\GridOverlay.cs" />
     <Compile Include="Assets\UI\KeyboardManager.cs" />
     <Compile Include="Assets\UI\MouseManager.cs" />

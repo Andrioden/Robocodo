@@ -58,7 +58,7 @@ public class RobotPanel : MonoBehaviour
     {
         animator = GetComponent<Animator>();
 
-        HarvesterRobotController.OnInventoryChanged += InventoryUpdated;
+        //HarvesterRobotController.OnInventoryChanged += InventoryUpdated; // TODO: Implement with new abstract
     }
 
     private void Update()
@@ -83,15 +83,15 @@ public class RobotPanel : MonoBehaviour
                 }
                 codeOutputField.text = string.Join("\n", instructionListCopy.ToArray());
 
-                inventoryLabel.text = harvesterRobotController.Inventory.Count > 0 ? "INVENTORY (" + harvesterRobotController.Inventory.Count + "/" + HarvesterRobotController.InventoryCapacity + ")": "INVENTORY";
+                inventoryLabel.text = harvesterRobotController.Inventory.Count > 0 ? "INVENTORY (" + harvesterRobotController.Inventory.Count + "/" + harvesterRobotController.Settings_InventoryCapacity() + ")": "INVENTORY";
             }
 
             var instructions = instructionListCopy.Count > 0 ? instructionListCopy : codeInputField.text.Split('\n').ToList();
-            bool memoryExceeded = instructions.Count > HarvesterRobotController.Memory;
+            bool memoryExceeded = instructions.Count > harvesterRobotController.Settings_Memory();
             string colorPrefix = memoryExceeded ? "<color=red>" : "";
             string colorSuffix = memoryExceeded ? "</color>" : "";
-            memoryText.text = colorPrefix + "MEMORY: " + instructions.Count + "/" + HarvesterRobotController.Memory + colorSuffix;
-            energyText.text = string.Format("ENERGY: {0}/{1}", harvesterRobotController.Energy, HarvesterRobotController.MaxEnergy);
+            memoryText.text = colorPrefix + "MEMORY: " + instructions.Count + "/" + harvesterRobotController.Settings_Memory() + colorSuffix;
+            energyText.text = string.Format("ENERGY: {0}/{1}", harvesterRobotController.Energy, harvesterRobotController.Settings_MaxEnergy());
         }
     }
 

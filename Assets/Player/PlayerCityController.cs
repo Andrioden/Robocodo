@@ -72,17 +72,17 @@ public class PlayerCityController : NetworkBehaviour, ISelectable
     private void CmdBuyHarvesterRobot()
     {
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
-        if (GetCopperCount() >= HarvesterRobotController.CopperCost && GetIronCount() >= HarvesterRobotController.IronCost)
+        if (GetCopperCount() >= HarvesterRobotController.Settings_CopperCost && GetIronCount() >= HarvesterRobotController.Settings_IronCost)
         {
             CmdSpawnHarvester((int)transform.position.x, (int)transform.position.z);
-            RemoveResources(HarvesterRobotController.CopperCost, HarvesterRobotController.IronCost);
+            RemoveResources(HarvesterRobotController.Settings_CopperCost, HarvesterRobotController.Settings_IronCost);
         }
     }
 
     [Server]
     public void CmdSpawnHarvester(int x, int z)
     {
-        WorldController.instance.SpawnHarvesterWithClientAuthority(connectionToClient, x, z);
+        WorldController.instance.SpawnHarvesterRobotWithClientAuthority(connectionToClient, x, z);
     }
 
     [Server]

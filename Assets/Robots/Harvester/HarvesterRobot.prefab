@@ -80,6 +80,7 @@ GameObject:
   - 4: {fileID: 487706}
   - 114: {fileID: 11430566}
   - 114: {fileID: 11476490}
+  - 65: {fileID: 6557976}
   m_Layer: 0
   m_Name: HarvesterRobot
   m_TagString: Untagged
@@ -326,6 +327,18 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!65 &6557976
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 162562}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!65 &6563042
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -410,6 +423,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 627eb305bdb303b4ebc3fa6c06084698, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  commonInstructions:
+  - MOVE UP
+  - MOVE DOWN
+  - MOVE LEFT
+  - MOVE RIGHT
+  - MOVE HOME
+  - LOOP START (NUMBER)
+  - LOOP START
+  - LOOP END
   visirMeshRenderer: {fileID: 2317704}
   animator: {fileID: 9538956}
 --- !u!136 &13605290

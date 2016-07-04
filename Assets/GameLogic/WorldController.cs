@@ -12,6 +12,7 @@ public class WorldController : NetworkBehaviour
     public GameObject copperNodePrefab;
     public GameObject ironNodePrefab;
     public GameObject harvesterRobotPrefab;
+    public GameObject combatRobotPrefab;
 
     private WorldBuilder worldBuilder;
     [SyncVar]
@@ -64,17 +65,25 @@ public class WorldController : NetworkBehaviour
     [Server]
     public void SpawnPlayer(NetworkConnection conn, short playerControllerId)
     {
-        var nextPos = worldBuilder.GetNextPlayerPosition();
-        GameObject newGameObject = (GameObject)Instantiate(playerCityPrefab, new Vector3(nextPos.x, 0, nextPos.z), Quaternion.identity);
+        var playerPos = worldBuilder.GetNextPlayerPosition();
+        GameObject newGameObject = (GameObject)Instantiate(playerCityPrefab, new Vector3(playerPos.x, 0, playerPos.z), Quaternion.identity);
 
         NetworkServer.AddPlayerForConnection(conn, newGameObject, playerControllerId);
 
         for (int i = 0; i < Settings.Player_AmountOfStartingHarvesterRobots; i++)
-            SpawnHarvesterWithClientAuthority(conn, nextPos.x, nextPos.z);
+            SpawnHarvesterRobotWithClientAuthority(conn, playerPos.x, playerPos.z);
+
+        SpawnCombatRobotWithClientAuthority(conn, playerPos.x, playerPos.z);
     }
 
     [Server]
-    public void SpawnHarvesterWithClientAuthority(NetworkConnection conn, int x, int z)
+    public void SpawnCombatRobotWithClientAuthority(NetworkConnection conn, int x, int z)
+    {
+        SpawnObjectWithClientAuthority(conn, combatRobotPrefab, x, z);
+    }
+
+    [Server]
+    public void SpawnHarvesterRobotWithClientAuthority(NetworkConnection conn, int x, int z)
     {
         SpawnObjectWithClientAuthority(conn, harvesterRobotPrefab, x, z);
     }

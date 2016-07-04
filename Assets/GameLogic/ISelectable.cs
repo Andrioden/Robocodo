@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-
-public interface ISelectable : IClickable
+﻿public interface ISelectable : IClickable
 {
 
 }
