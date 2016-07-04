@@ -85,7 +85,7 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
     [Client]
     private void Animate()
     {
-        string instruction = instructions[instructionBeingExecuted];
+        string instruction = instructions.Count > 0 ? instructions[instructionBeingExecuted] : string.Empty;
         switch (instruction)
         {
             case Instructions.Harvest:
