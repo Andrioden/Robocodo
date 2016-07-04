@@ -1095,13 +1095,15 @@ MonoBehaviour:
   closeButton: {fileID: 11472266}
   codeInputLabel: {fileID: 11422040}
   codeInputField: {fileID: 11470212}
-  codeInput: {fileID: 102334}
+  codeInputPanel: {fileID: 102334}
   codeOutputLabel: {fileID: 11446800}
   codeOutputField: {fileID: 11429702}
-  codeOutput: {fileID: 167468}
+  codeOutputPanel: {fileID: 167468}
   helpTextLabel: {fileID: 11451952}
   helpTextText: {fileID: 11459348}
+  helpTextPanel: {fileID: 158658}
   inventoryLabel: {fileID: 11407640}
+  inventoryPanel: {fileID: 148564}
   inventoryContainer: {fileID: 114290}
   ironPrefab: {fileID: 141874, guid: bb2776006ff9cc14980137a59a164b53, type: 2}
   copperPrefab: {fileID: 137158, guid: a47e3be69f3177f469d40d47f70ed892, type: 2}

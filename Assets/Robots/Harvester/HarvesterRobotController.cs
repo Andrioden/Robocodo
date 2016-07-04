@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System;
 using System.Threading;
 using System.Collections;
+using System.Linq;
 
 public class HarvesterRobotController : NetworkBehaviour, ISelectable
 {
@@ -66,7 +67,6 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
         energy = MaxEnergy;
     }
 
-    // Update is called once per frame
     private void Update()
     {
         var newPos = new Vector3(posX, transform.position.y, posZ);
@@ -87,27 +87,18 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
     }
 
     [Client]
-    public bool RunCode(List<string> newInstructions)
+    public void RunCode(List<string> newInstructions)
     {
         if (hasAuthority && !isStarted)
         {
-            if (newInstructions.Count > Memory)
-            {
-                feedback = "NOT ENOUGH MEMORY";
-                return false;
+            if (newInstructions.Count > Memory) { 
+                SetFeedback("NOT ENOUGH MEMORY");
+                return;
             }
 
-            isStarted = true;
-            newInstructions.ForEach(x =>
-            {
-                CmdAddInstruction(x); // TODO: Do more effective, cant we add all at once? string list, csv?
-            });
-
+            CmdAddInstructions(string.Join(",", newInstructions.ToArray()));
             CmdStartRobot();
-            return true;
         }
-
-        return false;
     }
 
 
@@ -156,6 +147,8 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
             WorldTickController.instance.HalfTickEvent += RunNextInstruction;
         else
             throw new Exception("IPT value not supported: " + IPT);
+
+        isStarted = true;
     }
 
     //[Server]
@@ -171,6 +164,17 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
         instructions.Add(instruction);
     }
 
+    [Command]
+    private void CmdAddInstructions(string instructionsCSV)
+    {
+        List<string> newInstructions = instructionsCSV.Split(',').ToList();
+
+        newInstructions.ForEach(x =>
+        {
+            instructions.Add(x);
+        });
+    }
+
     [Server]
     private void RunNextInstruction(object sender)
     {
@@ -180,8 +184,7 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
 
         if (energy <= 0)
         {
-            instructionBeingExecutedIsValid = false;
-            feedback = "Not enough energy";
+            SetFeedback("NOT ENOUGH ENERGY");
             return;
         }
         energy--;
@@ -220,21 +223,8 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
                 AddInventoryItem(new CopperItem());
             else if (WorldController.instance.HarvestFromNode(IronItem.SerializedType, posX, posZ))
                 AddInventoryItem(new IronItem());
-
-
-            //if (WorldController.instance.world.HasCopperNodeAt((int)posX, (int)posZ))
-            //    if (!AddInventoryItem(new CopperItem()))
-            //        instructionBeingExecutedIsValid = false;
-            //    else if (WorldController.instance.world.HasIronNodeAt((int)posX, (int)posZ))
-            //    {
-            //        if (!AddInventoryItem(new IronItem()))
-            //            instructionBeingExecutedIsValid = false;
-            //        else {
-            //            Debug.LogFormat("SERVER: Robot did not manage to harvest, no resource on {0},{1}", posX, posZ); // Might want to warn player about this, dunno, gameplay decision
-            //            instructionBeingExecutedIsValid = false;
-            //            feedback = "NOTHING TO HARVEST";
-            //        }
-            //    }
+            else
+                SetFeedback("NOTHING TO HARVEST");
         }
         else if (instruction == Instructions.DropInventory)
             DropInventory();
@@ -248,8 +238,7 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
         else
         {
             Debug.Log("SERVER: Robot does not understand instruction: " + instruction);
-            instructionBeingExecutedIsValid = false;
-            feedback = "Unknown command";
+            SetFeedback("UNKNOWN COMMAND");
         }
 
         InstructionCompleted();
@@ -328,7 +317,7 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
     private void SetInstructionToMatchingLoopStart()
     {
         int skippingLoopStarts = 0;
-        for (int i = currentInstructionIndex-1; i >= 0; i--)
+        for (int i = currentInstructionIndex - 1; i >= 0; i--)
         {
             if (instructions[i] == Instructions.LoopEnd)
                 skippingLoopStarts++;
@@ -349,8 +338,7 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
             }
         }
 
-        instructionBeingExecutedIsValid = false;
-        feedback = "Could not find matching LOOP START";
+        SetFeedback("Could not find matching LOOP START");
     }
 
     [Server]
@@ -375,25 +363,24 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
     }
 
     [Server]
-    private bool AddInventoryItem(InventoryItem item)
+    private void AddInventoryItem(InventoryItem item)
     {
         if (inventory.Count >= InventoryCapacity)
         {
-            feedback = "INVENTORY FULL";
-            return false;
+            SetFeedback("INVENTORY FULL");
         }
 
         inventory.Add(item);
-        OnInventoryChanged(this);
-        return true;
+        if (OnInventoryChanged != null)
+            OnInventoryChanged(this);
     }
 
     [Server]
     private void ClearInventory()
     {
         inventory = new List<InventoryItem>();
-        //if (OnInventoryChanged != null)
-        //    OnInventoryChanged(this);
+        if (OnInventoryChanged != null)
+            OnInventoryChanged(this);
     }
 
     [Server]
@@ -431,6 +418,13 @@ public class HarvesterRobotController : NetworkBehaviour, ISelectable
     {
         if ((number % 1) != 0)
             throw new Exception("Robot " + friendlyName + " is not a whole number");
+    }
+
+    [Server]
+    private void SetFeedback(string message)
+    {
+        feedback = message;
+        instructionBeingExecutedIsValid = false;
     }
 
 }

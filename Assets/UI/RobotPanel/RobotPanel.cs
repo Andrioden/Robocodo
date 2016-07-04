@@ -19,16 +19,18 @@ public class RobotPanel : MonoBehaviour
 
     public Text codeInputLabel;
     public InputField codeInputField;
-    public GameObject codeInput;
+    public GameObject codeInputPanel;
 
     public Text codeOutputLabel;
     public Text codeOutputField;
-    public GameObject codeOutput;
+    public GameObject codeOutputPanel;
 
     public Text helpTextLabel;
     public Text helpTextText;
+    public GameObject helpTextPanel;
 
     public Text inventoryLabel;
+    public GameObject inventoryPanel;
     public GameObject inventoryContainer;
     public GameObject ironPrefab;
     public GameObject copperPrefab;
@@ -63,7 +65,8 @@ public class RobotPanel : MonoBehaviour
     {
         if (harvesterRobotController != null)
         {
-            if (MouseManager.currentlySelected == null || MouseManager.currentlySelected != harvesterRobotController.gameObject) { 
+            if (MouseManager.currentlySelected == null || MouseManager.currentlySelected != harvesterRobotController.gameObject)
+            {
                 ClosePanel();
                 return;
             }
@@ -80,7 +83,7 @@ public class RobotPanel : MonoBehaviour
                 }
                 codeOutputField.text = string.Join("\n", instructionListCopy.ToArray());
 
-                inventoryLabel.text = harvesterRobotController.Inventory.Count > 0 ? "INVENTORY" + harvesterRobotController.Inventory.Count + "/" + HarvesterRobotController.InventoryCapacity : "INVENTORY";
+                inventoryLabel.text = harvesterRobotController.Inventory.Count > 0 ? "INVENTORY (" + harvesterRobotController.Inventory.Count + "/" + HarvesterRobotController.InventoryCapacity + ")": "INVENTORY";
             }
 
             var instructions = instructionListCopy.Count > 0 ? instructionListCopy : codeInputField.text.Split('\n').ToList();
@@ -98,32 +101,9 @@ public class RobotPanel : MonoBehaviour
         KeyboardManager.KeyboardLockOff();
 
         if (harvesterRobotController.IsStarted)
-        {
-            titleText.text = "HARVESTER";
-            helpTextLabel.text = "";
-            helpTextText.text = "";
-
-            closeButton.onClick.RemoveAllListeners();
-            closeButton.onClick.AddListener(ClosePanel);
-
-            codeOutput.SetActive(true);
-            codeInput.SetActive(false);            
-        }
-        else {
-            titleText.text = "HARVESTER SETUP";
-            helpTextLabel.text = "POSSIBLE COMMANDS";
-            helpTextText.text = string.Join("\n", Instructions.AllInstructions.ToArray());
-
-            runButton.onClick.RemoveAllListeners();
-            runButton.onClick.AddListener(RunCode);
-
-            codeOutput.SetActive(false);
-            codeInput.SetActive(true);
-            codeInputField.onValueChanged.AddListener(KeyboardManager.KeyboardLockOn);
-            codeInputField.onValueChanged.AddListener(CodeInputToUpper);
-            codeInputField.onEndEdit.AddListener(KeyboardManager.KeyboardLockOff);
-            codeInputField.text = harvesterRobotController.GetDemoInstructions();  /* Pre filled demo data */
-        }
+            EnableRunnningModePanel();
+        else
+            EnableSetupModePanel();
 
         animator.Play("RobotMenuSlideIn");
     }
@@ -133,12 +113,10 @@ public class RobotPanel : MonoBehaviour
         KeyboardManager.KeyboardLockOff();
         List<string> instructions = codeInputField.text.Split('\n').ToList();
 
-        if (harvesterRobotController.RunCode(instructions))
-            ClosePanel();
-        else
-        {
-            SetFeedbackText("<color=red>" + harvesterRobotController.Feedback + "</color>", 1);
-        }
+        harvesterRobotController.RunCode(instructions);
+
+        if (harvesterRobotController.IsStarted)
+            EnableRunnningModePanel();
     }
 
     private void ClosePanel()
@@ -155,7 +133,7 @@ public class RobotPanel : MonoBehaviour
 
     private void SetFeedbackText(string feedback, float durationSeconds)
     {
-        feedbackText.text = feedback;
+        feedbackText.text = feedback.ToUpper();
 
         if (feedbackClearCoroutine != null)
             StopCoroutine(feedbackClearCoroutine);
@@ -172,7 +150,7 @@ public class RobotPanel : MonoBehaviour
 
     private void InventoryUpdated(HarvesterRobotController robot)
     {
-        if(harvesterRobotController != null && robot == harvesterRobotController)
+        if (harvesterRobotController != null && robot == harvesterRobotController)
         {
             Debug.Log("InventoryUpdated: " + harvesterRobotController.Inventory);
 
@@ -198,15 +176,39 @@ public class RobotPanel : MonoBehaviour
         inventoryImage.transform.SetParent(inventoryContainer.transform, false);
     }
 
-    //private void InventoryDropped(HarvesterRobotController robot)
-    //{
-    //    if (harvesterRobotController != null && robot == harvesterRobotController)
-    //    {
-    //        foreach (Transform child in inventoryContainer.transform)
-    //        {
-    //            GameObject.Destroy(child.gameObject);
-    //        }
-    //    }
-    //}
+    private void EnableSetupModePanel()
+    {
+        titleText.text = "HARVESTER SETUP";        
+
+        helpTextPanel.SetActive(true);
+        helpTextText.text = string.Join("\n", Instructions.AllInstructions.ToArray());
+
+        codeInputPanel.SetActive(true);
+        codeInputField.onValueChanged.AddListener(KeyboardManager.KeyboardLockOn);
+        codeInputField.onValueChanged.AddListener(CodeInputToUpper);
+        codeInputField.onEndEdit.AddListener(KeyboardManager.KeyboardLockOff);
+        codeInputField.text = harvesterRobotController.GetDemoInstructions();  /* Pre filled demo data */
+
+        runButton.onClick.RemoveAllListeners();
+        runButton.onClick.AddListener(RunCode);
+
+        inventoryPanel.SetActive(false);
+        codeOutputPanel.SetActive(false);
+    }
+
+    private void EnableRunnningModePanel()
+    {
+        titleText.text = "HARVESTER";
+        InventoryUpdated(harvesterRobotController);
+
+        codeOutputPanel.SetActive(true);
+        inventoryPanel.SetActive(true);
+
+        closeButton.onClick.RemoveAllListeners();
+        closeButton.onClick.AddListener(ClosePanel);
+
+        codeInputPanel.SetActive(false);
+        helpTextPanel.SetActive(false);
+    }
 }
 
