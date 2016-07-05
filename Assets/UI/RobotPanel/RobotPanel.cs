@@ -38,7 +38,7 @@ public class RobotPanel : MonoBehaviour
     public static RobotPanel instance;
 
     private Animator animator;
-    private HarvesterRobotController harvesterRobotController;
+    private Robot robot;
     private List<string> instructionListCopy;
     private IEnumerator feedbackClearCoroutine;
 
@@ -58,49 +58,49 @@ public class RobotPanel : MonoBehaviour
     {
         animator = GetComponent<Animator>();
 
-        //HarvesterRobotController.OnInventoryChanged += InventoryUpdated; // TODO: Implement with new abstract
+        Robot.OnInventoryChanged += InventoryUpdated;
     }
 
     private void Update()
     {
-        if (harvesterRobotController != null)
+        if (robot != null)
         {
-            if (MouseManager.currentlySelected == null || MouseManager.currentlySelected != harvesterRobotController.gameObject)
+            if (MouseManager.currentlySelected == null || MouseManager.currentlySelected != robot.gameObject)
             {
                 ClosePanel();
                 return;
             }
 
-            instructionListCopy = harvesterRobotController.GetInstructions().Select(instruction => instruction.ToString()).ToList();
+            instructionListCopy = robot.GetInstructions().Select(instruction => instruction.ToString()).ToList();
 
-            if (harvesterRobotController.IsStarted)
+            if (robot.IsStarted)
             {
-                if (harvesterRobotController.InstructionBeingExecutedIsValid)
-                    instructionListCopy[harvesterRobotController.InstructionBeingExecuted] = "<color=#D5A042FF>" + instructionListCopy[harvesterRobotController.InstructionBeingExecuted] + "</color>";
+                if (robot.InstructionBeingExecutedIsValid)
+                    instructionListCopy[robot.InstructionBeingExecuted] = "<color=#D5A042FF>" + instructionListCopy[robot.InstructionBeingExecuted] + "</color>";
                 else {
-                    instructionListCopy[harvesterRobotController.InstructionBeingExecuted] = "<color=red>" + instructionListCopy[harvesterRobotController.InstructionBeingExecuted] + "</color>";
-                    SetFeedbackText("<color=red>" + harvesterRobotController.Feedback + "</color>", 0);
+                    instructionListCopy[robot.InstructionBeingExecuted] = "<color=red>" + instructionListCopy[robot.InstructionBeingExecuted] + "</color>";
+                    SetFeedbackText("<color=red>" + robot.Feedback + "</color>", 0);
                 }
                 codeOutputField.text = string.Join("\n", instructionListCopy.ToArray());
 
-                inventoryLabel.text = harvesterRobotController.Inventory.Count > 0 ? "INVENTORY (" + harvesterRobotController.Inventory.Count + "/" + harvesterRobotController.Settings_InventoryCapacity() + ")": "INVENTORY";
+                inventoryLabel.text = "INVENTORY (" + robot.Inventory.Count + "/" + robot.Settings_InventoryCapacity() + ")";
             }
 
             var instructions = instructionListCopy.Count > 0 ? instructionListCopy : codeInputField.text.Split('\n').ToList();
-            bool memoryExceeded = instructions.Count > harvesterRobotController.Settings_Memory();
+            bool memoryExceeded = instructions.Count > robot.Settings_Memory();
             string colorPrefix = memoryExceeded ? "<color=red>" : "";
             string colorSuffix = memoryExceeded ? "</color>" : "";
-            memoryText.text = colorPrefix + "MEMORY: " + instructions.Count + "/" + harvesterRobotController.Settings_Memory() + colorSuffix;
-            energyText.text = string.Format("ENERGY: {0}/{1}", harvesterRobotController.Energy, harvesterRobotController.Settings_MaxEnergy());
+            memoryText.text = colorPrefix + "MEMORY: " + instructions.Count + "/" + robot.Settings_Memory() + colorSuffix;
+            energyText.text = string.Format("ENERGY: {0}/{1}", robot.Energy, robot.Settings_MaxEnergy());
         }
     }
 
-    public void ShowPanel(HarvesterRobotController harvesterRobotController)
+    public void ShowPanel(Robot robot)
     {
-        this.harvesterRobotController = harvesterRobotController;
+        this.robot = robot;
         KeyboardManager.KeyboardLockOff();
 
-        if (harvesterRobotController.IsStarted)
+        if (robot.IsStarted)
             EnableRunnningModePanel();
         else
             EnableSetupModePanel();
@@ -113,16 +113,16 @@ public class RobotPanel : MonoBehaviour
         KeyboardManager.KeyboardLockOff();
         List<string> instructions = codeInputField.text.Split('\n').ToList();
 
-        harvesterRobotController.RunCode(instructions);
+        robot.RunCode(instructions);
 
-        if (harvesterRobotController.IsStarted)
+        if (robot.IsStarted)
             EnableRunnningModePanel();
     }
 
     public void ClosePanel()
     {
         KeyboardManager.KeyboardLockOff();
-        harvesterRobotController = null;
+        robot = null;
         animator.Play("RobotMenuSlideOut");
     }
 
@@ -148,18 +148,18 @@ public class RobotPanel : MonoBehaviour
         feedbackText.text = "";
     }
 
-    private void InventoryUpdated(HarvesterRobotController robot)
+    private void InventoryUpdated(Robot robot)
     {
-        if (harvesterRobotController != null && robot == harvesterRobotController)
+        if (this.robot != null && robot == this.robot)
         {
-            Debug.Log("InventoryUpdated: " + harvesterRobotController.Inventory);
+            Debug.Log("InventoryUpdated: " + this.robot.Inventory);
 
             foreach (Transform child in inventoryContainer.transform)
             {
                 GameObject.Destroy(child.gameObject);
             }
 
-            var currentInventory = harvesterRobotController.Inventory;
+            var currentInventory = this.robot.Inventory;
             currentInventory.ForEach(item => AddInventoryItem(item));
         }
     }
@@ -181,13 +181,15 @@ public class RobotPanel : MonoBehaviour
         titleText.text = "HARVESTER SETUP";        
 
         helpTextPanel.SetActive(true);
-        helpTextText.text = string.Join("\n", Instructions.AllInstructions.ToArray());
+        helpTextText.text = string.Join("\n", robot.commonInstructions.ToArray());
+        helpTextText.text += "\n\n";
+        helpTextText.text += string.Join("\n", robot.GetSpecializedInstruction().ToArray());
 
         codeInputPanel.SetActive(true);
         codeInputField.onValueChanged.AddListener(KeyboardManager.KeyboardLockOn);
         codeInputField.onValueChanged.AddListener(CodeInputToUpper);
         codeInputField.onEndEdit.AddListener(KeyboardManager.KeyboardLockOff);
-        codeInputField.text = harvesterRobotController.GetDemoInstructions();  /* Pre filled demo data */
+        codeInputField.text = robot.GetDemoInstructions();  /* Pre filled demo data */
 
         runButton.onClick.RemoveAllListeners();
         runButton.onClick.AddListener(RunCode);
@@ -199,7 +201,7 @@ public class RobotPanel : MonoBehaviour
     private void EnableRunnningModePanel()
     {
         titleText.text = "HARVESTER";
-        InventoryUpdated(harvesterRobotController);
+        InventoryUpdated(robot);
 
         codeOutputPanel.SetActive(true);
         inventoryPanel.SetActive(true);

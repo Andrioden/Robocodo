@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public abstract class Robot : NetworkBehaviour, IAttackable
+public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
 {
 
     // ********** COMMON VARIABLES **********
@@ -82,7 +82,7 @@ public abstract class Robot : NetworkBehaviour, IAttackable
 
 
     // Use this for initialization
-    void Start()
+    private void Start()
     {
         posX = transform.position.x;
         posZ = transform.position.z;
@@ -94,10 +94,16 @@ public abstract class Robot : NetworkBehaviour, IAttackable
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         Move();
         Animate();
+    }
+
+    public void Click()
+    {
+        if (hasAuthority)
+            RobotPanel.instance.ShowPanel(this);
     }
 
     [Client]
@@ -228,7 +234,11 @@ public abstract class Robot : NetworkBehaviour, IAttackable
         }
         else if (instruction == Instructions.Harvest)
         {
-            if (WorldController.instance.HarvestFromNode(CopperItem.SerializedType, posX, posZ))
+            if (Settings_InventoryCapacity() == 0)
+                SetFeedback("NO INVENTORY CAPACITY");
+            else if (inventory.Count >= Settings_InventoryCapacity())
+                SetFeedback("INVENTORY FULL");
+            else if (WorldController.instance.HarvestFromNode(CopperItem.SerializedType, posX, posZ))
                 AddInventoryItem(new CopperItem());
             else if (WorldController.instance.HarvestFromNode(IronItem.SerializedType, posX, posZ))
                 AddInventoryItem(new IronItem());
@@ -312,11 +322,6 @@ public abstract class Robot : NetworkBehaviour, IAttackable
     [Server]
     private void AddInventoryItem(InventoryItem item)
     {
-        if (inventory.Count >= Settings_InventoryCapacity())
-        {
-            SetFeedback("INVENTORY FULL");
-        }
-
         inventory.Add(item);
         if (OnInventoryChanged != null)
             OnInventoryChanged(this);

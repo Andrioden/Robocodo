@@ -72,7 +72,7 @@ public class WorldController : NetworkBehaviour
         for (int i = 0; i < Settings.Player_AmountOfStartingHarvesterRobots; i++)
             SpawnHarvesterRobotWithClientAuthority(conn, playerPos.x, playerPos.z);
 
-        //SpawnCombatRobotWithClientAuthority(conn, playerPos.x, playerPos.z);
+        SpawnCombatRobotWithClientAuthority(conn, playerPos.x, playerPos.z);
     }
 
     [Server]

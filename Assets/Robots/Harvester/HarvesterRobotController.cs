@@ -6,7 +6,7 @@ using System.Threading;
 using System.Collections;
 using System.Linq;
 
-public class HarvesterRobotController : Robot, ISelectable
+public class HarvesterRobotController : Robot
 {
     public MeshRenderer visirMeshRenderer;
     public Animator animator;
@@ -37,7 +37,7 @@ public class HarvesterRobotController : Robot, ISelectable
         string instruction = instructions.Count > 0 ? instructions[instructionBeingExecuted] : string.Empty;
         switch (instruction)
         {
-            case Instructions.Harvest:
+            case Instructions.Harvest: // TODO: SWITCH-CASE? FUCK YOU BT.
                 animator.Play("HarvesterHarvest");
                 break;
 
@@ -45,13 +45,6 @@ public class HarvesterRobotController : Robot, ISelectable
                 animator.Play("HarvesterIdle");
                 break;
         }
-    }
-
-    // TODO: Should be abstracted to Robot, but required a bit a of a rewrite of RobotPanel class, skipping for now.
-    public void Click()
-    {
-        if (hasAuthority)
-            RobotPanel.instance.ShowPanel(this);
     }
 
     public override void OnStartAuthority()
