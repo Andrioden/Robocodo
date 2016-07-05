@@ -24,7 +24,7 @@ public class RTSCamera : MonoBehaviour
         if (!KeyboardManager.KeyboardLock)
             MoveCameraWithKeyboard();
 
-        MoveCameraWithMouseAndScreenEdge();
+        //MoveCameraWithMouseAndScreenEdge();
         ZoomCameraWithScrollWheel();
     }
 
