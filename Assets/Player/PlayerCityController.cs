@@ -5,15 +5,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class PlayerCityController : NetworkBehaviour, ISelectable
+public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
 {
     public MeshRenderer bodyMeshRenderer;
 
     private List<InventoryItem> inventory = new List<InventoryItem>();
 
+    [SyncVar]
+    private int health;
+    public int Health { get { return health; } }
+
+    public static int Settings_StartHealth = 10;
+
     // Use this for initialization
     void Start()
     {
+        health = Settings_StartHealth;
+
         if (isLocalPlayer)
             ResourcePanel.instance.RegisterLocalPlayerCity(this);
 
@@ -116,6 +124,16 @@ public class PlayerCityController : NetworkBehaviour, ISelectable
         RTSCamera camera = Camera.main.transform.parent.GetComponent<RTSCamera>();
         camera.PositionRelativeToPlayer(transform);
         camera.transform.localPosition += new Vector3(0, -15, 0);
+    }
+
+    [Server]
+    public void TakeDamage(int damage)
+    {
+        health -= damage;
+        Debug.LogFormat("Robot {0} took {1} damage and now has {2} health", name, damage, health);
+
+        if (health <= 0)
+            Destroy(gameObject);
     }
 
 }

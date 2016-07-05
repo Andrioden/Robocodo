@@ -15,7 +15,7 @@ public class CombatRobotController : Robot
     public override int Settings_MaxEnergy() { return 50; }
     public override int Settings_InventoryCapacity() { return 0; }
     public override int Settings_Damage() { return 1; }
-    public override int Settings_MaxHealth() { return 5; }
+    public override int Settings_StartHealth() { return 5; }
 
     private List<string> spezializedInstructions = new List<string>()
     {

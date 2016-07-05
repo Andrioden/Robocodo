@@ -60,7 +60,7 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
     public abstract int Settings_MaxEnergy();
     public abstract int Settings_InventoryCapacity();
     public abstract int Settings_Damage();
-    public abstract int Settings_MaxHealth();
+    public abstract int Settings_StartHealth();
 
     public List<string> commonInstructions = new List<string>()
     {
@@ -91,6 +91,7 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
         homeZ = transform.position.z;
 
         energy = Settings_MaxEnergy();
+        health = Settings_StartHealth();
     }
 
     // Update is called once per frame
@@ -149,12 +150,23 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
 
     public string GetDemoInstructions()
     {
+        //List<string> demoInstructions = new List<string>()
+        //{
+        //    Instructions.MoveUp,
+        //    Instructions.Harvest,
+        //    Instructions.MoveHome,
+        //    Instructions.DropInventory
+        //};
+
         List<string> demoInstructions = new List<string>()
         {
-            Instructions.MoveUp,
-            Instructions.Harvest,
+            //Instructions.MoveUp,
+            //Instructions.MoveUp,
+            Instructions.MoveLeft,
+            Instructions.MeleeAttack,
             Instructions.MoveHome,
-            Instructions.DropInventory
+            Instructions.MeleeAttack
+            //Instructions.MeleeAttack,
         };
 
         //List<string> demoInstructions = new List<string>()
@@ -216,7 +228,6 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
             posX--;
         else if (instruction == Instructions.MoveHome)
         {
-            //Debug.LogFormat("MoveHome - Pos: {0},{1}, Home: {2},{3}", posX, posZ, homeX, homeZ);
             SanityCheckIfPositionNumbersAreWhole();
 
             float difX = Math.Abs(posX - homeX);
@@ -230,8 +241,15 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
             if (IsHome())
                 InstructionCompleted();
 
-            return;
+            return; // Avoid that InstructionComplete is run otherwise, TODO: Rewrite it into its own method and control the flow so it still works.
         }
+        else if (Instructions.IsValidLoopStart(instruction))
+        {
+            IterateLoopStartCounterIfNeeded(instruction);
+            ResetAllInnerLoopStarts(currentInstructionIndex + 1);
+        }
+        else if (instruction == Instructions.LoopEnd)
+            SetInstructionToMatchingLoopStart();
         else if (instruction == Instructions.Harvest)
         {
             if (Settings_InventoryCapacity() == 0)
@@ -247,13 +265,8 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
         }
         else if (instruction == Instructions.DropInventory)
             DropInventory();
-        else if (Instructions.IsValidLoopStart(instruction))
-        {
-            IterateLoopStartCounterIfNeeded(instruction);
-            ResetAllInnerLoopStarts(currentInstructionIndex + 1);
-        }
-        else if (instruction == Instructions.LoopEnd)
-            SetInstructionToMatchingLoopStart();
+        else if (instruction == Instructions.MeleeAttack)
+            AttackMeleeTargetIfAny();
         else
         {
             Debug.Log("SERVER: Robot does not understand instruction: " + instruction);
@@ -318,63 +331,6 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
             energy = Settings_MaxEnergy();
     }
 
-
-    [Server]
-    private void AddInventoryItem(InventoryItem item)
-    {
-        inventory.Add(item);
-        if (OnInventoryChanged != null)
-            OnInventoryChanged(this);
-
-        RpcSyncInventory(inventory.Select(i => i.Serialize()).ToArray());
-    }
-
-    [Server]
-    private void DropInventory()
-    {
-        Debug.Log("SERVER: Dropping inventory items count: " + inventory.Count);
-
-        PlayerCityController playerCity = FindPlayerCityControllerOnPosition();
-        if (playerCity != null)
-        {
-            Debug.Log("SERVER: Found city, dropping inventory on city");
-            playerCity.AddToInventory(inventory);
-            ClearInventory();
-        }
-        else
-        {
-            Debug.Log("SERVER: No city found, should drop items on ground. Not fully implemented.");
-        }
-    }
-
-    [Server]
-    private void ClearInventory()
-    {
-        inventory = new List<InventoryItem>();
-        if (OnInventoryChanged != null)
-            OnInventoryChanged(this);
-
-        RpcSyncInventory(inventory.Select(i => i.Serialize()).ToArray());
-    }
-
-    [ClientRpc]
-    private void RpcSyncInventory(string[] itemStrings)
-    {
-        inventory = new List<InventoryItem>();
-
-        foreach (string itemString in itemStrings)
-        {
-            if (itemString == CopperItem.SerializedType)
-                inventory.Add(new CopperItem());
-            else if (itemString == IronItem.SerializedType)
-                inventory.Add(new IronItem());
-            else
-                throw new Exception("Forgot to add deserialization support for InventoryType: " + itemString);
-        }
-
-        if (OnInventoryChanged != null)
-            OnInventoryChanged(this);
-    }
 
     [Server]
     private void IterateLoopStartCounterIfNeeded(string instruction)
@@ -456,6 +412,73 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
     }
 
     [Server]
+    private void AddInventoryItem(InventoryItem item)
+    {
+        inventory.Add(item);
+        if (OnInventoryChanged != null)
+            OnInventoryChanged(this);
+
+        RpcSyncInventory(inventory.Select(i => i.Serialize()).ToArray());
+    }
+
+    [Server]
+    private void DropInventory()
+    {
+        Debug.Log("SERVER: Dropping inventory items count: " + inventory.Count);
+
+        PlayerCityController playerCity = FindPlayerCityControllerOnPosition();
+        if (playerCity != null)
+        {
+            Debug.Log("SERVER: Found city, dropping inventory on city");
+            playerCity.AddToInventory(inventory);
+            ClearInventory();
+        }
+        else
+        {
+            Debug.Log("SERVER: No city found, should drop items on ground. Not fully implemented.");
+        }
+    }
+
+    [Server]
+    private void ClearInventory()
+    {
+        inventory = new List<InventoryItem>();
+        if (OnInventoryChanged != null)
+            OnInventoryChanged(this);
+
+        RpcSyncInventory(inventory.Select(i => i.Serialize()).ToArray());
+    }
+
+    [ClientRpc]
+    private void RpcSyncInventory(string[] itemStrings)
+    {
+        inventory = new List<InventoryItem>();
+
+        foreach (string itemString in itemStrings)
+        {
+            if (itemString == CopperItem.SerializedType)
+                inventory.Add(new CopperItem());
+            else if (itemString == IronItem.SerializedType)
+                inventory.Add(new IronItem());
+            else
+                throw new Exception("Forgot to add deserialization support for InventoryType: " + itemString);
+        }
+
+        if (OnInventoryChanged != null)
+            OnInventoryChanged(this);
+    }
+
+    [Server]
+    private void AttackMeleeTargetIfAny()
+    {
+        IAttackable attackable = FindAttackableMeleeEnemy();
+        if (attackable != null)
+            attackable.TakeDamage(Settings_Damage());
+        else
+            SetFeedback("NO TARGET TO ATTACK");
+    }
+
+    [Server]
     private PlayerCityController FindPlayerCityControllerOnPosition()
     {
         foreach (GameObject go in GameObject.FindGameObjectsWithTag("PlayerCity"))
@@ -463,6 +486,29 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
                 return go.GetComponent<PlayerCityController>();
 
         return null;
+    }
+
+    [Server]
+    private IAttackable FindAttackableMeleeEnemy()
+    {
+        foreach(GameObject potentialGO in FindNearbyCollidingGameObjects())
+        {
+            IAttackable attackable = potentialGO.GetComponent<IAttackable>();
+            if (attackable != null && potentialGO.transform.position.x == posX && potentialGO.transform.position.z == posZ)
+                return attackable;
+        }
+
+        Debug.Log("Did not find attackable");
+        return null;
+    }
+
+    [Server]
+    private List<GameObject> FindNearbyCollidingGameObjects()
+    {
+        return Physics.OverlapSphere(transform.position, 2.0f /*Radius*/)
+             .Except(new[] { GetComponent<Collider>() })
+             .Select(c => c.gameObject)
+             .ToList();
     }
 
     //[Server]
@@ -475,8 +521,9 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
     public void TakeDamage(int damage)
     {
         health -= damage;
+        Debug.LogFormat("Robot {0} took {1} damage and now has {2} health", name, damage, health);
 
-        if (health >= 0)
+        if (health <= 0)
             Destroy(gameObject);
     }
 
