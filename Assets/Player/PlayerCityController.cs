@@ -105,7 +105,7 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
     public void AddToInventory(List<InventoryItem> items)
     {
         inventory.AddRange(items);
-        RpcSyncInventory(inventory.Select(i => i.Serialize()).ToArray());
+        RpcSyncInventory(InventoryItem.SerializeList(inventory));
     }
 
     [Server]
@@ -117,23 +117,13 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
         for (int i = 0; i < iron; i++)
             inventory.RemoveAt(inventory.FindIndex(x => x.GetType() == typeof(IronItem)));
 
-        RpcSyncInventory(inventory.Select(i => i.Serialize()).ToArray());
+        RpcSyncInventory(InventoryItem.SerializeList(inventory));
     }
 
     [ClientRpc]
-    private void RpcSyncInventory(string[] itemStrings)
+    private void RpcSyncInventory(string[] itemCounts)
     {
-        inventory = new List<InventoryItem>();
-
-        foreach (string itemString in itemStrings)
-        {
-            if (itemString == CopperItem.SerializedType)
-                inventory.Add(new CopperItem());
-            else if (itemString == IronItem.SerializedType)
-                inventory.Add(new IronItem());
-            else
-                throw new Exception("Forgot to add deserialization support for InventoryType: " + itemString);
-        }
+        inventory = InventoryItem.DeserializeList(itemCounts);
     }
 
     private void AdjustCameraRelativeToPlayer()

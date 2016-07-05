@@ -14,7 +14,7 @@ public class HarvesterRobotController : Robot
 
     // ********** SETTINGS **********
 
-    public static new string Settings_Name = "HARVESTER";
+    public static string Settings_Name = "HARVESTER";
     public static int Settings_CopperCost = 1;
     public static int Settings_IronCost = 3;    
     

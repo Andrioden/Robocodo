@@ -56,7 +56,6 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
 
     //public abstract int Settings_CopperCost(); // Might not be needed, because do you need to know the cost of the instance?
     //public abstract int Settings_IronCost(); // Might not be needed, because do you need to know the cost of the instance?
-    public static string Settings_Name = "HARVESTER";
     public abstract int Settings_Memory();
     public abstract int Settings_IPT(); // Instructions Per Tick. Cant call it speed because it can be confused with move speed.
     public abstract int Settings_MaxEnergy();
@@ -152,24 +151,24 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
 
     public string GetDemoInstructions()
     {
-        //List<string> demoInstructions = new List<string>()
-        //{
-        //    Instructions.MoveUp,
-        //    Instructions.Harvest,
-        //    Instructions.MoveHome,
-        //    Instructions.DropInventory
-        //};
-
         List<string> demoInstructions = new List<string>()
         {
-            //Instructions.MoveUp,
-            //Instructions.MoveUp,
-            Instructions.MoveLeft,
-            Instructions.MeleeAttack,
+            Instructions.MoveUp,
+            Instructions.Harvest,
             Instructions.MoveHome,
-            Instructions.MeleeAttack
-            //Instructions.MeleeAttack,
+            Instructions.DropInventory
         };
+
+        //List<string> demoInstructions = new List<string>()
+        //{
+        //    //Instructions.MoveUp,
+        //    //Instructions.MoveUp,
+        //    Instructions.MoveLeft,
+        //    Instructions.MeleeAttack,
+        //    Instructions.MoveHome,
+        //    Instructions.MeleeAttack
+        //    //Instructions.MeleeAttack,
+        //};
 
         //List<string> demoInstructions = new List<string>()
         //{
@@ -420,7 +419,7 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
         if (OnInventoryChanged != null)
             OnInventoryChanged(this);
 
-        RpcSyncInventory(inventory.Select(i => i.Serialize()).ToArray());
+        RpcSyncInventory(InventoryItem.SerializeList(inventory));
     }
 
     [Server]
@@ -448,23 +447,13 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
         if (OnInventoryChanged != null)
             OnInventoryChanged(this);
 
-        RpcSyncInventory(inventory.Select(i => i.Serialize()).ToArray());
+        RpcSyncInventory(InventoryItem.SerializeList(inventory));
     }
 
     [ClientRpc]
-    private void RpcSyncInventory(string[] itemStrings)
+    private void RpcSyncInventory(string[] itemCounts)
     {
-        inventory = new List<InventoryItem>();
-
-        foreach (string itemString in itemStrings)
-        {
-            if (itemString == CopperItem.SerializedType)
-                inventory.Add(new CopperItem());
-            else if (itemString == IronItem.SerializedType)
-                inventory.Add(new IronItem());
-            else
-                throw new Exception("Forgot to add deserialization support for InventoryType: " + itemString);
-        }
+        inventory = InventoryItem.DeserializeList(itemCounts);
 
         if (OnInventoryChanged != null)
             OnInventoryChanged(this);

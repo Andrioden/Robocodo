@@ -1,10 +1,50 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using System.Collections.Generic;
+using System.Linq;
+using System;
 
 public abstract class InventoryItem
 {
     public abstract string Serialize();
+
+    /// <summary>
+    /// Serialize helper method for entities that want to sync inventory accross the network
+    /// </summary>
+    public static string[] SerializeList(List<InventoryItem> inventory)
+    {
+        List<string> itemCounts = new List<string>();
+
+        foreach (var itemCount in inventory.GroupBy(i => i.Serialize()))
+            itemCounts.Add(itemCount.Key + "," + itemCount.Count());
+
+        return itemCounts.ToArray();
+    }
+
+    /// <summary>
+    /// Deserialize helper method for entities that want to sync inventory accross the network
+    /// </summary>
+    public static List<InventoryItem> DeserializeList(string[] itemCounts)
+    {
+        List<InventoryItem> inventory = new List<InventoryItem>();
+
+        foreach (string itemCount in itemCounts)
+        {
+            string[] itemCountSplit = itemCount.Split(',');
+            for (int i = 0; i < Convert.ToInt32(itemCountSplit[1]); i++)
+            {
+                if (itemCountSplit[0] == CopperItem.SerializedType)
+                    inventory.Add(new CopperItem());
+                else if (itemCountSplit[0] == IronItem.SerializedType)
+                    inventory.Add(new IronItem());
+                else
+                    throw new Exception("Forgot to add deserialization support for InventoryType: " + itemCountSplit[0]);
+            }
+        }
+
+        return inventory;
+    }
+
 }
 
 public class CopperItem : InventoryItem
