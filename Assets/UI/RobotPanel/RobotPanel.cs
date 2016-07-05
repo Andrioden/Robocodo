@@ -13,6 +13,8 @@ public class RobotPanel : MonoBehaviour
 
     public Text memoryText;
     public Text energyText;
+    public Text healthText;
+    public Text damageText;
 
     public Button runButton;
     public Button closeButton;
@@ -92,6 +94,8 @@ public class RobotPanel : MonoBehaviour
             string colorSuffix = memoryExceeded ? "</color>" : "";
             memoryText.text = colorPrefix + "MEMORY: " + instructions.Count + "/" + robot.Settings_Memory() + colorSuffix;
             energyText.text = string.Format("ENERGY: {0}/{1}", robot.Energy, robot.Settings_MaxEnergy());
+            healthText.text = string.Format("HEALTH: {0}/{1}", robot.Health, robot.Settings_StartHealth());
+            damageText.text = string.Format("DAMAGE: {0}", robot.Settings_Damage());
         }
     }
 
