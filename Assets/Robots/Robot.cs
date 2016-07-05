@@ -70,8 +70,8 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
         Instructions.MoveLeft,
         Instructions.MoveRight,
         Instructions.MoveHome,
+        Instructions.LoopStartNumbered,
         Instructions.LoopStart,
-        Instructions.LoopStartPlain,
         Instructions.LoopEnd
     };
 
@@ -341,7 +341,7 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
     [Server]
     private void IterateLoopStartCounterIfNeeded(string instruction)
     {
-        if (instruction == Instructions.LoopStartPlain)
+        if (instruction == Instructions.LoopStart)
             return;
 
         string paraContent = Instructions.GetParenthesesContent(instruction);
@@ -365,7 +365,7 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
         else
             throw new Exception("Illegal amount of forward slashes in instruction: " + instruction);
 
-        instructions[currentInstructionIndex] = Instructions.LoopStartNumbered(currentLoopCount, totalLoopCount);
+        instructions[currentInstructionIndex] = Instructions.LoopStartNumberedSet(currentLoopCount, totalLoopCount);
     }
 
     [Server]

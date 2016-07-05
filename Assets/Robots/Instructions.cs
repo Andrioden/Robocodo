@@ -11,8 +11,8 @@ public static class Instructions
     public const string MoveLeft = "MOVE LEFT";
     public const string MoveRight = "MOVE RIGHT";
     public const string MoveHome = "MOVE HOME";
-    public const string LoopStart = "LOOP START (NUMBER)";
-    public const string LoopStartPlain = "LOOP START";
+    public const string LoopStart = "LOOP START";
+    public const string LoopStartNumbered = "LOOP START (NUMBER)";
     public const string LoopEnd = "LOOP END";
 
     public const string Harvest = "HARVEST";
@@ -30,8 +30,8 @@ public static class Instructions
         MoveHome,
         Harvest,
         DropInventory,
-        LoopStartPlain,
         LoopStart,
+        LoopStartNumbered,
         LoopEnd,
         MeleeAttack
     };
@@ -47,14 +47,14 @@ public static class Instructions
         return false;
     }
 
-    public static string LoopStartNumbered(int current, int total)
+    public static string LoopStartNumberedSet(int current, int total)
     {
-        return LoopStart.Replace("NUMBER", string.Format("{0}/{1}", current, total));
+        return LoopStartNumbered.Replace("NUMBER", string.Format("{0}/{1}", current, total));
     }
 
     public static bool IsLoopStartCompleted(string instruction)
     {
-        if (instruction == LoopStartPlain)
+        if (instruction == LoopStart)
             return false;
 
         string paraContent = GetParenthesesContent(instruction);
@@ -65,7 +65,7 @@ public static class Instructions
 
     public static string LoopStartReset(string instruction)
     {
-        if (instruction == LoopStartPlain)
+        if (instruction == LoopStart)
             return instruction;
 
         string paraContent = GetParenthesesContent(instruction);
@@ -74,7 +74,7 @@ public static class Instructions
         if (paraContentSlashSplit.Length == 1)
             return instruction;
 
-        return LoopStartNumbered(0, Convert.ToInt32(paraContentSlashSplit[1]));
+        return LoopStartNumberedSet(0, Convert.ToInt32(paraContentSlashSplit[1]));
     }
 
     public static string RemoveFirstParenthesesPart(string str)
