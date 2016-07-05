@@ -656,6 +656,18 @@ Prefab:
       propertyPath: step
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 476710, guid: 82164e652d8ecc247820fa49ca57f3bc, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0.5372997
+      objectReference: {fileID: 0}
+    - target: {fileID: 476710, guid: 82164e652d8ecc247820fa49ca57f3bc, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0.8433914
+      objectReference: {fileID: 0}
+    - target: {fileID: 11434324, guid: 82164e652d8ecc247820fa49ca57f3bc, type: 2}
+      propertyPath: edgeScrollBoundrary
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 82164e652d8ecc247820fa49ca57f3bc, type: 2}
   m_IsPrefabParent: 0

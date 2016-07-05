@@ -196,18 +196,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 353f94c60b360234baf3ab951b6fd887, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  showMain: 1
-  showSub: 0
+  show: 1
   gridSizeX: 100
   gridSizeY: 0
   gridSizeZ: 100
-  smallStep: 1
-  largeStep: 1
+  step: 1
   startX: -0.5
   startY: 0
   startZ: -0.5
-  mainColor: {r: 0, g: 1, b: 0, a: 0.203}
-  subColor: {r: 0, g: 0.5, b: 0, a: 0.1}
+  mainColor: {r: 1, g: 1, b: 1, a: 0.07058824}
 --- !u!114 &11434324
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -222,6 +219,7 @@ MonoBehaviour:
   horizontalSpeed: 40
   verticalSpeed: 40
   cameraDistance: 30
+  edgeScrollBoundrary: 5
 --- !u!124 &12481308
 Behaviour:
   m_ObjectHideFlags: 1
