@@ -41,7 +41,7 @@ public class HarvesterRobotController : Robot
     [Client]
     protected override void Animate()
     {
-        string instruction = instructions.Count > 0 ? instructions[instructionBeingExecuted] : string.Empty;
+        string instruction = instructions.Count > 0 ? instructions[currentInstructionIndex] : string.Empty;
         switch (instruction)
         {
             case Instructions.Harvest: // TODO: SWITCH-CASE? FUCK YOU BT.

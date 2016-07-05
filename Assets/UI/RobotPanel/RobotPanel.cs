@@ -77,10 +77,10 @@ public class RobotPanel : MonoBehaviour
 
             if (robot.IsStarted)
             {
-                if (robot.InstructionBeingExecutedIsValid)
-                    instructionListCopy[robot.InstructionBeingExecuted] = "<color=#D5A042FF>" + instructionListCopy[robot.InstructionBeingExecuted] + "</color>";
+                if (robot.CurrentInstructionIndexIsValid)
+                    instructionListCopy[robot.CurrentInstructionIndex] = "<color=#D5A042FF>" + instructionListCopy[robot.CurrentInstructionIndex] + "</color>";
                 else {
-                    instructionListCopy[robot.InstructionBeingExecuted] = "<color=red>" + instructionListCopy[robot.InstructionBeingExecuted] + "</color>";
+                    instructionListCopy[robot.CurrentInstructionIndex] = "<color=red>" + instructionListCopy[robot.CurrentInstructionIndex] + "</color>";
                     SetFeedbackText("<color=red>" + robot.Feedback + "</color>", 0);
                 }
                 codeOutputField.text = string.Join("\n", instructionListCopy.ToArray());

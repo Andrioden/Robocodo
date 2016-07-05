@@ -18,23 +18,11 @@ public static class Instructions
     public const string Harvest = "HARVEST";
     public const string DropInventory = "DROP INVENTORY";
 
-    public const string MeleeAttack = "MELEE ATTACK";
-
-    // TODO: Remove when we get the list from the Robot object
-    public static List<string> AllInstructions = new List<string>
-    {
-        MoveUp,
-        MoveDown,
-        MoveLeft,
-        MoveRight,
-        MoveHome,
-        Harvest,
-        DropInventory,
-        LoopStart,
-        LoopStartNumbered,
-        LoopEnd,
-        MeleeAttack
-    };
+    public const string AttackMelee = "ATTACK MELEE";
+    public const string AttackUp = "ATTACK UP";
+    public const string AttackDown = "ATTACK DOWN";
+    public const string AttackLeft = "ATTACK LEFT";
+    public const string AttackRight = "ATTACK RIGHT";
 
     public static bool IsValidLoopStart(string instruction)
     {

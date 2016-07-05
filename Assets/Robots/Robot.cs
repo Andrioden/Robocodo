@@ -20,14 +20,6 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
     private float homeZ;
 
     [SyncVar]
-    protected int instructionBeingExecuted = 0;
-    public int InstructionBeingExecuted { get { return instructionBeingExecuted; } }
-
-    [SyncVar]
-    private bool instructionBeingExecutedIsValid = true;
-    public bool InstructionBeingExecutedIsValid { get { return instructionBeingExecutedIsValid; } }
-
-    [SyncVar]
     private string feedback = "";
     public string Feedback { get { return feedback; } }
 
@@ -37,7 +29,15 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
 
     protected SyncListString instructions = new SyncListString();
     [SyncVar]
-    private int currentInstructionIndex = 0;
+    private int nextInstructionIndex = 0;
+
+    [SyncVar]
+    protected int currentInstructionIndex = 0;
+    public int CurrentInstructionIndex { get { return currentInstructionIndex; } }
+
+    [SyncVar]
+    private bool currentInstructionIndexIsValid = true;
+    public bool CurrentInstructionIndexIsValid { get { return currentInstructionIndexIsValid; } }
 
     private List<InventoryItem> inventory = new List<InventoryItem>();
     public List<InventoryItem> Inventory { get { return inventory; } }
@@ -99,6 +99,7 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
     private void Update()
     {
         Move();
+        FaceDirection();
         Animate();
     }
 
@@ -112,8 +113,32 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
     private void Move()
     {
         var newPos = new Vector3(posX, transform.position.y, posZ);
-        transform.LookAt(newPos);
         transform.position = Vector3.MoveTowards(transform.position, newPos, (1.0f / Settings.World_IrlSecondsPerTick) * Time.deltaTime * Settings_IPT());
+    }
+
+    [Client]
+    public void FaceDirection()
+    {
+        Vector3? facePosition = null;
+
+        if (instructions.Count > 0)
+        {
+            string currentInstruction = instructions[currentInstructionIndex];
+
+            if (currentInstruction == Instructions.AttackUp)
+                facePosition = new Vector3(posX, transform.position.y, posZ + 1);
+            else if (currentInstruction == Instructions.AttackDown)
+                facePosition = new Vector3(posX, transform.position.y, posZ - 1);
+            else if (currentInstruction == Instructions.AttackRight)
+                facePosition = new Vector3(posX + 1, transform.position.y, posZ);
+            else if (currentInstruction == Instructions.AttackLeft)
+                facePosition = new Vector3(posX - 1, transform.position.y, posZ);
+        }
+
+        if (!facePosition.HasValue)
+            facePosition = new Vector3(posX, transform.position.y, posZ);
+        
+        transform.LookAt(facePosition.Value);
     }
 
     [Client]
@@ -156,12 +181,31 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
 
     public string GetDemoInstructions()
     {
+        //List<string> demoInstructions = new List<string>()
+        //{
+        //    Instructions.MoveUp,
+        //    Instructions.Harvest,
+        //    Instructions.MoveHome,
+        //    Instructions.DropInventory
+        //};
+
         List<string> demoInstructions = new List<string>()
         {
             Instructions.MoveUp,
-            Instructions.Harvest,
+            Instructions.AttackDown,
             Instructions.MoveHome,
-            Instructions.DropInventory
+
+            Instructions.MoveDown,
+            Instructions.AttackUp,
+            Instructions.MoveHome,
+
+            Instructions.MoveLeft,
+            Instructions.AttackRight,
+            Instructions.MoveHome,
+
+            Instructions.MoveRight,
+            Instructions.AttackLeft,
+            Instructions.MoveHome,
         };
 
         //List<string> demoInstructions = new List<string>()
@@ -211,9 +255,9 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
     [Server]
     private void RunNextInstruction(object sender)
     {
-        instructionBeingExecutedIsValid = true;
-        instructionBeingExecuted = currentInstructionIndex;
-        string instruction = instructions[currentInstructionIndex];
+        currentInstructionIndexIsValid = true;
+        currentInstructionIndex = nextInstructionIndex;
+        string instruction = instructions[nextInstructionIndex];
 
         if (energy <= 0)
         {
@@ -252,7 +296,7 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
         else if (Instructions.IsValidLoopStart(instruction))
         {
             IterateLoopStartCounterIfNeeded(instruction);
-            ResetAllInnerLoopStarts(currentInstructionIndex + 1);
+            ResetAllInnerLoopStarts(nextInstructionIndex + 1);
         }
         else if (instruction == Instructions.LoopEnd)
             SetInstructionToMatchingLoopStart();
@@ -271,8 +315,16 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
         }
         else if (instruction == Instructions.DropInventory)
             DropInventory();
-        else if (instruction == Instructions.MeleeAttack)
-            AttackMeleeTargetIfAny();
+        else if (instruction == Instructions.AttackMelee)
+            AttackPosition(posX, posZ);
+        else if (instruction == Instructions.AttackUp)
+            AttackPosition(posX, posZ + 1);
+        else if (instruction == Instructions.AttackDown)
+            AttackPosition(posX, posZ - 1);
+        else if (instruction == Instructions.AttackRight)
+            AttackPosition(posX + 1, posZ);
+        else if (instruction == Instructions.AttackLeft)
+            AttackPosition(posX - 1, posZ);
         else
         {
             Debug.Log("SERVER: Robot does not understand instruction: " + instruction);
@@ -286,7 +338,7 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
     private void SetFeedback(string message)
     {
         feedback = message;
-        instructionBeingExecutedIsValid = false;
+        currentInstructionIndexIsValid = false;
     }
 
     [Server]
@@ -325,12 +377,12 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
     [Server]
     private void InstructionCompleted()
     {
-        currentInstructionIndex++;
+        nextInstructionIndex++;
 
-        if (currentInstructionIndex == instructions.Count)
+        if (nextInstructionIndex == instructions.Count)
         {
-            currentInstructionIndex = 0;
-            ResetAllInnerLoopStarts(currentInstructionIndex);
+            nextInstructionIndex = 0;
+            ResetAllInnerLoopStarts(nextInstructionIndex);
         }
 
         if (IsHome())
@@ -365,7 +417,7 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
         else
             throw new Exception("Illegal amount of forward slashes in instruction: " + instruction);
 
-        instructions[currentInstructionIndex] = Instructions.LoopStartNumberedSet(currentLoopCount, totalLoopCount);
+        instructions[nextInstructionIndex] = Instructions.LoopStartNumberedSet(currentLoopCount, totalLoopCount);
     }
 
     [Server]
@@ -393,7 +445,7 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
     private void SetInstructionToMatchingLoopStart()
     {
         int skippingLoopStarts = 0;
-        for (int i = currentInstructionIndex - 1; i >= 0; i--)
+        for (int i = nextInstructionIndex - 1; i >= 0; i--)
         {
             if (instructions[i] == Instructions.LoopEnd)
                 skippingLoopStarts++;
@@ -405,7 +457,7 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
                         return;
                     else
                     {
-                        currentInstructionIndex = i - 1;
+                        nextInstructionIndex = i - 1;
                         return;
                     }
                 }
@@ -465,9 +517,9 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
     }
 
     [Server]
-    private void AttackMeleeTargetIfAny()
+    private void AttackPosition(float x, float z)
     {
-        IAttackable attackable = FindAttackableMeleeEnemy();
+        IAttackable attackable = FindAttackableEnemy((int)x, (int)z);
         if (attackable != null)
             attackable.TakeDamage(Settings_Damage());
         else
@@ -485,12 +537,12 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
     }
 
     [Server]
-    private IAttackable FindAttackableMeleeEnemy()
+    private IAttackable FindAttackableEnemy(int x, int z)
     {
         foreach (GameObject potentialGO in FindNearbyCollidingGameObjects())
         {
             IAttackable attackable = potentialGO.GetComponent<IAttackable>();
-            if (attackable != null && potentialGO.transform.position.x == posX && potentialGO.transform.position.z == posZ)
+            if (attackable != null && potentialGO.transform.position.x == x && potentialGO.transform.position.z == z)
             {
                 if (attackable.GetOwner() != GetOwner())
                     return attackable;
@@ -511,12 +563,6 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
              .Select(c => c.gameObject)
              .ToList();
     }
-
-    //[Server]
-    //private IAttackable FindAttackableOnPosition()
-    //{
-
-    //}
 
     [Server]
     public void TakeDamage(int damage)

@@ -20,7 +20,11 @@ public class CombatRobotController : Robot
 
     private List<string> spezializedInstructions = new List<string>()
     {
-        Instructions.MeleeAttack
+        Instructions.AttackMelee,
+        Instructions.AttackUp,
+        Instructions.AttackDown,
+        Instructions.AttackLeft,
+        Instructions.AttackRight
     };
     public override List<string> GetSpecializedInstruction() { return spezializedInstructions; }
 
