@@ -45,6 +45,7 @@ MonoBehaviour:
   copperNodePrefab: {fileID: 157114, guid: 1cc4c27114911bc449b6fa845ebbd524, type: 2}
   ironNodePrefab: {fileID: 162768, guid: 30884e0b2f8c9014e8fba6f006b16d3e, type: 2}
   harvesterRobotPrefab: {fileID: 162562, guid: 3f0a199a0b1d5764693c9117987a91cc, type: 2}
+  combatRobotPrefab: {fileID: 129906, guid: dfdfcce3a5ca6a34fb3a302fe7ce37ac, type: 2}
 --- !u!114 &11494072
 MonoBehaviour:
   m_ObjectHideFlags: 1

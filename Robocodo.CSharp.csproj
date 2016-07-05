@@ -63,7 +63,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\BuildableItem.cs" />
     <Compile Include="Assets\GameLogic\CustomNetworkManager.cs" />
     <Compile Include="Assets\GameLogic\IAttackable.cs" />
     <Compile Include="Assets\GameLogic\IClickable.cs" />
@@ -84,6 +83,8 @@
     <Compile Include="Assets\UI\GridOverlay.cs" />
     <Compile Include="Assets\UI\KeyboardManager.cs" />
     <Compile Include="Assets\UI\MouseManager.cs" />
+    <Compile Include="Assets\UI\PlayerCityPanel\BuildMenu\BuildMenu.cs" />
+    <Compile Include="Assets\UI\PlayerCityPanel\BuildMenu\BuildableItem.cs" />
     <Compile Include="Assets\UI\PlayerCityPanel\PlayerCityPanel.cs" />
     <Compile Include="Assets\UI\RTSCamera.cs" />
     <Compile Include="Assets\UI\ResourcePanel\ResourcePanel.cs" />

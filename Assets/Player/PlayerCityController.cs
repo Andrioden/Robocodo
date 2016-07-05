@@ -59,17 +59,8 @@ public class PlayerCityController : NetworkBehaviour, ISelectable
         return inventory.Count(i => i.GetType() == typeof(IronItem));
     }
 
-    [Client]
-    public void BuyBuildableItem(BuildableItem.Type type)
-    {
-        if (type == BuildableItem.Type.HARVESTER)
-            CmdBuyHarvesterRobot();
-        else
-            throw new Exception("BuyBuildableItem: Chosen BuildableItem.Type not implemented.");
-    }
-
     [Command]
-    private void CmdBuyHarvesterRobot()
+    public void CmdBuyHarvesterRobot()
     {
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
         if (GetCopperCount() >= HarvesterRobotController.Settings_CopperCost && GetIronCount() >= HarvesterRobotController.Settings_IronCost)
