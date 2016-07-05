@@ -8,6 +8,7 @@ public class PlayerCityPanel : MonoBehaviour
     public static PlayerCityPanel instance;
     public BuildMenu buildMenu;
     public Sprite harvesterRobotSprite;
+    public Sprite combatRobotSprite;
 
     private Animator animator;
     private PlayerCityController playerCityController;
@@ -27,10 +28,7 @@ public class PlayerCityPanel : MonoBehaviour
     void Start()
     {
         animator = GetComponent<Animator>();
-
-        /* THIS IS WHERE WE ENABLE BUILDING NEW ITEMS */
-        //buildMenu.AddBuildableItem(BuyHarvesterRobot, HarvesterRobotController.Settings_CopperCost, HarvesterRobotController.Settings_IronCost, harvesterRobotSprite);
-        //buildMenu.AddBuildableItem(BuyCombatRobot, CombatRobotController.CopperCost, CombatRobotController.IronCost, combatRobotSprite);
+        AddBuildableItemsToBuildMenu();
     }
 
     void Update()
@@ -59,6 +57,12 @@ public class PlayerCityPanel : MonoBehaviour
         animator.Play("RobotMenuSlideOut");
     }
 
+    private void AddBuildableItemsToBuildMenu()
+    {
+        buildMenu.AddBuildableItem(HarvesterRobotController.Settings_Name, BuyHarvesterRobot, HarvesterRobotController.Settings_CopperCost, HarvesterRobotController.Settings_IronCost, harvesterRobotSprite);
+        buildMenu.AddBuildableItem(CombatRobotController.Settings_Name, BuyCombatRobot, CombatRobotController.Settings_CopperCost, CombatRobotController.Settings_IronCost, combatRobotSprite);
+    }
+
     public void BuyHarvesterRobot()
     {
         instance.playerCityController.CmdBuyHarvesterRobot();
@@ -66,6 +70,6 @@ public class PlayerCityPanel : MonoBehaviour
 
     public void BuyCombatRobot()
     {
-        //instance.playerCityController.CmdBuyCombatRobot();
+        instance.playerCityController.CmdBuyCombatRobot();
     }
 }

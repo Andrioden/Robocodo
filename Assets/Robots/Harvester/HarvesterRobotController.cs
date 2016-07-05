@@ -14,8 +14,10 @@ public class HarvesterRobotController : Robot
 
     // ********** SETTINGS **********
 
+    public static new string Settings_Name = "HARVESTER";
     public static int Settings_CopperCost = 1;
-    public static int Settings_IronCost = 3;
+    public static int Settings_IronCost = 3;    
+    
     public override int Settings_Memory() { return 20; }
     public override int Settings_IPT() { return 1; }
     public override int Settings_MaxEnergy() { return 50; }
@@ -28,8 +30,13 @@ public class HarvesterRobotController : Robot
         Instructions.Harvest,
         Instructions.DropInventory
     };
+
     public override List<string> GetSpecializedInstruction() { return spezializedInstructions; }
 
+    public override string GetName()
+    {
+        return Settings_Name;
+    }
 
     [Client]
     protected override void Animate()
@@ -52,5 +59,4 @@ public class HarvesterRobotController : Robot
         base.OnStartAuthority();
         visirMeshRenderer.material.color = Color.blue;
     }
-
 }

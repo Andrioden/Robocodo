@@ -7,8 +7,9 @@ using System.Linq;
 
 public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
 {
-
     // ********** COMMON VARIABLES **********
+    [SyncVar]
+    public string owner;
 
     [SyncVar]
     private float posX;
@@ -55,6 +56,7 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
 
     //public abstract int Settings_CopperCost(); // Might not be needed, because do you need to know the cost of the instance?
     //public abstract int Settings_IronCost(); // Might not be needed, because do you need to know the cost of the instance?
+    public static string Settings_Name = "HARVESTER";
     public abstract int Settings_Memory();
     public abstract int Settings_IPT(); // Instructions Per Tick. Cant call it speed because it can be confused with move speed.
     public abstract int Settings_MaxEnergy();
@@ -79,7 +81,7 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
 
     protected abstract void Animate();
     public abstract List<string> GetSpecializedInstruction();
-
+    public abstract string GetName();
 
     // Use this for initialization
     private void Start()
@@ -491,11 +493,16 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
     [Server]
     private IAttackable FindAttackableMeleeEnemy()
     {
-        foreach(GameObject potentialGO in FindNearbyCollidingGameObjects())
+        foreach (GameObject potentialGO in FindNearbyCollidingGameObjects())
         {
             IAttackable attackable = potentialGO.GetComponent<IAttackable>();
             if (attackable != null && potentialGO.transform.position.x == posX && potentialGO.transform.position.z == posZ)
-                return attackable;
+            {
+                if (attackable.GetOwner() != GetOwner())
+                    return attackable;
+                else
+                    Debug.Log("Found attackable but it was friendly");
+            }
         }
 
         Debug.Log("Did not find attackable");
@@ -524,7 +531,11 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
         Debug.LogFormat("Robot {0} took {1} damage and now has {2} health", name, damage, health);
 
         if (health <= 0)
-            Destroy(gameObject);
+            NetworkServer.Destroy(gameObject);
     }
 
+    public string GetOwner()
+    {
+        return owner;
+    }
 }

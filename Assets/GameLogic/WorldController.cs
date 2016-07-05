@@ -92,6 +92,10 @@ public class WorldController : NetworkBehaviour
     {
         GameObject newGameObject = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
         NetworkServer.SpawnWithClientAuthority(newGameObject, conn);
+
+        var robot = newGameObject.GetComponent<Robot>();
+        if (robot != null)
+            robot.owner = conn.connectionId.ToString();
     }
 
     [Server]

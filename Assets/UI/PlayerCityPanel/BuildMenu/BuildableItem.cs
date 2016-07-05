@@ -7,15 +7,17 @@ public class BuildableItem : MonoBehaviour
 {
     public Button button;
     public Image icon;
+    public Text nameLabel;
     public Text copperCostLabel;
     public Text ironCostLabel;
 
-    public void SetupBuildableItem(UnityAction buyAction, int copperCost, int ironCost, Sprite sprite)
+    public void SetupBuildableItem(string name, UnityAction buyAction, int copperCost, int ironCost, Sprite sprite)
     {
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener(buyAction);
-        copperCostLabel.text = "X" + copperCost;
-        ironCostLabel.text = "X" + ironCost;
         icon.sprite = sprite;
+        copperCostLabel.text = "X" + copperCost;
+        nameLabel.text = name.ToUpper();
+        ironCostLabel.text = "X" + ironCost;
     }
 }

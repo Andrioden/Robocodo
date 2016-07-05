@@ -178,7 +178,7 @@ public class RobotPanel : MonoBehaviour
 
     private void EnableSetupModePanel()
     {
-        titleText.text = "HARVESTER SETUP";        
+        titleText.text = robot.GetName() + " SETUP";        
 
         helpTextPanel.SetActive(true);
         helpTextText.text = string.Join("\n", robot.commonInstructions.ToArray());
@@ -200,7 +200,7 @@ public class RobotPanel : MonoBehaviour
 
     private void EnableRunnningModePanel()
     {
-        titleText.text = "HARVESTER";
+        titleText.text = robot.GetName();
         InventoryUpdated(robot);
 
         codeOutputPanel.SetActive(true);

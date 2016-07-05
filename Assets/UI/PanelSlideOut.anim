@@ -5,7 +5,7 @@ AnimationClip:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: RobotMenuSlideIn
+  m_Name: PanelSlideOut
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -20,14 +20,14 @@ AnimationClip:
       serializedVersion: 2
       m_Curve:
       - time: 0
-        value: 600
-        inSlope: -1200
-        outSlope: -1200
+        value: 0
+        inSlope: 1200
+        outSlope: 1200
         tangentMode: 10
       - time: 0.5
-        value: 0
-        inSlope: -1200
-        outSlope: -1200
+        value: 600
+        inSlope: 1200
+        outSlope: 1200
         tangentMode: 10
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -76,14 +76,14 @@ AnimationClip:
       serializedVersion: 2
       m_Curve:
       - time: 0
-        value: 600
-        inSlope: -1200
-        outSlope: -1200
+        value: 0
+        inSlope: 1200
+        outSlope: 1200
         tangentMode: 10
       - time: 0.5
-        value: 0
-        inSlope: -1200
-        outSlope: -1200
+        value: 600
+        inSlope: 1200
+        outSlope: 1200
         tangentMode: 10
       m_PreInfinity: 2
       m_PostInfinity: 2

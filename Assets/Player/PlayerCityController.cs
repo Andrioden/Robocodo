@@ -73,15 +73,32 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
         if (GetCopperCount() >= HarvesterRobotController.Settings_CopperCost && GetIronCount() >= HarvesterRobotController.Settings_IronCost)
         {
-            CmdSpawnHarvester((int)transform.position.x, (int)transform.position.z);
+            CmdSpawnHarvesterRobot((int)transform.position.x, (int)transform.position.z);
             RemoveResources(HarvesterRobotController.Settings_CopperCost, HarvesterRobotController.Settings_IronCost);
         }
     }
 
+    [Command]
+    public void CmdBuyCombatRobot()
+    {
+        // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
+        if (GetCopperCount() >= CombatRobotController.Settings_CopperCost && GetIronCount() >= CombatRobotController.Settings_IronCost)
+        {
+            CmdSpawnCombatRobot((int)transform.position.x, (int)transform.position.z);
+            RemoveResources(CombatRobotController.Settings_CopperCost, CombatRobotController.Settings_IronCost);
+        }
+    }
+
     [Server]
-    public void CmdSpawnHarvester(int x, int z)
+    private void CmdSpawnHarvesterRobot(int x, int z)
     {
         WorldController.instance.SpawnHarvesterRobotWithClientAuthority(connectionToClient, x, z);
+    }
+
+    [Server]
+    private void CmdSpawnCombatRobot(int x, int z)
+    {
+        WorldController.instance.SpawnCombatRobotWithClientAuthority(connectionToClient, x, z);
     }
 
     [Server]
@@ -136,4 +153,8 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
             Destroy(gameObject);
     }
 
+    public string GetOwner()
+    {
+        return connectionToClient.connectionId.ToString();
+    }
 }
