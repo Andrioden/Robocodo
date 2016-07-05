@@ -127,21 +127,26 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
                 return;
             }
 
-            CmdAddInstructions(string.Join(",", newInstructions.ToArray()));
+            string instructionsCSV = string.Join(",", newInstructions.ToArray());
+            SetInstructions(instructionsCSV);
+            CmdSetInstructions(instructionsCSV);
             CmdStartRobot();
             isStarted = true;
         }
     }
 
     [Command]
-    private void CmdAddInstructions(string instructionsCSV)
+    private void CmdSetInstructions(string instructionsCSV)
     {
-        List<string> newInstructions = instructionsCSV.Split(',').ToList();
+        SetInstructions(instructionsCSV);
+    }
 
-        newInstructions.ForEach(x =>
-        {
-            instructions.Add(x);
-        });
+    private void SetInstructions(string instructionsCSV)
+    {
+        instructions.Clear();
+
+        foreach (string instruction in instructionsCSV.Split(','))
+            instructions.Add(instruction);
     }
 
     public SyncListString GetInstructions()
