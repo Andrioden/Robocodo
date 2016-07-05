@@ -45,10 +45,10 @@ public class RTSCamera : MonoBehaviour
     private void MoveCameraWithMouseAndScreenEdge()
     {
         if (Input.mousePosition.x > (screenWidth - edgeScrollBoundrary))
-            transform.Translate(Vector3.right * verticalSpeed * Time.deltaTime);
+            transform.Translate(Vector3.right * horizontalSpeed * Time.deltaTime);
 
         if (Input.mousePosition.x < (0 + edgeScrollBoundrary))
-            transform.Translate(Vector3.left * verticalSpeed * Time.deltaTime);
+            transform.Translate(Vector3.left * horizontalSpeed * Time.deltaTime);
 
         if (Input.mousePosition.y > (screenHeight - edgeScrollBoundrary))
             transform.Translate(Vector3.forward * verticalSpeed * Time.deltaTime);
