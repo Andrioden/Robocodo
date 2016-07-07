@@ -16,8 +16,8 @@ public class HarvesterRobotController : Robot
 
     public static string Settings_Name = "HARVESTER";
     public static int Settings_CopperCost = 1;
-    public static int Settings_IronCost = 3;    
-    
+    public static int Settings_IronCost = 3;
+
     public override int Settings_Memory() { return 20; }
     public override int Settings_IPT() { return 1; }
     public override int Settings_MaxEnergy() { return 50; }
@@ -42,15 +42,9 @@ public class HarvesterRobotController : Robot
     protected override void Animate()
     {
         string instruction = instructions.Count > 0 ? instructions[currentInstructionIndex] : string.Empty;
-        switch (instruction)
+        if (instruction == Instructions.Harvest)
         {
-            case Instructions.Harvest: // TODO: SWITCH-CASE? FUCK YOU BT.
-                animator.Play("HarvesterRobotHarvest");
-                break;
-
-            default:
-                animator.Play("HarvesterRobotIdle");
-                break;
+            animator.Play("HarvesterRobotHarvest");
         }
     }
 

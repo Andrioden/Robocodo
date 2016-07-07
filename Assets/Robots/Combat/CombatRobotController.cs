@@ -44,8 +44,6 @@ public class CombatRobotController : Robot
         {
             animator.Play("CombatRobotMeleeAttack");
         }
-        else
-            animator.Play("CombotRobotIdle");
     }
 
     public override string GetName()
