@@ -6,7 +6,7 @@ using System.Threading;
 using System.Collections;
 using System.Linq;
 
-public class HarvesterRobotController : Robot
+public class HarvesterRobotController : RobotController
 {
     public MeshRenderer visirMeshRenderer;
     public Animator animator;

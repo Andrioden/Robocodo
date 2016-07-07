@@ -40,7 +40,7 @@ public class RobotPanel : MonoBehaviour
     public static RobotPanel instance;
 
     private Animator animator;
-    private Robot robot;
+    private RobotController robot;
     private List<string> instructionListCopy;
     private IEnumerator feedbackClearCoroutine;
 
@@ -60,7 +60,7 @@ public class RobotPanel : MonoBehaviour
     {
         animator = GetComponent<Animator>();
 
-        Robot.OnInventoryChanged += InventoryUpdated;
+        RobotController.OnInventoryChanged += InventoryUpdated;
     }
 
     private void Update()
@@ -99,7 +99,7 @@ public class RobotPanel : MonoBehaviour
         }
     }
 
-    public void ShowPanel(Robot robot)
+    public void ShowPanel(RobotController robot)
     {
         this.robot = robot;
         KeyboardManager.KeyboardLockOff();
@@ -152,7 +152,7 @@ public class RobotPanel : MonoBehaviour
         feedbackText.text = "";
     }
 
-    private void InventoryUpdated(Robot robot)
+    private void InventoryUpdated(RobotController robot)
     {
         if (this.robot != null && robot == this.robot)
         {

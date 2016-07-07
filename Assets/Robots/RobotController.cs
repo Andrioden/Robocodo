@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
+public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectable
 {
     // ********** COMMON VARIABLES **********
     [SyncVar]
@@ -41,7 +41,7 @@ public abstract class Robot : NetworkBehaviour, IAttackable, ISelectable
 
     private List<InventoryItem> inventory = new List<InventoryItem>();
     public List<InventoryItem> Inventory { get { return inventory; } }
-    public delegate void InventoryChanged(Robot robot);
+    public delegate void InventoryChanged(RobotController robot);
     public static event InventoryChanged OnInventoryChanged;
 
     [SyncVar]

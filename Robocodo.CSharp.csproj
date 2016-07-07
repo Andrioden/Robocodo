@@ -79,7 +79,7 @@
     <Compile Include="Assets\Robots\Harvester\HarvesterRobotController.cs" />
     <Compile Include="Assets\Robots\Instructions.cs" />
     <Compile Include="Assets\Robots\InventoryItems.cs" />
-    <Compile Include="Assets\Robots\Robot.cs" />
+    <Compile Include="Assets\Robots\RobotController.cs" />
     <Compile Include="Assets\UI\GridOverlay.cs" />
     <Compile Include="Assets\UI\KeyboardManager.cs" />
     <Compile Include="Assets\UI\MouseManager.cs" />

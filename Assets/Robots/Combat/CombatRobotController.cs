@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine.Networking;
 using System.Linq;
 
-public class CombatRobotController : Robot
+public class CombatRobotController : RobotController
 {
     public Animator animator;
 
