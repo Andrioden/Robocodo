@@ -12,9 +12,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     public string owner;
 
     [SyncVar]
-    private float posX;
+    private float x;
     [SyncVar]
-    private float posZ;
+    private float z;
 
     private float homeX;
     private float homeZ;
@@ -85,8 +85,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     // Use this for initialization
     private void Start()
     {
-        posX = transform.position.x;
-        posZ = transform.position.z;
+        x = transform.position.x;
+        z = transform.position.z;
 
         homeX = transform.position.x;
         homeZ = transform.position.z;
@@ -123,7 +123,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [Client]
     private void Move()
     {
-        var newPos = new Vector3(posX, transform.position.y, posZ);
+        var newPos = new Vector3(x, transform.position.y, z);
         transform.position = Vector3.MoveTowards(transform.position, newPos, (1.0f / Settings.World_IrlSecondsPerTick) * Time.deltaTime * Settings_IPT());
     }
 
@@ -137,17 +137,17 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             string currentInstruction = instructions[currentInstructionIndex];
 
             if (currentInstruction == Instructions.AttackUp)
-                facePosition = new Vector3(posX, transform.position.y, posZ + 1);
+                facePosition = new Vector3(x, transform.position.y, z + 1);
             else if (currentInstruction == Instructions.AttackDown)
-                facePosition = new Vector3(posX, transform.position.y, posZ - 1);
+                facePosition = new Vector3(x, transform.position.y, z - 1);
             else if (currentInstruction == Instructions.AttackRight)
-                facePosition = new Vector3(posX + 1, transform.position.y, posZ);
+                facePosition = new Vector3(x + 1, transform.position.y, z);
             else if (currentInstruction == Instructions.AttackLeft)
-                facePosition = new Vector3(posX - 1, transform.position.y, posZ);
+                facePosition = new Vector3(x - 1, transform.position.y, z);
         }
 
         if (!facePosition.HasValue)
-            facePosition = new Vector3(posX, transform.position.y, posZ);
+            facePosition = new Vector3(x, transform.position.y, z);
         
         transform.LookAt(facePosition.Value);
     }
@@ -280,24 +280,24 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         Debug.Log("SERVER: Running instruction: " + instruction);
 
         if (instruction == Instructions.MoveUp)
-            posZ++;
+            ChangePosition(x, z + 1);
         else if (instruction == Instructions.MoveDown)
-            posZ--;
+            ChangePosition(x, z - 1);
         else if (instruction == Instructions.MoveRight)
-            posX++;
+            ChangePosition(x + 1, z);
         else if (instruction == Instructions.MoveLeft)
-            posX--;
+            ChangePosition(x - 1, z);
         else if (instruction == Instructions.MoveHome)
         {
             SanityCheckIfPositionNumbersAreWhole();
 
-            float difX = Math.Abs(posX - homeX);
-            float difZ = Math.Abs(posZ - homeZ);
+            float difX = Math.Abs(x - homeX);
+            float difZ = Math.Abs(z - homeZ);
 
             if (difX >= difZ)
-                posX += GetIncremementOrDecrementToGetCloser(posX, homeX);
+                x += GetIncremementOrDecrementToGetCloser(x, homeX);
             else
-                posZ += GetIncremementOrDecrementToGetCloser(posZ, homeZ);
+                z += GetIncremementOrDecrementToGetCloser(z, homeZ);
 
             if (IsHome())
                 InstructionCompleted();
@@ -317,9 +317,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
                 SetFeedback("NO INVENTORY CAPACITY");
             else if (inventory.Count >= Settings_InventoryCapacity())
                 SetFeedback("INVENTORY FULL");
-            else if (WorldController.instance.HarvestFromNode(CopperItem.SerializedType, posX, posZ))
+            else if (WorldController.instance.HarvestFromNode(CopperItem.SerializedType, x, z))
                 AddInventoryItem(new CopperItem());
-            else if (WorldController.instance.HarvestFromNode(IronItem.SerializedType, posX, posZ))
+            else if (WorldController.instance.HarvestFromNode(IronItem.SerializedType, x, z))
                 AddInventoryItem(new IronItem());
             else
                 SetFeedback("NOTHING TO HARVEST");
@@ -327,15 +327,15 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         else if (instruction == Instructions.DropInventory)
             DropInventory();
         else if (instruction == Instructions.AttackMelee)
-            AttackPosition(posX, posZ);
+            AttackPosition(x, z);
         else if (instruction == Instructions.AttackUp)
-            AttackPosition(posX, posZ + 1);
+            AttackPosition(x, z + 1);
         else if (instruction == Instructions.AttackDown)
-            AttackPosition(posX, posZ - 1);
+            AttackPosition(x, z - 1);
         else if (instruction == Instructions.AttackRight)
-            AttackPosition(posX + 1, posZ);
+            AttackPosition(x + 1, z);
         else if (instruction == Instructions.AttackLeft)
-            AttackPosition(posX - 1, posZ);
+            AttackPosition(x - 1, z);
         else
         {
             Debug.Log("SERVER: Robot does not understand instruction: " + instruction);
@@ -353,10 +353,22 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     }
 
     [Server]
+    private void ChangePosition(float newPosX, float newPosZ)
+    {
+        if (newPosX >= WorldController.instance.Width || newPosX < 0 || newPosZ >= WorldController.instance.Height || newPosZ < 0)
+            SetFeedback("Cant move there");
+        else
+        {
+            x = newPosX;
+            z = newPosZ;
+        }
+    }
+
+    [Server]
     private void SanityCheckIfPositionNumbersAreWhole()
     {
-        SanityCheckIsWholeNumber("position X", posX);
-        SanityCheckIsWholeNumber("position Z", posZ);
+        SanityCheckIsWholeNumber("position X", x);
+        SanityCheckIsWholeNumber("position Z", z);
         SanityCheckIsWholeNumber("home X", homeX);
         SanityCheckIsWholeNumber("home Z", homeZ);
     }
@@ -382,7 +394,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [Server]
     private bool IsHome()
     {
-        return posX == homeX && posZ == homeZ;
+        return x == homeX && z == homeZ;
     }
 
     [Server]
@@ -541,7 +553,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private PlayerCityController FindPlayerCityControllerOnPosition()
     {
         foreach (GameObject go in GameObject.FindGameObjectsWithTag("PlayerCity"))
-            if (go.transform.position.x == posX && go.transform.position.z == posZ)
+            if (go.transform.position.x == x && go.transform.position.z == z)
                 return go.GetComponent<PlayerCityController>();
 
         return null;

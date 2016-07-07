@@ -16,8 +16,10 @@ public class WorldController : NetworkBehaviour
     private WorldBuilder worldBuilder;
     [SyncVar]
     private int width;
+    public int Width { get { return width; } }
     [SyncVar]
     private int height;
+    public int Height { get { return height; } }
 
     private List<ResourceController> resourceControllers = new List<ResourceController>();
 
