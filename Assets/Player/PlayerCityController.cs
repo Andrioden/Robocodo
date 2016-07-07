@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 using System.Collections;
 using System;
 using System.Collections.Generic;
@@ -40,6 +41,12 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
     private void Update()
     {
 
+    }
+
+    private void OnDestroy()
+    {
+        if (hasAuthority)
+            LostPanel.instance.Show();
     }
 
     public override void OnStartAuthority()

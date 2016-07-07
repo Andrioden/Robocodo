@@ -103,13 +103,15 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         Animate();
     }
 
-    [Server]
     private void OnDestroy()
     {
-        if (Settings_IPT() == 1)
-            WorldTickController.instance.TickEvent -= RunNextInstruction;
-        else if (Settings_IPT() == 2)
-            WorldTickController.instance.HalfTickEvent -= RunNextInstruction;
+        if (isServer)
+        {
+            if (Settings_IPT() == 1)
+                WorldTickController.instance.TickEvent -= RunNextInstruction;
+            else if (Settings_IPT() == 2)
+                WorldTickController.instance.HalfTickEvent -= RunNextInstruction;
+        }
     }
 
     public void Click()

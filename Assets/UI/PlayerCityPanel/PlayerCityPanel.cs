@@ -5,7 +5,6 @@ using System;
 public class PlayerCityPanel : MonoBehaviour
 {
 
-    public static PlayerCityPanel instance;
     public BuildMenu buildMenu;
     public Sprite harvesterRobotSprite;
     public Sprite combatRobotSprite;
@@ -13,6 +12,7 @@ public class PlayerCityPanel : MonoBehaviour
     private Animator animator;
     private PlayerCityController playerCityController;
 
+    public static PlayerCityPanel instance;
     private void Awake()
     {
         if (instance == null)

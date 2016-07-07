@@ -82,6 +82,7 @@
     <Compile Include="Assets\Robots\RobotController.cs" />
     <Compile Include="Assets\UI\GridOverlay.cs" />
     <Compile Include="Assets\UI\KeyboardManager.cs" />
+    <Compile Include="Assets\UI\LostPanel\LostPanel.cs" />
     <Compile Include="Assets\UI\MouseManager.cs" />
     <Compile Include="Assets\UI\PlayerCityPanel\BuildMenu\BuildMenu.cs" />
     <Compile Include="Assets\UI\PlayerCityPanel\BuildMenu\BuildableItem.cs" />
