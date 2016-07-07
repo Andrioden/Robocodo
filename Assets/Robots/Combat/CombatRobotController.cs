@@ -2,9 +2,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Networking;
+using System.Linq;
 
 public class CombatRobotController : Robot
 {
+    public Animator animator;
 
     // ********** SETTINGS **********
 
@@ -29,9 +32,20 @@ public class CombatRobotController : Robot
     public override List<string> GetSpecializedInstruction() { return spezializedInstructions; }
 
 
+    [Client]
     protected override void Animate()
     {
-        return;
+        string instruction = instructions.Count > 0 ? instructions[currentInstructionIndex] : string.Empty;
+        if (new List<string>() { Instructions.AttackUp, Instructions.AttackLeft, Instructions.AttackRight, Instructions.AttackDown }.Any(instruction.Contains))
+        {
+            animator.Play("CombatRobotRangedAttack");
+        }
+        else if (instruction == Instructions.AttackMelee)
+        {
+            animator.Play("CombatRobotMeleeAttack");
+        }
+        else
+            animator.Play("CombotRobotIdle");
     }
 
     public override string GetName()

@@ -45,11 +45,11 @@ public class HarvesterRobotController : Robot
         switch (instruction)
         {
             case Instructions.Harvest: // TODO: SWITCH-CASE? FUCK YOU BT.
-                animator.Play("HarvesterHarvest");
+                animator.Play("HarvesterRobotHarvest");
                 break;
 
             default:
-                animator.Play("HarvesterIdle");
+                animator.Play("HarvesterRobotIdle");
                 break;
         }
     }
