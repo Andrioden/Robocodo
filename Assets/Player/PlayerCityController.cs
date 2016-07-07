@@ -45,7 +45,7 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
 
     private void OnDestroy()
     {
-        if (hasAuthority)
+        if (hasAuthority && health == 0) // Health check to avoid that you get an error in the editor
             LostPanel.instance.Show();
     }
 

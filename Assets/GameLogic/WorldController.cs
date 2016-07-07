@@ -157,13 +157,13 @@ public class WorldController : NetworkBehaviour
     {
         Debug.Log("Spawning and adjusting ground");
 
-        float xPosition = (width / 2) - 0.5f; // Hack: The -0.5f is an offset we have to set to align the ground to the tiles
-        float zPosition = (height / 2) - 0.5f; // Hack: The -0.5f is an offset we have to set to align the ground to the tiles
+        float xPosition = (width / 2f) - 0.5f; // Hack: The -0.5f is an offset we have to set to align the ground to the tiles
+        float zPosition = (height / 2f) - 0.5f; // Hack: The -0.5f is an offset we have to set to align the ground to the tiles
 
         GameObject groundGameObject = (GameObject)Instantiate(groundPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         groundGameObject.name = "Ground_NotNetwork";
 
         groundGameObject.transform.position = new Vector3(xPosition, -0.001f, zPosition);
-        groundGameObject.transform.localScale = new Vector3(width / 10, 1, height / 10);
+        groundGameObject.transform.localScale = new Vector3(width / 10f, 1, height / 10f);
     }
 }
