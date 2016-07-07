@@ -66,29 +66,34 @@ public class WorldController : NetworkBehaviour
     {
         var playerPos = worldBuilder.GetNextPlayerPosition();
         GameObject newGameObject = (GameObject)Instantiate(playerCityPrefab, new Vector3(playerPos.x, 0, playerPos.z), Quaternion.identity);
+        PlayerCityController newPlayerCity = newGameObject.GetComponent<PlayerCityController>();
 
         NetworkServer.AddPlayerForConnection(conn, newGameObject, playerControllerId);
 
         for (int i = 0; i < Settings.Player_AmountOfStartingHarvesterRobots; i++)
-            SpawnHarvesterRobotWithClientAuthority(conn, playerPos.x, playerPos.z);
+        {
+            GameObject harvesterGO = SpawnHarvesterRobotWithClientAuthority(conn, playerPos.x, playerPos.z);
+            newPlayerCity.AddOwnedGameObject(harvesterGO);
+        }
 
-        SpawnCombatRobotWithClientAuthority(conn, playerPos.x, playerPos.z);
+        GameObject combatRobotGO = SpawnCombatRobotWithClientAuthority(conn, playerPos.x, playerPos.z);
+        newPlayerCity.AddOwnedGameObject(combatRobotGO);
     }
 
     [Server]
-    public void SpawnCombatRobotWithClientAuthority(NetworkConnection conn, int x, int z)
+    public GameObject SpawnCombatRobotWithClientAuthority(NetworkConnection conn, int x, int z)
     {
-        SpawnObjectWithClientAuthority(conn, combatRobotPrefab, x, z);
+        return SpawnObjectWithClientAuthority(conn, combatRobotPrefab, x, z);
     }
 
     [Server]
-    public void SpawnHarvesterRobotWithClientAuthority(NetworkConnection conn, int x, int z)
+    public GameObject SpawnHarvesterRobotWithClientAuthority(NetworkConnection conn, int x, int z)
     {
-        SpawnObjectWithClientAuthority(conn, harvesterRobotPrefab, x, z);
+        return SpawnObjectWithClientAuthority(conn, harvesterRobotPrefab, x, z);
     }
 
     [Server]
-    private void SpawnObjectWithClientAuthority(NetworkConnection conn, GameObject prefab, int x, int z)
+    private GameObject SpawnObjectWithClientAuthority(NetworkConnection conn, GameObject prefab, int x, int z)
     {
         GameObject newGameObject = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
         NetworkServer.SpawnWithClientAuthority(newGameObject, conn);
@@ -96,6 +101,8 @@ public class WorldController : NetworkBehaviour
         var robot = newGameObject.GetComponent<RobotController>();
         if (robot != null)
             robot.owner = conn.connectionId.ToString();
+
+        return newGameObject;
     }
 
     [Server]

@@ -9,6 +9,7 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
 {
     public MeshRenderer bodyMeshRenderer;
 
+    private List<GameObject> ownedGameObjects = new List<GameObject>();
     private List<InventoryItem> inventory = new List<InventoryItem>();
 
     [SyncVar]
@@ -18,7 +19,7 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
     public static int Settings_StartHealth = 10;
 
     // Use this for initialization
-    void Start()
+    private void Start()
     {
         health = Settings_StartHealth;
 
@@ -36,7 +37,7 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
 
     }
@@ -67,6 +68,16 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
         return inventory.Count(i => i.GetType() == typeof(IronItem));
     }
 
+    public string GetOwner()
+    {
+        return connectionToClient.connectionId.ToString();
+    }
+
+    public void AddOwnedGameObject(GameObject go)
+    {
+        ownedGameObjects.Add(go);
+    }
+
     [Command]
     public void CmdBuyHarvesterRobot()
     {
@@ -92,13 +103,15 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
     [Server]
     private void CmdSpawnHarvesterRobot(int x, int z)
     {
-        WorldController.instance.SpawnHarvesterRobotWithClientAuthority(connectionToClient, x, z);
+        GameObject newGO = WorldController.instance.SpawnHarvesterRobotWithClientAuthority(connectionToClient, x, z);
+        ownedGameObjects.Add(newGO);
     }
 
     [Server]
     private void CmdSpawnCombatRobot(int x, int z)
     {
-        WorldController.instance.SpawnCombatRobotWithClientAuthority(connectionToClient, x, z);
+        GameObject newGO = WorldController.instance.SpawnCombatRobotWithClientAuthority(connectionToClient, x, z);
+        ownedGameObjects.Add(newGO);
     }
 
     [Server]
@@ -140,11 +153,10 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
         Debug.LogFormat("Robot {0} took {1} damage and now has {2} health", name, damage, health);
 
         if (health <= 0)
+        {
+            foreach (GameObject go in ownedGameObjects)
+                Destroy(go);
             Destroy(gameObject);
-    }
-
-    public string GetOwner()
-    {
-        return connectionToClient.connectionId.ToString();
+        }
     }
 }
