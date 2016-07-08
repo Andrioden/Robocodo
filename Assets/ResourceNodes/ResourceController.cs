@@ -53,9 +53,11 @@ public class ResourceController : NetworkBehaviour, IClickable
 
     private void UpdateTransformHeight()
     {
-        int scalePercentage = MathUtils.LinearConversion(0, Settings.Resource_MaxItemsPerNode, 0, 100, remainingItems);
-        float scaleFactor = scalePercentage / 100.0f;
-        transform.localScale = new Vector3(originalTransformScale.x * scaleFactor, originalTransformScale.y * scaleFactor, originalTransformScale.z * scaleFactor);
+        double scalePercentage = MathUtils.LinearConversionDouble(0, Settings.Resource_MaxItemsPerNode, 0, 100, remainingItems);
+        double volumeScaleFactor = scalePercentage / 100.0;
+        float sideScaleFactor = (float)MathUtils.CubicRoot(volumeScaleFactor);
+
+        transform.localScale = new Vector3(originalTransformScale.x * sideScaleFactor, originalTransformScale.y * sideScaleFactor, originalTransformScale.z * sideScaleFactor);
     }
 
 }

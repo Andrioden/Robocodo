@@ -20,13 +20,25 @@ public static class MathUtils
     {
         int fromRange = (fromMax - fromMin);
         int toRange = (toMax - toMin);
-        int toValue = (((fromValue - fromMin) * toRange) / fromRange) + toMin;
-        return toValue;
+        double toValue = (((fromValue - fromMin) * toRange) / fromRange) + toMin;
+        return (int)Math.Round(toValue);
+    }
+
+    public static double LinearConversionDouble(double fromMin, double fromMax, double toMin, double toMax, double fromValue)
+    {
+        double fromRange = (fromMax - fromMin);
+        double toRange = (toMax - toMin);
+        return (((fromValue - fromMin) * toRange) / fromRange) + toMin;
     }
 
     public static int LinearConversionInverted(double actualFrom, double maxFrom, int maxTo)
     {
         return Convert.ToInt32(maxTo * (maxFrom - actualFrom) / maxFrom);
+    }
+
+    public static double CubicRoot(double number)
+    {
+        return Math.Pow(number, (1.0 / 3.0));
     }
 
 }

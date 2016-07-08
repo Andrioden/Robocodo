@@ -21,9 +21,17 @@ namespace Tests
         [TestMethod()]
         public void LinearConversionTest()
         {
+            Assert.AreEqual(0, MathUtils.LinearConversion(0, 200, 0, 100, 0));
+            Assert.AreEqual(0, MathUtils.LinearConversion(0, 200, 0, 100, 1));
             Assert.AreEqual(0, MathUtils.LinearConversion(100, 200, 0, 100, 100));
             Assert.AreEqual(20, MathUtils.LinearConversion(0, 10, 0, 100, 2));
             Assert.AreEqual(1, MathUtils.LinearConversion(1, 10, 1, 5, 2));
+        }
+
+        [TestMethod()]
+        public void LinearConversionDoubleTest()
+        { 
+            Assert.AreEqual(0.5, MathUtils.LinearConversionDouble(0, 200, 0, 100, 1));
         }
 
         [TestMethod()]
