@@ -41,8 +41,12 @@ public class RobotPanel : MonoBehaviour
 
     private Animator animator;
     private RobotController robot;
-    private List<string> instructionListCopy;
     private IEnumerator feedbackClearCoroutine;
+
+    private string _indentation = "   ";
+    private List<string> _indentedInstructionsCache = new List<string>();
+    private List<string> _formattedInstructions = new List<string>();
+    private int _codeInputCharCountLastEdit = 0;
 
     private void Awake()
     {
@@ -59,7 +63,6 @@ public class RobotPanel : MonoBehaviour
     private void Start()
     {
         animator = GetComponent<Animator>();
-
         RobotController.OnInventoryChanged += InventoryUpdated;
     }
 
@@ -73,29 +76,9 @@ public class RobotPanel : MonoBehaviour
                 return;
             }
 
-            instructionListCopy = robot.GetInstructions().Select(instruction => instruction.ToString()).ToList();
-
-            if (robot.IsStarted)
-            {
-                if (robot.CurrentInstructionIndexIsValid)
-                    instructionListCopy[robot.CurrentInstructionIndex] = "<color=#D5A042FF>" + instructionListCopy[robot.CurrentInstructionIndex] + "</color>";
-                else {
-                    instructionListCopy[robot.CurrentInstructionIndex] = "<color=red>" + instructionListCopy[robot.CurrentInstructionIndex] + "</color>";
-                    SetFeedbackText("<color=red>" + robot.Feedback + "</color>", 0);
-                }
-                codeOutputField.text = string.Join("\n", instructionListCopy.ToArray());
-
-                inventoryLabel.text = "INVENTORY (" + robot.Inventory.Count + "/" + robot.Settings_InventoryCapacity() + ")";
-            }
-
-            var instructions = instructionListCopy.Count > 0 ? instructionListCopy : codeInputField.text.Split('\n').ToList();
-            bool memoryExceeded = instructions.Count > robot.Settings_Memory();
-            string colorPrefix = memoryExceeded ? "<color=red>" : "";
-            string colorSuffix = memoryExceeded ? "</color>" : "";
-            memoryText.text = colorPrefix + "MEMORY: " + instructions.Count + "/" + robot.Settings_Memory() + colorSuffix;
-            energyText.text = string.Format("ENERGY: {0}/{1}", robot.Energy, robot.Settings_MaxEnergy());
-            healthText.text = string.Format("HEALTH: {0}/{1}", robot.Health, robot.Settings_StartHealth());
-            damageText.text = string.Format("DAMAGE: {0}", robot.Settings_Damage());
+            _formattedInstructions = _indentedInstructionsCache.Select(instruction => instruction.ToString()).ToList();
+            HighLightAndAutoIndentCode();
+            UpdateRobotInfoLabels();
         }
     }
 
@@ -115,7 +98,7 @@ public class RobotPanel : MonoBehaviour
     private void RunCode()
     {
         KeyboardManager.KeyboardLockOff();
-        List<string> instructions = codeInputField.text.Split('\n').ToList();
+        List<string> instructions = codeInputField.text.Split('\n').Select(x => x.Trim()).ToList();
 
         robot.RunCode(instructions);
 
@@ -130,9 +113,82 @@ public class RobotPanel : MonoBehaviour
         animator.Play("RobotMenuSlideOut");
     }
 
-    private void CodeInputToUpper(string arg0 = "")
+    private void CodeInputAutoIndentAndUpperCase(string arg0 = "")
     {
-        codeInputField.text = codeInputField.text.ToUpper();
+        arg0 = arg0.ToUpper();
+        List<string> instructions = arg0.Split('\n').Select(x => x.Replace(_indentation, "")).ToList();
+        AutoIndentInstructions(_indentation, instructions);
+
+        /* Disable onValueChanged listener to avoid loop when chaning input field value */
+        codeInputField.onValueChanged.RemoveListener(CodeInputAutoIndentAndUpperCase);
+        codeInputField.text = string.Join("\n", instructions.ToArray());
+        codeInputField.onValueChanged.AddListener(CodeInputAutoIndentAndUpperCase);
+
+        bool changeWasBackspace = _codeInputCharCountLastEdit - arg0.Count() == 1;
+        if (!changeWasBackspace)
+            MoveCaret(_indentation);
+        _codeInputCharCountLastEdit = codeInputField.text.Count();
+    }
+
+    private static void AutoIndentInstructions(string indentation, List<string> instructions)
+    {
+        int currentIndentionLevel = 0;
+        for (int i = 0; i < instructions.Count; i++)
+        {
+            if (instructions[i].Contains(Instructions.LoopEnd))
+                currentIndentionLevel--;
+
+            instructions[i] = Utils.RepeatString(indentation, currentIndentionLevel) + instructions[i];
+
+            if (instructions[i].Contains(Instructions.LoopStart))
+                currentIndentionLevel++;
+        }
+    }
+
+    private void MoveCaret(string indentation, int caretPositionOverride = -1)
+    {
+        int caretPosition = caretPositionOverride > 0 ? caretPositionOverride : codeInputField.caretPosition;
+        if (caretPosition <= 0) return;
+
+        string caretTextLine = GetCarretTextLineWithoutLineBreaks(caretPosition);
+        if (caretTextLine == "") return;
+
+        int numberOfCharactersInCaretTextLine = caretTextLine.Count();
+        if (Utils.ConsistsOfWhiteSpace(caretTextLine))
+            codeInputField.caretPosition += indentation.Count() * numberOfCharactersInCaretTextLine / indentation.Count();
+
+        LoopEndBetweenInstructionsCaretFix(indentation, caretPosition);
+    }
+
+    private void LoopEndBetweenInstructionsCaretFix(string indentation, int caretPosition)
+    {
+        //Backtracing if we just entered a Loop End between two instructions and moving caret back the appropriate amount of characters to avoid the caret skipping ahead to the middle of next line.
+        int identationPlusLineBreakCharacterCount = indentation.Count() + 1;
+        int potentialLoopEndCarretPosition = identationPlusLineBreakCharacterCount;
+        string caretTextLine = GetCarretTextLineWithoutLineBreaks(caretPosition - potentialLoopEndCarretPosition);
+
+        if (codeInputField.text.IndexOf("\n", caretPosition) == -1)
+            return;
+
+        if (caretTextLine.Trim() == Instructions.LoopEnd)
+            codeInputField.caretPosition -= indentation.Count();
+    }
+
+    private string GetCarretTextLineWithoutLineBreaks(int caretPosition)
+    {
+        var startOfCaretTextLine = codeInputField.text.LastIndexOf("\n", caretPosition, caretPosition);
+        var endOfCaretTextLine = codeInputField.text.IndexOf("\n", caretPosition);
+        if (endOfCaretTextLine == -1)
+            endOfCaretTextLine = codeInputField.text.Length;
+
+        string caretTextLine = string.Empty;
+        if ((startOfCaretTextLine > 0 && endOfCaretTextLine > 0) && startOfCaretTextLine < endOfCaretTextLine)
+        {
+            caretTextLine = codeInputField.text.Substring(startOfCaretTextLine, endOfCaretTextLine - startOfCaretTextLine);
+            return caretTextLine.Replace("\n", "");
+        }
+
+        return "";
     }
 
     private void SetFeedbackText(string feedback, float durationSeconds)
@@ -182,7 +238,7 @@ public class RobotPanel : MonoBehaviour
 
     private void EnableSetupModePanel()
     {
-        titleText.text = robot.GetName() + " SETUP";        
+        titleText.text = robot.GetName() + " SETUP";
 
         helpTextPanel.SetActive(true);
         helpTextText.text = string.Join("\n", robot.commonInstructions.ToArray());
@@ -191,7 +247,7 @@ public class RobotPanel : MonoBehaviour
 
         codeInputPanel.SetActive(true);
         codeInputField.onValueChanged.AddListener(KeyboardManager.KeyboardLockOn);
-        codeInputField.onValueChanged.AddListener(CodeInputToUpper);
+        codeInputField.onValueChanged.AddListener(CodeInputAutoIndentAndUpperCase);
         codeInputField.onEndEdit.AddListener(KeyboardManager.KeyboardLockOff);
         codeInputField.text = robot.GetDemoInstructions();  /* Pre filled demo data */
 
@@ -205,6 +261,8 @@ public class RobotPanel : MonoBehaviour
     private void EnableRunnningModePanel()
     {
         titleText.text = robot.GetName();
+        _indentedInstructionsCache = robot.GetInstructions().Select(instruction => instruction.ToString()).ToList();
+        AutoIndentInstructions(_indentation, _indentedInstructionsCache);
         InventoryUpdated(robot);
 
         codeOutputPanel.SetActive(true);
@@ -215,6 +273,47 @@ public class RobotPanel : MonoBehaviour
 
         codeInputPanel.SetActive(false);
         helpTextPanel.SetActive(false);
+    }
+
+    private string ColorTextOnCondition(bool condition, Color color, string text)
+    {
+        return ColorTextOnCondition(condition, Utils.ColorToHex(color), text);
+    }
+
+    private string ColorTextOnCondition(bool condition, string hexColor, string text)
+    {
+        if (!hexColor.Contains("#"))
+            hexColor = "#" + hexColor;
+
+        if (condition) return string.Format("<color={0}>{1}</color>", hexColor, text);
+        else return text;
+    }
+
+    private void HighLightAndAutoIndentCode()
+    {
+        if (robot.IsStarted)
+        {
+            if (robot.CurrentInstructionIndexIsValid)
+                _formattedInstructions[robot.CurrentInstructionIndex] = ColorTextOnCondition(true, "#D5A042FF", _formattedInstructions[robot.CurrentInstructionIndex]);
+            else {
+                _formattedInstructions[robot.CurrentInstructionIndex] = ColorTextOnCondition(true, Color.red, _formattedInstructions[robot.CurrentInstructionIndex]);
+                SetFeedbackText(ColorTextOnCondition(true, Color.red, robot.Feedback), 0);
+            }
+
+            codeOutputField.text = string.Join("\n", _formattedInstructions.ToArray());
+        }
+    }
+
+    private void UpdateRobotInfoLabels()
+    {
+        //If robot has no instructions at this time, get instructions from CodeInputField.
+        _formattedInstructions = _formattedInstructions.Count > 0 ? _formattedInstructions : codeInputField.text.Split('\n').ToList();
+
+        inventoryLabel.text = "INVENTORY (" + robot.Inventory.Count + "/" + robot.Settings_InventoryCapacity() + ")";
+        memoryText.text = ColorTextOnCondition(_formattedInstructions.Count > robot.Settings_Memory(), Color.red, string.Format("MEMORY: {0}/{1}", _formattedInstructions.Count, robot.Settings_Memory()));
+        energyText.text = ColorTextOnCondition(robot.Energy < 4, Color.red, string.Format("ENERGY: {0}/{1}", robot.Energy, robot.Settings_MaxEnergy()));
+        healthText.text = string.Format("HEALTH: {0}/{1}", robot.Health, robot.Settings_StartHealth());
+        damageText.text = string.Format("DAMAGE: {0}", robot.Settings_Damage());
     }
 }
 

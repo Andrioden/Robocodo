@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 
 public static class Utils
 {
@@ -42,4 +43,40 @@ public static class Utils
         return RandomDouble(0.0, 100.0) <= percentage;
     }
 
+    public static string ColorToHex(UnityEngine.Color32 color)
+    {
+        return color.r.ToString("X2") + color.g.ToString("X2") + color.b.ToString("X2");
+    }
+
+    public static UnityEngine.Color32 HexToColor(string hex)
+    {
+        byte r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+        byte g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+        byte b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+        return new UnityEngine.Color32(r, g, b, 255);
+    }
+
+    public static bool ConsistsOfWhiteSpace(string s)
+    {
+        foreach (char c in s)
+        {
+            if (c != ' ') return false;
+        }
+        return true;
+
+    }
+
+    public static string RepeatString(this string input, int count)
+    {
+        if (!string.IsNullOrEmpty(input) && count > 0)
+        {
+            StringBuilder builder = new StringBuilder(input.Length * count);
+            for (int i = 0; i < count; i++)
+                builder.Append(input);
+
+            return builder.ToString();
+        }
+
+        return string.Empty;
+    }
 }
