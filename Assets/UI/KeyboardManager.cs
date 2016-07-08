@@ -15,6 +15,9 @@ public class KeyboardManager : NetworkBehaviour
             else if (Input.GetKeyDown(KeyCode.KeypadPlus) && Time.timeScale < Settings.World_MaxTimeScale)
                 RpcAdjustTimeScale(Time.timeScale + 1);
         }
+
+        if (Input.GetKeyDown("escape"))
+            MouseManager.currentlySelected = null;
     }
 
     [ClientRpc]
