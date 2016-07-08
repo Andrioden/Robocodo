@@ -80,7 +80,6 @@ GameObject:
   - 4: {fileID: 487706}
   - 114: {fileID: 11430566}
   - 114: {fileID: 11476490}
-  - 65: {fileID: 6557976}
   - 54: {fileID: 5425898}
   m_Layer: 0
   m_Name: HarvesterRobot
@@ -337,18 +336,6 @@ BoxCollider:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 142670}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!65 &6557976
-BoxCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 162562}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1

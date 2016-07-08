@@ -73,6 +73,7 @@
     <Compile Include="Assets\GameLogic\WorldBuilder.cs" />
     <Compile Include="Assets\GameLogic\WorldController.cs" />
     <Compile Include="Assets\GameLogic\WorldTickController.cs" />
+    <Compile Include="Assets\Ground\TextureTilingController.cs" />
     <Compile Include="Assets\Player\PlayerCityController.cs" />
     <Compile Include="Assets\ResourceNodes\ResourceController.cs" />
     <Compile Include="Assets\Robots\Combat\CombatRobotController.cs" />

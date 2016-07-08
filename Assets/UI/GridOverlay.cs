@@ -1,7 +1,6 @@
 ﻿// Source: http://answers.unity3d.com/questions/482128/draw-grid-lines-in-game-view.html
 
 using UnityEngine;
-using System.Collections;
 
 public class GridOverlay : MonoBehaviour
 {
@@ -47,7 +46,7 @@ public class GridOverlay : MonoBehaviour
         lineMaterial.SetPass(0);
 
         GL.Begin(GL.LINES);
-        
+
         if (step == 0)
             Debug.Log("Step is 0, wont draw Grid. Step it to higher than 0.");
 

@@ -33,7 +33,7 @@ public class CustomNetworkManager : NetworkManager
             GameObject worldControllerGameObject = (GameObject)Instantiate(worldControllerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             NetworkServer.Spawn(worldControllerGameObject);
 
-            WorldController.instance.BuildWorld(15, 15);
+            WorldController.instance.BuildWorld(30, 30);
 
             WorldTickController.instance.StartGame();
         }

@@ -165,7 +165,9 @@ public class WorldController : NetworkBehaviour
         GameObject groundGameObject = (GameObject)Instantiate(groundPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         groundGameObject.name = "Ground_NotNetwork";
 
-        groundGameObject.transform.position = new Vector3(xPosition, -0.001f, zPosition);
         groundGameObject.transform.localScale = new Vector3(width / 10f, 1, height / 10f);
+        groundGameObject.transform.position = new Vector3(xPosition, -0.001f, zPosition);
+
+        groundGameObject.GetComponent<TextureTilingController>().RescaleTileTexture();
     }
 }
