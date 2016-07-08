@@ -90,6 +90,7 @@
     <Compile Include="Assets\UI\PlayerCityPanel\PlayerCityPanel.cs" />
     <Compile Include="Assets\UI\RTSCamera.cs" />
     <Compile Include="Assets\UI\ResourcePanel\ResourcePanel.cs" />
+    <Compile Include="Assets\UI\RobotPanel\PossibleCommandOnClick.cs" />
     <Compile Include="Assets\UI\RobotPanel\RobotPanel.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />

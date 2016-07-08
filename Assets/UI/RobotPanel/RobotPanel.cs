@@ -27,9 +27,10 @@ public class RobotPanel : MonoBehaviour
     public Text codeOutputField;
     public GameObject codeOutputPanel;
 
-    public Text helpTextLabel;
-    public Text helpTextText;
-    public GameObject helpTextPanel;
+    public Text possibleCommandsLabel;
+    public GameObject possibleCommandsContainer;
+    public GameObject possibleCommandPrefab;
+    public GameObject possibleCommandsPanel;
 
     public Text inventoryLabel;
     public GameObject inventoryPanel;
@@ -43,7 +44,7 @@ public class RobotPanel : MonoBehaviour
     private RobotController robot;
     private IEnumerator feedbackClearCoroutine;
 
-    private string _indentation = "   ";
+    public static readonly string _indentation = "   ";
     private List<string> _indentedInstructionsCache = new List<string>();
     private List<string> _formattedInstructions = new List<string>();
     private int _codeInputCharCountLastEdit = 0;
@@ -174,7 +175,7 @@ public class RobotPanel : MonoBehaviour
             codeInputField.caretPosition -= indentation.Count();
     }
 
-    private string GetCarretTextLineWithoutLineBreaks(int caretPosition)
+    public string GetCarretTextLineWithoutLineBreaks(int caretPosition)
     {
         var startOfCaretTextLine = codeInputField.text.LastIndexOf("\n", caretPosition, caretPosition);
         var endOfCaretTextLine = codeInputField.text.IndexOf("\n", caretPosition);
@@ -239,11 +240,7 @@ public class RobotPanel : MonoBehaviour
     private void EnableSetupModePanel()
     {
         titleText.text = robot.GetName() + " SETUP";
-
-        helpTextPanel.SetActive(true);
-        helpTextText.text = string.Join("\n", robot.commonInstructions.ToArray());
-        helpTextText.text += "\n\n";
-        helpTextText.text += string.Join("\n", robot.GetSpecializedInstruction().ToArray());
+        SetupPossibleCommands();
 
         codeInputPanel.SetActive(true);
         codeInputField.onValueChanged.AddListener(KeyboardManager.KeyboardLockOn);
@@ -257,6 +254,8 @@ public class RobotPanel : MonoBehaviour
         inventoryPanel.SetActive(false);
         codeOutputPanel.SetActive(false);
     }
+
+
 
     private void EnableRunnningModePanel()
     {
@@ -272,7 +271,7 @@ public class RobotPanel : MonoBehaviour
         closeButton.onClick.AddListener(ClosePanel);
 
         codeInputPanel.SetActive(false);
-        helpTextPanel.SetActive(false);
+        possibleCommandsPanel.SetActive(false);
     }
 
     private string ColorTextOnCondition(bool condition, Color color, string text)
@@ -287,6 +286,30 @@ public class RobotPanel : MonoBehaviour
 
         if (condition) return string.Format("<color={0}>{1}</color>", hexColor, text);
         else return text;
+    }
+
+    private void SetupPossibleCommands()
+    {
+        possibleCommandsPanel.SetActive(true);
+
+        var combinedList = robot.commonInstructions;
+        combinedList.Add(string.Empty);
+        combinedList.Add(string.Empty);
+        combinedList.AddRange(robot.GetSpecializedInstruction());
+
+        foreach (string instruction in combinedList)
+        {
+            var possibleCommandGO = Instantiate(possibleCommandPrefab) as GameObject;
+            possibleCommandGO.transform.SetParent(possibleCommandsContainer.transform, false);
+
+            if (instruction != string.Empty)
+            {
+                possibleCommandGO.GetComponent<Text>().text = instruction;
+                possibleCommandGO.GetComponent<PossibleCommandOnClick>().SetupPossibleCommand(codeInputField, instruction);
+            }
+            else
+                possibleCommandGO.GetComponent<PossibleCommandOnClick>().enabled = false;
+        }
     }
 
     private void HighLightAndAutoIndentCode()
