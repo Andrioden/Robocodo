@@ -44,7 +44,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 126368}
   m_LocalRotation: {x: 0.5372997, y: 0, z: 0, w: 0.8433914}
-  m_LocalPosition: {x: 0, y: 0, z: -15}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 484968}
@@ -216,10 +216,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c74ceec1d251b24e9c938281b985afe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cameraHeight: 10
+  cameraDistance: 4
   horizontalSpeed: 40
   verticalSpeed: 40
-  cameraDistance: 30
-  edgeScrollBoundrary: 5
+  enableEdgeScroll: 0
+  edgeScrollBoundrary: 15
 --- !u!124 &12481308
 Behaviour:
   m_ObjectHideFlags: 1

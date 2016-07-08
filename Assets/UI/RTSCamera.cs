@@ -6,10 +6,12 @@ using System;
 
 public class RTSCamera : MonoBehaviour
 {
+    public float cameraHeight = 10;
+    public float cameraDistance = 4;
     public float horizontalSpeed = 40;
     public float verticalSpeed = 40;
-    public float cameraDistance = 30;
-    public int edgeScrollBoundrary = 5;
+    public bool enableEdgeScroll = false;
+    public int edgeScrollBoundrary = 15;
 
     private int screenHeight, screenWidth;
 
@@ -19,18 +21,19 @@ public class RTSCamera : MonoBehaviour
         screenWidth = Screen.width;
     }
 
-    void Update()
+    void LateUpdate()
     {
         if (!KeyboardManager.KeyboardLock)
             MoveCameraWithKeyboard();
 
-        //MoveCameraWithMouseAndScreenEdge();
+        if(enableEdgeScroll)
+            MoveCameraWithMouseAndScreenEdge();
         ZoomCameraWithScrollWheel();
     }
 
     public void PositionRelativeToPlayer(Transform player)
     {
-        transform.position = new Vector3(player.transform.position.x, cameraDistance, player.transform.position.z + 5f);
+        transform.position = new Vector3(player.transform.position.x, cameraHeight, player.transform.position.z - cameraDistance);
     }
 
     private void MoveCameraWithKeyboard()
@@ -44,16 +47,16 @@ public class RTSCamera : MonoBehaviour
 
     private void MoveCameraWithMouseAndScreenEdge()
     {
-        if (Input.mousePosition.x > (screenWidth - edgeScrollBoundrary))
+        if (Input.mousePosition.x > (screenWidth - edgeScrollBoundrary) && Input.mousePosition.x < screenWidth)
             transform.Translate(Vector3.right * horizontalSpeed * Time.deltaTime);
 
-        if (Input.mousePosition.x < (0 + edgeScrollBoundrary))
+        if (Input.mousePosition.x < (0 + edgeScrollBoundrary) && Input.mousePosition.x > 0)
             transform.Translate(Vector3.left * horizontalSpeed * Time.deltaTime);
 
-        if (Input.mousePosition.y > (screenHeight - edgeScrollBoundrary))
+        if (Input.mousePosition.y > (screenHeight - edgeScrollBoundrary) && Input.mousePosition.y < screenHeight)
             transform.Translate(Vector3.forward * verticalSpeed * Time.deltaTime);
 
-        if (Input.mousePosition.y < (0 + edgeScrollBoundrary))
+        if (Input.mousePosition.y < (0 + edgeScrollBoundrary) && Input.mousePosition.y > 0)
             transform.Translate(Vector3.back * verticalSpeed * Time.deltaTime);
     }
 
