@@ -36,13 +36,12 @@ public class CombatRobotController : RobotController
     protected override void Animate()
     {
         string instruction = instructions.Count > 0 ? instructions[currentInstructionIndex] : string.Empty;
-        if (new List<string>() { Instructions.AttackUp, Instructions.AttackLeft, Instructions.AttackRight, Instructions.AttackDown }.Any(instruction.Contains))
+        if (CurrentInstructionIndexIsValid)
         {
-            animator.Play("CombatRobotRangedAttack");
-        }
-        else if (instruction == Instructions.AttackMelee)
-        {
-            animator.Play("CombatRobotMeleeAttack");
+            if (new List<string>() { Instructions.AttackUp, Instructions.AttackLeft, Instructions.AttackRight, Instructions.AttackDown }.Any(instruction.Contains))
+                animator.Play("CombatRobotRangedAttack");
+            else if (instruction == Instructions.AttackMelee)
+                animator.Play("CombatRobotMeleeAttack");
         }
     }
 

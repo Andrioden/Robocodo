@@ -42,9 +42,11 @@ public class HarvesterRobotController : RobotController
     protected override void Animate()
     {
         string instruction = instructions.Count > 0 ? instructions[currentInstructionIndex] : string.Empty;
-        if (instruction == Instructions.Harvest)
+
+        if (CurrentInstructionIndexIsValid)
         {
-            animator.Play("HarvesterRobotHarvest");
+            if (instruction == Instructions.Harvest)
+                animator.Play("HarvesterRobotHarvest");
         }
     }
 
