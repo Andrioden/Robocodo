@@ -1,0 +1,171 @@
+fileFormatVersion: 2
+guid: 21d36c3d2565f4c4d9f581b3f6c8d54e
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Cockpit_riser
+    100002: Cockpit_riser_Geom
+    100004: HalfShoulder_Bot
+    100006: HalfShoulder_Bot_Geom
+    100008: HalfShoulder_Cobra
+    100010: HalfShoulder_Cobra_Geom
+    100012: HalfShoulder_Tank
+    100014: HalfShoulder_Tank_Geom
+    100016: Mount_cockpit
+    100018: Mount_cockpit 1
+    100020: Mount_cockpit 2
+    100022: Mount_cockpit 3
+    100024: Mount_Shoulder_rockets_lvl1_L
+    100026: Mount_Shoulder_rockets_lvl1_L 1
+    100028: Mount_Shoulder_rockets_lvl1_L_2
+    100030: Mount_Shoulder_rockets_lvl1_L_2 1
+    100032: Mount_Shoulder_rockets_lvl1_R
+    100034: Mount_Shoulder_rockets_lvl1_R_2
+    100036: Mount_Shoulder_rockets_lvl2_L
+    100038: Mount_Shoulder_rockets_lvl2_L 1
+    100040: Mount_Shoulder_rockets_lvl2_L 2
+    100042: Mount_Shoulder_rockets_lvl2_L 3
+    100044: Mount_Shoulder_rockets_lvl2_R
+    100046: Mount_Shoulder_rockets_lvl2_R 1
+    100048: Mount_Weapon_L
+    100050: Mount_Weapon_L 1
+    100052: Mount_Weapon_L 2
+    100054: Mount_Weapon_L 3
+    100056: Mount_Weapon_L 4
+    100058: Mount_Weapon_L 5
+    100060: Mount_Weapon_R
+    100062: Mount_Weapon_R 1
+    100064: Mount_Weapon_R 2
+    100066: Shoulder_Med_Bot
+    100068: Shoulder_Med_Bot_Geom
+    100070: Shoulder_Med_Cobra
+    100072: Shoulder_Med_Cobra_Geom
+    100074: Shoulder_Med_Tank
+    100076: Shoulder_Med_Tank_Geom
+    100078: //RootNode
+    400000: Cockpit_riser
+    400002: Cockpit_riser_Geom
+    400004: HalfShoulder_Bot
+    400006: HalfShoulder_Bot_Geom
+    400008: HalfShoulder_Cobra
+    400010: HalfShoulder_Cobra_Geom
+    400012: HalfShoulder_Tank
+    400014: HalfShoulder_Tank_Geom
+    400016: Mount_cockpit
+    400018: Mount_cockpit 1
+    400020: Mount_cockpit 2
+    400022: Mount_cockpit 3
+    400024: Mount_Shoulder_rockets_lvl1_L
+    400026: Mount_Shoulder_rockets_lvl1_L 1
+    400028: Mount_Shoulder_rockets_lvl1_L_2
+    400030: Mount_Shoulder_rockets_lvl1_L_2 1
+    400032: Mount_Shoulder_rockets_lvl1_R
+    400034: Mount_Shoulder_rockets_lvl1_R_2
+    400036: Mount_Shoulder_rockets_lvl2_L
+    400038: Mount_Shoulder_rockets_lvl2_L 1
+    400040: Mount_Shoulder_rockets_lvl2_L 2
+    400042: Mount_Shoulder_rockets_lvl2_L 3
+    400044: Mount_Shoulder_rockets_lvl2_R
+    400046: Mount_Shoulder_rockets_lvl2_R 1
+    400048: Mount_Weapon_L
+    400050: Mount_Weapon_L 1
+    400052: Mount_Weapon_L 2
+    400054: Mount_Weapon_L 3
+    400056: Mount_Weapon_L 4
+    400058: Mount_Weapon_L 5
+    400060: Mount_Weapon_R
+    400062: Mount_Weapon_R 1
+    400064: Mount_Weapon_R 2
+    400066: Shoulder_Med_Bot
+    400068: Shoulder_Med_Bot_Geom
+    400070: Shoulder_Med_Cobra
+    400072: Shoulder_Med_Cobra_Geom
+    400074: Shoulder_Med_Tank
+    400076: Shoulder_Med_Tank_Geom
+    400078: //RootNode
+    2300000: Cockpit_riser_Geom
+    2300002: HalfShoulder_Bot_Geom
+    2300004: HalfShoulder_Cobra_Geom
+    2300006: HalfShoulder_Tank_Geom
+    2300008: Shoulder_Med_Bot_Geom
+    2300010: Shoulder_Med_Cobra_Geom
+    2300012: Shoulder_Med_Tank_Geom
+    3300000: Cockpit_riser_Geom
+    3300002: HalfShoulder_Bot_Geom
+    3300004: HalfShoulder_Cobra_Geom
+    3300006: HalfShoulder_Tank_Geom
+    3300008: Shoulder_Med_Bot_Geom
+    3300010: Shoulder_Med_Cobra_Geom
+    3300012: Shoulder_Med_Tank_Geom
+    4300000: Shoulder_Med_Tank_Geom
+    4300002: Shoulder_Med_Cobra_Geom
+    4300004: Shoulder_Med_Bot_Geom
+    4300006: Cockpit_riser_Geom
+    4300008: HalfShoulder_Tank_Geom
+    4300010: HalfShoulder_Cobra_Geom
+    4300012: HalfShoulder_Bot_Geom
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.01
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

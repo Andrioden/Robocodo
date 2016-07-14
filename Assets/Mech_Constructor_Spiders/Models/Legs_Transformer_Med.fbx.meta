@@ -1,0 +1,166 @@
+fileFormatVersion: 2
+guid: 9444037632b70c9469a4c8df9ece3dc1
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: FL_Foot
+    100002: FL_KneePad
+    100004: FL_Lower_Leg
+    100006: FL_Lower_Leg_End
+    100008: FL_Mid_Leg
+    100010: FL_Upper_Leg
+    100012: FL_Wheel
+    100014: FL_Wheel_Geom
+    100016: FR_Foot
+    100018: FR_KneePad
+    100020: FR_Lower_Leg
+    100022: FR_Lower_Leg_End
+    100024: FR_Mid_Leg
+    100026: FR_Upper_Leg
+    100028: FR_Wheel
+    100030: FR_Wheel_Geom
+    100032: FrontPlate
+    100034: //RootNode
+    100036: Legs_Transformer_Med_Geom
+    100038: Mount_top
+    100040: Pelvis
+    100042: RL_Fin_Mid
+    100044: RL_Fin_Up
+    100046: RL_Foot
+    100048: RL_Lower_Leg
+    100050: RL_Lower_Leg_End
+    100052: RL_Mid_Leg
+    100054: RL_Track_Geom
+    100056: RL_Upper_Leg
+    100058: RL_Wheel
+    100060: ROOT
+    100062: RR_Fin_Mid
+    100064: RR_Fin_Up
+    100066: RR_Foot
+    100068: RR_Lower_Leg
+    100070: RR_Lower_Leg_End
+    100072: RR_Mid_Leg
+    100074: RR_Track_Geom
+    100076: RR_Upper_Leg
+    100078: RR_Wheel
+    100080: Top
+    400000: FL_Foot
+    400002: FL_KneePad
+    400004: FL_Lower_Leg
+    400006: FL_Lower_Leg_End
+    400008: FL_Mid_Leg
+    400010: FL_Upper_Leg
+    400012: FL_Wheel
+    400014: FL_Wheel_Geom
+    400016: FR_Foot
+    400018: FR_KneePad
+    400020: FR_Lower_Leg
+    400022: FR_Lower_Leg_End
+    400024: FR_Mid_Leg
+    400026: FR_Upper_Leg
+    400028: FR_Wheel
+    400030: FR_Wheel_Geom
+    400032: FrontPlate
+    400034: //RootNode
+    400036: Legs_Transformer_Med_Geom
+    400038: Mount_top
+    400040: Pelvis
+    400042: RL_Fin_Mid
+    400044: RL_Fin_Up
+    400046: RL_Foot
+    400048: RL_Lower_Leg
+    400050: RL_Lower_Leg_End
+    400052: RL_Mid_Leg
+    400054: RL_Track_Geom
+    400056: RL_Upper_Leg
+    400058: RL_Wheel
+    400060: ROOT
+    400062: RR_Fin_Mid
+    400064: RR_Fin_Up
+    400066: RR_Foot
+    400068: RR_Lower_Leg
+    400070: RR_Lower_Leg_End
+    400072: RR_Mid_Leg
+    400074: RR_Track_Geom
+    400076: RR_Upper_Leg
+    400078: RR_Wheel
+    400080: Top
+    2300000: FL_Wheel_Geom
+    2300002: FR_Wheel_Geom
+    2300004: RL_Track_Geom
+    2300006: RR_Track_Geom
+    3300000: FL_Wheel_Geom
+    3300002: FR_Wheel_Geom
+    3300004: RL_Track_Geom
+    3300006: RR_Track_Geom
+    4300000: Legs_Transformer_Med_Geom
+    4300002: RL_Track_Geom
+    4300004: FL_Wheel_Geom
+    4300006: FR_Wheel_Geom
+    4300008: RR_Track_Geom
+    9500000: //RootNode
+    13700000: Legs_Transformer_Med_Geom
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.01
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: ROOT
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

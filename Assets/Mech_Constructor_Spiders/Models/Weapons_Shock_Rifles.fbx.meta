@@ -1,0 +1,124 @@
+fileFormatVersion: 2
+guid: 0bbe6ece324f61a4599ef05bfe5b71a4
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Barrel_end
+    100002: Barrel_end 1
+    100004: Barrel_end 2
+    100006: Barrel_end 3
+    100008: Barrel_end 4
+    100010: FX_Laser_ray
+    100012: FX_Laser_Ray_Geom
+    100014: Shock_Rifle_lvl1
+    100016: Shock_Rifle_lvl1_Geom
+    100018: Shock_Rifle_lvl2
+    100020: Shock_Rifle_lvl2_Geom
+    100022: Shock_Rifle_lvl3
+    100024: Shock_Rifle_lvl3_Geom
+    100026: Shock_Rifle_lvl4
+    100028: Shock_Rifle_lvl4_Geom
+    100030: Shock_Rifle_lvl5
+    100032: Shock_Rifle_lvl5_Geom
+    100034: //RootNode
+    400000: Barrel_end
+    400002: Barrel_end 1
+    400004: Barrel_end 2
+    400006: Barrel_end 3
+    400008: Barrel_end 4
+    400010: FX_Laser_ray
+    400012: FX_Laser_Ray_Geom
+    400014: Shock_Rifle_lvl1
+    400016: Shock_Rifle_lvl1_Geom
+    400018: Shock_Rifle_lvl2
+    400020: Shock_Rifle_lvl2_Geom
+    400022: Shock_Rifle_lvl3
+    400024: Shock_Rifle_lvl3_Geom
+    400026: Shock_Rifle_lvl4
+    400028: Shock_Rifle_lvl4_Geom
+    400030: Shock_Rifle_lvl5
+    400032: Shock_Rifle_lvl5_Geom
+    400034: //RootNode
+    2300000: FX_Laser_Ray_Geom
+    2300002: Shock_Rifle_lvl1_Geom
+    2300004: Shock_Rifle_lvl2_Geom
+    2300006: Shock_Rifle_lvl3_Geom
+    2300008: Shock_Rifle_lvl4_Geom
+    2300010: Shock_Rifle_lvl5_Geom
+    3300000: FX_Laser_Ray_Geom
+    3300002: Shock_Rifle_lvl1_Geom
+    3300004: Shock_Rifle_lvl2_Geom
+    3300006: Shock_Rifle_lvl3_Geom
+    3300008: Shock_Rifle_lvl4_Geom
+    3300010: Shock_Rifle_lvl5_Geom
+    4300000: FX_Laser_Ray_Geom
+    4300002: Shock_Rifle_lvl1_Geom
+    4300004: Shock_Rifle_lvl2_Geom
+    4300006: Shock_Rifle_lvl3_Geom
+    4300008: Shock_Rifle_lvl4_Geom
+    4300010: Shock_Rifle_lvl5_Geom
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.01
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

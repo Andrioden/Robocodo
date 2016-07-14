@@ -1,0 +1,158 @@
+fileFormatVersion: 2
+guid: a594441dec8461b4aad01618d479e768
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: FL_Foot
+    100002: FL_Lower_Leg
+    100004: FL_Lower_Leg_End
+    100006: FL_Mid_Leg
+    100008: FL_Tracks_Geom
+    100010: FL_Upper_Leg
+    100012: FL_Wheel
+    100014: FR_Foot
+    100016: FR_Lower_Leg
+    100018: FR_Lower_Leg_End
+    100020: FR_Mid_Leg
+    100022: FR_Tracks_Geom
+    100024: FR_Upper_Leg
+    100026: FR_Wheel
+    100028: FrontPlate
+    100030: //RootNode
+    100032: Legs_Transformer_Hvy_Geom
+    100034: Mount_top
+    100036: Pelvis
+    100038: RF_Tracks_Geom
+    100040: RF_Tracks_Geom 1
+    100042: RL_Fin_Up
+    100044: RL_Foot
+    100046: RL_Lower_Leg
+    100048: RL_Lower_Leg_End
+    100050: RL_Mid_Leg
+    100052: RL_Upper_Leg
+    100054: RL_Wheel
+    100056: ROOT
+    100058: RR_Fin_Up
+    100060: RR_Foot
+    100062: RR_Lower_Leg
+    100064: RR_Lower_Leg_End
+    100066: RR_Mid_Leg
+    100068: RR_Upper_Leg
+    100070: RR_Wheel
+    100072: Top
+    400000: FL_Foot
+    400002: FL_Lower_Leg
+    400004: FL_Lower_Leg_End
+    400006: FL_Mid_Leg
+    400008: FL_Tracks_Geom
+    400010: FL_Upper_Leg
+    400012: FL_Wheel
+    400014: FR_Foot
+    400016: FR_Lower_Leg
+    400018: FR_Lower_Leg_End
+    400020: FR_Mid_Leg
+    400022: FR_Tracks_Geom
+    400024: FR_Upper_Leg
+    400026: FR_Wheel
+    400028: FrontPlate
+    400030: //RootNode
+    400032: Legs_Transformer_Hvy_Geom
+    400034: Mount_top
+    400036: Pelvis
+    400038: RF_Tracks_Geom
+    400040: RF_Tracks_Geom 1
+    400042: RL_Fin_Up
+    400044: RL_Foot
+    400046: RL_Lower_Leg
+    400048: RL_Lower_Leg_End
+    400050: RL_Mid_Leg
+    400052: RL_Upper_Leg
+    400054: RL_Wheel
+    400056: ROOT
+    400058: RR_Fin_Up
+    400060: RR_Foot
+    400062: RR_Lower_Leg
+    400064: RR_Lower_Leg_End
+    400066: RR_Mid_Leg
+    400068: RR_Upper_Leg
+    400070: RR_Wheel
+    400072: Top
+    2300000: FL_Tracks_Geom
+    2300002: FR_Tracks_Geom
+    2300004: RF_Tracks_Geom
+    2300006: RF_Tracks_Geom 1
+    3300000: FL_Tracks_Geom
+    3300002: FR_Tracks_Geom
+    3300004: RF_Tracks_Geom
+    3300006: RF_Tracks_Geom 1
+    4300000: Legs_Transformer_Hvy_Geom
+    4300002: RF_Tracks_Geom
+    4300004: FL_Tracks_Geom
+    4300006: FR_Tracks_Geom
+    4300008: RF_Tracks_Geom
+    9500000: //RootNode
+    13700000: Legs_Transformer_Hvy_Geom
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.01
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: ROOT
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

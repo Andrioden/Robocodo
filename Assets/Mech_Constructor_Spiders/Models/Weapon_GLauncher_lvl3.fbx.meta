@@ -1,0 +1,128 @@
+fileFormatVersion: 2
+guid: 3e94d26674e969b47aeb232e16b58bed
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Ammo
+    100002: Ammo_Geom
+    100004: Back
+    100006: Back_Geom
+    100008: Barrel_end_1
+    100010: Barrel_end_2
+    100012: Barrels
+    100014: Barrels_Base_Geom
+    100016: Barrels_Geom
+    100018: Body_Geom
+    100020: GLauncher
+    100022: Grenade_Launcher_lvl3_Geom
+    100024: Half_1
+    100026: Half_1_Geom
+    100028: Half_2
+    100030: Half_2_Geom
+    100032: Lid
+    100034: Lid_Geom
+    100036: Mount_Weapon
+    100038: transform17
+    100040: transform18
+    100042: transform19
+    100044: transform20
+    100046: transform21
+    100048: transform22
+    100050: transform23
+    100052: transform24
+    100054: //RootNode
+    400000: Ammo
+    400002: Ammo_Geom
+    400004: Back
+    400006: Back_Geom
+    400008: Barrel_end_1
+    400010: Barrel_end_2
+    400012: Barrels
+    400014: Barrels_Base_Geom
+    400016: Barrels_Geom
+    400018: Body_Geom
+    400020: GLauncher
+    400022: Grenade_Launcher_lvl3_Geom
+    400024: Half_1
+    400026: Half_1_Geom
+    400028: Half_2
+    400030: Half_2_Geom
+    400032: Lid
+    400034: Lid_Geom
+    400036: Mount_Weapon
+    400038: transform17
+    400040: transform18
+    400042: transform19
+    400044: transform20
+    400046: transform21
+    400048: transform22
+    400050: transform23
+    400052: transform24
+    400054: //RootNode
+    4300000: Grenade_Launcher_lvl3_Geom
+    9500000: //RootNode
+    13700000: Grenade_Launcher_lvl3_Geom
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.01
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

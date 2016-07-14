@@ -7,7 +7,9 @@ using System.Linq;
 
 public class CombatRobotController : RobotController
 {
-    public Animator animator;
+    public Animator bodyAnimator;
+    public Animator leftWeaponAnimator;
+    public Animator rightWeaponAnimator;
 
     // ********** SETTINGS **********
 
@@ -36,12 +38,25 @@ public class CombatRobotController : RobotController
     protected override void Animate()
     {
         string instruction = instructions.Count > 0 ? instructions[currentInstructionIndex] : string.Empty;
-        if (CurrentInstructionIndexIsValid)
+        if (CurrentInstructionIndexIsValid || true)
         {
             if (new List<string>() { Instructions.AttackUp, Instructions.AttackLeft, Instructions.AttackRight, Instructions.AttackDown }.Any(instruction.Contains))
-                animator.Play("CombatRobotRangedAttack");
-            else if (instruction == Instructions.AttackMelee)
-                animator.Play("CombatRobotMeleeAttack");
+            {
+                bodyAnimator.Play("Idle");
+                leftWeaponAnimator.Play("Shoot");
+                rightWeaponAnimator.Play("Shoot");
+            }
+
+            else if (instruction == Instructions.AttackMelee) {
+                bodyAnimator.Play("Idle");
+                leftWeaponAnimator.Play("Shoot");
+                rightWeaponAnimator.Play("Shoot");
+            }
+
+            else if (new List<string>() { Instructions.MoveUp, Instructions.MoveDown, Instructions.MoveLeft, Instructions.MoveRight, Instructions.MoveHome }.Any(instruction.Contains))
+            {
+                bodyAnimator.Play("Walk");
+            }
         }
     }
 
