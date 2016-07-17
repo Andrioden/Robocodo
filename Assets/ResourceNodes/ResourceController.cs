@@ -11,12 +11,14 @@ public class ResourceController : NetworkBehaviour, IClickable
     [SyncVar]
     public string resourceType;
 
+    public Transform physicalTransform;
+
     private Vector3 originalTransformScale;
 
     // Use this for initialization
     private void Start()
     {
-        originalTransformScale = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z);
+        originalTransformScale = new Vector3(physicalTransform.localScale.x, physicalTransform.localScale.y, physicalTransform.localScale.z);
 
         remainingItems = Utils.RandomInt(Settings.Resource_MinItemsPerNode, Settings.Resource_MaxItemsPerNode);
         UpdateTransformHeight();
@@ -57,7 +59,7 @@ public class ResourceController : NetworkBehaviour, IClickable
         double volumeScaleFactor = scalePercentage / 100.0;
         float sideScaleFactor = (float)MathUtils.CubicRoot(volumeScaleFactor);
 
-        transform.localScale = new Vector3(originalTransformScale.x * sideScaleFactor, originalTransformScale.y * sideScaleFactor, originalTransformScale.z * sideScaleFactor);
+        physicalTransform.localScale = new Vector3(originalTransformScale.x * sideScaleFactor, originalTransformScale.y * sideScaleFactor, originalTransformScale.z * sideScaleFactor);
     }
 
 }

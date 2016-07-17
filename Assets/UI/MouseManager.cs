@@ -23,11 +23,10 @@ public class MouseManager : MonoBehaviour
         {
             GameObject ourHitObject = hitInfo.collider.transform.gameObject;
 
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetButtonDown("Fire1"))
             {
                 if (ourHitObject.transform.parent == null)
                 {
-                    Debug.Log("Currently selected cleared" );
                     currentlySelected = null;
                     return;
                 }
@@ -40,16 +39,13 @@ public class MouseManager : MonoBehaviour
                     clickableObject.Click();
                     if (clickableObject is ISelectable)
                         currentlySelected = ourHitObject;
-                    else {
-                        Debug.Log("Currently selected cleared");
+                    else
                         currentlySelected = null;
-                    }
+
                     return;
                 }
-                else {
-                    Debug.Log("Currently selected cleared");
+                else
                     currentlySelected = null;
-                }
             }
 
         }

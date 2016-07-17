@@ -31,7 +31,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [SyncVar]
     private int nextInstructionIndex = 0;
 
-    [SyncVar]
+    [SyncVar(hook = "OnCurrentInstructionIndexUpdates")]
     protected int currentInstructionIndex = 0;
     public int CurrentInstructionIndex { get { return currentInstructionIndex; } }
 
@@ -100,7 +100,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         Move();
         FaceDirection();
-        Animate();
     }
 
     private void OnDestroy()
@@ -148,8 +147,14 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
         if (!facePosition.HasValue)
             facePosition = new Vector3(x, transform.position.y, z);
-        
+
         transform.LookAt(facePosition.Value);
+    }
+
+    void OnCurrentInstructionIndexUpdates(int newCurrentInstructionIndex)
+    {
+        currentInstructionIndex = newCurrentInstructionIndex;
+        Animate();
     }
 
     [Client]

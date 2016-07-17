@@ -20,7 +20,7 @@ public class TextureTilingController : MonoBehaviour
             UpdateTiling();
 
         prevScale = gameObject.transform.lossyScale;
-        prevTextureToMeshZ = this.textureToMeshZ;
+        prevTextureToMeshZ = textureToMeshZ;
     }
 
     void UpdateTiling()

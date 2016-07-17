@@ -34,11 +34,10 @@ public class CombatRobotController : RobotController
     public override List<string> GetSpecializedInstruction() { return spezializedInstructions; }
 
 
-    [Client]
     protected override void Animate()
     {
         string instruction = instructions.Count > 0 ? instructions[currentInstructionIndex] : string.Empty;
-        if (CurrentInstructionIndexIsValid || true)
+        if (CurrentInstructionIndexIsValid)
         {
             if (new List<string>() { Instructions.AttackUp, Instructions.AttackLeft, Instructions.AttackRight, Instructions.AttackDown }.Any(instruction.Contains))
             {
@@ -46,18 +45,21 @@ public class CombatRobotController : RobotController
                 leftWeaponAnimator.Play("Shoot");
                 rightWeaponAnimator.Play("Shoot");
             }
-
-            else if (instruction == Instructions.AttackMelee) {
+            else if (instruction == Instructions.AttackMelee)
+            {
                 bodyAnimator.Play("Idle");
                 leftWeaponAnimator.Play("Shoot");
                 rightWeaponAnimator.Play("Shoot");
             }
-
             else if (new List<string>() { Instructions.MoveUp, Instructions.MoveDown, Instructions.MoveLeft, Instructions.MoveRight, Instructions.MoveHome }.Any(instruction.Contains))
             {
                 bodyAnimator.Play("Walk");
             }
+            else
+                bodyAnimator.Play("Idle");
         }
+        else
+            bodyAnimator.Play("Idle");
     }
 
     public override string GetName()

@@ -8,8 +8,10 @@ using System.Linq;
 
 public class HarvesterRobotController : RobotController
 {
-    public MeshRenderer visirMeshRenderer;
-    public Animator animator;
+    //public MeshRenderer visirMeshRenderer;
+    public Animator bodyAnimator;
+    public ParticleSystem leftToolParticleSystem;
+    public ParticleSystem rightToolParticleSystem;
 
 
     // ********** SETTINGS **********
@@ -38,7 +40,6 @@ public class HarvesterRobotController : RobotController
         return Settings_Name;
     }
 
-    [Client]
     protected override void Animate()
     {
         string instruction = instructions.Count > 0 ? instructions[currentInstructionIndex] : string.Empty;
@@ -46,13 +47,28 @@ public class HarvesterRobotController : RobotController
         if (CurrentInstructionIndexIsValid)
         {
             if (instruction == Instructions.Harvest)
-                animator.Play("HarvesterRobotHarvest");
+            {
+                bodyAnimator.Play("Idle");
+                PlayHarvestParticleSystem();
+            }
+            else
+                bodyAnimator.Play("Idle");
         }
+        else
+            bodyAnimator.Play("Idle");
+    }
+
+    private void PlayHarvestParticleSystem()
+    {
+        leftToolParticleSystem.Play();
+        rightToolParticleSystem.Play();
     }
 
     public override void OnStartAuthority()
     {
         base.OnStartAuthority();
-        visirMeshRenderer.material.color = Color.blue;
+        //visirMeshRenderer.material.color = Color.blue;
     }
+
+
 }

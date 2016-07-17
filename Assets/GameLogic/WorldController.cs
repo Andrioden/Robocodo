@@ -156,9 +156,7 @@ public class WorldController : NetworkBehaviour
     }
 
     private void SpawnAndAdjustGround()
-    {
-        Debug.Log("Spawning and adjusting ground");
-
+    {      
         float xPosition = (width / 2f) - 0.5f; // Hack: The -0.5f is an offset we have to set to align the ground to the tiles
         float zPosition = (height / 2f) - 0.5f; // Hack: The -0.5f is an offset we have to set to align the ground to the tiles
 
