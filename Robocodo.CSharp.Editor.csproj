@@ -5,16 +5,16 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{67AD220E-6C68-01CF-8045-34D53AD58D4B}</ProjectGuid>
+    <ProjectGuid>{735EA290-3406-0542-9D91-EEB3272562C0}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AssemblyName>Assembly-CSharp</AssemblyName>
+    <AssemblyName>Assembly-CSharp-Editor</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
+    <TargetFrameworkProfile>Unity Full v3.5</TargetFrameworkProfile>
     <CompilerResponseFile></CompilerResponseFile>
-    <UnityProjectType>Game:1</UnityProjectType>
+    <UnityProjectType>Editor:5</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>5.3.4f1</UnityVersion>
     <RootNamespace></RootNamespace>
@@ -52,63 +52,72 @@
     <Reference Include="UnityEngine">
       <HintPath>Library\UnityAssemblies\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEditor">
+      <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.Advertisements">
+      <HintPath>Library\UnityAssemblies\UnityEditor.Advertisements.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>Library\UnityAssemblies\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.EditorTestsRunner">
+      <HintPath>Library\UnityAssemblies\UnityEditor.EditorTestsRunner.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>Library\UnityAssemblies\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.UI">
+      <HintPath>Library\UnityAssemblies\UnityEditor.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.Networking">
       <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEditor">
-      <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
+    <Reference Include="UnityEditor.Networking">
+      <HintPath>Library\UnityAssemblies\UnityEditor.Networking.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.TreeEditor">
+      <HintPath>Library\UnityAssemblies\UnityEditor.TreeEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.Graphs">
+      <HintPath>Library\UnityAssemblies\UnityEditor.Graphs.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.Android.Extensions">
+      <HintPath>Library\UnityAssemblies\UnityEditor.Android.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.WebGL.Extensions">
+      <HintPath>Library\UnityAssemblies\UnityEditor.WebGL.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.WindowsStandalone.Extensions">
+      <HintPath>Library\UnityAssemblies\UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
+      <HintPath>Library\UnityAssemblies\SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-UnityScript">
+      <HintPath>Library\ScriptAssemblies\Assembly-UnityScript.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\GameLogic\CustomNetworkManager.cs" />
-    <Compile Include="Assets\GameLogic\IAttackable.cs" />
-    <Compile Include="Assets\GameLogic\IClickable.cs" />
-    <Compile Include="Assets\GameLogic\ISelectable.cs" />
-    <Compile Include="Assets\GameLogic\MathUtils.cs" />
-    <Compile Include="Assets\GameLogic\Settings.cs" />
-    <Compile Include="Assets\GameLogic\Utils.cs" />
-    <Compile Include="Assets\GameLogic\WorldBuilder.cs" />
-    <Compile Include="Assets\GameLogic\WorldController.cs" />
-    <Compile Include="Assets\GameLogic\WorldTickController.cs" />
-    <Compile Include="Assets\Ground\TextureTilingController.cs" />
-    <Compile Include="Assets\Player\PlayerCityController.cs" />
-    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(ALPHA)\AntiAliasing\AntiAliasing.cs" />
-    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(ALPHA)\AntiAliasing\FXAA\FXAA.cs" />
-    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(ALPHA)\AntiAliasing\IAntiAliasing.cs" />
-    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(ALPHA)\AntiAliasing\SMAA\SMAA.cs" />
-    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(BETA)\AmbientOcclusion\AmbientOcclusion.cs" />
-    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(BETA)\AmbientOcclusion\Helpers\PropertyObserver.cs" />
-    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(BETA)\AmbientOcclusion\Helpers\Settings.cs" />
-    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(BETA)\Bloom\Bloom.cs" />
-    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(BETA)\Common\ImageEffectHelper.cs" />
-    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(BETA)\Common\MinAttribute.cs" />
-    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(BETA)\Common\RenderTextureUtility.cs" />
-    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(BETA)\DepthOfField\DepthOfField.cs" />
-    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(BETA)\LensAberrations\LensAberrations.cs" />
-    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(BETA)\ScreenSpaceReflection\ScreenSpaceReflection.cs" />
-    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(BETA)\TonemappingColorGrading\TonemappingColorGrading.cs" />
-    <Compile Include="Assets\ResourceNodes\ResourceController.cs" />
-    <Compile Include="Assets\Robots\Combat\CombatRobotController.cs" />
-    <Compile Include="Assets\Robots\Harvester\HarvesterRobotController.cs" />
-    <Compile Include="Assets\Robots\Harvester\Scripts\ScrollTankTracks.cs" />
-    <Compile Include="Assets\Robots\Instructions.cs" />
-    <Compile Include="Assets\Robots\InventoryItems.cs" />
-    <Compile Include="Assets\Robots\RobotController.cs" />
-    <Compile Include="Assets\UI\GridOverlay.cs" />
-    <Compile Include="Assets\UI\KeyboardManager.cs" />
-    <Compile Include="Assets\UI\LostPanel\LostPanel.cs" />
-    <Compile Include="Assets\UI\MouseManager.cs" />
-    <Compile Include="Assets\UI\PlayerCityPanel\BuildMenu\BuildMenu.cs" />
-    <Compile Include="Assets\UI\PlayerCityPanel\BuildMenu\BuildableItem.cs" />
-    <Compile Include="Assets\UI\PlayerCityPanel\PlayerCityPanel.cs" />
-    <Compile Include="Assets\UI\RTSCamera.cs" />
-    <Compile Include="Assets\UI\ResourcePanel\ResourcePanel.cs" />
-    <Compile Include="Assets\UI\RobotPanel\PossibleCommandOnClick.cs" />
-    <Compile Include="Assets\UI\RobotPanel\RobotPanel.cs" />
-    <Compile Include="Assets\UI\SelectionIndicator\SelectionIndicatorController.cs" />
+    <ProjectReference Include="Robocodo.CSharp.csproj">
+      <Project>{67AD220E-6C68-01CF-8045-34D53AD58D4B}</Project>
+      <Name>Robocodo.CSharp</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(ALPHA)\AntiAliasing\Editor\AntiAliasingEditor.cs" />
+    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(ALPHA)\AntiAliasing\Editor\IAntiAliasingEditor.cs" />
+    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(ALPHA)\AntiAliasing\FXAA\Editor\FXAAEditor.cs" />
+    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(ALPHA)\AntiAliasing\SMAA\Editor\SMAAEditor.cs" />
+    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(BETA)\AmbientOcclusion\Editor\AmbientOcclusionEditor.cs" />
+    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(BETA)\Bloom\Editor\BloomEditor.cs" />
+    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(BETA)\Common\Editor\EditorGUIHelper.cs" />
+    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(BETA)\Common\Editor\FieldFinder.cs" />
+    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(BETA)\Common\Editor\MinDrawer.cs" />
+    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(BETA)\DepthOfField\Editor\DepthOfFieldEditor.cs" />
+    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(BETA)\LensAberrations\Editor\LensAberrationsEditor.cs" />
+    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(BETA)\ScreenSpaceReflection\Editor\ScreenSpaceReflectionEditor.cs" />
+    <Compile Include="Assets\PostProcessingEffects\CinematicEffects(BETA)\TonemappingColorGrading\Editor\TonemappingColorGradingEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\PostProcessingEffects\CinematicEffects(ALPHA)\AntiAliasing\FXAA\Resources\FXAA.shader" />

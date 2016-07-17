@@ -28,7 +28,7 @@ GameObject:
   - 23: {fileID: 2307586}
   - 95: {fileID: 9515788}
   m_Layer: 0
-  m_Name: Quad
+  m_Name: SelectionIndicatorMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
