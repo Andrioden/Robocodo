@@ -105,6 +105,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Editor\EditorWorldBuilderEditor.cs" />
     <Compile Include="Assets\PostProcessingEffects\CinematicEffects(ALPHA)\AntiAliasing\Editor\AntiAliasingEditor.cs" />
     <Compile Include="Assets\PostProcessingEffects\CinematicEffects(ALPHA)\AntiAliasing\Editor\IAntiAliasingEditor.cs" />
     <Compile Include="Assets\PostProcessingEffects\CinematicEffects(ALPHA)\AntiAliasing\FXAA\Editor\FXAAEditor.cs" />

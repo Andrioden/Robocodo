@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using Assets.GameLogic.ClassExtensions;
 
 public class RobotPanel : MonoBehaviour
 {
@@ -213,12 +214,7 @@ public class RobotPanel : MonoBehaviour
     {
         if (this.robot != null && robot == this.robot)
         {
-            Debug.Log("InventoryUpdated: " + this.robot.Inventory);
-
-            foreach (Transform child in inventoryContainer.transform)
-            {
-                GameObject.Destroy(child.gameObject);
-            }
+            inventoryContainer.transform.DestroyChildren();
 
             var currentInventory = this.robot.Inventory;
             currentInventory.ForEach(item => AddInventoryItem(item));
@@ -292,10 +288,12 @@ public class RobotPanel : MonoBehaviour
     {
         possibleCommandsPanel.SetActive(true);
 
-        var combinedList = robot.commonInstructions;
+        var combinedList = robot.commonInstructions.Select(instruction => instruction.ToString()).ToList();
         combinedList.Add(string.Empty);
         combinedList.Add(string.Empty);
         combinedList.AddRange(robot.GetSpecializedInstruction());
+
+        possibleCommandsContainer.transform.DestroyChildren();
 
         foreach (string instruction in combinedList)
         {

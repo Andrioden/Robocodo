@@ -23,6 +23,8 @@ public class WorldController : NetworkBehaviour
 
     private List<ResourceController> resourceControllers = new List<ResourceController>();
 
+    private Transform worldParent;
+
     public static WorldController instance;
     private void Awake()
     {
@@ -48,7 +50,6 @@ public class WorldController : NetworkBehaviour
 
     }
 
-    [Server]
     public void BuildWorld(int width, int height)
     {
         this.width = width;
@@ -63,14 +64,26 @@ public class WorldController : NetworkBehaviour
             SpawnResourceNode(ironNodePrefab, coord.x, coord.z);
     }
 
-    [Server]
+    public void BuildWorldDemoWorld(int width, int height, Transform demoWorldParent)
+    {
+        worldParent = demoWorldParent;
+        BuildWorld(width, height);
+        SpawnPlayer(null, 0);
+        SpawnAndAdjustGround();
+    }
+
+    //[Server] Wanted to call this from editor when creating demo world but was blocked because of being "client". Should we do this in some other way?
     public void SpawnPlayer(NetworkConnection conn, short playerControllerId)
     {
         var playerPos = worldBuilder.GetNextPlayerPosition();
         GameObject newGameObject = (GameObject)Instantiate(playerCityPrefab, new Vector3(playerPos.x, 0, playerPos.z), Quaternion.identity);
         PlayerCityController newPlayerCity = newGameObject.GetComponent<PlayerCityController>();
 
-        NetworkServer.AddPlayerForConnection(conn, newGameObject, playerControllerId);
+        if (worldParent != null)
+            newGameObject.transform.parent = worldParent;
+
+        if (NetworkServer.active)
+            NetworkServer.AddPlayerForConnection(conn, newGameObject, playerControllerId);
 
         for (int i = 0; i < Settings.Player_AmountOfStartingHarvesterRobots; i++)
         {
@@ -82,32 +95,39 @@ public class WorldController : NetworkBehaviour
         newPlayerCity.AddOwnedGameObject(combatRobotGO);
     }
 
-    [Server]
+    //[Server] Wanted to call this from editor when creating demo world but was blocked because of being "client". Should we do this in some other way?
     public GameObject SpawnCombatRobotWithClientAuthority(NetworkConnection conn, int x, int z)
     {
         return SpawnObjectWithClientAuthority(conn, combatRobotPrefab, x, z);
     }
 
-    [Server]
+    //[Server] Wanted to call this from editor when creating demo world but was blocked because of being "client". Should we do this in some other way?
     public GameObject SpawnHarvesterRobotWithClientAuthority(NetworkConnection conn, int x, int z)
     {
         return SpawnObjectWithClientAuthority(conn, harvesterRobotPrefab, x, z);
     }
 
-    [Server]
+    //[Server] Wanted to call this from editor when creating demo world but was blocked because of being "client". Should we do this in some other way?
     private GameObject SpawnObjectWithClientAuthority(NetworkConnection conn, GameObject prefab, int x, int z)
     {
         GameObject newGameObject = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
-        NetworkServer.SpawnWithClientAuthority(newGameObject, conn);
 
-        var robot = newGameObject.GetComponent<RobotController>();
-        if (robot != null)
-            robot.owner = conn.connectionId.ToString();
+        if (worldParent != null)
+            newGameObject.transform.parent = worldParent;
+
+        if (NetworkServer.active)
+        {
+            NetworkServer.SpawnWithClientAuthority(newGameObject, conn);
+
+            var robot = newGameObject.GetComponent<RobotController>();
+            if (robot != null)
+                robot.owner = conn.connectionId.ToString();
+        }
 
         return newGameObject;
     }
 
-    [Server]
+    //[Server] Wanted to call this from editor when creating demo world but was blocked because of being "client". Should we do this in some other way?
     private void SpawnResourceNode(GameObject prefab, int x, int z)
     {
         ResourceController resourceController = SpawnObject(prefab, x, z).GetComponent<ResourceController>();
@@ -122,10 +142,20 @@ public class WorldController : NetworkBehaviour
         resourceControllers.Add(resourceController);
     }
 
+    //[Server] Wanted to call this from editor when creating demo world but was blocked because of being "client". Should we do this in some other way?
     public GameObject SpawnObject(GameObject prefab, int x, int z)
     {
         GameObject newGameObject = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
-        NetworkServer.Spawn(newGameObject);
+
+        if (worldParent != null)
+            newGameObject.transform.parent = worldParent;
+
+        if (NetworkServer.active)
+            NetworkServer.Spawn(newGameObject);
+        else {
+            if (worldParent != null)
+                newGameObject.transform.parent = worldParent;
+        }
 
         return newGameObject;
     }
@@ -155,13 +185,16 @@ public class WorldController : NetworkBehaviour
         }
     }
 
-    private void SpawnAndAdjustGround()
-    {      
+    public void SpawnAndAdjustGround()
+    {
         float xPosition = (width / 2f) - 0.5f; // Hack: The -0.5f is an offset we have to set to align the ground to the tiles
         float zPosition = (height / 2f) - 0.5f; // Hack: The -0.5f is an offset we have to set to align the ground to the tiles
 
         GameObject groundGameObject = (GameObject)Instantiate(groundPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         groundGameObject.name = "Ground_NotNetwork";
+
+        if (worldParent != null)
+            groundGameObject.transform.parent = worldParent;
 
         groundGameObject.transform.localScale = new Vector3(width / 10f, 1, height / 10f);
         groundGameObject.transform.position = new Vector3(xPosition, -0.001f, zPosition);

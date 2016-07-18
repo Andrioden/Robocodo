@@ -63,7 +63,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\GameLogic\ClassExtensions\TransformExtensions.cs" />
     <Compile Include="Assets\GameLogic\CustomNetworkManager.cs" />
+    <Compile Include="Assets\GameLogic\DemoWorldBuilder.cs" />
     <Compile Include="Assets\GameLogic\IAttackable.cs" />
     <Compile Include="Assets\GameLogic\IClickable.cs" />
     <Compile Include="Assets\GameLogic\ISelectable.cs" />

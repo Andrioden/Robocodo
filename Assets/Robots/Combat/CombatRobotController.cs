@@ -31,8 +31,37 @@ public class CombatRobotController : RobotController
         Instructions.AttackLeft,
         Instructions.AttackRight
     };
+
     public override List<string> GetSpecializedInstruction() { return spezializedInstructions; }
 
+    public override string GetDemoInstructions()
+    {
+        List<string> demoInstructions = new List<string>()
+        {
+            Instructions.MoveUp,
+            Instructions.AttackDown,
+            Instructions.MoveHome,
+
+            Instructions.MoveDown,
+            Instructions.AttackUp,
+            Instructions.MoveHome,
+
+            Instructions.MoveLeft,
+            Instructions.AttackRight,
+            Instructions.MoveHome,
+
+            Instructions.MoveRight,
+            Instructions.AttackLeft,
+            Instructions.MoveHome,
+        };
+
+        return string.Join("\n", demoInstructions.ToArray());
+    }
+
+    public override string GetName()
+    {
+        return Settings_Name;
+    }
 
     protected override void Animate()
     {
@@ -60,10 +89,5 @@ public class CombatRobotController : RobotController
         }
         else
             bodyAnimator.Play("Idle");
-    }
-
-    public override string GetName()
-    {
-        return Settings_Name;
     }
 }

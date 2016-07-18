@@ -195,34 +195,36 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         return instructions;
     }
 
-    public string GetDemoInstructions()
+    public virtual string GetDemoInstructions()
     {
-        //List<string> demoInstructions = new List<string>()
-        //{
-        //    Instructions.MoveUp,
-        //    Instructions.Harvest,
-        //    Instructions.MoveHome,
-        //    Instructions.DropInventory
-        //};
-
         List<string> demoInstructions = new List<string>()
         {
             Instructions.MoveUp,
-            Instructions.AttackDown,
-            Instructions.MoveHome,
-
-            Instructions.MoveDown,
-            Instructions.AttackUp,
-            Instructions.MoveHome,
-
-            Instructions.MoveLeft,
-            Instructions.AttackRight,
-            Instructions.MoveHome,
-
-            Instructions.MoveRight,
-            Instructions.AttackLeft,
-            Instructions.MoveHome,
+            Instructions.MoveUp,
+            Instructions.MoveUp,
+            Instructions.MoveUp,
+            Instructions.MoveUp,
+            Instructions.MoveHome
         };
+
+        //List<string> demoInstructions = new List<string>()
+        //{
+        //    Instructions.MoveUp,
+        //    Instructions.AttackDown,
+        //    Instructions.MoveHome,
+
+        //    Instructions.MoveDown,
+        //    Instructions.AttackUp,
+        //    Instructions.MoveHome,
+
+        //    Instructions.MoveLeft,
+        //    Instructions.AttackRight,
+        //    Instructions.MoveHome,
+
+        //    Instructions.MoveRight,
+        //    Instructions.AttackLeft,
+        //    Instructions.MoveHome,
+        //};
 
         //List<string> demoInstructions = new List<string>()
         //{
@@ -361,7 +363,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private void ChangePosition(float newPosX, float newPosZ)
     {
         if (newPosX >= WorldController.instance.Width || newPosX < 0 || newPosZ >= WorldController.instance.Height || newPosZ < 0)
-            SetFeedback("Cant move there");
+            SetFeedback("Can't move there");
         else
         {
             x = newPosX;

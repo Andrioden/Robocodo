@@ -35,6 +35,24 @@ public class HarvesterRobotController : RobotController
 
     public override List<string> GetSpecializedInstruction() { return spezializedInstructions; }
 
+    public override string GetDemoInstructions()
+    {
+        List<string> demoInstructions = new List<string>()
+        {
+            Instructions.MoveUp,
+            Instructions.MoveUp,
+            Instructions.MoveUp,
+            Instructions.MoveUp,
+            Instructions.MoveUp,
+            Instructions.Harvest,
+            Instructions.Harvest,
+            Instructions.MoveHome,
+            Instructions.DropInventory
+        };
+
+        return string.Join("\n", demoInstructions.ToArray());
+    }
+
     public override string GetName()
     {
         return Settings_Name;
