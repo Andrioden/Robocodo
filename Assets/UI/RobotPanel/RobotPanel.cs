@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using Assets.GameLogic.ClassExtensions;
+using UnityEngine.Networking;
 
 public class RobotPanel : MonoBehaviour
 {
@@ -79,7 +80,7 @@ public class RobotPanel : MonoBehaviour
             }
 
             _formattedInstructions = _indentedInstructionsCache.Select(instruction => instruction.ToString()).ToList();
-            HighLightAndAutoIndentCode();
+            HighlightCode();
             UpdateRobotInfoLabels();
         }
     }
@@ -87,6 +88,8 @@ public class RobotPanel : MonoBehaviour
     public void ShowPanel(RobotController robot)
     {
         this.robot = robot;
+        this.robot.GetInstructions().Callback += RobotInstructionsWasUpdated;
+
         KeyboardManager.KeyboardLockOff();
 
         if (robot.IsStarted)
@@ -233,6 +236,17 @@ public class RobotPanel : MonoBehaviour
         inventoryImage.transform.SetParent(inventoryContainer.transform, false);
     }
 
+    private void RobotInstructionsWasUpdated(SyncList<string>.Operation op, int itemIndex)
+    {
+        LoadInstructionsFromRobot();
+    }
+
+    private void LoadInstructionsFromRobot()
+    {
+        _indentedInstructionsCache = robot.GetInstructions().Select(instruction => instruction.ToString()).ToList();
+        AutoIndentInstructions(_indentation, _indentedInstructionsCache);
+    }
+
     private void EnableSetupModePanel()
     {
         titleText.text = robot.GetName() + " SETUP";
@@ -251,13 +265,10 @@ public class RobotPanel : MonoBehaviour
         codeOutputPanel.SetActive(false);
     }
 
-
-
     private void EnableRunnningModePanel()
     {
         titleText.text = robot.GetName();
-        _indentedInstructionsCache = robot.GetInstructions().Select(instruction => instruction.ToString()).ToList();
-        AutoIndentInstructions(_indentation, _indentedInstructionsCache);
+        LoadInstructionsFromRobot();
         InventoryUpdated(robot);
 
         codeOutputPanel.SetActive(true);
@@ -310,7 +321,7 @@ public class RobotPanel : MonoBehaviour
         }
     }
 
-    private void HighLightAndAutoIndentCode()
+    private void HighlightCode()
     {
         if (robot.IsStarted)
         {

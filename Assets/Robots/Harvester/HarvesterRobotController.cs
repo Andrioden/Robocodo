@@ -81,12 +81,4 @@ public class HarvesterRobotController : RobotController
         leftToolParticleSystem.Play();
         rightToolParticleSystem.Play();
     }
-
-    public override void OnStartAuthority()
-    {
-        base.OnStartAuthority();
-        //visirMeshRenderer.material.color = Color.blue;
-    }
-
-
 }
