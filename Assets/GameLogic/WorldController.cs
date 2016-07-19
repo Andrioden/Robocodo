@@ -72,7 +72,7 @@ public class WorldController : NetworkBehaviour
         SpawnAndAdjustGround();
     }
 
-    //[Server] Wanted to call this from editor when creating demo world but was blocked because of being "client". Should we do this in some other way?
+    [Server]
     public void SpawnPlayer(NetworkConnection conn, short playerControllerId)
     {
         var playerPos = worldBuilder.GetNextPlayerPosition();
@@ -84,6 +84,8 @@ public class WorldController : NetworkBehaviour
 
         if (NetworkServer.active)
             NetworkServer.AddPlayerForConnection(conn, newGameObject, playerControllerId);
+        else
+            Debug.LogError("Network server is not active!");
 
         for (int i = 0; i < Settings.Player_AmountOfStartingHarvesterRobots; i++)
         {
@@ -95,19 +97,19 @@ public class WorldController : NetworkBehaviour
         newPlayerCity.AddOwnedGameObject(combatRobotGO);
     }
 
-    //[Server] Wanted to call this from editor when creating demo world but was blocked because of being "client". Should we do this in some other way?
+    [Server]
     public GameObject SpawnCombatRobotWithClientAuthority(NetworkConnection conn, int x, int z)
     {
         return SpawnObjectWithClientAuthority(conn, combatRobotPrefab, x, z);
     }
 
-    //[Server] Wanted to call this from editor when creating demo world but was blocked because of being "client". Should we do this in some other way?
+    [Server]
     public GameObject SpawnHarvesterRobotWithClientAuthority(NetworkConnection conn, int x, int z)
     {
         return SpawnObjectWithClientAuthority(conn, harvesterRobotPrefab, x, z);
     }
 
-    //[Server] Wanted to call this from editor when creating demo world but was blocked because of being "client". Should we do this in some other way?
+    [Server]
     private GameObject SpawnObjectWithClientAuthority(NetworkConnection conn, GameObject prefab, int x, int z)
     {
         GameObject newGameObject = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
@@ -123,11 +125,13 @@ public class WorldController : NetworkBehaviour
             if (robot != null)
                 robot.owner = conn.connectionId.ToString();
         }
+        else
+            Debug.LogError("Network server is not active!");
 
         return newGameObject;
     }
 
-    //[Server] Wanted to call this from editor when creating demo world but was blocked because of being "client". Should we do this in some other way?
+    [Server]
     private void SpawnResourceNode(GameObject prefab, int x, int z)
     {
         ResourceController resourceController = SpawnObject(prefab, x, z).GetComponent<ResourceController>();
@@ -142,7 +146,7 @@ public class WorldController : NetworkBehaviour
         resourceControllers.Add(resourceController);
     }
 
-    //[Server] Wanted to call this from editor when creating demo world but was blocked because of being "client". Should we do this in some other way?
+    [Server]
     public GameObject SpawnObject(GameObject prefab, int x, int z)
     {
         GameObject newGameObject = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
@@ -152,10 +156,8 @@ public class WorldController : NetworkBehaviour
 
         if (NetworkServer.active)
             NetworkServer.Spawn(newGameObject);
-        else {
-            if (worldParent != null)
-                newGameObject.transform.parent = worldParent;
-        }
+        else
+            Debug.LogError("Network server is not active!");
 
         return newGameObject;
     }
