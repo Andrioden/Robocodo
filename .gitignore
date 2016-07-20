@@ -4,6 +4,8 @@
 */obj/*
 *.pdb
 *.exe
+*Robocodo.sln
+*Robocodo.CSharp.csproj
 
 # From Template
 
