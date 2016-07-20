@@ -24,6 +24,7 @@ public class WorldController : NetworkBehaviour
     private List<ResourceController> resourceControllers = new List<ResourceController>();
 
     private Transform worldParent;
+    private bool classIsUsedAsDemo = false;
 
     public static WorldController instance;
     private void Awake()
@@ -66,26 +67,28 @@ public class WorldController : NetworkBehaviour
 
     public void BuildWorldDemoWorld(int width, int height, Transform demoWorldParent)
     {
+        classIsUsedAsDemo = true;
         worldParent = demoWorldParent;
         BuildWorld(width, height);
         SpawnPlayer(null, 0);
         SpawnAndAdjustGround();
     }
 
-    [Server]
-    public void SpawnPlayer(NetworkConnection conn, short playerControllerId)
+    // [Server] enforced with inline code check
+    public GameObject SpawnPlayer(NetworkConnection conn, short playerControllerId)
     {
+        if (!IsServerOrDemo())
+            return null;
+
         var playerPos = worldBuilder.GetNextPlayerPosition();
-        GameObject newGameObject = (GameObject)Instantiate(playerCityPrefab, new Vector3(playerPos.x, 0, playerPos.z), Quaternion.identity);
-        PlayerCityController newPlayerCity = newGameObject.GetComponent<PlayerCityController>();
+        GameObject playerCityGameObject = (GameObject)Instantiate(playerCityPrefab, new Vector3(playerPos.x, 0, playerPos.z), Quaternion.identity);
+        PlayerCityController newPlayerCity = playerCityGameObject.GetComponent<PlayerCityController>();
 
         if (worldParent != null)
-            newGameObject.transform.parent = worldParent;
+            playerCityGameObject.transform.parent = worldParent;
 
         if (NetworkServer.active)
-            NetworkServer.AddPlayerForConnection(conn, newGameObject, playerControllerId);
-        else
-            Debug.LogError("Network server is not active!");
+            NetworkServer.AddPlayerForConnection(conn, playerCityGameObject, playerControllerId);
 
         for (int i = 0; i < Settings.Player_AmountOfStartingHarvesterRobots; i++)
         {
@@ -95,23 +98,34 @@ public class WorldController : NetworkBehaviour
 
         GameObject combatRobotGO = SpawnCombatRobotWithClientAuthority(conn, playerPos.x, playerPos.z);
         newPlayerCity.AddOwnedGameObject(combatRobotGO);
+
+        return playerCityGameObject;
     }
 
-    [Server]
+    // [Server] enforced with inline code check
     public GameObject SpawnCombatRobotWithClientAuthority(NetworkConnection conn, int x, int z)
     {
+        if (!IsServerOrDemo())
+            return null;
+
         return SpawnObjectWithClientAuthority(conn, combatRobotPrefab, x, z);
     }
 
-    [Server]
+    // [Server] enforced with inline code check
     public GameObject SpawnHarvesterRobotWithClientAuthority(NetworkConnection conn, int x, int z)
     {
+        if (!IsServerOrDemo())
+            return null;
+
         return SpawnObjectWithClientAuthority(conn, harvesterRobotPrefab, x, z);
     }
 
-    [Server]
+    // [Server] enforced with inline code check
     private GameObject SpawnObjectWithClientAuthority(NetworkConnection conn, GameObject prefab, int x, int z)
     {
+        if (!IsServerOrDemo())
+            return null;
+
         GameObject newGameObject = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
 
         if (worldParent != null)
@@ -125,16 +139,18 @@ public class WorldController : NetworkBehaviour
             if (robot != null)
                 robot.owner = conn.connectionId.ToString();
         }
-        else
-            Debug.LogError("Network server is not active!");
 
         return newGameObject;
     }
 
-    [Server]
-    private void SpawnResourceNode(GameObject prefab, int x, int z)
+    // [Server] enforced with inline code check
+    private GameObject SpawnResourceNode(GameObject prefab, int x, int z)
     {
-        ResourceController resourceController = SpawnObject(prefab, x, z).GetComponent<ResourceController>();
+        if (!IsServerOrDemo())
+            return null;
+
+        GameObject resurceGameObject = SpawnObject(prefab, x, z);
+        ResourceController resourceController = resurceGameObject.GetComponent<ResourceController>();
 
         if (prefab == ironNodePrefab)
             resourceController.resourceType = IronItem.SerializedType;
@@ -144,11 +160,16 @@ public class WorldController : NetworkBehaviour
             throw new Exception("Not added support for given resource prefab. Get coding!");
 
         resourceControllers.Add(resourceController);
+
+        return resurceGameObject;
     }
 
-    [Server]
+    // [Server] enforced with inline code check
     public GameObject SpawnObject(GameObject prefab, int x, int z)
     {
+        if (!IsServerOrDemo())
+            return null;
+
         GameObject newGameObject = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
 
         if (worldParent != null)
@@ -156,8 +177,6 @@ public class WorldController : NetworkBehaviour
 
         if (NetworkServer.active)
             NetworkServer.Spawn(newGameObject);
-        else
-            Debug.LogError("Network server is not active!");
 
         return newGameObject;
     }
@@ -202,5 +221,18 @@ public class WorldController : NetworkBehaviour
         groundGameObject.transform.position = new Vector3(xPosition, -0.001f, zPosition);
 
         groundGameObject.GetComponent<TextureTilingController>().RescaleTileTexture();
+    }
+
+    private bool IsServerOrDemo()
+    {
+        if (classIsUsedAsDemo)
+            return true;
+        else if (isServer)
+            return true;
+        else
+        {
+            Debug.LogWarning("Method is called by a non-server. Stopping method excecution.");
+            return false;
+        }
     }
 }
