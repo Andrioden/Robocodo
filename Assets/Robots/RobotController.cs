@@ -324,15 +324,13 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             float difX = Math.Abs(x - homeX);
             float difZ = Math.Abs(z - homeZ);
 
-            if (difX >= difZ)
+            if (difX >= difZ && !IsHome())
                 x += GetIncremementOrDecrementToGetCloser(x, homeX);
-            else
+            else if (difX < difZ)
                 z += GetIncremementOrDecrementToGetCloser(z, homeZ);
 
-            if (IsHome())
-                InstructionCompleted();
-
-            return; // Avoid that InstructionComplete is run otherwise, TODO: Rewrite it into its own method and control the flow so it still works.
+            if (!IsHome())
+                return;
         }
         else if (Instructions.IsValidLoopStart(instruction))
         {
@@ -341,11 +339,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         }
         else if (instruction == Instructions.LoopEnd)
             SetInstructionToMatchingLoopStart();
-        else if (instruction == Instructions.Harvest)
+        else if (instruction == Instructions.Harvest && !isPreviewRobot)
         {
-            if (isPreviewRobot)
-                return;
-
             if (Settings_InventoryCapacity() == 0)
                 SetFeedback("NO INVENTORY CAPACITY");
             else if (inventory.Count >= Settings_InventoryCapacity())
@@ -357,23 +352,20 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             else
                 SetFeedback("NOTHING TO HARVEST");
         }
-        else if (instruction == Instructions.DropInventory)
+        else if (instruction == Instructions.DropInventory && !isPreviewRobot)
             DropInventory();
-        else if (instruction == Instructions.AttackMelee)
+        else if (instruction == Instructions.AttackMelee && !isPreviewRobot)
             AttackPosition(x, z);
-        else if (instruction == Instructions.AttackUp)
+        else if (instruction == Instructions.AttackUp && !isPreviewRobot)
             AttackPosition(x, z + 1);
-        else if (instruction == Instructions.AttackDown)
+        else if (instruction == Instructions.AttackDown && !isPreviewRobot)
             AttackPosition(x, z - 1);
-        else if (instruction == Instructions.AttackRight)
+        else if (instruction == Instructions.AttackRight && !isPreviewRobot)
             AttackPosition(x + 1, z);
-        else if (instruction == Instructions.AttackLeft)
+        else if (instruction == Instructions.AttackLeft && !isPreviewRobot)
             AttackPosition(x - 1, z);
         else
-        {
-            Debug.Log("SERVER: Robot does not understand instruction: " + instruction);
             SetFeedback("UNKNOWN COMMAND");
-        }
 
         InstructionCompleted();
     }
