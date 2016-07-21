@@ -40,6 +40,8 @@ public class RobotPanel : MonoBehaviour
     public GameObject ironPrefab;
     public GameObject copperPrefab;
 
+    public GameObject arrowPrefab;
+
     public static RobotPanel instance;
 
     private Animator animator;
@@ -50,6 +52,10 @@ public class RobotPanel : MonoBehaviour
     private List<string> _indentedInstructionsCache = new List<string>();
     private List<string> _formattedInstructions = new List<string>();
     private int _codeInputCharCountLastEdit = 0;
+
+    private RobotMovementPreviewer previewer;
+    private List<GameObject> previewArrows = new List<GameObject>();
+    private float drawPreviewArrowTime = -1f;
 
     private void Awake()
     {
@@ -82,6 +88,9 @@ public class RobotPanel : MonoBehaviour
             _formattedInstructions = _indentedInstructionsCache.Select(instruction => instruction.ToString()).ToList();
             HighlightCode();
             UpdateRobotInfoLabels();
+
+            if (drawPreviewArrowTime != -1f && drawPreviewArrowTime < Time.time)
+                DrawPreviewArrows();
         }
     }
 
@@ -109,6 +118,8 @@ public class RobotPanel : MonoBehaviour
 
         if (robot.IsStarted)
             EnableRunnningModePanel();
+
+        CleanUpPreviewer();
     }
 
     public void ClosePanel()
@@ -116,6 +127,7 @@ public class RobotPanel : MonoBehaviour
         KeyboardManager.KeyboardLockOff();
         robot = null;
         animator.Play("RobotMenuSlideOut");
+        CleanUpPreviewer();
     }
 
     private void CodeInputAutoIndentAndUpperCase(string arg0 = "")
@@ -133,6 +145,12 @@ public class RobotPanel : MonoBehaviour
         if (!changeWasBackspace)
             MoveCaret(_indentation);
         _codeInputCharCountLastEdit = codeInputField.text.Count();
+
+        if (previewer != null)
+        {
+            previewer.UpdateInstructions(instructions);
+            DrawPreviewArrowsIfNoNewInput();
+        }
     }
 
     private static void AutoIndentInstructions(string indentation, List<string> instructions)
@@ -249,6 +267,9 @@ public class RobotPanel : MonoBehaviour
 
     private void EnableSetupModePanel()
     {
+        if (robot.isPreviewRobot)
+            return;
+
         titleText.text = robot.GetName() + " SETUP";
         SetupPossibleCommands();
 
@@ -256,13 +277,17 @@ public class RobotPanel : MonoBehaviour
         codeInputField.onValueChanged.AddListener(KeyboardManager.KeyboardLockOn);
         codeInputField.onValueChanged.AddListener(CodeInputAutoIndentAndUpperCase);
         codeInputField.onEndEdit.AddListener(KeyboardManager.KeyboardLockOff);
-        codeInputField.text = robot.GetDemoInstructions();  /* Pre filled demo data */
+        List<string> exampleInstructions = robot.GetExampleInstructions();
+        codeInputField.text = string.Join("\n", exampleInstructions.ToArray());  /* Pre filled example data */
 
         runButton.onClick.RemoveAllListeners();
         runButton.onClick.AddListener(RunCode);
 
         inventoryPanel.SetActive(false);
         codeOutputPanel.SetActive(false);
+
+        previewer = new RobotMovementPreviewer(robot, exampleInstructions);
+        DrawPreviewArrows();
     }
 
     private void EnableRunnningModePanel()
@@ -347,5 +372,52 @@ public class RobotPanel : MonoBehaviour
         healthText.text = string.Format("HEALTH: {0}/{1}", robot.Health, robot.Settings_StartHealth());
         damageText.text = string.Format("DAMAGE: {0}", robot.Settings_Damage());
     }
-}
 
+    private void CleanUpPreviewer()
+    {
+        DestroyPreviewArrows();
+
+        if (previewer != null)
+        {
+            previewer.Destroy();
+            previewer = null;
+        }
+    }
+
+    private void DrawPreviewArrowsIfNoNewInput()
+    {
+        drawPreviewArrowTime = Time.time + 0.3f;
+    }
+
+    private void DrawPreviewArrows()
+    {
+        Debug.Log("Drawing preview arrows");
+        DestroyPreviewArrows();
+
+        foreach (CoordinateDirection coordDir in previewer.GetPreviewCoordinateDirections())
+        {
+            GameObject arrowGO = Instantiate(arrowPrefab);
+            arrowGO.transform.position = new Vector3(coordDir.x, arrowGO.transform.position.y, coordDir.z);
+            Vector3 rotation = arrowGO.transform.rotation.eulerAngles;
+            if (coordDir.direction == Direction.Right)
+                arrowGO.transform.rotation = Quaternion.Euler(rotation.x, 0, rotation.z);
+            else if (coordDir.direction == Direction.Down)
+                arrowGO.transform.rotation = Quaternion.Euler(rotation.x, 90, rotation.z);
+            else if (coordDir.direction == Direction.Left)
+                arrowGO.transform.rotation = Quaternion.Euler(rotation.x, 180, rotation.z);
+            else if (coordDir.direction == Direction.Up)
+                arrowGO.transform.rotation = Quaternion.Euler(rotation.x, 270, rotation.z);
+
+            previewArrows.Add(arrowGO);
+        }
+
+        drawPreviewArrowTime = -1f;
+    }
+
+    private void DestroyPreviewArrows()
+    {
+        foreach (GameObject arrow in previewArrows)
+            Destroy(arrow);
+    }
+
+}

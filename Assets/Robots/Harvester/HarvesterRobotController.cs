@@ -35,7 +35,7 @@ public class HarvesterRobotController : RobotController
 
     public override List<string> GetSpecializedInstruction() { return spezializedInstructions; }
 
-    public override string GetDemoInstructions()
+    public override List<string> GetExampleInstructions()
     {
         List<string> demoInstructions = new List<string>()
         {
@@ -50,7 +50,7 @@ public class HarvesterRobotController : RobotController
             Instructions.DropInventory
         };
 
-        return string.Join("\n", demoInstructions.ToArray());
+        return demoInstructions;
     }
 
     public override string GetName()
@@ -81,4 +81,10 @@ public class HarvesterRobotController : RobotController
         leftToolParticleSystem.Play();
         rightToolParticleSystem.Play();
     }
+
+    public override GameObject SpawnPreviewGameObjectClone()
+    {
+        return (GameObject)Instantiate(WorldController.instance.harvesterRobotPrefab, new Vector3(x, 1, z), Quaternion.identity);
+    }
+
 }

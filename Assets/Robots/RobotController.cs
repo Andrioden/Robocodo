@@ -12,9 +12,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     public string owner;
 
     [SyncVar]
-    private float x;
+    protected float x;
     [SyncVar]
-    private float z;
+    protected float z;
 
     private float homeX;
     private float homeZ;
@@ -27,6 +27,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private bool isStarted = false;
     public bool IsStarted { get { return isStarted; } }
 
+    public bool isPreviewRobot = false;
+
     protected SyncListString instructions = new SyncListString();
     [SyncVar]
     private int nextInstructionIndex = 0;
@@ -38,6 +40,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [SyncVar]
     private bool currentInstructionIndexIsValid = true;
     public bool CurrentInstructionIndexIsValid { get { return currentInstructionIndexIsValid; } }
+
+    private int instructionsMainLoopCount = 0;
+    public int InstructionsMainLoopCount { get { return instructionsMainLoopCount; } }
 
     private List<InventoryItem> inventory = new List<InventoryItem>();
     public List<InventoryItem> Inventory { get { return inventory; } }
@@ -81,18 +86,12 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     protected abstract void Animate();
     public abstract List<string> GetSpecializedInstruction();
     public abstract string GetName();
+    public abstract GameObject SpawnPreviewGameObjectClone();
 
     // Use this for initialization
     private void Start()
     {
-        x = transform.position.x;
-        z = transform.position.z;
-
-        homeX = transform.position.x;
-        homeZ = transform.position.z;
-
-        energy = Settings_MaxEnergy();
-        health = Settings_StartHealth();
+        InitDefaultValues();
     }
 
     // Update is called once per frame
@@ -117,6 +116,24 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         if (hasAuthority)
             RobotPanel.instance.ShowPanel(this);
+    }
+
+
+    public void InitDefaultValues()
+    {
+        x = transform.position.x;
+        z = transform.position.z;
+
+        homeX = transform.position.x;
+        homeZ = transform.position.z;
+
+        energy = Settings_MaxEnergy();
+        health = Settings_StartHealth();
+    }
+
+    public Coordinate GetCoordinate()
+    {
+        return new Coordinate((int)x, (int)z);
     }
 
     [Client]
@@ -182,6 +199,14 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         SetInstructions(instructionsCSV);
     }
 
+    public void SetInstructions(List<string> instructionsList)
+    {
+        instructions.Clear();
+
+        foreach (string instruction in instructionsList)
+            instructions.Add(instruction);
+    }
+
     private void SetInstructions(string instructionsCSV)
     {
         instructions.Clear();
@@ -195,7 +220,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         return instructions;
     }
 
-    public virtual string GetDemoInstructions()
+    public virtual List<string> GetExampleInstructions()
     {
         List<string> demoInstructions = new List<string>()
         {
@@ -254,7 +279,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         //    Instructions.MoveLeft
         //};
 
-        return string.Join("\n", demoInstructions.ToArray());
+        return demoInstructions;
     }
 
     [Command]
@@ -269,13 +294,11 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             throw new Exception("IPT value not supported: " + Settings_IPT());
     }
 
-
-    [Server]
-    private void RunNextInstruction(object sender)
+    public void RunNextInstruction(object sender)
     {
         currentInstructionIndexIsValid = true;
         currentInstructionIndex = nextInstructionIndex;
-        string instruction = instructions[nextInstructionIndex];
+        string instruction = instructions[nextInstructionIndex].Trim();
 
         if (energy <= 0)
         {
@@ -284,7 +307,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         }
         energy--;
 
-        Debug.Log("SERVER: Running instruction: " + instruction);
+        //Debug.Log("SERVER: Running instruction: " + instruction);
 
         if (instruction == Instructions.MoveUp)
             ChangePosition(x, z + 1);
@@ -320,6 +343,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             SetInstructionToMatchingLoopStart();
         else if (instruction == Instructions.Harvest)
         {
+            if (isPreviewRobot)
+                return;
+
             if (Settings_InventoryCapacity() == 0)
                 SetFeedback("NO INVENTORY CAPACITY");
             else if (inventory.Count >= Settings_InventoryCapacity())
@@ -352,14 +378,12 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         InstructionCompleted();
     }
 
-    [Server]
     private void SetFeedback(string message)
     {
         feedback = message;
         currentInstructionIndexIsValid = false;
     }
 
-    [Server]
     private void ChangePosition(float newPosX, float newPosZ)
     {
         if (newPosX >= WorldController.instance.Width || newPosX < 0 || newPosZ >= WorldController.instance.Height || newPosZ < 0)
@@ -371,7 +395,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         }
     }
 
-    [Server]
     private void SanityCheckIfPositionNumbersAreWhole()
     {
         SanityCheckIsWholeNumber("position X", x);
@@ -380,14 +403,12 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         SanityCheckIsWholeNumber("home Z", homeZ);
     }
 
-    [Server]
     private void SanityCheckIsWholeNumber(string friendlyName, float number)
     {
         if ((number % 1) != 0)
             throw new Exception("Robot " + friendlyName + " is not a whole number");
     }
 
-    [Server]
     private int GetIncremementOrDecrementToGetCloser(float posValue, float homeValue)
     {
         if (posValue > homeValue)
@@ -398,13 +419,11 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             throw new Exception("Should not call this method withot a value difference");
     }
 
-    [Server]
     private bool IsHome()
     {
         return x == homeX && z == homeZ;
     }
 
-    [Server]
     private void InstructionCompleted()
     {
         nextInstructionIndex++;
@@ -413,14 +432,13 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         {
             nextInstructionIndex = 0;
             ResetAllInnerLoopStarts(nextInstructionIndex);
+            instructionsMainLoopCount++;
         }
 
         if (IsHome())
             energy = Settings_MaxEnergy();
     }
 
-
-    [Server]
     private void IterateLoopStartCounterIfNeeded(string instruction)
     {
         if (instruction == Instructions.LoopStart)
@@ -450,7 +468,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         instructions[nextInstructionIndex] = Instructions.LoopStartNumberedSet(currentLoopCount, totalLoopCount);
     }
 
-    [Server]
     private void ResetAllInnerLoopStarts(int startingIndex)
     {
         int loopEndSkippingUntilDone = 0;
@@ -471,7 +488,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         }
     }
 
-    [Server]
     private void SetInstructionToMatchingLoopStart()
     {
         int skippingLoopStarts = 0;
@@ -607,5 +623,16 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     public string GetOwner()
     {
         return owner;
+    }
+
+    public void PreviewResetRobot()
+    {
+        x = homeX;
+        z = homeZ;
+        transform.position = new Vector3(x, 1, z);
+        energy = Settings_MaxEnergy();
+        currentInstructionIndex = 0;
+        nextInstructionIndex = 0;
+        instructionsMainLoopCount = 0;
     }
 }

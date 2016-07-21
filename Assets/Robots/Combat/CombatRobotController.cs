@@ -34,28 +34,36 @@ public class CombatRobotController : RobotController
 
     public override List<string> GetSpecializedInstruction() { return spezializedInstructions; }
 
-    public override string GetDemoInstructions()
+    public override List<string> GetExampleInstructions()
     {
         List<string> demoInstructions = new List<string>()
         {
             Instructions.MoveUp,
-            Instructions.AttackDown,
-            Instructions.MoveHome,
-
-            Instructions.MoveDown,
-            Instructions.AttackUp,
-            Instructions.MoveHome,
-
-            Instructions.MoveLeft,
-            Instructions.AttackRight,
-            Instructions.MoveHome,
-
+            Instructions.MoveUp,
             Instructions.MoveRight,
-            Instructions.AttackLeft,
+            Instructions.MoveRight,
+            Instructions.MoveRight,
+            Instructions.MoveRight,
+            Instructions.MoveDown,
+            Instructions.MoveDown,
             Instructions.MoveHome,
+            //Instructions.AttackDown,
+            //Instructions.MoveHome,
+
+            //Instructions.MoveDown,
+            //Instructions.AttackUp,
+            //Instructions.MoveHome,
+
+            //Instructions.MoveLeft,
+            //Instructions.AttackRight,
+            //Instructions.MoveHome,
+
+            //Instructions.MoveRight,
+            //Instructions.AttackLeft,
+            //Instructions.MoveHome,
         };
 
-        return string.Join("\n", demoInstructions.ToArray());
+        return demoInstructions;
     }
 
     public override string GetName()
@@ -89,5 +97,10 @@ public class CombatRobotController : RobotController
         }
         else
             bodyAnimator.Play("Idle");
+    }
+
+    public override GameObject SpawnPreviewGameObjectClone()
+    {
+        return (GameObject)Instantiate(WorldController.instance.combatRobotPrefab, new Vector3(x, 1, z), Quaternion.identity);
     }
 }

@@ -1148,6 +1148,7 @@ MonoBehaviour:
   inventoryContainer: {fileID: 114290}
   ironPrefab: {fileID: 141874, guid: bb2776006ff9cc14980137a59a164b53, type: 2}
   copperPrefab: {fileID: 137158, guid: a47e3be69f3177f469d40d47f70ed892, type: 2}
+  arrowPrefab: {fileID: 181972, guid: 65c97c1709e830d468dcdb900e3db303, type: 2}
 --- !u!114 &11464056
 MonoBehaviour:
   m_ObjectHideFlags: 1

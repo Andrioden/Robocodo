@@ -87,23 +87,4 @@ public static class Instructions
         return str.Substring(indexOfParenthesesStart + 1, indexOfParenthesesEnd - indexOfParenthesesStart - 1);
     }
 
-    // Outdated after LOOP START with number input was added
-    //public static bool IsValidInstruction(string instruction)
-    //{
-
-    //    return AllInstructions.Contains(instruction);
-    //}
-
-    // Outdated after LOOP START with number input was added
-    //public static bool IsValidInstructionList(List<string> instructions)
-    //{
-    //    foreach (string instructionString in instructions)
-    //    {
-    //        if (!IsValidInstruction(instructionString))
-    //            return false;
-    //    }
-
-    //    return true;
-    //}
-
 }
