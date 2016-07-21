@@ -36,12 +36,6 @@ namespace Robocodo.CSharp.Tests
             Assert.IsTrue(Instructions.IsLoopStartCompleted("LOOP START (45/45)"));
         }
 
-        [TestMethod]
-        public void GetStringInsideParenthesesTest()
-        {
-            Assert.AreEqual("a123", Instructions.GetParenthesesContent("LOOP START (a123)"));
-        }
-
         //[TestMethod]
         //public void RobotInstructionTest()
         //{

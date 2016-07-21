@@ -436,23 +436,23 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         if (instruction == Instructions.LoopStart)
             return;
 
-        string paraContent = Instructions.GetParenthesesContent(instruction);
-        string[] paraContentSlashSplit = paraContent.Split('/');
+        string loopNumber = instruction.Replace(Instructions.LoopStart, "").Trim();
+        string[] loopNumberSplit = loopNumber.Split('/');
 
         int currentLoopCount = -1;
         int totalLoopCount = -1;
 
-        if (paraContentSlashSplit.Length == 1)
+        if (loopNumberSplit.Length == 1)
         {
             // First time running Loop
             currentLoopCount = 1;
-            totalLoopCount = Convert.ToInt32(paraContentSlashSplit[0]);
+            totalLoopCount = Convert.ToInt32(loopNumberSplit[0]);
         }
-        else if (paraContentSlashSplit.Length == 2)
+        else if (loopNumberSplit.Length == 2)
         {
             // Loop has been run before, example 'LOOP START (1/2)' means that it has been run 1 of 2 times
-            currentLoopCount = Convert.ToInt32(paraContentSlashSplit[0]) + 1;
-            totalLoopCount = Convert.ToInt32(paraContentSlashSplit[1]);
+            currentLoopCount = Convert.ToInt32(loopNumberSplit[0]) + 1;
+            totalLoopCount = Convert.ToInt32(loopNumberSplit[1]);
         }
         else
             throw new Exception("Illegal amount of forward slashes in instruction: " + instruction);

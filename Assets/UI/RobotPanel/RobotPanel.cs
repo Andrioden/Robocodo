@@ -324,7 +324,7 @@ public class RobotPanel : MonoBehaviour
     {
         possibleCommandsPanel.SetActive(true);
 
-        var combinedList = robot.commonInstructions.Select(instruction => instruction.ToString()).ToList();
+        var combinedList = robot.commonInstructions;
         combinedList.Add(string.Empty);
         combinedList.Add(string.Empty);
         combinedList.AddRange(robot.GetSpecializedInstruction());
