@@ -68,7 +68,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     public abstract int Settings_Damage();
     public abstract int Settings_StartHealth();
 
-    public List<string> commonInstructions = new List<string>()
+    private List<string> commonInstructions = new List<string>()
     {
         Instructions.MoveUp,
         Instructions.MoveDown,
@@ -79,6 +79,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         Instructions.LoopStart,
         Instructions.LoopEnd
     };
+
+    public List<string> CommonInstructions { get { return commonInstructions; } }
 
 
     // ********** ABSTRACT METHODS  **********

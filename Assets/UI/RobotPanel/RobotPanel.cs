@@ -52,6 +52,7 @@ public class RobotPanel : MonoBehaviour
     private List<string> _indentedInstructionsCache = new List<string>();
     private List<string> _formattedInstructions = new List<string>();
     private int _codeInputCharCountLastEdit = 0;
+    private int lastCaretPosition = 0;
 
     private RobotMovementPreviewer previewer;
     private List<GameObject> previewArrows = new List<GameObject>();
@@ -130,6 +131,30 @@ public class RobotPanel : MonoBehaviour
         CleanUpPreviewer();
     }
 
+    public void AppendNewInstructionAtCaretPosition(string instructionString)
+    {
+        if (string.IsNullOrEmpty(instructionString))
+            throw new Exception("Tried to append empty instruction string to code input.");
+
+        int lastKnowCaretPosition = RobotPanel.instance.GetLastKnownCaretPosition();
+        if (lastKnowCaretPosition > 0)
+        {
+            string caretTextLine = RobotPanel.instance.GetCarretTextLineWithoutLineBreaks(lastKnowCaretPosition - 1);
+
+            instructionString = caretTextLine == string.Empty ? instructionString : "\n" + instructionString;
+            codeInputField.text = codeInputField.text.Insert(lastKnowCaretPosition, instructionString);
+            //TODO: This caret repositioning does not work for loop start. Debug.
+            codeInputField.caretPosition = lastKnowCaretPosition + instructionString.Length;
+        }
+        else
+        {
+            instructionString = codeInputField.text == string.Empty ? instructionString : "\n" + instructionString;
+            codeInputField.text += instructionString;
+        }
+
+        SaveCaretPositions();
+    }
+
     private void CodeInputAutoIndentAndUpperCase(string arg0 = "")
     {
         arg0 = arg0.ToUpper();
@@ -143,7 +168,7 @@ public class RobotPanel : MonoBehaviour
 
         bool changeWasBackspace = _codeInputCharCountLastEdit - arg0.Count() == 1;
         if (!changeWasBackspace)
-            MoveCaret(_indentation);
+            AdjustCaretBasedOnContext();
         _codeInputCharCountLastEdit = codeInputField.text.Count();
 
         if (previewer != null)
@@ -168,9 +193,9 @@ public class RobotPanel : MonoBehaviour
         }
     }
 
-    private void MoveCaret(string indentation, int caretPositionOverride = -1)
+    public void AdjustCaretBasedOnContext()
     {
-        int caretPosition = caretPositionOverride > 0 ? caretPositionOverride : codeInputField.caretPosition;
+        int caretPosition = GetLastKnownCaretPosition();
         if (caretPosition <= 0) return;
 
         string caretTextLine = GetCarretTextLineWithoutLineBreaks(caretPosition);
@@ -178,9 +203,9 @@ public class RobotPanel : MonoBehaviour
 
         int numberOfCharactersInCaretTextLine = caretTextLine.Count();
         if (Utils.ConsistsOfWhiteSpace(caretTextLine))
-            codeInputField.caretPosition += indentation.Count() * numberOfCharactersInCaretTextLine / indentation.Count();
+            codeInputField.caretPosition += _indentation.Count() * numberOfCharactersInCaretTextLine / _indentation.Count();
 
-        LoopEndBetweenInstructionsCaretFix(indentation, caretPosition);
+        LoopEndBetweenInstructionsCaretFix(_indentation, caretPosition);
     }
 
     private void LoopEndBetweenInstructionsCaretFix(string indentation, int caretPosition)
@@ -199,19 +224,37 @@ public class RobotPanel : MonoBehaviour
 
     public string GetCarretTextLineWithoutLineBreaks(int caretPosition)
     {
+        if (caretPosition < codeInputField.text.Length && caretPosition <= 0 || caretPosition > codeInputField.text.Length)
+            return "";
+
         var startOfCaretTextLine = codeInputField.text.LastIndexOf("\n", caretPosition, caretPosition);
         var endOfCaretTextLine = codeInputField.text.IndexOf("\n", caretPosition);
+
+        if (startOfCaretTextLine == -1)
+            startOfCaretTextLine = 0;
+
         if (endOfCaretTextLine == -1)
             endOfCaretTextLine = codeInputField.text.Length;
 
         string caretTextLine = string.Empty;
-        if ((startOfCaretTextLine > 0 && endOfCaretTextLine > 0) && startOfCaretTextLine < endOfCaretTextLine)
+        if ((startOfCaretTextLine >= 0 && endOfCaretTextLine > 0) && startOfCaretTextLine < endOfCaretTextLine)
         {
             caretTextLine = codeInputField.text.Substring(startOfCaretTextLine, endOfCaretTextLine - startOfCaretTextLine);
             return caretTextLine.Replace("\n", "");
         }
 
         return "";
+    }
+
+    public void SaveCaretPositions()
+    {
+        if (codeInputField.caretPosition > 0)
+            lastCaretPosition = codeInputField.caretPosition;
+    }
+
+    public int GetLastKnownCaretPosition()
+    {
+        return codeInputField.caretPosition == 0 ? lastCaretPosition : codeInputField.caretPosition;
     }
 
     private void SetFeedbackText(string feedback, float durationSeconds)
@@ -324,7 +367,7 @@ public class RobotPanel : MonoBehaviour
     {
         possibleCommandsPanel.SetActive(true);
 
-        var combinedList = robot.commonInstructions;
+        var combinedList = robot.CommonInstructions;
         combinedList.Add(string.Empty);
         combinedList.Add(string.Empty);
         combinedList.AddRange(robot.GetSpecializedInstruction());
@@ -391,7 +434,6 @@ public class RobotPanel : MonoBehaviour
 
     private void DrawPreviewArrows()
     {
-        Debug.Log("Drawing preview arrows");
         DestroyPreviewArrows();
 
         foreach (CoordinateDirection coordDir in previewer.GetPreviewCoordinateDirections())

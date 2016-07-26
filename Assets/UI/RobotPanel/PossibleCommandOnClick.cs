@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Linq;
 
 public class PossibleCommandOnClick : MonoBehaviour
 {
     InputField codeInputField;
     string instruction;
-    int lastCaretPosition = 0;
 
     public void SetupPossibleCommand(InputField codeInputField, string instruction)
     {
@@ -16,8 +16,7 @@ public class PossibleCommandOnClick : MonoBehaviour
 
     public void StoreCaretPosition()
     {
-        if (codeInputField != null)
-            lastCaretPosition = codeInputField.caretPosition;
+        RobotPanel.instance.SaveCaretPositions();
     }
 
     public void CopyInstructionToCodeInput()
@@ -26,11 +25,8 @@ public class PossibleCommandOnClick : MonoBehaviour
         {
             if (instruction != string.Empty)
             {
-                if (lastCaretPosition > 0)
-                    codeInputField.text = codeInputField.text.Insert(lastCaretPosition, "\n" + instruction);
-                else
-                    codeInputField.text += codeInputField.text == string.Empty ? instruction : "\n" + instruction;
+                RobotPanel.instance.AppendNewInstructionAtCaretPosition(instruction);
             }
         }
-    }
+    }    
 }
