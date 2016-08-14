@@ -366,12 +366,10 @@ public class RobotPanel : MonoBehaviour
     private void SetupPossibleCommands()
     {
         possibleCommandsPanel.SetActive(true);
-
-        var combinedList = robot.CommonInstructions;
+        var combinedList = robot.CommonInstructions.ToList();
         combinedList.Add(string.Empty);
         combinedList.Add(string.Empty);
         combinedList.AddRange(robot.GetSpecializedInstruction());
-
         possibleCommandsContainer.transform.DestroyChildren();
 
         foreach (string instruction in combinedList)
@@ -395,7 +393,8 @@ public class RobotPanel : MonoBehaviour
         {
             if (robot.CurrentInstructionIndexIsValid)
                 _formattedInstructions[robot.CurrentInstructionIndex] = ColorTextOnCondition(true, "#D5A042FF", _formattedInstructions[robot.CurrentInstructionIndex]);
-            else {
+            else
+            {
                 _formattedInstructions[robot.CurrentInstructionIndex] = ColorTextOnCondition(true, Color.red, _formattedInstructions[robot.CurrentInstructionIndex]);
                 SetFeedbackText(ColorTextOnCondition(true, Color.red, robot.Feedback), 0);
             }
