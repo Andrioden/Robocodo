@@ -141,11 +141,9 @@ public class RobotPanel : MonoBehaviour
         if (lastKnowCaretPosition > 0)
         {
             string caretTextLine = RobotPanel.instance.GetCarretTextLineWithoutLineBreaks(lastKnowCaretPosition - 1);
-
             instructionString = caretTextLine == string.Empty ? instructionString : "\n" + instructionString;
-            codeInputField.text = codeInputField.text.Insert(lastKnowCaretPosition, instructionString);
-            //TODO: This caret repositioning does not work for loop start. Debug.
-            codeInputField.caretPosition = lastKnowCaretPosition + instructionString.Length;
+            codeInputField.text = codeInputField.text.Insert(GetEndIndexOfCaretLine(lastKnowCaretPosition), instructionString);
+            codeInputField.caretPosition = lastKnowCaretPosition + instructionString.Length; //Won't be end of line if indented. Get end of line when inserting next instruction.
         }
         else
         {
@@ -184,7 +182,7 @@ public class RobotPanel : MonoBehaviour
         int currentIndentionLevel = 0;
         for (int i = 0; i < instructions.Count; i++)
         {
-            if (instructions[i].Contains(Instructions.LoopEnd))
+            if (instructions[i].Contains(Instructions.LoopEnd) && currentIndentionLevel > 0)
                 currentIndentionLevel--;
 
             instructions[i] = Utils.RepeatString(indentation, currentIndentionLevel) + instructions[i];
@@ -228,14 +226,8 @@ public class RobotPanel : MonoBehaviour
         if (caretPosition < codeInputField.text.Length && caretPosition <= 0 || caretPosition > codeInputField.text.Length)
             return "";
 
-        var startOfCaretTextLine = codeInputField.text.LastIndexOf("\n", caretPosition, caretPosition);
-        var endOfCaretTextLine = codeInputField.text.IndexOf("\n", caretPosition);
-
-        if (startOfCaretTextLine == -1)
-            startOfCaretTextLine = 0;
-
-        if (endOfCaretTextLine == -1)
-            endOfCaretTextLine = codeInputField.text.Length;
+        var startOfCaretTextLine = GetStartIndexOfCaretLine(caretPosition);
+        var endOfCaretTextLine = GetEndIndexOfCaretLine(caretPosition);        
 
         string caretTextLine = string.Empty;
         if ((startOfCaretTextLine >= 0 && endOfCaretTextLine > 0) && startOfCaretTextLine < endOfCaretTextLine)
@@ -245,6 +237,32 @@ public class RobotPanel : MonoBehaviour
         }
 
         return "";
+    }
+
+    public int GetStartIndexOfCaretLine(int caretPosition)
+    {
+        if (caretPosition < codeInputField.text.Length && caretPosition <= 0 || caretPosition > codeInputField.text.Length)
+            return 0;
+
+        int startOfCaretTextLine = codeInputField.text.LastIndexOf("\n", caretPosition, caretPosition);
+
+        if (startOfCaretTextLine == -1)
+            startOfCaretTextLine = 0;
+
+        return startOfCaretTextLine;
+    }
+
+    public int GetEndIndexOfCaretLine(int caretPosition)
+    {
+        if (caretPosition < codeInputField.text.Length && caretPosition <= 0 || caretPosition > codeInputField.text.Length)
+            return 0;
+
+        var endOfCaretTextLine = codeInputField.text.IndexOf("\n", caretPosition);
+
+        if (endOfCaretTextLine == -1)
+            endOfCaretTextLine = codeInputField.text.Length;
+
+        return endOfCaretTextLine;
     }
 
     public void SaveCaretPositions()
