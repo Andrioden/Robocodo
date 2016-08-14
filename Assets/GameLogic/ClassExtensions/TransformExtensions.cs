@@ -29,9 +29,7 @@ namespace Assets.GameLogic.ClassExtensions
             var tempList = transform.Cast<Transform>().ToList();
 
             foreach (Transform child in tempList)
-            {
                 GameObject.DestroyImmediate(child.gameObject);
-            }
 
             return transform;
         }
