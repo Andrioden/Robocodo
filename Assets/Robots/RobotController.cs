@@ -23,7 +23,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private string feedback = "";
     public string Feedback { get { return feedback; } }
 
-    [SyncVar]
+    [SyncVar(hook = "OnIsStartedChanged")]
     private bool isStarted = false;
     public bool IsStarted { get { return isStarted; } }
 
@@ -140,14 +140,14 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     }
 
     [Command]
-    public void SalvageWhenHome()
+    public void CmdSalvageWhenHome()
     {
         willSalvageWhenHome = true;
         willReprogramWhenHome = false;
     }
 
     [Command]
-    public void ReprogramWhenHome()
+    public void CmdReprogramWhenHome()
     {
         willSalvageWhenHome = false;
         willReprogramWhenHome = true;
@@ -191,6 +191,12 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         Animate();
     }
 
+    private void OnIsStartedChanged(bool newValue)
+    {
+        isStarted = newValue;
+        RobotPanel.instance.RefreshPanel(this);
+    }
+
     [Client]
     public void RunCode(List<string> newInstructions)
     {
@@ -206,6 +212,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             SetInstructions(instructionsCSV);
             CmdSetInstructions(instructionsCSV);
             CmdStartRobot();
+
+            //For quicker response when changing from setup mode to running mode in GUI. Will be overridden by server when syncvar is synced.
+            isStarted = true;
         }
     }
 

@@ -493,7 +493,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 073935ba82a3dc847bfd3da2044af741, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panel: {fileID: 1990651308}
+  panel: {fileID: 0}
 --- !u!1 &1351560966
 GameObject:
   m_ObjectHideFlags: 0
@@ -1165,10 +1165,6 @@ RectTransform:
   m_PrefabParentObject: {fileID: 22450806, guid: e8b0df87f41d77e4ea89e66390955336,
     type: 2}
   m_PrefabInternal: {fileID: 1990651306}
---- !u!1 &1990651308 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 104964, guid: e8b0df87f41d77e4ea89e66390955336, type: 2}
-  m_PrefabInternal: {fileID: 1990651306}
 --- !u!1 &2113597373
 GameObject:
   m_ObjectHideFlags: 0
@@ -1196,8 +1192,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a20d245c6f3a3d49a69143fa0d34df8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldControllerPrefab: {fileID: 190096, guid: a52a093a005a4704ca0b0b49c72156c5,
-    type: 2}
+  worldControllerPrefab: {fileID: 0}
 --- !u!4 &2113597375
 Transform:
   m_ObjectHideFlags: 0

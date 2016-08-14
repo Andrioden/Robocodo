@@ -21,6 +21,12 @@ public class RobotPanel : MonoBehaviour
     public Button runButton;
     public Button closeButton;
 
+    public Button reprogramButton;
+    private Image reprogramButtonImage;
+
+    public Button salvageButton;
+    private Image salvageButtonImage;
+
     public Text codeInputLabel;
     public InputField codeInputField;
     public GameObject codeInputPanel;
@@ -58,6 +64,9 @@ public class RobotPanel : MonoBehaviour
     private List<GameObject> previewArrows = new List<GameObject>();
     private float drawPreviewArrowTime = -1f;
 
+    private Color _highlightColor;
+    private Color _defaultButtonStateColors;
+
     private void Awake()
     {
         if (instance == null)
@@ -74,6 +83,9 @@ public class RobotPanel : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         RobotController.OnInventoryChanged += InventoryUpdated;
+
+        _highlightColor = Utils.HexToColor("#D5A042FF");
+        _defaultButtonStateColors = runButton.GetComponent<Image>().color;
     }
 
     private void Update()
@@ -95,7 +107,7 @@ public class RobotPanel : MonoBehaviour
         }
     }
 
-    public void ShowPanel(RobotController robot)
+    public void ShowPanel(this RobotController robot)
     {
         this.robot = robot;
         this.robot.GetInstructions().Callback += RobotInstructionsWasUpdated;
@@ -103,11 +115,24 @@ public class RobotPanel : MonoBehaviour
         KeyboardManager.KeyboardLockOff();
 
         if (robot.IsStarted)
-            EnableRunnningModePanel();
+            EnableRunningModePanel();
         else
             EnableSetupModePanel();
 
         animator.Play("RobotMenuSlideIn");
+    }
+
+    public void RefreshPanel(RobotController robot)
+    {
+        if (this.robot != null && robot == this.robot)
+        {
+            KeyboardManager.KeyboardLockOff();
+
+            if (robot.IsStarted)
+                EnableRunningModePanel();
+            else
+                EnableSetupModePanel();
+        }
     }
 
     private void RunCode()
@@ -118,7 +143,7 @@ public class RobotPanel : MonoBehaviour
         robot.RunCode(instructions);
 
         if (robot.IsStarted)
-            EnableRunnningModePanel();
+            EnableRunningModePanel();
 
         CleanUpPreviewer();
     }
@@ -227,7 +252,7 @@ public class RobotPanel : MonoBehaviour
             return "";
 
         var startOfCaretTextLine = GetStartIndexOfCaretLine(caretPosition);
-        var endOfCaretTextLine = GetEndIndexOfCaretLine(caretPosition);        
+        var endOfCaretTextLine = GetEndIndexOfCaretLine(caretPosition);
 
         string caretTextLine = string.Empty;
         if ((startOfCaretTextLine >= 0 && endOfCaretTextLine > 0) && startOfCaretTextLine < endOfCaretTextLine)
@@ -352,7 +377,7 @@ public class RobotPanel : MonoBehaviour
         DrawPreviewArrows();
     }
 
-    private void EnableRunnningModePanel()
+    private void EnableRunningModePanel()
     {
         titleText.text = robot.GetName();
         LoadInstructionsFromRobot();
@@ -361,11 +386,44 @@ public class RobotPanel : MonoBehaviour
         codeOutputPanel.SetActive(true);
         inventoryPanel.SetActive(true);
 
+        SetupReprogramAndSalvageButtons();
         closeButton.onClick.RemoveAllListeners();
         closeButton.onClick.AddListener(ClosePanel);
 
         codeInputPanel.SetActive(false);
         possibleCommandsPanel.SetActive(false);
+    }
+
+    private void SetupReprogramAndSalvageButtons()
+    {
+        reprogramButton.onClick.RemoveAllListeners();
+        reprogramButton.onClick.AddListener(TriggerReprogramming);
+        //reprogramButton.onClick.AddListener(UpdateReprogramAndSalvageButtonsState);
+
+        salvageButton.onClick.RemoveAllListeners();
+        salvageButton.onClick.AddListener(TriggerSalvaging);
+        //salvageButton.onClick.AddListener(UpdateReprogramAndSalvageButtonsState);
+
+        //UpdateReprogramAndSalvageButtonsState();
+    }
+
+    private void UpdateReprogramAndSalvageButtonsState()
+    {
+        if (reprogramButtonImage == null)
+            reprogramButtonImage = reprogramButton.GetComponent<Image>();
+
+        if (salvageButtonImage == null)
+            salvageButtonImage = salvageButton.GetComponent<Image>();
+
+        if (robot.WillReprogramWhenHome)
+            reprogramButtonImage.color = _highlightColor;
+        else
+            reprogramButtonImage.color = _defaultButtonStateColors;
+
+        if (robot.WillSalvageWhenHome)
+            salvageButtonImage.color = _highlightColor;
+        else
+            salvageButtonImage.color = _defaultButtonStateColors;
     }
 
     private string ColorTextOnCondition(bool condition, Color color, string text)
@@ -411,7 +469,7 @@ public class RobotPanel : MonoBehaviour
         if (robot.IsStarted)
         {
             if (robot.CurrentInstructionIndexIsValid)
-                _formattedInstructions[robot.CurrentInstructionIndex] = ColorTextOnCondition(true, "#D5A042FF", _formattedInstructions[robot.CurrentInstructionIndex]);
+                _formattedInstructions[robot.CurrentInstructionIndex] = ColorTextOnCondition(true, _highlightColor, _formattedInstructions[robot.CurrentInstructionIndex]);
             else
             {
                 _formattedInstructions[robot.CurrentInstructionIndex] = ColorTextOnCondition(true, Color.red, _formattedInstructions[robot.CurrentInstructionIndex]);
@@ -480,4 +538,13 @@ public class RobotPanel : MonoBehaviour
             Destroy(arrow);
     }
 
+    public void TriggerReprogramming()
+    {
+        robot.CmdReprogramWhenHome();
+    }
+
+    public void TriggerSalvaging()
+    {
+        robot.CmdSalvageWhenHome();
+    }
 }
