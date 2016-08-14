@@ -306,6 +306,12 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     public void RunNextInstruction(object sender)
     {
+        if (instructions.Count == 0)
+        {
+            SetFeedback("NO INSTRUCTIONS");
+            return;
+        }
+
         currentInstructionIndexIsValid = true;
         currentInstructionIndex = nextInstructionIndex;
         string instruction = instructions[nextInstructionIndex].Trim();
@@ -391,7 +397,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         else if (instruction == Instructions.AttackLeft && !isPreviewRobot)
             AttackPosition(x - 1, z);
         else
-            SetFeedback("UNKNOWN COMMAND");
+            SetFeedback(string.Format("UNKNOWN COMMAND: '{0}'", instruction));
 
         InstructionCompleted();
     }

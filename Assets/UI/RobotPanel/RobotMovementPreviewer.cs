@@ -35,6 +35,9 @@ public class RobotMovementPreviewer
 
     public List<CoordinateDirection> GetPreviewCoordinateDirections()
     {
+        if (robotCloneController.GetInstructions().Count == 0)
+            return new List<CoordinateDirection>();
+
         List<Coordinate> coords = new List<Coordinate>();
         coords.Add(robotCloneController.GetCoordinate());
 
