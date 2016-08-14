@@ -47,8 +47,13 @@ public class RobotMovementPreviewer
             if (nextCoordinate.x != prevCoordinateDir.x || nextCoordinate.z != prevCoordinateDir.z)
                 coords.Add(nextCoordinate);
 
-            if (robotCloneController.InstructionsMainLoopCount > 0 || robotCloneController.Energy <= 0 || instructionsRun > Settings_MaxPreviewInstructions)
+            if (robotCloneController.InstructionsMainLoopCount > 0 || robotCloneController.Energy <= 0)
                 break;
+            else if (instructionsRun > Settings_MaxPreviewInstructions)
+            {
+                Debug.LogWarning("Robot preview algorithm exceeded settings for max preview instructions.");
+                break;
+            }
 
             instructionsRun++;
         }

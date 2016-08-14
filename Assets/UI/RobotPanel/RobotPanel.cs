@@ -126,6 +126,7 @@ public class RobotPanel : MonoBehaviour
     public void ClosePanel()
     {
         KeyboardManager.KeyboardLockOff();
+        robot.GetInstructions().Callback -= RobotInstructionsWasUpdated;
         robot = null;
         animator.Play("RobotMenuSlideOut");
         CleanUpPreviewer();

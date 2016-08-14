@@ -77,7 +77,7 @@ public class CombatRobotController : RobotController
     protected override void Animate()
     {
         string instruction = instructions.Count > 0 ? instructions[currentInstructionIndex] : string.Empty;
-        if (CurrentInstructionIndexIsValid)
+        if (CurrentInstructionIndexIsValid && IsStarted)
         {
             if (new List<string>() { Instructions.AttackUp, Instructions.AttackLeft, Instructions.AttackRight, Instructions.AttackDown }.Any(instruction.Contains))
             {

@@ -49,7 +49,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     public delegate void InventoryChanged(RobotController robot);
     public static event InventoryChanged OnInventoryChanged;
 
-    private bool salvageWhenHome = false;
+    public bool salvageWhenHome = false;
+    public bool reprogramWhenHome = false;
 
     [SyncVar]
     private int energy;
@@ -107,12 +108,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     private void OnDestroy()
     {
-        // Has to be run without server check because the server variable is not set after network destroy.
-        // It is ok that it runs on the server. Trying to desubsribe a method that isnt subscribed is ok.
-        if (Settings_IPT() == 1)
-            WorldTickController.instance.TickEvent -= RunNextInstruction;
-        else if (Settings_IPT() == 2)
-            WorldTickController.instance.HalfTickEvent -= RunNextInstruction;
+        StopRobot();
     }
 
     public void Click()
@@ -171,7 +167,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         transform.LookAt(facePosition.Value);
     }
 
-    void OnCurrentInstructionIndexUpdates(int newCurrentInstructionIndex)
+    private void OnCurrentInstructionIndexUpdates(int newCurrentInstructionIndex)
     {
         currentInstructionIndex = newCurrentInstructionIndex;
         Animate();
@@ -192,7 +188,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             SetInstructions(instructionsCSV);
             CmdSetInstructions(instructionsCSV);
             CmdStartRobot();
-            isStarted = true;
         }
     }
 
@@ -227,12 +222,12 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         List<string> demoInstructions = new List<string>()
         {
-            Instructions.MoveUp,
-            Instructions.MoveUp,
-            Instructions.MoveUp,
-            Instructions.MoveUp,
-            Instructions.MoveUp,
-            Instructions.MoveHome
+            //Instructions.MoveUp,
+            //Instructions.MoveUp,
+            //Instructions.MoveUp,
+            //Instructions.MoveUp,
+            //Instructions.MoveUp,
+            //Instructions.MoveHome
         };
 
         //List<string> demoInstructions = new List<string>()
@@ -289,12 +284,24 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private void CmdStartRobot()
     {
         Debug.Log("Server: Starting robot");
+        isStarted = true;
         if (Settings_IPT() == 1)
             WorldTickController.instance.TickEvent += RunNextInstruction;
         else if (Settings_IPT() == 2)
             WorldTickController.instance.HalfTickEvent += RunNextInstruction;
         else
             throw new Exception("IPT value not supported: " + Settings_IPT());
+    }
+
+    private void StopRobot()
+    {
+        isStarted = false;
+        // Has to be run without server check because the server variable is not set after network destroy.
+        // It is ok that it runs on the server. Trying to desubsribe a method that isnt subscribed is ok.
+        if (Settings_IPT() == 1)
+            WorldTickController.instance.TickEvent -= RunNextInstruction;
+        else if (Settings_IPT() == 2)
+            WorldTickController.instance.HalfTickEvent -= RunNextInstruction;
     }
 
     public void RunNextInstruction(object sender)
@@ -308,8 +315,17 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         if (IsHome())
         {
             energy = Settings_MaxEnergy();
+
             if (salvageWhenHome)
+            {
                 SalvageRobot();
+                return;
+            }
+            else if (reprogramWhenHome)
+            {
+                ReprogramRobot();
+                return;
+            }
         }
 
         if (energy <= 0)
@@ -324,10 +340,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         else if (instruction == Instructions.MoveDown)
             ChangePosition(x, z - 1);
         else if (instruction == Instructions.MoveRight)
-        {
             ChangePosition(x + 1, z);
-            //salvageWhenHome = true;
-        }
         else if (instruction == Instructions.MoveLeft)
             ChangePosition(x - 1, z);
         else if (instruction == Instructions.MoveHome)
@@ -392,7 +405,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private void ChangePosition(float newPosX, float newPosZ)
     {
         if (newPosX >= WorldController.instance.Width || newPosX < 0 || newPosZ >= WorldController.instance.Height || newPosZ < 0)
-            SetFeedback("Can't move there");
+            SetFeedback("CAN NOT MOVE THERE");
         else
         {
             x = newPosX;
@@ -514,7 +527,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             }
         }
 
-        SetFeedback("Could not find matching LOOP START");
+        SetFeedback("COULD NOT FIND MATCHING LOOP START");
     }
 
     [Server]
@@ -643,6 +656,33 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         playerCity.AddToInventory(salvagedResources);
 
         NetworkServer.Destroy(gameObject);
+    }
+
+    [Server]
+    private void ReprogramRobot()
+    {
+        if (isPreviewRobot) // TODO: REMOVE. This code can be removed when testing is done because it should never be reached by the preview code
+            return;
+
+        reprogramWhenHome = false;
+
+        PlayerCityController playerCity = FindPlayerCityControllerOnPosition();
+
+        int reprogramCopperCost = MathUtils.RoundMin1IfHasValue(Settings_CopperCost() * Settings.Robot_ReprogramPercentage / 100.0);
+        int reprogramIronCost = MathUtils.RoundMin1IfHasValue(Settings_IronCost() * Settings.Robot_ReprogramPercentage / 100.0);
+
+        if (playerCity.GetCopperCount() >= reprogramCopperCost && playerCity.GetIronCount() >= reprogramIronCost)
+        {
+            playerCity.RemoveResources(reprogramCopperCost, reprogramIronCost);
+
+            StopRobot();
+            SetInstructions(GetExampleInstructions());
+            currentInstructionIndex = 0;
+            currentInstructionIndexIsValid = true;
+            instructionsMainLoopCount = 0;
+        }
+        else
+            SetFeedback("NOT ENOUGH RESOURCES TO REPROGRAM");
     }
 
     public string GetOwner()
