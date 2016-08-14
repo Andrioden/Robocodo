@@ -49,8 +49,12 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     public delegate void InventoryChanged(RobotController robot);
     public static event InventoryChanged OnInventoryChanged;
 
-    public bool salvageWhenHome = false;
-    public bool reprogramWhenHome = false;
+    [SyncVar]
+    private bool willSalvageWhenHome = false;
+    public bool WillSalvageWhenHome { get { return willSalvageWhenHome; } }
+    [SyncVar]
+    private bool willReprogramWhenHome = false;
+    public bool WillReprogramWhenHome { get { return willReprogramWhenHome; } }
 
     [SyncVar]
     private int energy;
@@ -133,6 +137,20 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     public Coordinate GetCoordinate()
     {
         return new Coordinate((int)x, (int)z);
+    }
+
+    [Command]
+    public void SalvageWhenHome()
+    {
+        willSalvageWhenHome = true;
+        willReprogramWhenHome = false;
+    }
+
+    [Command]
+    public void ReprogramWhenHome()
+    {
+        willSalvageWhenHome = false;
+        willReprogramWhenHome = true;
     }
 
     [Client]
@@ -322,12 +340,12 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         {
             energy = Settings_MaxEnergy();
 
-            if (salvageWhenHome)
+            if (willSalvageWhenHome)
             {
                 SalvageRobot();
                 return;
             }
-            else if (reprogramWhenHome)
+            else if (willReprogramWhenHome)
             {
                 ReprogramRobot();
                 return;
@@ -670,7 +688,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         if (isPreviewRobot) // TODO: REMOVE. This code can be removed when testing is done because it should never be reached by the preview code
             return;
 
-        reprogramWhenHome = false;
+        willReprogramWhenHome = false;
 
         PlayerCityController playerCity = FindPlayerCityControllerOnPosition();
 
