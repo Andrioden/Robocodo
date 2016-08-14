@@ -10,6 +10,10 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
 {
     public MeshRenderer bodyMeshRenderer;
 
+    [SyncVar]
+    private string playerNick;
+    public string PlayerNick { get { return playerNick; } }
+
     private List<GameObject> ownedGameObjects = new List<GameObject>();
     private List<InventoryItem> inventory = new List<InventoryItem>();
 
@@ -25,7 +29,10 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
         health = Settings_StartHealth;
 
         if (isLocalPlayer)
+        {
             ResourcePanel.instance.RegisterLocalPlayerCity(this);
+            CmdRegisterPlayerNick(NetworkPanel.instance.nickInput.text);
+        }
 
         if (isServer)
             AddToInventory(new List<InventoryItem>()
@@ -165,4 +172,22 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
             Destroy(gameObject);
         }
     }
+
+    [Command]
+    private void CmdRegisterPlayerNick(string nick)
+    {
+        List<string> currentNicks = new List<string>();
+        foreach (GameObject go in GameObject.FindGameObjectsWithTag("PlayerCity"))
+        {
+            PlayerCityController playerCity = go.GetComponent<PlayerCityController>();
+            if (!string.IsNullOrEmpty(playerCity.PlayerNick))
+                currentNicks.Add(playerCity.PlayerNick);
+        }
+
+        if (!currentNicks.Contains(nick))
+            playerNick = nick;
+        else
+            playerNick = nick + (currentNicks.Count(n => n.Contains(nick)) + 1);
+    }
+
 }

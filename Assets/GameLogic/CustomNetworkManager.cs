@@ -8,22 +8,11 @@ public class CustomNetworkManager : NetworkManager
 
     public GameObject worldControllerPrefab;
 
-    // Use this for initialization
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public override void OnClientConnect(NetworkConnection conn)
     {
         ClientScene.Ready(conn);
         ClientScene.AddPlayer((short)numPlayers);
+        NetworkPanel.instance.feedbackText.text = "";
     }
 
     public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)

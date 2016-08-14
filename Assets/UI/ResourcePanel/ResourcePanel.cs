@@ -6,6 +6,7 @@ using System.Linq;
 public class ResourcePanel : MonoBehaviour
 {
 
+    public Text nickLabel;
     public Text copperLabel;
     public Text ironLabel;
 
@@ -40,8 +41,15 @@ public class ResourcePanel : MonoBehaviour
     {
         if (localPlayerCity != null)
         {
+            nickLabel.text = localPlayerCity.PlayerNick;
             copperLabel.text = "Copper: " + localPlayerCity.GetCopperCount();
             ironLabel.text = "Iron: " + localPlayerCity.GetIronCount();
+        }
+        else
+        {
+            nickLabel.text = "";
+            copperLabel.text = "Copper: " + 0;
+            ironLabel.text = "Iron: " + 0;
         }
     }
 
