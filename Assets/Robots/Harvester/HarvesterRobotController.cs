@@ -17,9 +17,11 @@ public class HarvesterRobotController : RobotController
     // ********** SETTINGS **********
 
     public static string Settings_Name = "HARVESTER";
-    public static int Settings_CopperCost = 1;
-    public static int Settings_IronCost = 3;
+    public static int Settings_copperCost = 1;
+    public static int Settings_ironCost = 3;
 
+    public override int Settings_CopperCost() { return Settings_copperCost; }
+    public override int Settings_IronCost() { return Settings_ironCost; }
     public override int Settings_Memory() { return 20; }
     public override int Settings_IPT() { return 1; }
     public override int Settings_MaxEnergy() { return 50; }

@@ -14,8 +14,11 @@ public class CombatRobotController : RobotController
     // ********** SETTINGS **********
 
     public static string Settings_Name = "PREDATOR";
-    public static int Settings_CopperCost = 5;
-    public static int Settings_IronCost = 2;
+    public static int Settings_copperCost = 5;
+    public static int Settings_ironCost = 2;
+
+    public override int Settings_CopperCost() { return Settings_copperCost; }
+    public override int Settings_IronCost() { return Settings_ironCost; }
     public override int Settings_Memory() { return 200; }
     public override int Settings_IPT() { return 1; }
     public override int Settings_MaxEnergy() { return 50; }

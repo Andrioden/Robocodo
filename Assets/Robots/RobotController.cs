@@ -49,6 +49,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     public delegate void InventoryChanged(RobotController robot);
     public static event InventoryChanged OnInventoryChanged;
 
+    private bool salvageWhenHome = false;
+
     [SyncVar]
     private int energy;
     public int Energy { get { return energy; } }
@@ -59,8 +61,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     // ********** SETTINGS **********
 
-    //public abstract int Settings_CopperCost(); // Might not be needed, because do you need to know the cost of the instance?
-    //public abstract int Settings_IronCost(); // Might not be needed, because do you need to know the cost of the instance?
+    public abstract int Settings_CopperCost();
+    public abstract int Settings_IronCost();
     public abstract int Settings_Memory();
     public abstract int Settings_IPT(); // Instructions Per Tick. Cant call it speed because it can be confused with move speed.
     public abstract int Settings_MaxEnergy();
@@ -105,13 +107,12 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     private void OnDestroy()
     {
-        if (isServer)
-        {
-            if (Settings_IPT() == 1)
-                WorldTickController.instance.TickEvent -= RunNextInstruction;
-            else if (Settings_IPT() == 2)
-                WorldTickController.instance.HalfTickEvent -= RunNextInstruction;
-        }
+        // Has to be run without server check because the server variable is not set after network destroy.
+        // It is ok that it runs on the server. Trying to desubsribe a method that isnt subscribed is ok.
+        if (Settings_IPT() == 1)
+            WorldTickController.instance.TickEvent -= RunNextInstruction;
+        else if (Settings_IPT() == 2)
+            WorldTickController.instance.HalfTickEvent -= RunNextInstruction;
     }
 
     public void Click()
@@ -302,6 +303,15 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         currentInstructionIndex = nextInstructionIndex;
         string instruction = instructions[nextInstructionIndex].Trim();
 
+        //Debug.Log("SERVER: Running instruction: " + instruction);
+
+        if (IsHome())
+        {
+            energy = Settings_MaxEnergy();
+            if (salvageWhenHome)
+                SalvageRobot();
+        }
+
         if (energy <= 0)
         {
             SetFeedback("NOT ENOUGH ENERGY");
@@ -309,14 +319,15 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         }
         energy--;
 
-        //Debug.Log("SERVER: Running instruction: " + instruction);
-
         if (instruction == Instructions.MoveUp)
             ChangePosition(x, z + 1);
         else if (instruction == Instructions.MoveDown)
             ChangePosition(x, z - 1);
         else if (instruction == Instructions.MoveRight)
+        {
             ChangePosition(x + 1, z);
+            //salvageWhenHome = true;
+        }
         else if (instruction == Instructions.MoveLeft)
             ChangePosition(x - 1, z);
         else if (instruction == Instructions.MoveHome)
@@ -428,9 +439,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             ResetAllInnerLoopStarts(nextInstructionIndex);
             instructionsMainLoopCount++;
         }
-
-        if (IsHome())
-            energy = Settings_MaxEnergy();
     }
 
     private void IterateLoopStartCounterIfNeeded(string instruction)
@@ -612,6 +620,29 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
         if (health <= 0)
             NetworkServer.Destroy(gameObject);
+    }
+
+    [Server]
+    private void SalvageRobot()
+    {
+        if (isPreviewRobot) // TODO: REMOVE. This code can be removed when testing is done because it should never be reached by the preview code
+            return;
+
+        PlayerCityController playerCity = FindPlayerCityControllerOnPosition();
+
+        List<InventoryItem> salvagedResources = new List<InventoryItem>();
+
+        int salvagedCopper = MathUtils.RoundMin1IfHasValue(Settings_CopperCost() * Settings.Robot_SalvagePercentage / 100.0);
+        for (int c = 0; c < salvagedCopper; c++)
+            salvagedResources.Add(new CopperItem());
+
+        int salvagedIron = MathUtils.RoundMin1IfHasValue(Settings_IronCost() * Settings.Robot_SalvagePercentage / 100.0);
+        for (int c = 0; c < salvagedIron; c++)
+            salvagedResources.Add(new IronItem());
+
+        playerCity.AddToInventory(salvagedResources);
+
+        NetworkServer.Destroy(gameObject);
     }
 
     public string GetOwner()

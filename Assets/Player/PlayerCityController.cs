@@ -89,10 +89,10 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
     public void CmdBuyHarvesterRobot()
     {
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
-        if (GetCopperCount() >= HarvesterRobotController.Settings_CopperCost && GetIronCount() >= HarvesterRobotController.Settings_IronCost)
+        if (GetCopperCount() >= HarvesterRobotController.Settings_copperCost && GetIronCount() >= HarvesterRobotController.Settings_ironCost)
         {
             CmdSpawnHarvesterRobot((int)transform.position.x, (int)transform.position.z);
-            RemoveResources(HarvesterRobotController.Settings_CopperCost, HarvesterRobotController.Settings_IronCost);
+            RemoveResources(HarvesterRobotController.Settings_copperCost, HarvesterRobotController.Settings_ironCost);
         }
     }
 
@@ -100,10 +100,10 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
     public void CmdBuyCombatRobot()
     {
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
-        if (GetCopperCount() >= CombatRobotController.Settings_CopperCost && GetIronCount() >= CombatRobotController.Settings_IronCost)
+        if (GetCopperCount() >= CombatRobotController.Settings_copperCost && GetIronCount() >= CombatRobotController.Settings_ironCost)
         {
             CmdSpawnCombatRobot((int)transform.position.x, (int)transform.position.z);
-            RemoveResources(CombatRobotController.Settings_CopperCost, CombatRobotController.Settings_IronCost);
+            RemoveResources(CombatRobotController.Settings_copperCost, CombatRobotController.Settings_ironCost);
         }
     }
 

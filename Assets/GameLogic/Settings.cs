@@ -7,4 +7,6 @@
     public static int Resource_MaxItemsPerNode = 200;
 
     public static int Player_AmountOfStartingHarvesterRobots = 2;
+
+    public static int Robot_SalvagePercentage = 25;
 }

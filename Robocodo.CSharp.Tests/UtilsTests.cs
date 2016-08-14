@@ -7,24 +7,24 @@ using System.Threading.Tasks;
 
 namespace Tests
 {
-    [TestClass()]
+    [TestClass]
     public class UtilsTests
     {
-        [TestMethod()]
+        [TestMethod]
         public void RandomIntTest()
         {
             Assert.AreEqual(0, Utils.RandomInt(0, 0));
             Assert.AreEqual(1, Utils.RandomInt(1, 1));
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void RandomDoubleTest()
         {
             Assert.AreEqual(0, Utils.RandomDouble(0, 0));
             Assert.AreEqual(1, Utils.RandomDouble(1, 1));
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void PercentageRollTest()
         {
             double percentChance = 0.1 * 2.0;

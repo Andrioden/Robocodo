@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace Tests
 {
-    [TestClass()]
+    [TestClass]
     public class MathUtilsTests
     {
-        [TestMethod()]
+        [TestMethod]
         public void DistanceTest()
         {
             Assert.AreEqual(0, MathUtils.Distance(0, 0, 0, 0)); // Same spot
@@ -18,7 +18,7 @@ namespace Tests
             Assert.AreEqual(3, MathUtils.Distance(0, 0, 3, 0)); // A Line
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void LinearConversionTest()
         {
             Assert.AreEqual(0, MathUtils.LinearConversion(0, 200, 0, 100, 0));
@@ -28,13 +28,13 @@ namespace Tests
             Assert.AreEqual(1, MathUtils.LinearConversion(1, 10, 1, 5, 2));
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void LinearConversionDoubleTest()
         { 
             Assert.AreEqual(0.5, MathUtils.LinearConversionDouble(0, 200, 0, 100, 1));
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void LinearConversionInvertedTest()
         {
             Assert.AreEqual(1, MathUtils.LinearConversionInverted(0.0, 1.0, 1));
@@ -42,6 +42,16 @@ namespace Tests
             Assert.AreEqual(50, MathUtils.LinearConversionInverted(5.0, 10.0, 100));
             Assert.AreEqual(0, MathUtils.LinearConversionInverted(1.0, 1.0, 100));
             Assert.AreEqual(25, MathUtils.LinearConversionInverted(3.0, 4.0, 100));
+        }
+
+        [TestMethod]
+        public void RoundMin1IfHasValueTest()
+        {
+            Assert.AreEqual(0, MathUtils.RoundMin1IfHasValue(0.0));
+            Assert.AreEqual(1, MathUtils.RoundMin1IfHasValue(0.1));
+            Assert.AreEqual(1, MathUtils.RoundMin1IfHasValue(1.1));
+            Assert.AreEqual(2, MathUtils.RoundMin1IfHasValue(1.6));
+            Assert.AreEqual(2, MathUtils.RoundMin1IfHasValue(2.4));
         }
     }
 }

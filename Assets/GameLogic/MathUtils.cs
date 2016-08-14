@@ -41,4 +41,12 @@ public static class MathUtils
         return Math.Pow(number, (1.0 / 3.0));
     }
 
+    public static int RoundMin1IfHasValue(double value)
+    {
+        if (value > 0)
+            return (int)Math.Max(1.0, Math.Round(value));
+        else
+            return 0;
+    }
+
 }

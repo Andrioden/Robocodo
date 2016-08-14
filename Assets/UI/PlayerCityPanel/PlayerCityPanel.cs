@@ -59,8 +59,8 @@ public class PlayerCityPanel : MonoBehaviour
 
     private void AddBuildableItemsToBuildMenu()
     {
-        buildMenu.AddBuildableItem(HarvesterRobotController.Settings_Name, BuyHarvesterRobot, HarvesterRobotController.Settings_CopperCost, HarvesterRobotController.Settings_IronCost, harvesterRobotSprite);
-        buildMenu.AddBuildableItem(CombatRobotController.Settings_Name, BuyCombatRobot, CombatRobotController.Settings_CopperCost, CombatRobotController.Settings_IronCost, combatRobotSprite);
+        buildMenu.AddBuildableItem(HarvesterRobotController.Settings_Name, BuyHarvesterRobot, HarvesterRobotController.Settings_copperCost, HarvesterRobotController.Settings_ironCost, harvesterRobotSprite);
+        buildMenu.AddBuildableItem(CombatRobotController.Settings_Name, BuyCombatRobot, CombatRobotController.Settings_copperCost, CombatRobotController.Settings_ironCost, combatRobotSprite);
     }
 
     public void BuyHarvesterRobot()
