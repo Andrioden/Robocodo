@@ -67,6 +67,8 @@ public class RobotPanel : MonoBehaviour
     private Color _highlightColor;
     private Color _defaultButtonStateColors;
 
+    private bool _hadRobotLastFrame = false;
+
     private void Awake()
     {
         if (instance == null)
@@ -97,17 +99,24 @@ public class RobotPanel : MonoBehaviour
                 ClosePanel();
                 return;
             }
+            _hadRobotLastFrame = true;
 
             _formattedInstructions = _indentedInstructionsCache.Select(instruction => instruction.ToString()).ToList();
             HighlightCode();
             UpdateRobotInfoLabels();
+            UpdateReprogramAndSalvageButtonsState();
 
             if (drawPreviewArrowTime != -1f && drawPreviewArrowTime < Time.time)
                 DrawPreviewArrows();
         }
+        else if(_hadRobotLastFrame)
+        {
+            _hadRobotLastFrame = false;
+            ClosePanel();            
+        }
     }
 
-    public void ShowPanel(this RobotController robot)
+    public void ShowPanel(RobotController robot)
     {
         this.robot = robot;
         this.robot.GetInstructions().Callback += RobotInstructionsWasUpdated;
@@ -151,7 +160,8 @@ public class RobotPanel : MonoBehaviour
     public void ClosePanel()
     {
         KeyboardManager.KeyboardLockOff();
-        robot.GetInstructions().Callback -= RobotInstructionsWasUpdated;
+        if(robot != null)
+            robot.GetInstructions().Callback -= RobotInstructionsWasUpdated;
         robot = null;
         animator.Play("RobotMenuSlideOut");
         CleanUpPreviewer();
@@ -386,25 +396,15 @@ public class RobotPanel : MonoBehaviour
         codeOutputPanel.SetActive(true);
         inventoryPanel.SetActive(true);
 
-        SetupReprogramAndSalvageButtons();
+        reprogramButton.onClick.RemoveAllListeners();
+        reprogramButton.onClick.AddListener(ToggleReprogramming);
+        salvageButton.onClick.RemoveAllListeners();
+        salvageButton.onClick.AddListener(ToggleSalvaging);
         closeButton.onClick.RemoveAllListeners();
         closeButton.onClick.AddListener(ClosePanel);
 
         codeInputPanel.SetActive(false);
         possibleCommandsPanel.SetActive(false);
-    }
-
-    private void SetupReprogramAndSalvageButtons()
-    {
-        reprogramButton.onClick.RemoveAllListeners();
-        reprogramButton.onClick.AddListener(TriggerReprogramming);
-        //reprogramButton.onClick.AddListener(UpdateReprogramAndSalvageButtonsState);
-
-        salvageButton.onClick.RemoveAllListeners();
-        salvageButton.onClick.AddListener(TriggerSalvaging);
-        //salvageButton.onClick.AddListener(UpdateReprogramAndSalvageButtonsState);
-
-        //UpdateReprogramAndSalvageButtonsState();
     }
 
     private void UpdateReprogramAndSalvageButtonsState()
@@ -468,6 +468,9 @@ public class RobotPanel : MonoBehaviour
     {
         if (robot.IsStarted)
         {
+            if (_formattedInstructions.Count <= 0)
+                return;
+
             if (robot.CurrentInstructionIndexIsValid)
                 _formattedInstructions[robot.CurrentInstructionIndex] = ColorTextOnCondition(true, _highlightColor, _formattedInstructions[robot.CurrentInstructionIndex]);
             else
@@ -538,13 +541,13 @@ public class RobotPanel : MonoBehaviour
             Destroy(arrow);
     }
 
-    public void TriggerReprogramming()
+    public void ToggleReprogramming()
     {
-        robot.CmdReprogramWhenHome();
+        robot.CmdToggleReprogramWhenHome();
     }
 
-    public void TriggerSalvaging()
+    public void ToggleSalvaging()
     {
-        robot.CmdSalvageWhenHome();
+        robot.CmdToggleSalvageWhenHome();
     }
 }

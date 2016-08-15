@@ -140,17 +140,17 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     }
 
     [Command]
-    public void CmdSalvageWhenHome()
+    public void CmdToggleSalvageWhenHome()
     {
-        willSalvageWhenHome = true;
+        willSalvageWhenHome = !willSalvageWhenHome;
         willReprogramWhenHome = false;
     }
 
     [Command]
-    public void CmdReprogramWhenHome()
+    public void CmdToggleReprogramWhenHome()
     {
+        willReprogramWhenHome = !willReprogramWhenHome;
         willSalvageWhenHome = false;
-        willReprogramWhenHome = true;
     }
 
     [Client]
