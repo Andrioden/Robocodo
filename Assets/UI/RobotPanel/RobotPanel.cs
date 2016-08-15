@@ -52,7 +52,6 @@ public class RobotPanel : MonoBehaviour
 
     private Animator animator;
     private RobotController robot;
-    private IEnumerator feedbackClearCoroutine;
 
     public static readonly string _indentation = "   ";
     private List<string> _indentedInstructionsCache = new List<string>();
@@ -108,11 +107,13 @@ public class RobotPanel : MonoBehaviour
 
             if (drawPreviewArrowTime != -1f && drawPreviewArrowTime < Time.time)
                 DrawPreviewArrows();
+
+            feedbackText.text = ColorTextOnCondition(true, Color.red, robot.Feedback);
         }
-        else if(_hadRobotLastFrame)
+        else if (_hadRobotLastFrame)
         {
             _hadRobotLastFrame = false;
-            ClosePanel();            
+            ClosePanel();
         }
     }
 
@@ -147,7 +148,7 @@ public class RobotPanel : MonoBehaviour
     private void RunCode()
     {
         KeyboardManager.KeyboardLockOff();
-        List<string> instructions = codeInputField.text.Split('\n').Select(x => x.Trim()).ToList();
+        List<string> instructions = codeInputField.text.Split('\n').Where(x => x.Trim() != string.Empty).Select(x => x.Trim()).ToList();
 
         robot.RunCode(instructions);
 
@@ -160,7 +161,7 @@ public class RobotPanel : MonoBehaviour
     public void ClosePanel()
     {
         KeyboardManager.KeyboardLockOff();
-        if(robot != null)
+        if (robot != null)
             robot.GetInstructions().Callback -= RobotInstructionsWasUpdated;
         robot = null;
         animator.Play("RobotMenuSlideOut");
@@ -195,7 +196,7 @@ public class RobotPanel : MonoBehaviour
         List<string> instructions = arg0.Split('\n').Select(x => x.Replace(_indentation, "")).ToList();
         AutoIndentInstructions(_indentation, instructions);
 
-        /* Disable onValueChanged listener to avoid loop when chaning input field value */
+        /* Disable onValueChanged listener to avoid loop when changing input field value */
         codeInputField.onValueChanged.RemoveListener(CodeInputAutoIndentAndUpperCase);
         codeInputField.text = string.Join("\n", instructions.ToArray());
         codeInputField.onValueChanged.AddListener(CodeInputAutoIndentAndUpperCase);
@@ -309,23 +310,6 @@ public class RobotPanel : MonoBehaviour
     public int GetLastKnownCaretPosition()
     {
         return codeInputField.caretPosition == 0 ? lastCaretPosition : codeInputField.caretPosition;
-    }
-
-    private void SetFeedbackText(string feedback, float durationSeconds)
-    {
-        feedbackText.text = feedback.ToUpper();
-
-        if (feedbackClearCoroutine != null)
-            StopCoroutine(feedbackClearCoroutine);
-
-        feedbackClearCoroutine = RemoveFeedbackAfterSeconds(durationSeconds);
-        StartCoroutine(feedbackClearCoroutine);
-    }
-
-    IEnumerator RemoveFeedbackAfterSeconds(float seconds)
-    {
-        yield return new WaitForSeconds(seconds);
-        feedbackText.text = "";
     }
 
     private void InventoryUpdated(RobotController robot)
@@ -476,7 +460,6 @@ public class RobotPanel : MonoBehaviour
             else
             {
                 _formattedInstructions[robot.CurrentInstructionIndex] = ColorTextOnCondition(true, Color.red, _formattedInstructions[robot.CurrentInstructionIndex]);
-                SetFeedbackText(ColorTextOnCondition(true, Color.red, robot.Feedback), 0);
             }
 
             codeOutputField.text = string.Join("\n", _formattedInstructions.ToArray());

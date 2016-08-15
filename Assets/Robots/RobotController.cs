@@ -23,6 +23,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private string feedback = "";
     public string Feedback { get { return feedback; } }
 
+    private IEnumerator feedbackClearCoroutine;
+
     [SyncVar(hook = "OnIsStartedChanged")]
     private bool isStarted = false;
     public bool IsStarted { get { return isStarted; } }
@@ -112,7 +114,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     private void OnDestroy()
     {
-        StopRobot();
+        if (Application.isPlaying)
+            StopRobot();
     }
 
     public void Click()
@@ -204,12 +207,19 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         {
             if (newInstructions.Count > Settings_Memory())
             {
-                SetFeedback("NOT ENOUGH MEMORY"); // TODO: Discuss with BT, here a Client method calls a server method, should not happen? Wont work either.
+                CmdSetFeedback("NOT ENOUGH MEMORY"); // TODO: Discuss with BT, here a Client method calls a server method, should not happen? Wont work either.
                 return;
             }
 
             string instructionsCSV = string.Join(",", newInstructions.ToArray());
             SetInstructions(instructionsCSV);
+
+            if (instructions.Count <= 0)
+            {
+                CmdSetFeedback("NO INSTRUCTIONS DETECTED");
+                return;
+            }
+
             CmdSetInstructions(instructionsCSV);
             CmdStartRobot();
 
@@ -221,7 +231,13 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [Command]
     private void CmdSetInstructions(string instructionsCSV)
     {
-        SetInstructions(instructionsCSV);
+        SetInstructions(instructionsCSV);        
+    }
+
+    private IEnumerator ClearFeedbackAfterSeconds(float s)
+    {
+        yield return new WaitForSeconds(s);
+        feedback = string.Empty;
     }
 
     public void SetInstructions(List<string> instructionsList)
@@ -236,7 +252,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         instructions.Clear();
 
-        foreach (string instruction in instructionsCSV.Split(','))
+        foreach (string instruction in instructionsCSV.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
             instructions.Add(instruction);
     }
 
@@ -333,6 +349,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     public void RunNextInstruction(object sender)
     {
+        SetFeedback("");
+
         if (instructions.Count == 0)
         {
             SetFeedback("NO INSTRUCTIONS");
@@ -429,10 +447,24 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         InstructionCompleted();
     }
 
+    [Server]
     private void SetFeedback(string message)
     {
         feedback = message;
         currentInstructionIndexIsValid = false;
+    }
+
+    [Command]
+    private void CmdSetFeedback(string message)
+    {
+        SetFeedback(message);
+
+        /* When client sets feedback we have to clear it manually as clearing on server is based on tick */
+        if (feedbackClearCoroutine != null)
+            StopCoroutine(feedbackClearCoroutine);
+
+        feedbackClearCoroutine = ClearFeedbackAfterSeconds(1f);
+        StartCoroutine(feedbackClearCoroutine);
     }
 
     private void ChangePosition(float newPosX, float newPosZ)
