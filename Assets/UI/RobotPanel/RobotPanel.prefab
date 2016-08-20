@@ -116,7 +116,7 @@ GameObject:
   - 222: {fileID: 22261978}
   - 114: {fileID: 11429702}
   m_Layer: 5
-  m_Name: CodeOutputText
+  m_Name: CodeRunningText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -394,7 +394,7 @@ GameObject:
   - 222: {fileID: 22279364}
   - 114: {fileID: 11430582}
   m_Layer: 5
-  m_Name: CodeOutput
+  m_Name: CodeRunning
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -445,7 +445,7 @@ GameObject:
   - 222: {fileID: 22298784}
   - 114: {fileID: 11446800}
   m_Layer: 5
-  m_Name: CodeOutputLabel
+  m_Name: CodeRunningLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1076,7 +1076,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: RUNNING CODE
+  m_Text: RUNNING CODE ([iteration] times)
 --- !u!114 &11447376
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1308,9 +1308,9 @@ MonoBehaviour:
   codeInputLabel: {fileID: 11422040}
   codeInputField: {fileID: 11498150}
   codeInputPanel: {fileID: 102334}
-  codeOutputLabel: {fileID: 11446800}
-  codeOutputField: {fileID: 11429702}
-  codeOutputPanel: {fileID: 167468}
+  codeRunningLabel: {fileID: 11446800}
+  codeRunningField: {fileID: 11429702}
+  codeRunningPanel: {fileID: 167468}
   possibleCommandsLabel: {fileID: 11451952}
   possibleCommandsContainer: {fileID: 196420}
   possibleCommandPrefab: {fileID: 188904, guid: 751bb712c6cb99f44ad1db7f2b1e877e,
@@ -2158,7 +2158,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 22462162}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -0.5}
@@ -2242,8 +2242,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 22444700}
   - {fileID: 22454826}
+  - {fileID: 22444700}
   - {fileID: 22406494}
   m_Father: {fileID: 22486036}
   m_RootOrder: 3
@@ -2263,7 +2263,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 22442682}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -0.5}
@@ -2280,7 +2280,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 22442682}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 25}
@@ -2313,8 +2313,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 22426298}
   - {fileID: 22471200}
+  - {fileID: 22426298}
   - {fileID: 22468734}
   - {fileID: 22419364}
   - {fileID: 22499718}
@@ -2354,7 +2354,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 22462162}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 25}

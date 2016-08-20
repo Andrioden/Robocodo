@@ -31,9 +31,9 @@ public class RobotPanel : MonoBehaviour
     public InputField codeInputField;
     public GameObject codeInputPanel;
 
-    public Text codeOutputLabel;
-    public Text codeOutputField;
-    public GameObject codeOutputPanel;
+    public Text codeRunningLabel;
+    public Text codeRunningField;
+    public GameObject codeRunningPanel;
 
     public Text possibleCommandsLabel;
     public GameObject possibleCommandsContainer;
@@ -101,7 +101,7 @@ public class RobotPanel : MonoBehaviour
             _hadRobotLastFrame = true;
 
             _formattedInstructions = _indentedInstructionsCache.Select(instruction => instruction.ToString()).ToList();
-            HighlightCode();
+            UpdateCodeRunningUI();
             UpdateRobotInfoLabels();
             UpdateReprogramAndSalvageButtonsState();
 
@@ -365,7 +365,7 @@ public class RobotPanel : MonoBehaviour
         runButton.onClick.AddListener(RunCode);
 
         inventoryPanel.SetActive(false);
-        codeOutputPanel.SetActive(false);
+        codeRunningPanel.SetActive(false);
 
         previewer = new RobotMovementPreviewer(robot, exampleInstructions);
         DrawPreviewArrows();
@@ -377,7 +377,7 @@ public class RobotPanel : MonoBehaviour
         LoadInstructionsFromRobot();
         InventoryUpdated(robot);
 
-        codeOutputPanel.SetActive(true);
+        codeRunningPanel.SetActive(true);
         inventoryPanel.SetActive(true);
 
         reprogramButton.onClick.RemoveAllListeners();
@@ -448,7 +448,7 @@ public class RobotPanel : MonoBehaviour
         }
     }
 
-    private void HighlightCode()
+    private void UpdateCodeRunningUI()
     {
         if (robot.IsStarted)
         {
@@ -462,7 +462,12 @@ public class RobotPanel : MonoBehaviour
                 _formattedInstructions[robot.CurrentInstructionIndex] = ColorTextOnCondition(true, Color.red, _formattedInstructions[robot.CurrentInstructionIndex]);
             }
 
-            codeOutputField.text = string.Join("\n", _formattedInstructions.ToArray());
+            codeRunningField.text = string.Join("\n", _formattedInstructions.ToArray());
+
+            if (robot.InstructionsMainLoopCount == 1)
+                codeRunningLabel.text = string.Format("RUNNING CODE ({0} iteration)", robot.InstructionsMainLoopCount);
+            else
+                codeRunningLabel.text = string.Format("RUNNING CODE ({0} iterations)", robot.InstructionsMainLoopCount);
         }
     }
 
