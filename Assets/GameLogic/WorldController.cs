@@ -51,6 +51,11 @@ public class WorldController : NetworkBehaviour
 
     }
 
+    private void OnDestroy()
+    {
+        Destroy(GameObject.Find("Ground_NotNetwork"));
+    }
+
     public void BuildWorld(int width, int height)
     {
         this.width = width;
