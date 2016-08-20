@@ -52,24 +52,24 @@ public class NetworkPanel : MonoBehaviour
             MMGameSizeField.text = "2";
 
         hostLanButton.onClick.RemoveAllListeners();
-        hostLanButton.onClick.AddListener(OnHostLanClick);
+        hostLanButton.onClick.AddListener(LAN_OnHostClick);
 
         joinLanButton.onClick.RemoveAllListeners();
-        joinLanButton.onClick.AddListener(OnJoinLanClick);
+        joinLanButton.onClick.AddListener(LAN_OnJoinClick);
 
         quitButton.onClick.RemoveAllListeners();
         quitButton.onClick.AddListener(OnQuitCLick);
 
         hostMMutton.onClick.RemoveAllListeners();
-        hostMMutton.onClick.AddListener(OnHostMatchMakingClick);
+        hostMMutton.onClick.AddListener(MM_OnHostClick);
 
         findMMButton.onClick.RemoveAllListeners();
-        findMMButton.onClick.AddListener(OnFindMatchMakingGameClick);
+        findMMButton.onClick.AddListener(MM_OnFindGamesClick);
 
         ReadyToHostOrJoin();
     }
 
-    private void OnHostLanClick()
+    private void LAN_OnHostClick()
     {
         feedbackText.text = "";
         if (RequireNick())
@@ -84,7 +84,7 @@ public class NetworkPanel : MonoBehaviour
         }
     }
 
-    private void OnJoinLanClick()
+    private void LAN_OnJoinClick()
     {
         feedbackText.text = "";
         if (RequireNick())
@@ -96,7 +96,7 @@ public class NetworkPanel : MonoBehaviour
         }
     }
 
-    private void OnHostMatchMakingClick()
+    private void MM_OnHostClick()
     {
         feedbackText.text = "";
         if (RequireNick())
@@ -119,16 +119,16 @@ public class NetworkPanel : MonoBehaviour
         }
     }
 
-    private void OnFindMatchMakingGameClick()
+    private void MM_OnFindGamesClick()
     {
         feedbackText.text = "";
         if (RequireNick())
         {
-            manager.matchMaker.ListMatches(0, 20, "", BuildMatchMakingGameList);
+            manager.matchMaker.ListMatches(0, 20, "", MM_BuildGamesList);
         }
     }
 
-    private void BuildMatchMakingGameList(ListMatchResponse matchListResponse)
+    private void MM_BuildGamesList(ListMatchResponse matchListResponse)
     {
         MMGameListContainer.transform.DestroyChildren();
 
@@ -140,7 +140,7 @@ public class NetworkPanel : MonoBehaviour
                 var matchGO = Instantiate(MMGameListJoinButtonPrefab) as GameObject;
                 matchGO.transform.SetParent(MMGameListContainer.transform, false);
                 Button matchGObutton = matchGO.GetComponent<Button>();
-                matchGObutton.onClick.AddListener(() => { OnJoinMatchMakingGameClick(match.networkId); });
+                matchGObutton.onClick.AddListener(() => { MM_OnJoinGameClick(match.networkId); });
                 Text matchGObuttonText = matchGO.GetComponentInChildren<Text>();
                 matchGObuttonText.text = match.name;
             }
@@ -154,7 +154,7 @@ public class NetworkPanel : MonoBehaviour
             feedbackText.text = "Failed to get match list";
     }
 
-    private void OnJoinMatchMakingGameClick(NetworkID id)
+    private void MM_OnJoinGameClick(NetworkID id)
     {
         Debug.Log("Joining matchmaking game with match id: " + id);
         manager.matchMaker.JoinMatch(id, "", manager.OnMatchJoined);
