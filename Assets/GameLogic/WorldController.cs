@@ -13,6 +13,8 @@ public class WorldController : NetworkBehaviour
     public GameObject harvesterRobotPrefab;
     public GameObject combatRobotPrefab;
 
+    private GameObject groundGameObject;
+
     private WorldBuilder worldBuilder;
     [SyncVar]
     private int width;
@@ -53,7 +55,7 @@ public class WorldController : NetworkBehaviour
 
     private void OnDestroy()
     {
-        Destroy(GameObject.Find("Ground_NotNetwork"));
+        Destroy(groundGameObject);
     }
 
     public void BuildWorld(int width, int height)
@@ -216,7 +218,7 @@ public class WorldController : NetworkBehaviour
         float xPosition = (width / 2f) - 0.5f; // Hack: The -0.5f is an offset we have to set to align the ground to the tiles
         float zPosition = (height / 2f) - 0.5f; // Hack: The -0.5f is an offset we have to set to align the ground to the tiles
 
-        GameObject groundGameObject = (GameObject)Instantiate(groundPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        groundGameObject = (GameObject)Instantiate(groundPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         groundGameObject.name = "Ground_NotNetwork";
 
         if (worldParent != null)
