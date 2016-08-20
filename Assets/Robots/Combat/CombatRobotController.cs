@@ -37,7 +37,7 @@ public class CombatRobotController : RobotController
 
     public override List<string> GetSpecializedInstruction() { return spezializedInstructions; }
 
-    public override List<string> GetExampleInstructions()
+    public override List<string> GetDefaultInstructions()
     {
         List<string> demoInstructions = new List<string>()
         {
@@ -50,20 +50,10 @@ public class CombatRobotController : RobotController
             Instructions.MoveDown,
             Instructions.MoveDown,
             Instructions.MoveHome,
-            //Instructions.AttackDown,
-            //Instructions.MoveHome,
 
-            //Instructions.MoveDown,
-            //Instructions.AttackUp,
-            //Instructions.MoveHome,
-
-            //Instructions.MoveLeft,
-            //Instructions.AttackRight,
-            //Instructions.MoveHome,
-
-            //Instructions.MoveRight,
-            //Instructions.AttackLeft,
-            //Instructions.MoveHome,
+            //Instructions.LoopStartNumberedSet(0, 5),
+            //Instructions.MoveUp,
+            //Instructions.LoopEnd
         };
 
         return demoInstructions;

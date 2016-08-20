@@ -228,7 +228,7 @@ public class RobotPanel : MonoBehaviour
         }
     }
 
-    public void AdjustCaretBasedOnContext()
+    private void AdjustCaretBasedOnContext()
     {
         int caretPosition = GetLastKnownCaretPosition();
         if (caretPosition <= 0) return;
@@ -358,7 +358,7 @@ public class RobotPanel : MonoBehaviour
         codeInputField.onValueChanged.AddListener(KeyboardManager.KeyboardLockOn);
         codeInputField.onValueChanged.AddListener(CodeInputAutoIndentAndUpperCase);
         codeInputField.onEndEdit.AddListener(KeyboardManager.KeyboardLockOff);
-        List<string> exampleInstructions = robot.GetExampleInstructions();
+        List<string> exampleInstructions = robot.GetDefaultInstructions();
         codeInputField.text = string.Join("\n", exampleInstructions.ToArray());  /* Pre filled example data */
 
         runButton.onClick.RemoveAllListeners();
@@ -524,11 +524,17 @@ public class RobotPanel : MonoBehaviour
             Destroy(arrow);
     }
 
+    /// <summary>
+    /// Has to have a middlemethod run the robot method, cant run the robot.Cmd.. method directly 
+    /// </summary>
     public void ToggleReprogramming()
     {
         robot.CmdToggleReprogramWhenHome();
     }
 
+    /// <summary>
+    /// Has to have a middlemethod run the robot method, cant run the robot.Cmd.. method directly 
+    /// </summary>
     public void ToggleSalvaging()
     {
         robot.CmdToggleSalvageWhenHome();

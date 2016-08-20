@@ -37,7 +37,7 @@ public class HarvesterRobotController : RobotController
 
     public override List<string> GetSpecializedInstruction() { return spezializedInstructions; }
 
-    public override List<string> GetExampleInstructions()
+    public override List<string> GetDefaultInstructions()
     {
         List<string> demoInstructions = new List<string>()
         {

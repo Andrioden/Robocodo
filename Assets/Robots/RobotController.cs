@@ -98,6 +98,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     public abstract List<string> GetSpecializedInstruction();
     public abstract string GetName();
     public abstract GameObject SpawnPreviewGameObjectClone();
+    public abstract List<string> GetDefaultInstructions();
 
     // Use this for initialization
     private void Start()
@@ -207,7 +208,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         {
             if (newInstructions.Count > Settings_Memory())
             {
-                CmdSetFeedback("NOT ENOUGH MEMORY"); // TODO: Discuss with BT, here a Client method calls a server method, should not happen? Wont work either.
+                CmdSetFeedback("NOT ENOUGH MEMORY");
                 return;
             }
 
@@ -261,68 +262,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         return instructions;
     }
 
-    public virtual List<string> GetExampleInstructions()
-    {
-        List<string> demoInstructions = new List<string>()
-        {
-            //Instructions.MoveUp,
-            //Instructions.MoveUp,
-            //Instructions.MoveUp,
-            //Instructions.MoveUp,
-            //Instructions.MoveUp,
-            //Instructions.MoveHome
-        };
-
-        //List<string> demoInstructions = new List<string>()
-        //{
-        //    Instructions.MoveUp,
-        //    Instructions.AttackDown,
-        //    Instructions.MoveHome,
-
-        //    Instructions.MoveDown,
-        //    Instructions.AttackUp,
-        //    Instructions.MoveHome,
-
-        //    Instructions.MoveLeft,
-        //    Instructions.AttackRight,
-        //    Instructions.MoveHome,
-
-        //    Instructions.MoveRight,
-        //    Instructions.AttackLeft,
-        //    Instructions.MoveHome,
-        //};
-
-        //List<string> demoInstructions = new List<string>()
-        //{
-        //    //Instructions.MoveUp,
-        //    //Instructions.MoveUp,
-        //    Instructions.MoveLeft,
-        //    Instructions.MeleeAttack,
-        //    Instructions.MoveHome,
-        //    Instructions.MeleeAttack
-        //    //Instructions.MeleeAttack,
-        //};
-
-        //List<string> demoInstructions = new List<string>()
-        //{
-        //    Instructions.MoveLeft,
-        //    Instructions.LoopStartPlain,
-        //        Instructions.LoopStartNumbered(0, 2),
-        //            Instructions.MoveUp,
-        //            Instructions.LoopStartNumbered(0, 1),
-        //                Instructions.MoveRight,
-        //            Instructions.LoopEnd,
-        //            Instructions.LoopStartNumbered(0, 1),
-        //                Instructions.MoveRight,
-        //            Instructions.LoopEnd,
-        //        Instructions.LoopEnd,
-        //    Instructions.LoopEnd,
-        //    Instructions.MoveLeft
-        //};
-
-        return demoInstructions;
-    }
-
     [Command]
     private void CmdStartRobot()
     {
@@ -336,11 +275,14 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             throw new Exception("IPT value not supported: " + Settings_IPT());
     }
 
+    /// <summary>
+    /// Has to be run without server check because the server variable is not set after network destroy.
+    /// It is ok that it runs on the client. Trying to desubscribe a method that isnt subscribed is ok.
+    /// </summary>
     private void StopRobot()
     {
         isStarted = false;
-        // Has to be run without server check because the server variable is not set after network destroy.
-        // It is ok that it runs on the server. Trying to desubsribe a method that isnt subscribed is ok.
+
         if (Settings_IPT() == 1)
             WorldTickController.instance.TickEvent -= RunNextInstruction;
         else if (Settings_IPT() == 2)
@@ -546,6 +488,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             throw new Exception("Illegal amount of forward slashes in instruction: " + instruction);
 
         instructions[nextInstructionIndex] = Instructions.LoopStartNumberedSet(currentLoopCount, totalLoopCount);
+        instructions.Dirty(nextInstructionIndex);
     }
 
     private void ResetAllInnerLoopStarts(int startingIndex)
@@ -741,7 +684,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             playerCity.RemoveResources(reprogramCopperCost, reprogramIronCost);
 
             StopRobot();
-            SetInstructions(GetExampleInstructions());
+            SetInstructions(GetDefaultInstructions());
             currentInstructionIndex = 0;
             currentInstructionIndexIsValid = true;
             instructionsMainLoopCount = 0;
