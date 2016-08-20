@@ -35,10 +35,10 @@ public class RobotPanel : MonoBehaviour
     public Text codeRunningField;
     public GameObject codeRunningPanel;
 
-    public Text possibleCommandsLabel;
-    public GameObject possibleCommandsContainer;
-    public GameObject possibleCommandPrefab;
-    public GameObject possibleCommandsPanel;
+    public Text possibleInstructionsLabel;
+    public GameObject possibleInstructionsContainer;
+    public GameObject possibleInstructionsPrefab;
+    public GameObject possibleInstructionsPanel;
 
     public Text inventoryLabel;
     public GameObject inventoryPanel;
@@ -352,7 +352,7 @@ public class RobotPanel : MonoBehaviour
             return;
 
         titleText.text = robot.GetName() + " SETUP";
-        SetupPossibleCommands();
+        SetupPossibleInstructions();
 
         codeInputPanel.SetActive(true);
         codeInputField.onValueChanged.AddListener(KeyboardManager.KeyboardLockOn);
@@ -388,7 +388,7 @@ public class RobotPanel : MonoBehaviour
         closeButton.onClick.AddListener(ClosePanel);
 
         codeInputPanel.SetActive(false);
-        possibleCommandsPanel.SetActive(false);
+        possibleInstructionsPanel.SetActive(false);
     }
 
     private void UpdateReprogramAndSalvageButtonsState()
@@ -424,27 +424,27 @@ public class RobotPanel : MonoBehaviour
         else return text;
     }
 
-    private void SetupPossibleCommands()
+    private void SetupPossibleInstructions()
     {
-        possibleCommandsPanel.SetActive(true);
+        possibleInstructionsPanel.SetActive(true);
         var combinedList = robot.CommonInstructions.ToList();
         combinedList.Add(string.Empty);
         combinedList.Add(string.Empty);
         combinedList.AddRange(robot.GetSpecializedInstruction());
-        possibleCommandsContainer.transform.DestroyChildren();
+        possibleInstructionsContainer.transform.DestroyChildren();
 
         foreach (string instruction in combinedList)
         {
-            var possibleCommandGO = Instantiate(possibleCommandPrefab) as GameObject;
-            possibleCommandGO.transform.SetParent(possibleCommandsContainer.transform, false);
+            var possibleInstructionGO = Instantiate(possibleInstructionsPrefab) as GameObject;
+            possibleInstructionGO.transform.SetParent(possibleInstructionsContainer.transform, false);
 
             if (instruction != string.Empty)
             {
-                possibleCommandGO.GetComponent<Text>().text = instruction;
-                possibleCommandGO.GetComponent<PossibleCommandOnClick>().SetupPossibleCommand(codeInputField, instruction);
+                possibleInstructionGO.GetComponent<Text>().text = instruction;
+                possibleInstructionGO.GetComponent<PossibleInstructionOnClick>().SetupPossibleInstruction(codeInputField, instruction);
             }
             else
-                possibleCommandGO.GetComponent<PossibleCommandOnClick>().enabled = false;
+                possibleInstructionGO.GetComponent<PossibleInstructionOnClick>().enabled = false;
         }
     }
 

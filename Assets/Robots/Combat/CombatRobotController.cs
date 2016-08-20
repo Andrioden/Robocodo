@@ -19,7 +19,7 @@ public class CombatRobotController : RobotController
 
     public override int Settings_CopperCost() { return Settings_copperCost; }
     public override int Settings_IronCost() { return Settings_ironCost; }
-    public override int Settings_Memory() { return 200; }
+    public override int Settings_Memory() { return 20; }
     public override int Settings_IPT() { return 1; }
     public override int Settings_MaxEnergy() { return 50; }
     public override int Settings_InventoryCapacity() { return 0; }

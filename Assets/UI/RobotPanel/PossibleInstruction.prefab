@@ -13,7 +13,7 @@ GameObject:
   - 114: {fileID: 11418052}
   - 114: {fileID: 11439582}
   m_Layer: 5
-  m_Name: PossibleCommand
+  m_Name: PossibleInstruction
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -10,7 +10,6 @@ GameObject:
   - 4: {fileID: 457384}
   - 114: {fileID: 11450866}
   - 114: {fileID: 11418718}
-  - 65: {fileID: 6589828}
   m_Layer: 0
   m_Name: PlayerCity
   m_TagString: PlayerCity
@@ -28,6 +27,7 @@ GameObject:
   - 4: {fileID: 456370}
   - 33: {fileID: 3358282}
   - 23: {fileID: 2350100}
+  - 65: {fileID: 6560800}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -93,12 +93,12 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 133642}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!65 &6589828
+--- !u!65 &6560800
 BoxCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 107340}
+  m_GameObject: {fileID: 133642}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1

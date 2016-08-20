@@ -133,7 +133,7 @@ GameObject:
   - 222: {fileID: 22225688}
   - 114: {fileID: 11451952}
   m_Layer: 5
-  m_Name: PossibleCommandsLabel
+  m_Name: PossibleInstructionsLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -342,7 +342,7 @@ GameObject:
   - 222: {fileID: 22230572}
   - 114: {fileID: 11454940}
   m_Layer: 5
-  m_Name: PossibleCommands
+  m_Name: PossibleInstructions
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -531,7 +531,7 @@ GameObject:
   - 222: {fileID: 22245678}
   - 114: {fileID: 11435252}
   m_Layer: 5
-  m_Name: PossibleCommandsContainer
+  m_Name: PossibleInstructionsContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1169,7 +1169,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: POSSIBLE COMMANDS
+  m_Text: POSSIBLE INSTRUCTIONS
 --- !u!114 &11454940
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1311,11 +1311,11 @@ MonoBehaviour:
   codeRunningLabel: {fileID: 11446800}
   codeRunningField: {fileID: 11429702}
   codeRunningPanel: {fileID: 167468}
-  possibleCommandsLabel: {fileID: 11451952}
-  possibleCommandsContainer: {fileID: 196420}
-  possibleCommandPrefab: {fileID: 188904, guid: 751bb712c6cb99f44ad1db7f2b1e877e,
+  possibleInstructionsLabel: {fileID: 11451952}
+  possibleInstructionsContainer: {fileID: 196420}
+  possibleInstructionsPrefab: {fileID: 188904, guid: 751bb712c6cb99f44ad1db7f2b1e877e,
     type: 2}
-  possibleCommandsPanel: {fileID: 158658}
+  possibleInstructionsPanel: {fileID: 158658}
   inventoryLabel: {fileID: 11407640}
   inventoryPanel: {fileID: 148564}
   inventoryContainer: {fileID: 114290}

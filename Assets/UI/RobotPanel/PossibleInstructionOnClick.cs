@@ -3,12 +3,12 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Linq;
 
-public class PossibleCommandOnClick : MonoBehaviour
+public class PossibleInstructionOnClick : MonoBehaviour
 {
     InputField codeInputField;
     string instruction;
 
-    public void SetupPossibleCommand(InputField codeInputField, string instruction)
+    public void SetupPossibleInstruction(InputField codeInputField, string instruction)
     {
         this.codeInputField = codeInputField;
         this.instruction = instruction;

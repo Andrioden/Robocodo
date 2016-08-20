@@ -48,8 +48,6 @@ public class WorldBuilder
     {
         reservedPlayerCoordinates.Add(playerCityCoordinate);
 
-        //AddCopperNode(new Coordinate(playerCityCoordinate.x, playerCityCoordinate.z+1));
-
         AddCopperNode(GetRandomOpenCoordinateNear(playerCityCoordinate, 1, 3));
         AddIronNode(GetRandomOpenCoordinateNear(playerCityCoordinate, 1, 3));
 
@@ -88,7 +86,7 @@ public class WorldBuilder
     /// Image you have two Squares, one big and one small. This method uses minDistance-1 as a little square and maxDistance as a big square.
     /// It finds availible open spots by withdrawing from the big square coordinates that is in the small square.
     /// </summary>
-    private Coordinate GetRandomOpenCoordinateNear(Coordinate coord, int minDistance, int maxDistance)
+    public Coordinate GetRandomOpenCoordinateNear(Coordinate coord, int minDistance, int maxDistance)
     {
         List<Coordinate> openCoords = new List<Coordinate>();
 

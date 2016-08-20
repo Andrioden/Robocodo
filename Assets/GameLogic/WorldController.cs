@@ -107,6 +107,8 @@ public class WorldController : NetworkBehaviour
         GameObject combatRobotGO = SpawnCombatRobotWithClientAuthority(conn, playerPos.x, playerPos.z);
         newPlayerCity.AddOwnedGameObject(combatRobotGO);
 
+        //SpawnObject(combatRobotPrefab, playerPos.x + 2, playerPos.z);
+
         return playerCityGameObject;
     }
 

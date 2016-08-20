@@ -36,16 +36,28 @@ namespace Robocodo.CSharp.Tests
             Assert.IsTrue(Instructions.IsLoopStartCompleted("LOOP START (45/45)"));
         }
 
-        //[TestMethod]
-        //public void RobotInstructionTest()
-        //{
-        //    Assert.IsFalse(Instructions.IsValidInstruction("LOL"));
-        //    Assert.IsFalse(Instructions.IsValidInstruction("move left"));
+        [TestMethod]
+        public void IsValidDetectTest()
+        {
+            Assert.IsTrue(Instructions.IsValidDetect("DETECT ENEMY THEN MOVE HOME"));
+            Assert.IsTrue(Instructions.IsValidDetect("DETECT COPPER THEN MOVE HOME"));
+            Assert.IsTrue(Instructions.IsValidDetect("DETECT IRON THEN MOVE HOME"));
+            Assert.IsTrue(Instructions.IsValidDetect("DETECT COPPER THEN HARVEST"));
 
-        //    Assert.IsTrue(Instructions.IsValidInstruction("MOVE UP"));
-        //    Assert.IsTrue(Instructions.IsValidInstruction("MOVE DOWN"));
-        //    Assert.IsTrue(Instructions.IsValidInstruction("MOVE LEFT"));
-        //    Assert.IsTrue(Instructions.IsValidInstruction("MOVE RIGHT"));
-        //}
+            Assert.IsFalse(Instructions.IsValidDetect("LOL DETECT ENEMY THEN MOVE HOME"));
+            Assert.IsFalse(Instructions.IsValidDetect("DETECT"));
+            Assert.IsFalse(Instructions.IsValidDetect("DETECT ENEMY"));
+            Assert.IsFalse(Instructions.IsValidDetect("DETECT ENEMY THEN"));
+            Assert.IsFalse(Instructions.IsValidDetect("DETECT ENEMY THEN "));
+        }
+
+        [TestMethod]
+        public void GetStringAfterSpaceTest()
+        {
+            Assert.AreEqual("MOVE HOME", Instructions.GetStringAfterSpace("DETECT COPPER THEN MOVE HOME", 3));
+            Assert.AreEqual("Two Three Four", Instructions.GetStringAfterSpace("One Two Three Four", 1));
+            Assert.AreEqual("Three Four", Instructions.GetStringAfterSpace("One Two Three Four", 2));
+            Assert.AreEqual("Four", Instructions.GetStringAfterSpace("One Two Three Four", 3));
+        }
     }
 }

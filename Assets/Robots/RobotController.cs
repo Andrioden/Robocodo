@@ -9,7 +9,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 {
     // ********** COMMON VARIABLES **********
     [SyncVar]
-    public string owner;
+    public string owner = "NEUTRAL";
 
     [SyncVar]
     protected float x;
@@ -87,7 +87,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         Instructions.MoveHome,
         Instructions.LoopStartNumbered,
         Instructions.LoopStart,
-        Instructions.LoopEnd
+        Instructions.LoopEnd,
+        Instructions.DetectThen
     };
 
     public List<string> CommonInstructions { get { return commonInstructions; } }
@@ -329,6 +330,13 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         }
         energy--;
 
+        if (ApplyInstruction(instruction))
+            InstructionCompleted();
+    }
+
+    [Server]
+    private bool ApplyInstruction(string instruction)
+    {
         if (instruction == Instructions.MoveUp)
             ChangePosition(x, z + 1);
         else if (instruction == Instructions.MoveDown)
@@ -350,7 +358,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
                 z += GetIncremementOrDecrementToGetCloser(z, homeZ);
 
             if (!IsHome())
-                return;
+                return false;
         }
         else if (Instructions.IsValidLoopStart(instruction))
         {
@@ -384,10 +392,26 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             AttackPosition(x + 1, z);
         else if (instruction == Instructions.AttackLeft && !isPreviewRobot)
             AttackPosition(x - 1, z);
-        else
-            SetFeedback(string.Format("UNKNOWN COMMAND: '{0}'", instruction));
+        else if (Instructions.IsValidDetect(instruction) && !isPreviewRobot)
+        {
+            string detectionSource = instruction.Split(' ')[1];
+            if (detectionSource == "ENEMY" && FindNearbyEnemy((int)x, (int)z, 3.0) == null)
+                return true;
+            else if (detectionSource == "IRON" || detectionSource == "COPPER")
+            {
+                SetFeedback("Cant detect IRON or COPPER yet. Not implemented");
+                return true;
+            }
 
-        InstructionCompleted();
+            Debug.Log("Nearby: " + FindNearbyEnemy((int)x, (int)z, 4.3));
+
+            string detectInstruction = Instructions.GetStringAfterSpace(instruction, 3);
+            return ApplyInstruction(detectInstruction);
+        }
+        else
+            SetFeedback(string.Format("UNKNOWN INSTRUCTION: '{0}'", instruction));
+
+        return true;
     }
 
     [Server]
@@ -606,12 +630,16 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         return null;
     }
 
+    /// <summary>
+    /// Finds attackable enemy based on colliders. Requires that the collider is hierarchaly 1 step below the IAttackable script.
+    /// </summary>
     [Server]
     private IAttackable FindAttackableEnemy(int x, int z)
     {
         foreach (GameObject potentialGO in FindNearbyCollidingGameObjects())
         {
-            IAttackable attackable = potentialGO.GetComponent<IAttackable>();
+            IAttackable attackable = potentialGO.transform.root.GetComponent<IAttackable>();
+
             if (attackable != null && potentialGO.transform.position.x == x && potentialGO.transform.position.z == z)
             {
                 if (attackable.GetOwner() != GetOwner())
@@ -625,10 +653,35 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         return null;
     }
 
+    /// <summary>
+    /// Finds nearby enemy based on colliders. Requires that the collider is hierarchaly 1 step below the IAttackable script.
+    /// </summary>
+    [Server]
+    private IAttackable FindNearbyEnemy(int x, int z, double maxDistance)
+    {
+        foreach (GameObject potentialGO in FindNearbyCollidingGameObjects())
+        {
+            IAttackable attackable = potentialGO.transform.root.GetComponent<IAttackable>();
+            if (attackable == null)
+                continue;
+
+            int toX = (int)potentialGO.transform.position.x;
+            int toZ = (int)potentialGO.transform.position.z;
+            if (MathUtils.Distance(x, z, toX, toZ) <= maxDistance)
+            {
+                if (attackable.GetOwner() != GetOwner())
+                    return attackable;
+            }
+        }
+
+        Debug.Log("Nothing nearby");
+        return null;
+    }
+
     [Server]
     private List<GameObject> FindNearbyCollidingGameObjects()
     {
-        return Physics.OverlapSphere(transform.position, 2.0f /*Radius*/)
+        return Physics.OverlapSphere(transform.position, 7.0f /*Radius*/)
              .Except(new[] { GetComponent<Collider>() })
              .Select(c => c.gameObject)
              .ToList();
@@ -685,7 +738,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             playerCity.RemoveResources(reprogramCopperCost, reprogramIronCost);
 
             StopRobot();
-            SetInstructions(GetDefaultInstructions());
             currentInstructionIndex = 0;
             currentInstructionIndexIsValid = true;
             mainLoopIterationCount = 0;
