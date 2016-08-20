@@ -50,7 +50,7 @@ public class RobotMovementPreviewer
             if (nextCoordinate.x != prevCoordinateDir.x || nextCoordinate.z != prevCoordinateDir.z)
                 coords.Add(nextCoordinate);
 
-            if (robotCloneController.InstructionsMainLoopCount > 0 || robotCloneController.Energy <= 0)
+            if (robotCloneController.MainLoopIterationCount > 0 || robotCloneController.Energy <= 0)
                 break;
             else if (instructionsRun > Settings_MaxPreviewInstructions)
             {

@@ -464,10 +464,10 @@ public class RobotPanel : MonoBehaviour
 
             codeRunningField.text = string.Join("\n", _formattedInstructions.ToArray());
 
-            if (robot.InstructionsMainLoopCount == 1)
-                codeRunningLabel.text = string.Format("RUNNING CODE ({0} iteration)", robot.InstructionsMainLoopCount);
+            if (robot.MainLoopIterationCount == 1)
+                codeRunningLabel.text = string.Format("RUNNING CODE ({0} iteration)", robot.MainLoopIterationCount);
             else
-                codeRunningLabel.text = string.Format("RUNNING CODE ({0} iterations)", robot.InstructionsMainLoopCount);
+                codeRunningLabel.text = string.Format("RUNNING CODE ({0} iterations)", robot.MainLoopIterationCount);
         }
     }
 

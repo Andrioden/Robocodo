@@ -43,8 +43,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private bool currentInstructionIndexIsValid = true;
     public bool CurrentInstructionIndexIsValid { get { return currentInstructionIndexIsValid; } }
 
-    private int instructionsMainLoopCount = 0;
-    public int InstructionsMainLoopCount { get { return instructionsMainLoopCount; } }
+    [SyncVar]
+    private int mainLoopIterationCount = 0;
+    public int MainLoopIterationCount { get { return mainLoopIterationCount; } }
 
     private List<InventoryItem> inventory = new List<InventoryItem>();
     public List<InventoryItem> Inventory { get { return inventory; } }
@@ -457,7 +458,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         {
             nextInstructionIndex = 0;
             ResetAllInnerLoopStarts(nextInstructionIndex);
-            instructionsMainLoopCount++;
+            mainLoopIterationCount++;
         }
     }
 
@@ -687,7 +688,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             SetInstructions(GetDefaultInstructions());
             currentInstructionIndex = 0;
             currentInstructionIndexIsValid = true;
-            instructionsMainLoopCount = 0;
+            mainLoopIterationCount = 0;
         }
         else
             SetFeedback("NOT ENOUGH RESOURCES TO REPROGRAM");
@@ -706,6 +707,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         energy = Settings_MaxEnergy();
         currentInstructionIndex = 0;
         nextInstructionIndex = 0;
-        instructionsMainLoopCount = 0;
+        mainLoopIterationCount = 0;
     }
 }
