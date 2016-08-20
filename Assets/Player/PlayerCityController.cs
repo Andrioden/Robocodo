@@ -9,6 +9,7 @@ using System.Linq;
 public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
 {
     public MeshRenderer bodyMeshRenderer;
+    public GameObject playerCityRubblePrefab;
 
     [SyncVar]
     private string playerNick;
@@ -170,6 +171,7 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
             foreach (GameObject go in ownedGameObjects)
                 Destroy(go);
             Destroy(gameObject);
+            WorldController.instance.SpawnObject(playerCityRubblePrefab, (int)transform.position.x, (int)transform.position.z);
         }
     }
 
@@ -180,7 +182,7 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
         foreach (GameObject go in GameObject.FindGameObjectsWithTag("PlayerCity"))
         {
             PlayerCityController playerCity = go.GetComponent<PlayerCityController>();
-            if (!string.IsNullOrEmpty(playerCity.PlayerNick))
+            if (playerCity != null && !string.IsNullOrEmpty(playerCity.PlayerNick))
                 currentNicks.Add(playerCity.PlayerNick);
         }
 

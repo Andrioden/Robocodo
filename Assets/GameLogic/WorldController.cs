@@ -44,6 +44,7 @@ public class WorldController : NetworkBehaviour
     // Use this for initialization
     private void Start()
     {
+        Time.timeScale = 1;
         SpawnAndAdjustGround();
     }
 
