@@ -761,7 +761,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         return Physics.OverlapSphere(transform.position, radius)
              .Except(new[] { GetComponent<Collider>() })                // Should check if its not the same collider as current collider, not sure if it works
-             .Where(c => c.transform.root.gameObject != gameObject)    // Check that it is not the same object
+             .Where(c => c.transform.root.gameObject != gameObject)     // Check that it is not the same object
              .Select(c => c.gameObject)
              .ToList();
     }

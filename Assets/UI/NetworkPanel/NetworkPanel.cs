@@ -196,6 +196,8 @@ public class NetworkPanel : MonoBehaviour
         findMMButton.gameObject.SetActive(false);
         MMGameListContainer.SetActive(false);
         quitButton.gameObject.SetActive(true);
+
+        ResourcePanel.instance.Show();
     }
 
     private void ReadyToHostOrJoin()
@@ -209,6 +211,8 @@ public class NetworkPanel : MonoBehaviour
         findMMButton.gameObject.SetActive(true);
         MMGameListContainer.SetActive(true);
         quitButton.gameObject.SetActive(false);
+
+        ResourcePanel.instance.Hide();
     }
 
 }

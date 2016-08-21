@@ -37,6 +37,21 @@ public class ResourcePanel : MonoBehaviour
 
     }
 
+    public void Show()
+    {
+        gameObject.SetActive(true);
+    }
+
+    public void Hide()
+    {
+        gameObject.SetActive(false);
+    }
+
+    public void RegisterLocalPlayerCity(PlayerCityController playerCity)
+    {
+        localPlayerCity = playerCity;
+    }
+
     private void UpdateResourceLabels()
     {
         if (localPlayerCity != null)
@@ -53,8 +68,4 @@ public class ResourcePanel : MonoBehaviour
         }
     }
 
-    public void RegisterLocalPlayerCity(PlayerCityController playerCity)
-    {
-        localPlayerCity = playerCity;
-    }
 }
