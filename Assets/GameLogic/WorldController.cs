@@ -102,8 +102,8 @@ public class WorldController : NetworkBehaviour
         if (NetworkServer.active)
             NetworkServer.AddPlayerForConnection(conn, playerCityGameObject, playerControllerId);
 
-        //scenarioSetup.Normal(conn, playerCityGameObject);
-        scenarioSetup.HarvesterTransporter(conn, playerCityGameObject);
+        scenarioSetup.Normal(conn, playerCityGameObject);
+        //scenarioSetup.HarvesterTransporter(conn, playerCityGameObject);
         //scenarioSetup.AttackNeutralEnemy(conn, playerCityGameObject);
 
         return playerCityGameObject;

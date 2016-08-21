@@ -311,20 +311,17 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
         //Debug.Log("SERVER: Running instruction: " + instruction);
 
-        if (IsHome())
-        {
-            if (willSalvageWhenHome)
-            {
-                SalvageRobot();
-                return;
-            }
-            else if (willReprogramWhenHome)
-            {
-                ReprogramRobot();
-                return;
-            }
-        }
+        UpdateEnergy();
 
+        if (SalvageOrReprogramCheck())
+            return;
+
+        if (ApplyInstruction(instruction))
+            InstructionCompleted();
+    }
+
+    private void UpdateEnergy()
+    {
         if (IsOnEnergySource())
             energy = Settings_MaxEnergy();
         else if (energy <= 0)
@@ -335,8 +332,25 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         else
             energy--;
 
-        if (ApplyInstruction(instruction))
-            InstructionCompleted();
+    }
+
+    private bool SalvageOrReprogramCheck()
+    {
+        if (IsHome())
+        {
+            if (willSalvageWhenHome)
+            {
+                SalvageRobot();
+                return true;
+            }
+            else if (willReprogramWhenHome)
+            {
+                ReprogramRobot();
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private bool ApplyInstruction(string instruction)
@@ -675,24 +689,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             SetFeedbackIfNotPreview("NO TARGET TO ATTACK");
     }
 
-    /// <summary>
-    /// TODO: Should probably rewrite to use collisions and remove tag.
-    /// </summary>
-    /// <returns></returns>
-    [Server]
-    private PlayerCityController FindPlayerCityControllerOnPosition()
-    {
-        foreach (GameObject go in GameObject.FindGameObjectsWithTag("PlayerCity"))
-            if (go.transform.position.x == x && go.transform.position.z == z)
-                return go.GetComponent<PlayerCityController>();
-
-        return null;
-    }
-
-    /// <summary>
-    /// Finds attackable enemy based on colliders. Requires that the collider is hierarchaly 1 step below the IAttackable script.
-    /// </summary>
-    [Server]
     private IAttackable FindAttackableEnemy(int x, int z)
     {
         foreach (GameObject potentialGO in FindNearbyCollidingGameObjects())
@@ -712,10 +708,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         return null;
     }
 
-    /// <summary>
-    /// Finds nearby enemy based on colliders. Requires that the collider is hierarchaly 1 step below the IAttackable script.
-    /// </summary>
-    [Server]
     private IAttackable FindNearbyEnemy(int x, int z, double maxDistance)
     {
         foreach (GameObject potentialGO in FindNearbyCollidingGameObjects<IAttackable>())
@@ -734,10 +726,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         return null;
     }
 
-    /// <summary>
-    /// Finds go that can be dropped on based on colliders. Requires that the collider is hierarchaly 1 step below the IAttackable script.
-    /// </summary>
-    [Server]
     private IHasInventory FindDroppableTarget(int x, int z)
     {
         foreach (GameObject potentialGO in FindNearbyCollidingGameObjects<IHasInventory>())
@@ -753,8 +741,15 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     private bool IsOnEnergySource()
     {
-        return FindNearbyCollidingGameObjects<IEnergySource>()
-            .Any(go => go.transform.position.x == x && go.transform.position.z == z);
+        return FindOnCurrentPosition<IEnergySource>() != null;
+    }
+
+    private T FindOnCurrentPosition<T>()
+    {
+        return FindNearbyCollidingGameObjects<T>()
+            .Where(go => go.transform.position.x == x && go.transform.position.z == z)
+            .Select(go => go.transform.root.GetComponent<T>())
+            .FirstOrDefault();
     }
 
     private List<GameObject> FindNearbyCollidingGameObjects<T>(float radius = 7.0f)
@@ -784,10 +779,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [Server]
     private void SalvageRobot()
     {
-        if (isPreviewRobot) // TODO: REMOVE. This code can be removed when testing is done because it should never be reached by the preview code
-            return;
-
-        PlayerCityController playerCity = FindPlayerCityControllerOnPosition();
+        PlayerCityController playerCity = FindOnCurrentPosition<PlayerCityController>();
 
         List<InventoryItem> salvagedResources = new List<InventoryItem>();
 
@@ -807,12 +799,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [Server]
     private void ReprogramRobot()
     {
-        if (isPreviewRobot) // TODO: REMOVE. This code can be removed when testing is done because it should never be reached by the preview code
-            return;
-
         willReprogramWhenHome = false;
 
-        PlayerCityController playerCity = FindPlayerCityControllerOnPosition();
+        PlayerCityController playerCity = FindOnCurrentPosition<PlayerCityController>();
 
         int reprogramCopperCost = MathUtils.RoundMin1IfHasValue(Settings_CopperCost() * Settings.Robot_ReprogramPercentage / 100.0);
         int reprogramIronCost = MathUtils.RoundMin1IfHasValue(Settings_IronCost() * Settings.Robot_ReprogramPercentage / 100.0);
