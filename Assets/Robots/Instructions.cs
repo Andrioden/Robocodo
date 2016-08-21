@@ -24,6 +24,7 @@ public static class Instructions
     public const string AttackDown = "ATTACK DOWN";
     public const string AttackLeft = "ATTACK LEFT";
     public const string AttackRight = "ATTACK RIGHT";
+    public const string AttackRandom = "ATTACK RANDOM";
 
     public const string DetectThen = "DETECT [WHAT] THEN [INSTRUCTION]";
     public static string DetectThenDefined(string what, string thenInstruction) { return DetectThen.Replace("[WHAT]", what).Replace("[INSTRUCTION]", thenInstruction); }

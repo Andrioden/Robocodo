@@ -34,7 +34,8 @@ public class CombatRobotController : RobotController
         Instructions.AttackUp,
         Instructions.AttackDown,
         Instructions.AttackLeft,
-        Instructions.AttackRight
+        Instructions.AttackRight,
+        Instructions.AttackRandom
     };
     public override List<string> GetSpecializedInstruction() { return spezializedInstructions; }
 

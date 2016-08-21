@@ -355,6 +355,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     private bool ApplyInstruction(string instruction)
     {
+        Debug.Log("Applying instruction: " + instruction);
+
         if (instruction == Instructions.Idle)
             return true;
         else if (instruction == Instructions.MoveUp)
@@ -418,6 +420,17 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             AttackPosition(x + 1, z);
         else if (instruction == Instructions.AttackLeft && !isPreviewRobot)
             AttackPosition(x - 1, z);
+        else if (instruction == Instructions.AttackRandom && !isPreviewRobot)
+        {
+            ApplyInstruction(Utils.Random(new List<string>
+            {
+                Instructions.AttackMelee,
+                Instructions.AttackUp,
+                Instructions.AttackDown,
+                Instructions.AttackRight,
+                Instructions.AttackLeft
+            }));
+        }
         else if (Instructions.IsValidDetect(instruction) && !isPreviewRobot)
         {
             string detectionSource = instruction.Split(' ')[1];
@@ -699,8 +712,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             {
                 if (attackable.GetOwner() != GetOwner())
                     return attackable;
-                else
-                    Debug.Log("Found attackable but it was friendly");
             }
         }
 
