@@ -297,11 +297,11 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     public void RunNextInstruction(object sender)
     {
-        SetFeedback("");
+        SetFeedbackIfNotPreview("");
 
         if (instructions.Count == 0)
         {
-            SetFeedback("NO INSTRUCTIONS");
+            SetFeedbackIfNotPreview("NO INSTRUCTIONS");
             return;
         }
 
@@ -329,7 +329,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             energy = Settings_MaxEnergy();
         else if (energy <= 0)
         {
-            SetFeedback("NOT ENOUGH ENERGY");
+            SetFeedbackIfNotPreview("NOT ENOUGH ENERGY");
             return;
         }
         else
@@ -378,19 +378,19 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             for (int i = 0; i < Settings_HarvestYield(); i++)
             {
                 if (Settings_InventoryCapacity() == 0)
-                    SetFeedback("NO INVENTORY CAPACITY");
+                    SetFeedbackIfNotPreview("NO INVENTORY CAPACITY");
                 else if (IsInventoryFull())
-                    SetFeedback("INVENTORY FULL");
+                    SetFeedbackIfNotPreview("INVENTORY FULL");
                 else if (WorldController.instance.HarvestFromNode(CopperItem.SerializedType, x, z))
                     TransferToInventory(new CopperItem());
                 else if (WorldController.instance.HarvestFromNode(IronItem.SerializedType, x, z))
                     TransferToInventory(new IronItem());
                 else
-                    SetFeedback("NOTHING TO HARVEST");
+                    SetFeedbackIfNotPreview("NOTHING TO HARVEST");
             }
 
             if (Settings_HarvestYield() == 0)
-                SetFeedback("NO HARVEST YIELD");
+                SetFeedbackIfNotPreview("NO HARVEST YIELD");
         }
         else if (instruction == Instructions.DropInventory && !isPreviewRobot)
             DropInventory();
@@ -413,7 +413,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
                 return true;
             else if (detectionSource == "IRON" || detectionSource == "COPPER")
             {
-                SetFeedback("Cant detect IRON or COPPER yet. Not implemented");
+                SetFeedbackIfNotPreview("Cant detect IRON or COPPER yet. Not implemented");
                 return true;
             }
 
@@ -430,13 +430,22 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             return ApplyInstruction(detectInstruction);
         }
         else
-            SetFeedback(string.Format("UNKNOWN INSTRUCTION: '{0}'", instruction));
+            SetFeedbackIfNotPreview(string.Format("UNKNOWN INSTRUCTION: '{0}'", instruction));
 
         return true;
     }
 
+    private void SetFeedbackIfNotPreview(string message)
+    {
+        if (!isPreviewRobot)
+            _SetFeedback(message);
+    }
+
+    /// <summary>
+    /// Never run this method directly, always use SetFeedbackIfNotPreview
+    /// </summary>
     [Server]
-    private void SetFeedback(string message)
+    private void _SetFeedback(string message)
     {
         feedback = message;
         currentInstructionIndexIsValid = false;
@@ -445,7 +454,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [Command]
     private void CmdSetFeedback(string message)
     {
-        SetFeedback(message);
+        SetFeedbackIfNotPreview(message);
 
         /* When client sets feedback we have to clear it manually as clearing on server is based on tick */
         if (feedbackClearCoroutine != null)
@@ -458,7 +467,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private void ChangePosition(float newPosX, float newPosZ)
     {
         if (newPosX >= WorldController.instance.Width || newPosX < 0 || newPosZ >= WorldController.instance.Height || newPosZ < 0)
-            SetFeedback("CAN NOT MOVE THERE");
+            SetFeedbackIfNotPreview("CAN NOT MOVE THERE");
         else
         {
             x = newPosX;
@@ -581,7 +590,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             }
         }
 
-        SetFeedback("COULD NOT FIND MATCHING LOOP START");
+        SetFeedbackIfNotPreview("COULD NOT FIND MATCHING LOOP START");
     }
 
     [Server]
@@ -596,7 +605,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             List<InventoryItem> itemsNotAdded = droppableTarget.TransferToInventory(inventory);
             SetInventory(itemsNotAdded);
             if (itemsNotAdded.Count > 0)
-                SetFeedback("NOT ALL ITEMS DROPPED, TARGET FULL");
+                SetFeedbackIfNotPreview("NOT ALL ITEMS DROPPED, TARGET FULL");
         }
         else
             Debug.Log("SERVER: No droppable, should drop items on ground. Not fully implemented.");
@@ -663,7 +672,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         if (attackable != null)
             attackable.TakeDamage(Settings_Damage());
         else
-            SetFeedback("NO TARGET TO ATTACK");
+            SetFeedbackIfNotPreview("NO TARGET TO ATTACK");
     }
 
     /// <summary>
@@ -818,7 +827,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             mainLoopIterationCount = 0;
         }
         else
-            SetFeedback("NOT ENOUGH RESOURCES TO REPROGRAM");
+            SetFeedbackIfNotPreview("NOT ENOUGH RESOURCES TO REPROGRAM");
     }
 
     public string GetOwner()
