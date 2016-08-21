@@ -313,8 +313,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
         if (IsHome())
         {
-            energy = Settings_MaxEnergy();
-
             if (willSalvageWhenHome)
             {
                 SalvageRobot();
@@ -327,18 +325,20 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             }
         }
 
-        if (energy <= 0)
+        if (IsOnEnergySource())
+            energy = Settings_MaxEnergy();
+        else if (energy <= 0)
         {
             SetFeedback("NOT ENOUGH ENERGY");
             return;
         }
-        energy--;
+        else
+            energy--;
 
         if (ApplyInstruction(instruction))
             InstructionCompleted();
     }
 
-    [Server]
     private bool ApplyInstruction(string instruction)
     {
         if (instruction == Instructions.Idle)
@@ -642,7 +642,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         RpcSyncInventory(InventoryItem.SerializeList(inventory));
     }
 
-    [Server]
     private bool IsInventoryFull()
     {
         return inventory.Count >= Settings_InventoryCapacity();
@@ -682,23 +681,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     }
 
     /// <summary>
-    /// Finds go that can be dropped on based on colliders. Requires that the collider is hierarchaly 1 step below the IAttackable script.
-    /// </summary>
-    [Server]
-    private IHasInventory FindDroppableTarget(int x, int z)
-    {
-        foreach (GameObject potentialGO in FindNearbyCollidingGameObjects())
-        {
-            IHasInventory droppable = potentialGO.transform.root.GetComponent<IHasInventory>();
-            if (droppable != null && potentialGO.transform.position.x == x && potentialGO.transform.position.z == z)
-                return droppable;
-        }
-
-        Debug.Log("Did not find attackable");
-        return null;
-    }
-
-    /// <summary>
     /// Finds attackable enemy based on colliders. Requires that the collider is hierarchaly 1 step below the IAttackable script.
     /// </summary>
     [Server]
@@ -727,12 +709,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [Server]
     private IAttackable FindNearbyEnemy(int x, int z, double maxDistance)
     {
-        foreach (GameObject potentialGO in FindNearbyCollidingGameObjects())
+        foreach (GameObject potentialGO in FindNearbyCollidingGameObjects<IAttackable>())
         {
             IAttackable attackable = potentialGO.transform.root.GetComponent<IAttackable>();
-            if (attackable == null)
-                continue;
-
             int toX = (int)potentialGO.transform.position.x;
             int toZ = (int)potentialGO.transform.position.z;
             if (MathUtils.Distance(x, z, toX, toZ) <= maxDistance)
@@ -746,12 +725,39 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         return null;
     }
 
+    /// <summary>
+    /// Finds go that can be dropped on based on colliders. Requires that the collider is hierarchaly 1 step below the IAttackable script.
+    /// </summary>
     [Server]
-    private List<GameObject> FindNearbyCollidingGameObjects()
+    private IHasInventory FindDroppableTarget(int x, int z)
     {
-        return Physics.OverlapSphere(transform.position, 7.0f /*Radius*/)
-             .Except(new[] { GetComponent<Collider>() })
-             .Where(c => c.transform.root.gameObject != gameObject )
+        foreach (GameObject potentialGO in FindNearbyCollidingGameObjects<IHasInventory>())
+        {
+            IHasInventory droppable = potentialGO.transform.root.GetComponent<IHasInventory>();
+            if (potentialGO.transform.position.x == x && potentialGO.transform.position.z == z)
+                return droppable;
+        }
+
+        Debug.Log("Did not find attackable");
+        return null;
+    }
+
+    private bool IsOnEnergySource()
+    {
+        return FindNearbyCollidingGameObjects<IEnergySource>()
+            .Any(go => go.transform.position.x == x && go.transform.position.z == z);
+    }
+
+    private List<GameObject> FindNearbyCollidingGameObjects<T>(float radius = 7.0f)
+    {
+        return FindNearbyCollidingGameObjects(radius).Where(go => go.transform.root.GetComponent<T>() != null).ToList();
+    }
+
+    private List<GameObject> FindNearbyCollidingGameObjects(float radius = 7.0f)
+    {
+        return Physics.OverlapSphere(transform.position, radius)
+             .Except(new[] { GetComponent<Collider>() })                // Should check if its not the same collider as current collider, not sure if it works
+             .Where(c => c.transform.root.gameObject != gameObject)    // Check that it is not the same object
              .Select(c => c.gameObject)
              .ToList();
     }

@@ -17,6 +17,8 @@ public class WorldController : NetworkBehaviour
     private GameObject groundGameObject;
 
     private WorldBuilder worldBuilder;
+    private ScenarioSetup scenarioSetup;
+
     [SyncVar]
     private int width;
     public int Width { get { return width; } }
@@ -40,6 +42,8 @@ public class WorldController : NetworkBehaviour
             Debug.LogError("Tried to created another instance of " + GetType() + ". Destroying.");
             Destroy(gameObject);
         }
+
+        scenarioSetup = new ScenarioSetup(this);
     }
 
     // Use this for initialization
@@ -79,10 +83,8 @@ public class WorldController : NetworkBehaviour
         classIsUsedAsDemo = true;
         worldParent = demoWorldParent;
         BuildWorld(width, height);
-        GameObject playerGO = SpawnPlayer(null, 0);
+        SpawnPlayer(null, 0);
         SpawnAndAdjustGround();
-
-        //ScenarioSetupo_HarvesterTransporter(null, playerGO);
     }
 
     // [Server] enforced with inline code check
@@ -100,48 +102,11 @@ public class WorldController : NetworkBehaviour
         if (NetworkServer.active)
             NetworkServer.AddPlayerForConnection(conn, playerCityGameObject, playerControllerId);
 
-        //ScenarioSetup_Normal(conn, playerCityGameObject);
-        ScenarioSetup_HarvesterTransporter(conn, playerCityGameObject);
+        //scenarioSetup.Normal(conn, playerCityGameObject);
+        scenarioSetup.HarvesterTransporter(conn, playerCityGameObject);
+        //scenarioSetup.AttackNeutralEnemy(conn, playerCityGameObject);
 
         return playerCityGameObject;
-    }
-
-    private void ScenarioSetup_Normal(NetworkConnection conn, GameObject playerGO)
-    {
-        PlayerCityController newPlayerCity = playerGO.GetComponent<PlayerCityController>();
-
-        for (int i = 0; i < Settings.Player_AmountOfStartingHarvesterRobots; i++)
-            SpawnHarvesterRobotWithClientAuthority(conn, (int)playerGO.transform.position.x, (int)playerGO.transform.position.z, newPlayerCity);
-
-        SpawnCombatRobotWithClientAuthority(conn, (int)playerGO.transform.position.x, (int)playerGO.transform.position.z, newPlayerCity);
-    }
-
-    private void ScenarioSetup_HarvesterTransporter(NetworkConnection conn, GameObject playerGO)
-    {
-        PlayerCityController newPlayerCity = playerGO.GetComponent<PlayerCityController>();
-        int playerPosX = (int)playerGO.transform.position.x;
-        int playerPosZ = (int)playerGO.transform.position.z;
-
-        SpawnResourceNode(copperNodePrefab, playerPosX + 2, playerPosZ);
-
-        GameObject harvesterGO = SpawnHarvesterRobotWithClientAuthority(conn, playerPosX + 2, playerPosZ, newPlayerCity);
-        HarvesterRobotController harvester = harvesterGO.GetComponent<HarvesterRobotController>();
-        harvester.SetInstructions(new List<string>
-        {
-            Instructions.Harvest,
-            Instructions.MoveLeft,
-            Instructions.DropInventory,
-            Instructions.MoveRight,
-        });
-
-        GameObject transporterGO = SpawnTransporterRobotWithClientAuthority(conn, playerPosX + 1, playerPosZ, newPlayerCity);
-        TransporterRobotController transporter = transporterGO.GetComponent<TransporterRobotController>();
-        transporter.SetInstructions(new List<string>
-        {
-            Instructions.IdleUntilDefined("FULL", "MOVE LEFT"),
-            Instructions.DropInventory,
-            Instructions.MoveRight
-        });
     }
 
     public GameObject SpawnCombatRobotWithClientAuthority(NetworkConnection conn, int x, int z, PlayerCityController playerCity)
@@ -185,7 +150,7 @@ public class WorldController : NetworkBehaviour
     }
 
     // [Server] enforced with inline code check
-    private GameObject SpawnResourceNode(GameObject prefab, int x, int z)
+    public GameObject SpawnResourceNode(GameObject prefab, int x, int z)
     {
         if (!IsServerOrDemo())
             return null;

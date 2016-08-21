@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, IHasInventory
+public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, IHasInventory, IEnergySource
 {
     public MeshRenderer bodyMeshRenderer;
     public GameObject playerCityRubblePrefab;
@@ -14,6 +14,9 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, 
     [SyncVar]
     private string playerNick;
     public string PlayerNick { get { return playerNick; } }
+
+    public int X { get { return (int)gameObject.transform.position.x; } }
+    public int Z { get { return (int)gameObject.transform.position.z; } }
 
     private List<GameObject> ownedGameObjects = new List<GameObject>();
     private List<InventoryItem> inventory = new List<InventoryItem>();
