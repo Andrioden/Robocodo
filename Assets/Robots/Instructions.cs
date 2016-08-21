@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 public static class Instructions
 {
-    public const string DoNothing = "DO NOTHING";
+    public const string Idle = "IDLE";
     public const string MoveUp = "MOVE UP";
     public const string MoveDown = "MOVE DOWN";
     public const string MoveLeft = "MOVE LEFT";
@@ -26,9 +26,15 @@ public static class Instructions
     public const string AttackRight = "ATTACK RIGHT";
 
     public const string DetectThen = "DETECT [WHAT] THEN [INSTRUCTION]";
+    public static string DetectThenDefined(string what, string thenInstruction) { return DetectThen.Replace("[WHAT]", what).Replace("[INSTRUCTION]", thenInstruction); }
 
-    public static List<string> ValidDetectInstructions = new List<string>()
+    public const string IdleUntil = "IDLE UNTIL [WHAT] THEN [INSTRUCTION]";
+    public static string IdleUntilDefined(string what, string thenInstruction) { return IdleUntil.Replace("[WHAT]", what).Replace("[INSTRUCTION]", thenInstruction); }
+
+
+    public static List<string> ValidConditionaledInstructions = new List<string>()
     {
+        Idle,
         MoveUp,
         MoveDown,
         MoveLeft,
@@ -59,7 +65,18 @@ public static class Instructions
         if (Regex.Match(instruction, @"^DETECT \b(ENEMY|COPPER|IRON|FULL)\b THEN .+$").Success) // Understand regex better: https://regex101.com/r/aK2aM2/1
         {
             string detectInstruction = GetStringAfterSpace(instruction, 3);
-            if (ValidDetectInstructions.Contains(detectInstruction))
+            if (ValidConditionaledInstructions.Contains(detectInstruction))
+                return true;
+        }
+        return false;
+    }
+
+    public static bool IsValidIdleUntil(string instruction)
+    {
+        if (Regex.Match(instruction, @"^IDLE UNTIL \b(FULL)\b THEN .+$").Success) // Understand regex better: https://regex101.com/r/rU4dK3/1
+        {
+            string detectInstruction = GetStringAfterSpace(instruction, 4);
+            if (ValidConditionaledInstructions.Contains(detectInstruction))
                 return true;
         }
         return false;

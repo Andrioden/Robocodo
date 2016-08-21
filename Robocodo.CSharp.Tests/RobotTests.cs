@@ -52,6 +52,19 @@ namespace Robocodo.CSharp.Tests
         }
 
         [TestMethod]
+        public void IsValidIdleUntilTest()
+        {
+            Assert.IsTrue(Instructions.IsValidIdleUntil("IDLE UNTIL FULL THEN MOVE HOME"));
+            Assert.IsTrue(Instructions.IsValidIdleUntil("UDLE UNTIL FULL THEN MOVE LEFT"));
+
+            Assert.IsFalse(Instructions.IsValidDetect("IDLE FULL THEN MOVE HOME"));
+            Assert.IsFalse(Instructions.IsValidDetect("IDLE UNTIL FULLJ THEN MOVE HOME"));
+            Assert.IsFalse(Instructions.IsValidDetect("IDLE UNTIL STUPID THEN MOVE HOME"));
+            Assert.IsFalse(Instructions.IsValidDetect("IDLES UNTIL FULL THEN MOVE HOME"));
+            Assert.IsFalse(Instructions.IsValidDetect("IDLEUNTIL FULL THEN MOVE HOME"));
+        }
+
+        [TestMethod]
         public void GetStringAfterSpaceTest()
         {
             Assert.AreEqual("MOVE HOME", Instructions.GetStringAfterSpace("DETECT COPPER THEN MOVE HOME", 3));

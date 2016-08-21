@@ -341,7 +341,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [Server]
     private bool ApplyInstruction(string instruction)
     {
-        if (instruction == Instructions.DoNothing)
+        if (instruction == Instructions.Idle)
             return true;
         else if (instruction == Instructions.MoveUp)
             ChangePosition(x, z + 1);
@@ -409,7 +409,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             string detectionSource = instruction.Split(' ')[1];
             if (detectionSource == "ENEMY" && FindNearbyEnemy((int)x, (int)z, 3.0) == null)
                 return true;
-            else if (detectionSource == "FULL" && IsInventoryFull())
+            else if (detectionSource == "FULL" && !IsInventoryFull())
                 return true;
             else if (detectionSource == "IRON" || detectionSource == "COPPER")
             {
@@ -417,9 +417,16 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
                 return true;
             }
 
-            Debug.Log("Nearby: " + FindNearbyEnemy((int)x, (int)z, 4.3));
-
             string detectInstruction = Instructions.GetStringAfterSpace(instruction, 3);
+            return ApplyInstruction(detectInstruction);
+        }
+        else if (Instructions.IsValidIdleUntil(instruction))
+        {
+            string detectionSource = instruction.Split(' ')[2];
+            if (detectionSource == "FULL" && !IsInventoryFull())
+                return false;
+
+            string detectInstruction = Instructions.GetStringAfterSpace(instruction, 4);
             return ApplyInstruction(detectInstruction);
         }
         else

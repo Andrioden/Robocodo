@@ -138,18 +138,7 @@ public class WorldController : NetworkBehaviour
         TransporterRobotController transporter = transporterGO.GetComponent<TransporterRobotController>();
         transporter.SetInstructions(new List<string>
         {
-            Instructions.DoNothing,
-            Instructions.DoNothing,
-            Instructions.DoNothing,
-            Instructions.DoNothing,
-            Instructions.DoNothing,
-            Instructions.DoNothing,
-            Instructions.DoNothing,
-            Instructions.DoNothing,
-            Instructions.DoNothing,
-            Instructions.DoNothing,
-            Instructions.DoNothing,
-            Instructions.MoveLeft,
+            Instructions.IdleUntilDefined("FULL", "MOVE LEFT"),
             Instructions.DropInventory,
             Instructions.MoveRight
         });
