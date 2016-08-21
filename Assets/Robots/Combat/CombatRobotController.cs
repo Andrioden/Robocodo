@@ -13,16 +13,18 @@ public class CombatRobotController : RobotController
 
     // ********** SETTINGS **********
 
-    public static string Settings_Name = "PREDATOR";
+    public static string Settings_name = "PREDATOR";
     public static int Settings_copperCost = 5;
     public static int Settings_ironCost = 2;
 
+    public override string Settings_Name() { return Settings_name; }
     public override int Settings_CopperCost() { return Settings_copperCost; }
     public override int Settings_IronCost() { return Settings_ironCost; }
     public override int Settings_Memory() { return 20; }
     public override int Settings_IPT() { return 1; }
     public override int Settings_MaxEnergy() { return 50; }
     public override int Settings_InventoryCapacity() { return 0; }
+    public override int Settings_HarvestYield() { return 0; }
     public override int Settings_Damage() { return 1; }
     public override int Settings_StartHealth() { return 5; }
 
@@ -34,10 +36,9 @@ public class CombatRobotController : RobotController
         Instructions.AttackLeft,
         Instructions.AttackRight
     };
-
     public override List<string> GetSpecializedInstruction() { return spezializedInstructions; }
 
-    public override List<string> GetDefaultInstructions()
+    protected override List<string> GetDefaultInstructions()
     {
         List<string> demoInstructions = new List<string>()
         {
@@ -57,11 +58,6 @@ public class CombatRobotController : RobotController
         };
 
         return demoInstructions;
-    }
-
-    public override string GetName()
-    {
-        return Settings_Name;
     }
 
     protected override void Animate()

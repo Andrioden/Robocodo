@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectable
+public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectable, IHasInventory
 {
     // ********** COMMON VARIABLES **********
     [SyncVar]
@@ -69,12 +69,14 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     // ********** SETTINGS **********
 
+    public abstract string Settings_Name();
     public abstract int Settings_CopperCost();
     public abstract int Settings_IronCost();
     public abstract int Settings_Memory();
     public abstract int Settings_IPT(); // Instructions Per Tick. Cant call it speed because it can be confused with move speed.
     public abstract int Settings_MaxEnergy();
     public abstract int Settings_InventoryCapacity();
+    public abstract int Settings_HarvestYield();
     public abstract int Settings_Damage();
     public abstract int Settings_StartHealth();
 
@@ -98,9 +100,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     protected abstract void Animate();
     public abstract List<string> GetSpecializedInstruction();
-    public abstract string GetName();
     public abstract GameObject SpawnPreviewGameObjectClone();
-    public abstract List<string> GetDefaultInstructions();
+    protected abstract List<string> GetDefaultInstructions();
 
     // Use this for initialization
     private void Start()
@@ -138,6 +139,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
         energy = Settings_MaxEnergy();
         health = Settings_StartHealth();
+
+        if (instructions.Count == 0)
+            SetInstructions(GetDefaultInstructions());
     }
 
     public Coordinate GetCoordinate()
@@ -337,7 +341,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [Server]
     private bool ApplyInstruction(string instruction)
     {
-        if (instruction == Instructions.MoveUp)
+        if (instruction == Instructions.DoNothing)
+            return true;
+        else if (instruction == Instructions.MoveUp)
             ChangePosition(x, z + 1);
         else if (instruction == Instructions.MoveDown)
             ChangePosition(x, z - 1);
@@ -369,16 +375,22 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             SetInstructionToMatchingLoopStart();
         else if (instruction == Instructions.Harvest && !isPreviewRobot)
         {
-            if (Settings_InventoryCapacity() == 0)
-                SetFeedback("NO INVENTORY CAPACITY");
-            else if (inventory.Count >= Settings_InventoryCapacity())
-                SetFeedback("INVENTORY FULL");
-            else if (WorldController.instance.HarvestFromNode(CopperItem.SerializedType, x, z))
-                AddInventoryItem(new CopperItem());
-            else if (WorldController.instance.HarvestFromNode(IronItem.SerializedType, x, z))
-                AddInventoryItem(new IronItem());
-            else
-                SetFeedback("NOTHING TO HARVEST");
+            for (int i = 0; i < Settings_HarvestYield(); i++)
+            {
+                if (Settings_InventoryCapacity() == 0)
+                    SetFeedback("NO INVENTORY CAPACITY");
+                else if (IsInventoryFull())
+                    SetFeedback("INVENTORY FULL");
+                else if (WorldController.instance.HarvestFromNode(CopperItem.SerializedType, x, z))
+                    TransferToInventory(new CopperItem());
+                else if (WorldController.instance.HarvestFromNode(IronItem.SerializedType, x, z))
+                    TransferToInventory(new IronItem());
+                else
+                    SetFeedback("NOTHING TO HARVEST");
+            }
+
+            if (Settings_HarvestYield() == 0)
+                SetFeedback("NO HARVEST YIELD");
         }
         else if (instruction == Instructions.DropInventory && !isPreviewRobot)
             DropInventory();
@@ -396,6 +408,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         {
             string detectionSource = instruction.Split(' ')[1];
             if (detectionSource == "ENEMY" && FindNearbyEnemy((int)x, (int)z, 3.0) == null)
+                return true;
+            else if (detectionSource == "FULL" && IsInventoryFull())
                 return true;
             else if (detectionSource == "IRON" || detectionSource == "COPPER")
             {
@@ -564,41 +578,67 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     }
 
     [Server]
-    private void AddInventoryItem(InventoryItem item)
-    {
-        inventory.Add(item);
-        if (OnInventoryChanged != null)
-            OnInventoryChanged(this);
-
-        RpcSyncInventory(InventoryItem.SerializeList(inventory));
-    }
-
-    [Server]
     private void DropInventory()
     {
         Debug.Log("SERVER: Dropping inventory items count: " + inventory.Count);
 
-        PlayerCityController playerCity = FindPlayerCityControllerOnPosition();
-        if (playerCity != null)
+        IHasInventory droppableTarget = FindDroppableTarget((int)x, (int)z);
+        if (droppableTarget != null)
         {
-            Debug.Log("SERVER: Found city, dropping inventory on city");
-            playerCity.AddToInventory(inventory);
-            ClearInventory();
+            Debug.Log("SERVER: Found something to drop on, dropping inventory on it");
+            List<InventoryItem> itemsNotAdded = droppableTarget.TransferToInventory(inventory);
+            SetInventory(itemsNotAdded);
+            if (itemsNotAdded.Count > 0)
+                SetFeedback("NOT ALL ITEMS DROPPED, TARGET FULL");
         }
         else
-        {
-            Debug.Log("SERVER: No city found, should drop items on ground. Not fully implemented.");
-        }
+            Debug.Log("SERVER: No droppable, should drop items on ground. Not fully implemented.");
+    }
+
+    /// <summary>
+    /// Returns true if the item was added successfully
+    /// </summary>
+    [Server]
+    private bool TransferToInventory(InventoryItem item)
+    {
+        List<InventoryItem> notAddedItems = TransferToInventory(new List<InventoryItem> { item });
+        return notAddedItems.Count == 0;
     }
 
     [Server]
-    private void ClearInventory()
+    public List<InventoryItem> TransferToInventory(List<InventoryItem> items)
     {
-        inventory = new List<InventoryItem>();
+        List<InventoryItem> notAdded = new List<InventoryItem>();
+        foreach (InventoryItem item in items)
+        {
+            if (IsInventoryFull())
+                notAdded.Add(item);
+            else
+                inventory.Add(item);
+        }
+
         if (OnInventoryChanged != null)
             OnInventoryChanged(this);
 
         RpcSyncInventory(InventoryItem.SerializeList(inventory));
+
+        return notAdded;
+    }
+
+    [Server]
+    private void SetInventory(List<InventoryItem> items)
+    {
+        inventory = items;
+        if (OnInventoryChanged != null)
+            OnInventoryChanged(this);
+
+        RpcSyncInventory(InventoryItem.SerializeList(inventory));
+    }
+
+    [Server]
+    private bool IsInventoryFull()
+    {
+        return inventory.Count >= Settings_InventoryCapacity();
     }
 
     [ClientRpc]
@@ -620,6 +660,10 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             SetFeedback("NO TARGET TO ATTACK");
     }
 
+    /// <summary>
+    /// TODO: Should probably rewrite to use collisions and remove tag.
+    /// </summary>
+    /// <returns></returns>
     [Server]
     private PlayerCityController FindPlayerCityControllerOnPosition()
     {
@@ -627,6 +671,23 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             if (go.transform.position.x == x && go.transform.position.z == z)
                 return go.GetComponent<PlayerCityController>();
 
+        return null;
+    }
+
+    /// <summary>
+    /// Finds go that can be dropped on based on colliders. Requires that the collider is hierarchaly 1 step below the IAttackable script.
+    /// </summary>
+    [Server]
+    private IHasInventory FindDroppableTarget(int x, int z)
+    {
+        foreach (GameObject potentialGO in FindNearbyCollidingGameObjects())
+        {
+            IHasInventory droppable = potentialGO.transform.root.GetComponent<IHasInventory>();
+            if (droppable != null && potentialGO.transform.position.x == x && potentialGO.transform.position.z == z)
+                return droppable;
+        }
+
+        Debug.Log("Did not find attackable");
         return null;
     }
 
@@ -683,6 +744,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         return Physics.OverlapSphere(transform.position, 7.0f /*Radius*/)
              .Except(new[] { GetComponent<Collider>() })
+             .Where(c => c.transform.root.gameObject != gameObject )
              .Select(c => c.gameObject)
              .ToList();
     }
@@ -715,7 +777,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         for (int c = 0; c < salvagedIron; c++)
             salvagedResources.Add(new IronItem());
 
-        playerCity.AddToInventory(salvagedResources);
+        playerCity.TransferToInventory(salvagedResources);
 
         NetworkServer.Destroy(gameObject);
     }
@@ -761,4 +823,5 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         nextInstructionIndex = 0;
         mainLoopIterationCount = 0;
     }
+
 }

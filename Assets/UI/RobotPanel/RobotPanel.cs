@@ -358,14 +358,14 @@ public class RobotPanel : MonoBehaviour
         if (robot.isPreviewRobot)
             return;
 
-        titleText.text = robot.GetName() + " SETUP";
+        titleText.text = robot.Settings_Name() + " SETUP";
         SetupPossibleInstructions();
 
         codeInputPanel.SetActive(true);
         codeInputField.onValueChanged.AddListener(KeyboardManager.KeyboardLockOn);
         codeInputField.onValueChanged.AddListener(CodeInputAutoIndentAndUpperCase);
         codeInputField.onEndEdit.AddListener(KeyboardManager.KeyboardLockOff);
-        List<string> exampleInstructions = robot.GetDefaultInstructions();
+        List<string> exampleInstructions = robot.GetInstructions().ToList();
         codeInputField.text = string.Join("\n", exampleInstructions.ToArray());  /* Pre filled example data */
 
         runButton.onClick.RemoveAllListeners();
@@ -380,7 +380,7 @@ public class RobotPanel : MonoBehaviour
 
     private void EnableRunningModePanel()
     {
-        titleText.text = robot.GetName();
+        titleText.text = robot.Settings_Name();
         LoadInstructionsFromRobot();
         InventoryUpdated(robot);
 

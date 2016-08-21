@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 
 public static class Instructions
 {
+    public const string DoNothing = "DO NOTHING";
     public const string MoveUp = "MOVE UP";
     public const string MoveDown = "MOVE DOWN";
     public const string MoveLeft = "MOVE LEFT";
@@ -55,7 +56,7 @@ public static class Instructions
 
     public static bool IsValidDetect(string instruction)
     {
-        if (Regex.Match(instruction, @"^DETECT \b(ENEMY|COPPER|IRON)\b THEN .+$").Success) // Understand regex better: https://regex101.com/r/aK2aM2/1
+        if (Regex.Match(instruction, @"^DETECT \b(ENEMY|COPPER|IRON|FULL)\b THEN .+$").Success) // Understand regex better: https://regex101.com/r/aK2aM2/1
         {
             string detectInstruction = GetStringAfterSpace(instruction, 3);
             if (ValidDetectInstructions.Contains(detectInstruction))

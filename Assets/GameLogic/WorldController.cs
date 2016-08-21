@@ -12,6 +12,7 @@ public class WorldController : NetworkBehaviour
     public GameObject ironNodePrefab;
     public GameObject harvesterRobotPrefab;
     public GameObject combatRobotPrefab;
+    public GameObject transporterRobotPrefab;
 
     private GameObject groundGameObject;
 
@@ -78,8 +79,10 @@ public class WorldController : NetworkBehaviour
         classIsUsedAsDemo = true;
         worldParent = demoWorldParent;
         BuildWorld(width, height);
-        SpawnPlayer(null, 0);
+        GameObject playerGO = SpawnPlayer(null, 0);
         SpawnAndAdjustGround();
+
+        //ScenarioSetupo_HarvesterTransporter(null, playerGO);
     }
 
     // [Server] enforced with inline code check
@@ -90,7 +93,6 @@ public class WorldController : NetworkBehaviour
 
         var playerPos = worldBuilder.GetNextPlayerPosition();
         GameObject playerCityGameObject = (GameObject)Instantiate(playerCityPrefab, new Vector3(playerPos.x, 0, playerPos.z), Quaternion.identity);
-        PlayerCityController newPlayerCity = playerCityGameObject.GetComponent<PlayerCityController>();
 
         if (worldParent != null)
             playerCityGameObject.transform.parent = worldParent;
@@ -98,40 +100,78 @@ public class WorldController : NetworkBehaviour
         if (NetworkServer.active)
             NetworkServer.AddPlayerForConnection(conn, playerCityGameObject, playerControllerId);
 
-        for (int i = 0; i < Settings.Player_AmountOfStartingHarvesterRobots; i++)
-        {
-            GameObject harvesterGO = SpawnHarvesterRobotWithClientAuthority(conn, playerPos.x, playerPos.z);
-            newPlayerCity.AddOwnedGameObject(harvesterGO);
-        }
-
-        GameObject combatRobotGO = SpawnCombatRobotWithClientAuthority(conn, playerPos.x, playerPos.z);
-        newPlayerCity.AddOwnedGameObject(combatRobotGO);
-
-        //SpawnObject(combatRobotPrefab, playerPos.x + 2, playerPos.z);
+        //ScenarioSetup_Normal(conn, playerCityGameObject);
+        ScenarioSetup_HarvesterTransporter(conn, playerCityGameObject);
 
         return playerCityGameObject;
     }
 
-    // [Server] enforced with inline code check
-    public GameObject SpawnCombatRobotWithClientAuthority(NetworkConnection conn, int x, int z)
+    private void ScenarioSetup_Normal(NetworkConnection conn, GameObject playerGO)
     {
-        if (!IsServerOrDemo())
-            return null;
+        PlayerCityController newPlayerCity = playerGO.GetComponent<PlayerCityController>();
 
-        return SpawnObjectWithClientAuthority(conn, combatRobotPrefab, x, z);
+        for (int i = 0; i < Settings.Player_AmountOfStartingHarvesterRobots; i++)
+            SpawnHarvesterRobotWithClientAuthority(conn, (int)playerGO.transform.position.x, (int)playerGO.transform.position.z, newPlayerCity);
+
+        SpawnCombatRobotWithClientAuthority(conn, (int)playerGO.transform.position.x, (int)playerGO.transform.position.z, newPlayerCity);
+    }
+
+    private void ScenarioSetup_HarvesterTransporter(NetworkConnection conn, GameObject playerGO)
+    {
+        PlayerCityController newPlayerCity = playerGO.GetComponent<PlayerCityController>();
+        int playerPosX = (int)playerGO.transform.position.x;
+        int playerPosZ = (int)playerGO.transform.position.z;
+
+        SpawnResourceNode(copperNodePrefab, playerPosX + 2, playerPosZ);
+
+        GameObject harvesterGO = SpawnHarvesterRobotWithClientAuthority(conn, playerPosX + 2, playerPosZ, newPlayerCity);
+        HarvesterRobotController harvester = harvesterGO.GetComponent<HarvesterRobotController>();
+        harvester.SetInstructions(new List<string>
+        {
+            Instructions.Harvest,
+            Instructions.MoveLeft,
+            Instructions.DropInventory,
+            Instructions.MoveRight,
+        });
+
+        GameObject transporterGO = SpawnTransporterRobotWithClientAuthority(conn, playerPosX + 1, playerPosZ, newPlayerCity);
+        TransporterRobotController transporter = transporterGO.GetComponent<TransporterRobotController>();
+        transporter.SetInstructions(new List<string>
+        {
+            Instructions.DoNothing,
+            Instructions.DoNothing,
+            Instructions.DoNothing,
+            Instructions.DoNothing,
+            Instructions.DoNothing,
+            Instructions.DoNothing,
+            Instructions.DoNothing,
+            Instructions.DoNothing,
+            Instructions.DoNothing,
+            Instructions.DoNothing,
+            Instructions.DoNothing,
+            Instructions.MoveLeft,
+            Instructions.DropInventory,
+            Instructions.MoveRight
+        });
+    }
+
+    public GameObject SpawnCombatRobotWithClientAuthority(NetworkConnection conn, int x, int z, PlayerCityController playerCity)
+    {
+        return SpawnObjectWithClientAuthority(conn, combatRobotPrefab, x, z, playerCity);
+    }
+
+    public GameObject SpawnHarvesterRobotWithClientAuthority(NetworkConnection conn, int x, int z, PlayerCityController playerCity)
+    {
+        return SpawnObjectWithClientAuthority(conn, harvesterRobotPrefab, x, z, playerCity);
+    }
+
+    public GameObject SpawnTransporterRobotWithClientAuthority(NetworkConnection conn, int x, int z, PlayerCityController playerCity)
+    {
+        return SpawnObjectWithClientAuthority(conn, transporterRobotPrefab, x, z, playerCity);
     }
 
     // [Server] enforced with inline code check
-    public GameObject SpawnHarvesterRobotWithClientAuthority(NetworkConnection conn, int x, int z)
-    {
-        if (!IsServerOrDemo())
-            return null;
-
-        return SpawnObjectWithClientAuthority(conn, harvesterRobotPrefab, x, z);
-    }
-
-    // [Server] enforced with inline code check
-    private GameObject SpawnObjectWithClientAuthority(NetworkConnection conn, GameObject prefab, int x, int z)
+    private GameObject SpawnObjectWithClientAuthority(NetworkConnection conn, GameObject prefab, int x, int z, PlayerCityController playerCity)
     {
         if (!IsServerOrDemo())
             return null;
@@ -149,6 +189,8 @@ public class WorldController : NetworkBehaviour
             if (robot != null)
                 robot.owner = conn.connectionId.ToString();
         }
+
+        playerCity.AddOwnedGameObject(newGameObject);
 
         return newGameObject;
     }

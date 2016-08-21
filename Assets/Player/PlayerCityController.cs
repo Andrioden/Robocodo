@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
+public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, IHasInventory
 {
     public MeshRenderer bodyMeshRenderer;
     public GameObject playerCityRubblePrefab;
@@ -36,7 +36,7 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
         }
 
         if (isServer)
-            AddToInventory(new List<InventoryItem>()
+            TransferToInventory(new List<InventoryItem>()
             {
                 new CopperItem(),
                 new IronItem(),
@@ -118,22 +118,26 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable
     [Server]
     private void CmdSpawnHarvesterRobot(int x, int z)
     {
-        GameObject newGO = WorldController.instance.SpawnHarvesterRobotWithClientAuthority(connectionToClient, x, z);
+        GameObject newGO = WorldController.instance.SpawnHarvesterRobotWithClientAuthority(connectionToClient, x, z, this);
         ownedGameObjects.Add(newGO);
     }
 
     [Server]
     private void CmdSpawnCombatRobot(int x, int z)
     {
-        GameObject newGO = WorldController.instance.SpawnCombatRobotWithClientAuthority(connectionToClient, x, z);
+        GameObject newGO = WorldController.instance.SpawnCombatRobotWithClientAuthority(connectionToClient, x, z, this);
         ownedGameObjects.Add(newGO);
     }
 
+    /// <summary>
+    /// Returns the items not added to the inventory
+    /// </summary>
     [Server]
-    public void AddToInventory(List<InventoryItem> items)
+    public List<InventoryItem> TransferToInventory(List<InventoryItem> items)
     {
         inventory.AddRange(items);
         RpcSyncInventory(InventoryItem.SerializeList(inventory));
+        return new List<InventoryItem>(); // No items was not added
     }
 
     [Server]
