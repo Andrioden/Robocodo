@@ -68,6 +68,8 @@ public class RobotPanel : MonoBehaviour
 
     private bool _hadRobotLastFrame = false;
 
+    private bool applicationIsQuitting = false;
+
     private void Awake()
     {
         if (instance == null)
@@ -95,7 +97,7 @@ public class RobotPanel : MonoBehaviour
         {
             if (MouseManager.currentlySelected == null || MouseManager.currentlySelected != robot.gameObject)
             {
-                ClosePanel();
+                Close();
                 return;
             }
             _hadRobotLastFrame = true;
@@ -113,11 +115,16 @@ public class RobotPanel : MonoBehaviour
         else if (_hadRobotLastFrame)
         {
             _hadRobotLastFrame = false;
-            ClosePanel();
+            Close();
         }
     }
 
-    public void ShowPanel(RobotController robot)
+    private void OnApplicationQuit()
+    {
+        applicationIsQuitting = true;
+    }
+
+    public void Show(RobotController robot)
     {
         this.robot = robot;
         this.robot.GetInstructions().Callback += RobotInstructionsWasUpdated;
@@ -132,9 +139,9 @@ public class RobotPanel : MonoBehaviour
         animator.Play("RobotMenuSlideIn");
     }
 
-    public void RefreshPanel(RobotController robot)
+    public void Refresh(RobotController robot)
     {
-        if (this.robot != null && robot == this.robot)
+        if (this.robot != null && robot == this.robot && !applicationIsQuitting)
         {
             KeyboardManager.KeyboardLockOff();
 
@@ -158,7 +165,7 @@ public class RobotPanel : MonoBehaviour
         CleanUpPreviewer();
     }
 
-    public void ClosePanel()
+    public void Close()
     {
         KeyboardManager.KeyboardLockOff();
         if (robot != null)
@@ -385,7 +392,7 @@ public class RobotPanel : MonoBehaviour
         salvageButton.onClick.RemoveAllListeners();
         salvageButton.onClick.AddListener(ToggleSalvaging);
         closeButton.onClick.RemoveAllListeners();
-        closeButton.onClick.AddListener(ClosePanel);
+        closeButton.onClick.AddListener(Close);
 
         codeInputPanel.SetActive(false);
         possibleInstructionsPanel.SetActive(false);

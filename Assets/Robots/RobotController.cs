@@ -124,7 +124,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     public void Click()
     {
         if (hasAuthority)
-            RobotPanel.instance.ShowPanel(this);
+            RobotPanel.instance.Show(this);
     }
 
 
@@ -200,7 +200,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private void OnIsStartedChanged(bool newValue)
     {
         isStarted = newValue;
-        RobotPanel.instance.RefreshPanel(this);
+        RobotPanel.instance.Refresh(this);
     }
 
     [Client]
