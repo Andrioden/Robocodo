@@ -1462,7 +1462,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: SALVAGE
+  m_Text: SALVAGE when home
 --- !u!114 &11472266
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1717,7 +1717,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: REPROGRAM
+  m_Text: REPROGRAM when home
 --- !u!114 &11498150
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2107,8 +2107,8 @@ RectTransform:
   m_RootOrder: 3
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -185, y: -49.999985}
-  m_SizeDelta: {x: 120.2, y: 30}
+  m_AnchoredPosition: {x: -267.5, y: -50}
+  m_SizeDelta: {x: 300, y: 30}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!224 &22424052
 RectTransform:
@@ -2340,8 +2340,8 @@ RectTransform:
   m_RootOrder: 2
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -340, y: -49.999985}
-  m_SizeDelta: {x: 155, y: 30}
+  m_AnchoredPosition: {x: -579, y: -50}
+  m_SizeDelta: {x: 300, y: 30}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!224 &22471200
 RectTransform:
