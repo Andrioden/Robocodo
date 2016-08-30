@@ -14,9 +14,12 @@ public class RobotPanel : MonoBehaviour
     public Text feedbackText;
 
     public Text memoryText;
-    public Text energyText;
+    public Text iptText;
+    public Text inventoryCapacityText;
+    public Text harvestYieldText;
     public Text healthText;
     public Text damageText;
+    public Text energyText;
 
     public Button runButton;
     public Button closeButton;
@@ -491,9 +494,12 @@ public class RobotPanel : MonoBehaviour
 
         inventoryLabel.text = "INVENTORY (" + robot.Inventory.Count + "/" + robot.Settings_InventoryCapacity() + ")";
         memoryText.text = ColorTextOnCondition(_formattedInstructions.Count > robot.Settings_Memory(), Color.red, string.Format("MEMORY: {0}/{1}", _formattedInstructions.Count, robot.Settings_Memory()));
-        energyText.text = ColorTextOnCondition(robot.Energy < 4, Color.red, string.Format("ENERGY: {0}/{1}", robot.Energy, robot.Settings_MaxEnergy()));
+        iptText.text = string.Format("IPT: {0}", robot.Settings_IPT());
+        inventoryCapacityText.text = string.Format("INVENTORY CAPACITY: {0}", robot.Settings_InventoryCapacity());
+        harvestYieldText.text = string.Format("HARVEST YIELD: {0}", robot.Settings_HarvestYield());
         healthText.text = string.Format("HEALTH: {0}/{1}", robot.Health, robot.Settings_StartHealth());
         damageText.text = string.Format("DAMAGE: {0}", robot.Settings_Damage());
+        energyText.text = ColorTextOnCondition(robot.Energy < 4, Color.red, string.Format("ENERGY: {0}/{1}", robot.Energy, robot.Settings_MaxEnergy()));
     }
 
     private void CleanUpPreviewer()
