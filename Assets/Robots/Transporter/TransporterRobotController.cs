@@ -29,7 +29,7 @@ public class TransporterRobotController : RobotController
 
     protected override List<string> GetDefaultInstructions()
     {
-        List<string> demoInstructions = new List<string>()
+        return new List<string>()
         {
             Instructions.MoveUp,
             Instructions.MoveUp,
@@ -41,8 +41,6 @@ public class TransporterRobotController : RobotController
             Instructions.MoveHome,
             Instructions.DropInventory
         };
-
-        return demoInstructions;
     }
 
     protected override void Animate()

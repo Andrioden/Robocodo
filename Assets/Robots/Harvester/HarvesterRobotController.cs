@@ -40,7 +40,7 @@ public class HarvesterRobotController : RobotController
 
     protected override List<string> GetDefaultInstructions()
     {
-        List<string> demoInstructions = new List<string>()
+        return new List<string>()
         {
             Instructions.MoveUp,
             Instructions.MoveUp,
@@ -52,8 +52,6 @@ public class HarvesterRobotController : RobotController
             Instructions.MoveHome,
             Instructions.DropInventory
         };
-
-        return demoInstructions;
     }
 
     protected override void Animate()

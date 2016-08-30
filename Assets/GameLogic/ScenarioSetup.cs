@@ -17,10 +17,17 @@ public class ScenarioSetup
     {
         PlayerCityController newPlayerCity = playerGO.GetComponent<PlayerCityController>();
 
-        for (int i = 0; i < Settings.Player_AmountOfStartingHarvesterRobots; i++)
+        for (int i = 0; i < Settings.Scenario_Normal_AmountOfStartingHarvesterRobots; i++)
             wc.SpawnHarvesterRobotWithClientAuthority(conn, newPlayerCity.X, newPlayerCity.Z, newPlayerCity);
+        for (int i = 0; i < Settings.Scenario_Normal_AmountOfStartingCombatRobots; i++)
+            wc.SpawnCombatRobotWithClientAuthority(conn, newPlayerCity.X, newPlayerCity.Z, newPlayerCity);
 
-        wc.SpawnCombatRobotWithClientAuthority(conn, newPlayerCity.X, newPlayerCity.Z, newPlayerCity);
+        List<InventoryItem> startingResources = new List<InventoryItem>();
+        for (int i = 0; i < Settings.Scenario_Normal_AmountOfStartingCopper; i++)
+            startingResources.Add(new CopperItem());
+        for (int i = 0; i < Settings.Scenario_Normal_AmountOfStartingIron; i++)
+            startingResources.Add(new IronItem());
+        newPlayerCity.TransferToInventory(startingResources);
     }
 
     public void AttackNeutralEnemy(NetworkConnection conn, GameObject playerGO)

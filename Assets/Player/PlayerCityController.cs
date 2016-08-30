@@ -37,15 +37,6 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, 
             ResourcePanel.instance.RegisterLocalPlayerCity(this);
             CmdRegisterPlayerNick(NetworkPanel.instance.nickInput.text);
         }
-
-        if (isServer)
-            TransferToInventory(new List<InventoryItem>()
-            {
-                new CopperItem(),
-                new IronItem(),
-                new IronItem(),
-                new IronItem(),
-            });
     }
 
     // Update is called once per frame
@@ -102,7 +93,7 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, 
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
         if (GetCopperCount() >= HarvesterRobotController.Settings_copperCost && GetIronCount() >= HarvesterRobotController.Settings_ironCost)
         {
-            CmdSpawnHarvesterRobot((int)transform.position.x, (int)transform.position.z);
+            WorldController.instance.SpawnHarvesterRobotWithClientAuthority(connectionToClient, X, Z, this);
             RemoveResources(HarvesterRobotController.Settings_copperCost, HarvesterRobotController.Settings_ironCost);
         }
     }
@@ -113,23 +104,20 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, 
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
         if (GetCopperCount() >= CombatRobotController.Settings_copperCost && GetIronCount() >= CombatRobotController.Settings_ironCost)
         {
-            CmdSpawnCombatRobot((int)transform.position.x, (int)transform.position.z);
+            WorldController.instance.SpawnCombatRobotWithClientAuthority(connectionToClient, X, Z, this);
             RemoveResources(CombatRobotController.Settings_copperCost, CombatRobotController.Settings_ironCost);
         }
     }
 
-    [Server]
-    private void CmdSpawnHarvesterRobot(int x, int z)
+    [Command]
+    public void CmdBuyTransporterRobot()
     {
-        GameObject newGO = WorldController.instance.SpawnHarvesterRobotWithClientAuthority(connectionToClient, x, z, this);
-        ownedGameObjects.Add(newGO);
-    }
-
-    [Server]
-    private void CmdSpawnCombatRobot(int x, int z)
-    {
-        GameObject newGO = WorldController.instance.SpawnCombatRobotWithClientAuthority(connectionToClient, x, z, this);
-        ownedGameObjects.Add(newGO);
+        // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
+        if (GetCopperCount() >= TransporterRobotController.Settings_copperCost && GetIronCount() >= TransporterRobotController.Settings_ironCost)
+        {
+            WorldController.instance.SpawnTransporterRobotWithClientAuthority(connectionToClient, X, Z, this);
+            RemoveResources(TransporterRobotController.Settings_copperCost, TransporterRobotController.Settings_ironCost);
+        }
     }
 
     /// <summary>

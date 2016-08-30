@@ -41,7 +41,7 @@ public class CombatRobotController : RobotController
 
     protected override List<string> GetDefaultInstructions()
     {
-        List<string> demoInstructions = new List<string>()
+        return new List<string>()
         {
             Instructions.MoveUp,
             Instructions.MoveUp,
@@ -57,8 +57,6 @@ public class CombatRobotController : RobotController
             //Instructions.MoveUp,
             //Instructions.LoopEnd
         };
-
-        return demoInstructions;
     }
 
     protected override void Animate()

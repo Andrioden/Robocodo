@@ -8,6 +8,7 @@ public class PlayerCityPanel : MonoBehaviour
     public BuildMenu buildMenu;
     public Sprite harvesterRobotSprite;
     public Sprite combatRobotSprite;
+    public Sprite transporterRobotSprite;
 
     private Animator animator;
     private PlayerCityController playerCityController;
@@ -61,15 +62,21 @@ public class PlayerCityPanel : MonoBehaviour
     {
         buildMenu.AddBuildableItem(HarvesterRobotController.Settings_name, BuyHarvesterRobot, HarvesterRobotController.Settings_copperCost, HarvesterRobotController.Settings_ironCost, harvesterRobotSprite);
         buildMenu.AddBuildableItem(CombatRobotController.Settings_name, BuyCombatRobot, CombatRobotController.Settings_copperCost, CombatRobotController.Settings_ironCost, combatRobotSprite);
+        buildMenu.AddBuildableItem(TransporterRobotController.Settings_name, BuyTransporterRobot, TransporterRobotController.Settings_copperCost, TransporterRobotController.Settings_ironCost, transporterRobotSprite);
     }
 
-    public void BuyHarvesterRobot()
+    private void BuyHarvesterRobot()
     {
         instance.playerCityController.CmdBuyHarvesterRobot();
     }
 
-    public void BuyCombatRobot()
+    private void BuyCombatRobot()
     {
         instance.playerCityController.CmdBuyCombatRobot();
+    }
+
+    private void BuyTransporterRobot()
+    {
+        instance.playerCityController.CmdBuyTransporterRobot();
     }
 }
