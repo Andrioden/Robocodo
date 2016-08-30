@@ -139,6 +139,19 @@ public class RobotPanel : MonoBehaviour
         animator.Play("RobotMenuSlideIn");
     }
 
+    public void Close()
+    {
+        KeyboardManager.KeyboardLockOff();
+        if (robot != null)
+        {
+            robot.GetInstructions().Callback -= RobotInstructionsWasUpdated;
+            robot.SetInstructions(GetCleanedCodeInput());
+        }
+        robot = null;
+        animator.Play("RobotMenuSlideOut");
+        CleanUpPreviewer();
+    }
+
     public void Refresh(RobotController robot)
     {
         if (this.robot != null && robot == this.robot && !applicationIsQuitting)
@@ -155,9 +168,7 @@ public class RobotPanel : MonoBehaviour
     private void RunCode()
     {
         KeyboardManager.KeyboardLockOff();
-        List<string> instructions = codeInputField.text.Split('\n').Where(x => x.Trim() != string.Empty).Select(x => x.Trim()).ToList();
-
-        robot.RunCode(instructions);
+        robot.RunCode(GetCleanedCodeInput());
 
         if (robot.IsStarted)
             EnableRunningModePanel();
@@ -165,14 +176,9 @@ public class RobotPanel : MonoBehaviour
         CleanUpPreviewer();
     }
 
-    public void Close()
+    private List<string> GetCleanedCodeInput()
     {
-        KeyboardManager.KeyboardLockOff();
-        if (robot != null)
-            robot.GetInstructions().Callback -= RobotInstructionsWasUpdated;
-        robot = null;
-        animator.Play("RobotMenuSlideOut");
-        CleanUpPreviewer();
+        return codeInputField.text.Split('\n').Where(x => x.Trim() != string.Empty).Select(x => x.Trim()).ToList();
     }
 
     public void AppendNewInstructionAtCaretPosition(string instructionString)

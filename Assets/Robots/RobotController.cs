@@ -353,7 +353,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     private bool ApplyInstruction(string instruction)
     {
-        Debug.Log("Applying instruction: " + instruction);
+        //Debug.Log("Applying instruction: " + instruction);
 
         if (instruction == Instructions.Idle)
             return true;
