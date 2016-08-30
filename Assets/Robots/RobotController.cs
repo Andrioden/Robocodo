@@ -60,11 +60,11 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     public bool WillReprogramWhenHome { get { return willReprogramWhenHome; } }
 
     [SyncVar]
-    private int energy;
+    protected int energy;
     public int Energy { get { return energy; } }
 
     [SyncVar]
-    private int health;
+    protected int health;
     public int Health { get { return health; } }
 
     // ********** SETTINGS **********
@@ -179,13 +179,13 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         {
             string currentInstruction = instructions[currentInstructionIndex];
 
-            if (currentInstruction == Instructions.AttackUp)
+            if (currentInstruction == Instructions.AttackUp || currentInstruction == Instructions.MoveUp)
                 facePosition = new Vector3(x, transform.position.y, z + 1);
-            else if (currentInstruction == Instructions.AttackDown)
+            else if (currentInstruction == Instructions.AttackDown || currentInstruction == Instructions.MoveDown)
                 facePosition = new Vector3(x, transform.position.y, z - 1);
-            else if (currentInstruction == Instructions.AttackRight)
+            else if (currentInstruction == Instructions.AttackRight || currentInstruction == Instructions.MoveRight)
                 facePosition = new Vector3(x + 1, transform.position.y, z);
-            else if (currentInstruction == Instructions.AttackLeft)
+            else if (currentInstruction == Instructions.AttackLeft || currentInstruction == Instructions.MoveLeft)
                 facePosition = new Vector3(x - 1, transform.position.y, z);
         }
 
@@ -205,6 +205,11 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         isStarted = newValue;
         RobotPanel.instance.Refresh(this);
+    }
+
+    protected bool ShouldAnimationBePlayed()
+    {
+        return energy > 0 && IsStarted && CurrentInstructionIndexIsValid;
     }
 
     [Client]
@@ -311,27 +316,20 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
         //Debug.Log("SERVER: Running instruction: " + instruction);
 
-        UpdateEnergy();
+        if (IsOnEnergySource())
+            energy = Settings_MaxEnergy();
 
         if (SalvageOrReprogramCheck())
             return;
 
-        if (ApplyInstruction(instruction))
-            InstructionCompleted();
-    }
-
-    private void UpdateEnergy()
-    {
-        if (IsOnEnergySource())
-            energy = Settings_MaxEnergy();
-        else if (energy <= 0)
-        {
+        if (energy <= 0)
             SetFeedbackIfNotPreview("NOT ENOUGH ENERGY");
-            return;
-        }
         else
+        {
+            if (ApplyInstruction(instruction))
+                InstructionCompleted();
             energy--;
-
+        }
     }
 
     private bool SalvageOrReprogramCheck()

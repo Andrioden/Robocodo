@@ -58,10 +58,10 @@ public class HarvesterRobotController : RobotController
 
     protected override void Animate()
     {
-        string instruction = instructions.Count > 0 ? instructions[currentInstructionIndex] : string.Empty;
-
-        if (CurrentInstructionIndexIsValid)
+        if (ShouldAnimationBePlayed())
         {
+            string instruction = instructions.Count > 0 ? instructions[currentInstructionIndex] : string.Empty;
+
             if (instruction == Instructions.Harvest)
             {
                 bodyAnimator.Play("Idle");
