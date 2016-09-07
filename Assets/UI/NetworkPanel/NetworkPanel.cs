@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
-using UnityEngine.Networking.Types;
 using UnityEngine.Networking.Match;
 using System.Collections;
 using System.Collections.Generic;
 using Assets.GameLogic.ClassExtensions;
 using System;
+using UnityEngine.Networking.Types;
 
 public class NetworkPanel : MonoBehaviour
 {
@@ -108,13 +108,8 @@ public class NetworkPanel : MonoBehaviour
             }
 
             Debug.Log("Hosting matchmaking server " + MMGameNameField.text);
-            CreateMatchRequest create = new CreateMatchRequest();
-            create.name = MMGameNameField.text;
-            create.size = (uint)Convert.ToInt32(MMGameSizeField.text);
-            create.advertise = true;
-            create.password = "";
-
-            manager.matchMaker.CreateMatch(create, manager.OnMatchCreate);
+            uint matchSize = (uint)Convert.ToInt32(MMGameSizeField.text);
+            manager.matchMaker.CreateMatch(MMGameNameField.text, matchSize, true, "", "", "", 0, 0, manager.OnMatchCreate);
             Ingame();
         }
     }
@@ -124,18 +119,18 @@ public class NetworkPanel : MonoBehaviour
         feedbackText.text = "";
         if (RequireNick())
         {
-            manager.matchMaker.ListMatches(0, 20, "", MM_BuildGamesList);
+            manager.matchMaker.ListMatches(0, 20, "", true, 0, 0, MM_BuildGamesList);
         }
     }
 
-    private void MM_BuildGamesList(ListMatchResponse matchListResponse)
+    private void MM_BuildGamesList(bool success, string extendedInfo, List<MatchInfoSnapshot> matches)
     {
         MMGameListContainer.transform.DestroyChildren();
 
-        if (matchListResponse.success && matchListResponse.matches != null)
+        if (success)
         {
-            Debug.LogFormat("Found {0} matches", matchListResponse.matches.Count);
-            foreach (var match in matchListResponse.matches)
+            Debug.LogFormat("Found {0} matches", matches.Count);
+            foreach (var match in matches)
             {
                 var matchGO = Instantiate(MMGameListJoinButtonPrefab) as GameObject;
                 matchGO.transform.SetParent(MMGameListContainer.transform, false);
@@ -145,7 +140,7 @@ public class NetworkPanel : MonoBehaviour
                 matchGObuttonText.text = match.name;
             }
 
-            if (matchListResponse.matches.Count == 0)
+            if (matches.Count == 0)
                 feedbackText.text = "Found 0 matches";
             else
                 feedbackText.text = "";
@@ -154,10 +149,10 @@ public class NetworkPanel : MonoBehaviour
             feedbackText.text = "Failed to get match list";
     }
 
-    private void MM_OnJoinGameClick(NetworkID id)
+    private void MM_OnJoinGameClick(NetworkID networkId)
     {
-        Debug.Log("Joining matchmaking game with match id: " + id);
-        manager.matchMaker.JoinMatch(id, "", manager.OnMatchJoined);
+        Debug.Log("Joining matchmaking game with match id: " + networkId);
+        manager.matchMaker.JoinMatch(networkId, "", "", "", 0, 0, manager.OnMatchJoined);
         feedbackText.text = "Joining...";
         Ingame();
     }
