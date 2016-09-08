@@ -129,8 +129,8 @@ public class RobotPanel : MonoBehaviour
 
     public void Show(RobotController robot)
     {
-        this.robot = robot;
-        this.robot.GetInstructions().Callback += RobotInstructionsWasUpdated;
+        UnloadCurrentRobot();
+        LoadRobot(robot);
 
         KeyboardManager.KeyboardLockOff();
 
@@ -145,14 +145,9 @@ public class RobotPanel : MonoBehaviour
     public void Close()
     {
         KeyboardManager.KeyboardLockOff();
-        if (robot != null)
-        {
-            robot.GetInstructions().Callback -= RobotInstructionsWasUpdated;
-            robot.SetInstructions(GetCleanedCodeInput());
-        }
-        robot = null;
-        animator.Play("RobotMenuSlideOut");
+        UnloadCurrentRobot();
         CleanUpPreviewer();
+        animator.Play("RobotMenuSlideOut");
     }
 
     public void Refresh(RobotController robot)
@@ -165,6 +160,24 @@ public class RobotPanel : MonoBehaviour
                 EnableRunningModePanel();
             else
                 EnableSetupModePanel();
+        }
+    }
+
+    private void LoadRobot(RobotController robot)
+    {
+        this.robot = robot;
+        this.robot.GetInstructions().Callback += RobotInstructionsWasUpdated;
+    }
+
+    private void UnloadCurrentRobot()
+    {
+        if (robot != null)
+        {
+            robot.GetInstructions().Callback -= RobotInstructionsWasUpdated;
+            if (!robot.IsStarted)
+                robot.SetInstructions(GetCleanedCodeInput());
+
+            robot = null;
         }
     }
 
