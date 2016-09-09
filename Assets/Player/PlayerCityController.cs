@@ -151,8 +151,7 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, 
 
     private void AdjustCameraRelativeToPlayer()
     {
-        RTSCamera camera = Camera.main.transform.parent.GetComponent<RTSCamera>();
-        camera.PositionRelativeToPlayer(transform);
+        RTSCamera.instance.PositionRelativeTo(transform);
     }
 
     [Server]

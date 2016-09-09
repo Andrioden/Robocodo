@@ -6,7 +6,7 @@ public class KeyboardManager : NetworkBehaviour
 {
     public static bool KeyboardLock = false;
 
-    void Update()
+    private void Update()
     {
         if (isServer)
         {

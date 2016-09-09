@@ -10,30 +10,42 @@ public class RTSCamera : MonoBehaviour
     public float cameraDistance = 4;
     public float horizontalSpeed = 40;
     public float verticalSpeed = 40;
-    public bool enableEdgeScroll = false;
     public int edgeScrollBoundrary = 15;
 
     private int screenHeight, screenWidth;
 
-    void Start()
+    public static RTSCamera instance;
+    private void Awake()
+    {
+        if (instance == null)
+            instance = this;
+
+        else if (instance != this)
+        {
+            Debug.LogError("Tried to created another instance of " + GetType() + ". Destroying.");
+            Destroy(gameObject);
+        }
+    }
+
+    private void Start()
     {
         screenHeight = Screen.height;
         screenWidth = Screen.width;
     }
 
-    void LateUpdate()
+    private void LateUpdate()
     {
         if (!KeyboardManager.KeyboardLock)
             MoveCameraWithKeyboard();
 
-        if(enableEdgeScroll)
+        if(Settings.GUI_EnableEdgeScrolling)
             MoveCameraWithMouseAndScreenEdge();
         ZoomCameraWithScrollWheel();
     }
 
-    public void PositionRelativeToPlayer(Transform player)
+    public void PositionRelativeTo(Transform relativeToTransform, float xOffset = 0.0f, float zOffSet = 0.0f)
     {
-        transform.position = new Vector3(player.transform.position.x, cameraHeight, player.transform.position.z - cameraDistance);
+        transform.position = new Vector3(relativeToTransform.position.x, cameraHeight, relativeToTransform.position.z - cameraDistance);
     }
 
     private void MoveCameraWithKeyboard()
