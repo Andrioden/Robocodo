@@ -388,24 +388,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         else if (instruction == Instructions.LoopEnd)
             SetInstructionToMatchingLoopStart();
         else if (instruction == Instructions.Harvest && !isPreviewRobot)
-        {
-            for (int i = 0; i < Settings_HarvestYield(); i++)
-            {
-                if (Settings_InventoryCapacity() == 0)
-                    SetFeedbackIfNotPreview("NO INVENTORY CAPACITY");
-                else if (IsInventoryFull())
-                    SetFeedbackIfNotPreview("INVENTORY FULL");
-                else if (WorldController.instance.HarvestFromNode(CopperItem.SerializedType, x, z))
-                    TransferToInventory(new CopperItem());
-                else if (WorldController.instance.HarvestFromNode(IronItem.SerializedType, x, z))
-                    TransferToInventory(new IronItem());
-                else
-                    SetFeedbackIfNotPreview("NOTHING TO HARVEST");
-            }
-
-            if (Settings_HarvestYield() == 0)
-                SetFeedbackIfNotPreview("NO HARVEST YIELD");
-        }
+            Harvest();
         else if (instruction == Instructions.DropInventory && !isPreviewRobot)
             DropInventory();
         else if (instruction == Instructions.AttackMelee && !isPreviewRobot)
@@ -616,6 +599,26 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         }
 
         SetFeedbackIfNotPreview("COULD NOT FIND MATCHING LOOP START");
+    }
+
+    private void Harvest()
+    {
+        for (int i = 0; i < Settings_HarvestYield(); i++)
+        {
+            if (Settings_InventoryCapacity() == 0)
+                SetFeedbackIfNotPreview("NO INVENTORY CAPACITY");
+            else if (IsInventoryFull())
+                SetFeedbackIfNotPreview("INVENTORY FULL");
+            else if (WorldController.instance.HarvestFromNode(CopperItem.SerializedType, x, z))
+                TransferToInventory(new CopperItem());
+            else if (WorldController.instance.HarvestFromNode(IronItem.SerializedType, x, z))
+                TransferToInventory(new IronItem());
+            else
+                SetFeedbackIfNotPreview("NOTHING TO HARVEST");
+        }
+
+        if (Settings_HarvestYield() == 0)
+            SetFeedbackIfNotPreview("NO HARVEST YIELD");
     }
 
     [Server]
