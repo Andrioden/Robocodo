@@ -2,18 +2,44 @@
 using System.Collections;
 using UnityEngine.Networking;
 using System.Collections.Generic;
+using System;
+using System.Linq;
 
-public class ScenarioSetup
+public static class ScenarioSetup
 {
 
-    WorldController wc;
+    private static WorldController wc;
 
-    public ScenarioSetup(WorldController worldController)
+    private static List<ScenarioEntry> scenarios = new List<ScenarioEntry>();
+    public static List<ScenarioEntry> Scenarios { get { return scenarios; } }
+
+    static ScenarioSetup()
+    {
+        scenarios.Add(new ScenarioEntry("Normal", Scenario.Normal, Normal));
+        scenarios.Add(new ScenarioEntry("Test Attack Neu Enemy", Scenario.Test_AttackNeutralEnemy, Test_AttackNeutralEnemy));
+        scenarios.Add(new ScenarioEntry("Test Transporter", Scenario.Test_Harvester, Test_Harvester));
+    }
+
+    public static void RegisterWorldController(WorldController worldController)
     {
         wc = worldController;
     }
 
-    public void Normal(NetworkConnection conn, GameObject playerGO)
+    public static void Run(int scenarioIndex, NetworkConnection conn, GameObject playerGO)
+    {
+        scenarios[scenarioIndex].Run(conn, playerGO);
+    }
+
+    public static void Run(Scenario scenario, NetworkConnection conn, GameObject playerGO)
+    {
+        ScenarioEntry scenarioEntry = scenarios.Where(s => s.ScenarioEnumRef == scenario).FirstOrDefault();
+        if (scenarioEntry == null)
+            throw new Exception("Not added support for this scenario enum entry.");
+        else
+            scenarioEntry.Run(conn, playerGO);
+    }
+
+    private static void Normal(NetworkConnection conn, GameObject playerGO)
     {
         PlayerCityController newPlayerCity = playerGO.GetComponent<PlayerCityController>();
 
@@ -30,7 +56,12 @@ public class ScenarioSetup
         newPlayerCity.TransferToInventory(startingResources);
     }
 
-    public void AttackNeutralEnemy(NetworkConnection conn, GameObject playerGO)
+    private static void Wild(NetworkConnection conn, GameObject playerGO)
+    {
+
+    }
+
+    private static void Test_AttackNeutralEnemy(NetworkConnection conn, GameObject playerGO)
     {
         PlayerCityController newPlayerCity = playerGO.GetComponent<PlayerCityController>();
 
@@ -50,7 +81,7 @@ public class ScenarioSetup
         });
     }
 
-    public void HarvesterTransporter(NetworkConnection conn, GameObject playerGO)
+    private static void Test_Harvester(NetworkConnection conn, GameObject playerGO)
     {
         PlayerCityController newPlayerCity = playerGO.GetComponent<PlayerCityController>();
 
@@ -76,4 +107,27 @@ public class ScenarioSetup
         });
     }
 
+}
+
+public class ScenarioEntry
+{
+    public string FriendlyName;
+    public Scenario ScenarioEnumRef;
+    public Action<NetworkConnection, GameObject> Run;
+
+    public ScenarioEntry(string friendlyName, Scenario scenario, Action<NetworkConnection, GameObject> run)
+    {
+        FriendlyName = friendlyName;
+        ScenarioEnumRef = scenario;
+        Run = run;
+    }
+}
+
+public enum Scenario
+{
+    Normal = 0,
+    Wild = 1,
+
+    Test_AttackNeutralEnemy = 100,
+    Test_Harvester = 101
 }

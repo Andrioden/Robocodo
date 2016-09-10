@@ -17,7 +17,6 @@ public class WorldController : NetworkBehaviour
     private GameObject groundGameObject;
 
     private WorldBuilder worldBuilder;
-    private ScenarioSetup scenarioSetup;
 
     [SyncVar]
     private int width;
@@ -43,7 +42,7 @@ public class WorldController : NetworkBehaviour
             Destroy(gameObject);
         }
 
-        scenarioSetup = new ScenarioSetup(this);
+        ScenarioSetup.RegisterWorldController(this);
     }
 
     // Use this for initialization
@@ -102,9 +101,7 @@ public class WorldController : NetworkBehaviour
         if (NetworkServer.active)
             NetworkServer.AddPlayerForConnection(conn, playerCityGameObject, playerControllerId);
 
-        scenarioSetup.Normal(conn, playerCityGameObject);
-        //scenarioSetup.HarvesterTransporter(conn, playerCityGameObject);
-        //scenarioSetup.AttackNeutralEnemy(conn, playerCityGameObject);
+        ScenarioSetup.Run(NetworkPanel.instance.gameModeDropdown.value, conn, playerCityGameObject);
 
         return playerCityGameObject;
     }

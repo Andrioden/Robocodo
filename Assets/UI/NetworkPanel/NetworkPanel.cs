@@ -14,6 +14,7 @@ public class NetworkPanel : MonoBehaviour
 
     public Button quitButton;
     public InputField nickInput;
+    public Dropdown gameModeDropdown;
     public Button hostLanButton;
     public Button joinLanButton;
     public InputField MMGameNameField;
@@ -66,13 +67,16 @@ public class NetworkPanel : MonoBehaviour
         findMMButton.onClick.RemoveAllListeners();
         findMMButton.onClick.AddListener(MM_OnFindGamesClick);
 
+        foreach(var scenario in ScenarioSetup.Scenarios)
+            gameModeDropdown.options.Add(new Dropdown.OptionData(scenario.FriendlyName));
+
         ReadyToHostOrJoin();
     }
 
     private void LAN_OnHostClick()
     {
         feedbackText.text = "";
-        if (RequireNick())
+        if (ValidateMandatoryInput())
         {
             manager.StartHost();
             Debug.LogFormat("Hosting on {0}:{1}", manager.networkAddress, manager.networkPort);
@@ -87,7 +91,7 @@ public class NetworkPanel : MonoBehaviour
     private void LAN_OnJoinClick()
     {
         feedbackText.text = "";
-        if (RequireNick())
+        if (ValidateMandatoryInput())
         {
             manager.StartClient();
             Debug.LogFormat("Joining {0}:{1}", manager.networkAddress, manager.networkPort);
@@ -99,7 +103,7 @@ public class NetworkPanel : MonoBehaviour
     private void MM_OnHostClick()
     {
         feedbackText.text = "";
-        if (RequireNick())
+        if (ValidateMandatoryInput())
         {
             if (MMGameSizeField.text.Length == 0)
             {
@@ -117,9 +121,9 @@ public class NetworkPanel : MonoBehaviour
     private void MM_OnFindGamesClick()
     {
         feedbackText.text = "";
-        if (RequireNick())
+        if (ValidateMandatoryInput())
         {
-            manager.matchMaker.ListMatches(0, 20, "", true, 0, 0, MM_BuildGamesList);
+            manager.matchMaker.ListMatches(0, 20, "", false, 0, 0, MM_BuildGamesList);
         }
     }
 
@@ -169,20 +173,21 @@ public class NetworkPanel : MonoBehaviour
         ReadyToHostOrJoin();
     }
 
-    private bool RequireNick()
+    private bool ValidateMandatoryInput()
     {
-        if (nickInput.text.Length > 0)
-            return true;
-        else
+        if (nickInput.text.Length <= 0)
         {
             feedbackText.text = "No nick set!";
             return false;
         }
+        else
+            return true;
     }
 
     private void Ingame()
     {
         nickInput.gameObject.SetActive(false);
+        gameModeDropdown.gameObject.SetActive(false);
         hostLanButton.gameObject.SetActive(false);
         joinLanButton.gameObject.SetActive(false);
         MMGameNameField.gameObject.SetActive(false);
@@ -198,6 +203,7 @@ public class NetworkPanel : MonoBehaviour
     private void ReadyToHostOrJoin()
     {
         nickInput.gameObject.SetActive(true);
+        gameModeDropdown.gameObject.SetActive(true);
         hostLanButton.gameObject.SetActive(true);
         joinLanButton.gameObject.SetActive(true);
         MMGameNameField.gameObject.SetActive(true);
