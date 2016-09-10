@@ -9,7 +9,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 {
     // ********** COMMON VARIABLES **********
     [SyncVar]
-    public string owner = "NEUTRAL";
+    public string owner = "";
 
     [SyncVar]
     protected float x;
@@ -86,6 +86,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         Instructions.MoveDown,
         Instructions.MoveLeft,
         Instructions.MoveRight,
+        Instructions.MoveRandom,
         Instructions.MoveHome,
         Instructions.LoopStartNumbered,
         Instructions.LoopStart,
@@ -274,7 +275,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     }
 
     [Command]
-    private void CmdStartRobot()
+    public void CmdStartRobot()
     {
         Debug.Log("Server: Starting robot");
         isStarted = true;
@@ -328,7 +329,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         {
             if (ApplyInstruction(instruction))
                 InstructionCompleted();
-            energy--;
+            if (owner != "") //TODO REMOVE AND INSTEAD REPLACE WITH A MODULE ON THE ROBOTS
+                energy--;
         }
     }
 
@@ -365,6 +367,16 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             ChangePosition(x + 1, z);
         else if (instruction == Instructions.MoveLeft)
             ChangePosition(x - 1, z);
+        else if (instruction == Instructions.MoveRandom && !isPreviewRobot)
+        {
+            ApplyInstruction(Utils.Random(new List<string>
+            {
+                Instructions.MoveUp,
+                Instructions.MoveDown,
+                Instructions.MoveRight,
+                Instructions.MoveLeft
+            }));
+        }
         else if (instruction == Instructions.MoveHome)
         {
             SanityCheckIfPositionNumbersAreWhole();
@@ -716,7 +728,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             }
         }
 
-        Debug.Log("Did not find attackable");
+        //Debug.Log("Did not find attackable");
         return null;
     }
 

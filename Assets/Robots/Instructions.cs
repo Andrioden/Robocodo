@@ -11,7 +11,9 @@ public static class Instructions
     public const string MoveDown = "MOVE DOWN";
     public const string MoveLeft = "MOVE LEFT";
     public const string MoveRight = "MOVE RIGHT";
+    public const string MoveRandom = "MOVE RANDOM";
     public const string MoveHome = "MOVE HOME";
+
     public const string LoopStart = "LOOP START";
     public const string LoopStartNumbered = "LOOP START [NUMBER]";
     public const string LoopEnd = "LOOP END";

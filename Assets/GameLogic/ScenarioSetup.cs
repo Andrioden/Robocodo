@@ -16,6 +16,7 @@ public static class ScenarioSetup
     static ScenarioSetup()
     {
         scenarios.Add(new ScenarioEntry("Normal", Scenario.Normal, Normal));
+        scenarios.Add(new ScenarioEntry("Wild PvE", Scenario.WildPvE, WildPvE));
         scenarios.Add(new ScenarioEntry("Test Attack Neu Enemy", Scenario.Test_AttackNeutralEnemy, Test_AttackNeutralEnemy));
         scenarios.Add(new ScenarioEntry("Test Transporter", Scenario.Test_Harvester, Test_Harvester));
     }
@@ -56,9 +57,21 @@ public static class ScenarioSetup
         newPlayerCity.TransferToInventory(startingResources);
     }
 
-    private static void Wild(NetworkConnection conn, GameObject playerGO)
+    private static void WildPvE(NetworkConnection conn, GameObject playerGO)
     {
+        Normal(conn, playerGO);
 
+        for (int x = 0; x < wc.Width; x++)
+        {
+            GameObject combaRobotGO = wc.SpawnObject(wc.combatRobotPrefab, x, 0);
+            CombatRobotController combatRobot = combaRobotGO.GetComponent<CombatRobotController>();
+            combatRobot.SetInstructions(new List<string>
+            {
+                Instructions.MoveRandom,
+                Instructions.AttackRandom
+            });
+            combatRobot.CmdStartRobot();
+        }
     }
 
     private static void Test_AttackNeutralEnemy(NetworkConnection conn, GameObject playerGO)
@@ -126,7 +139,7 @@ public class ScenarioEntry
 public enum Scenario
 {
     Normal = 0,
-    Wild = 1,
+    WildPvE = 1,
 
     Test_AttackNeutralEnemy = 100,
     Test_Harvester = 101
