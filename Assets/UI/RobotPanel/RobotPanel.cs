@@ -384,6 +384,7 @@ public class RobotPanel : MonoBehaviour
         SetupPossibleInstructions();
 
         codeInputPanel.SetActive(true);
+        //TODO: Is the listeners added several times?
         codeInputField.onValueChanged.AddListener(KeyboardManager.KeyboardLockOn);
         codeInputField.onValueChanged.AddListener(CodeInputAutoIndentAndUpperCase);
         codeInputField.onEndEdit.AddListener(KeyboardManager.KeyboardLockOff);
@@ -502,11 +503,10 @@ public class RobotPanel : MonoBehaviour
 
     private void UpdateRobotInfoLabels()
     {
-        //If robot has no instructions at this time, get instructions from CodeInputField.
-        _formattedInstructions = _formattedInstructions.Count > 0 ? _formattedInstructions : codeInputField.text.Split('\n').ToList();
+        int instructionsCount = codeInputField.text.Split('\n').Length;
 
         inventoryLabel.text = "INVENTORY (" + robot.Inventory.Count + "/" + robot.Settings_InventoryCapacity() + ")";
-        memoryText.text = ColorTextOnCondition(_formattedInstructions.Count > robot.Settings_Memory(), Color.red, string.Format("MEMORY: {0}/{1}", _formattedInstructions.Count, robot.Settings_Memory()));
+        memoryText.text = ColorTextOnCondition(instructionsCount > robot.Settings_Memory(), Color.red, string.Format("MEMORY: {0}/{1}", instructionsCount, robot.Settings_Memory()));
         iptText.text = string.Format("IPT: {0}", robot.Settings_IPT());
         inventoryCapacityText.text = string.Format("INVENTORY CAPACITY: {0}", robot.Settings_InventoryCapacity());
         harvestYieldText.text = string.Format("HARVEST YIELD: {0}", robot.Settings_HarvestYield());
