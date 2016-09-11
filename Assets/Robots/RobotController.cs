@@ -43,6 +43,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private bool currentInstructionIndexIsValid = true;
     public bool CurrentInstructionIndexIsValid { get { return currentInstructionIndexIsValid; } }
 
+    private List<string> _allowedInstructions = new List<string>();
+
     [SyncVar]
     private int mainLoopIterationCount = 0;
     public int MainLoopIterationCount { get { return mainLoopIterationCount; } }
@@ -93,21 +95,21 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         Instructions.LoopEnd,
         Instructions.DetectThen
     };
-
     public List<string> CommonInstructions { get { return commonInstructions; } }
 
 
     // ********** ABSTRACT METHODS  **********
 
     protected abstract void Animate();
-    public abstract List<string> GetSpecializedInstruction();
+    public abstract List<string> GetSpecializedInstructions();
     public abstract GameObject SpawnPreviewGameObjectClone();
-    protected abstract List<string> GetDefaultInstructions();
+    protected abstract List<string> GetSuggestedInstructionSet();
 
     // Use this for initialization
     private void Start()
     {
         InitDefaultValues();
+        CacheAllowedInstructions();
     }
 
     // Update is called once per frame
@@ -129,7 +131,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             RobotPanel.instance.Show(this);
     }
 
-
     public void InitDefaultValues()
     {
         x = transform.position.x;
@@ -142,7 +143,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         health = Settings_StartHealth();
 
         if (instructions.Count == 0)
-            SetInstructions(GetDefaultInstructions());
+            SetInstructions(GetSuggestedInstructionSet());
     }
 
     public Coordinate GetCoordinate()
@@ -274,6 +275,13 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         return instructions;
     }
 
+    private void CacheAllowedInstructions()
+    {
+        _allowedInstructions = commonInstructions
+            .Concat(GetSpecializedInstructions())
+            .ToList();
+    }
+
     [Command]
     public void CmdStartRobot()
     {
@@ -357,7 +365,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         //Debug.Log("Applying instruction: " + instruction);
 
-        if (instruction == Instructions.Idle)
+        if (!_allowedInstructions.Contains(instruction))
+            SetFeedbackIfNotPreview(string.Format("INSTRUCTION NOT ALLOWED: '{0}'", instruction));
+        else if (instruction == Instructions.Idle)
             return true;
         else if (instruction == Instructions.MoveUp)
             ChangePosition(x, z + 1);

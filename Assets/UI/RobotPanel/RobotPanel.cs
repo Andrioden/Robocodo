@@ -460,7 +460,7 @@ public class RobotPanel : MonoBehaviour
         var combinedList = robot.CommonInstructions.ToList();
         combinedList.Add(string.Empty);
         combinedList.Add(string.Empty);
-        combinedList.AddRange(robot.GetSpecializedInstruction());
+        combinedList.AddRange(robot.GetSpecializedInstructions());
         possibleInstructionsContainer.transform.DestroyChildren();
 
         foreach (string instruction in combinedList)

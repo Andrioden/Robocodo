@@ -25,9 +25,9 @@ public class TransporterRobotController : RobotController
         Instructions.DropInventory,
         Instructions.IdleUntilDefined("FULL", "[INSTRUCTION]")
     };
-    public override List<string> GetSpecializedInstruction() { return spezializedInstructions; }
+    public override List<string> GetSpecializedInstructions() { return spezializedInstructions; }
 
-    protected override List<string> GetDefaultInstructions()
+    protected override List<string> GetSuggestedInstructionSet()
     {
         return new List<string>()
         {
