@@ -65,7 +65,7 @@ public class CombatRobotController : RobotController
         {
             string instruction = instructions.Count > 0 ? instructions[currentInstructionIndex] : string.Empty;
 
-            if (new List<string>() { Instructions.AttackUp, Instructions.AttackLeft, Instructions.AttackRight, Instructions.AttackDown }.Any(instruction.Contains))
+            if (new List<string>() { Instructions.AttackUp, Instructions.AttackLeft, Instructions.AttackRight, Instructions.AttackDown, Instructions.AttackRandom }.Any(instruction.Contains))
             {
                 bodyAnimator.Play("Idle");
                 leftWeaponAnimator.Play("Shoot");
@@ -77,7 +77,7 @@ public class CombatRobotController : RobotController
                 leftWeaponAnimator.Play("Shoot");
                 rightWeaponAnimator.Play("Shoot");
             }
-            else if (new List<string>() { Instructions.MoveUp, Instructions.MoveDown, Instructions.MoveLeft, Instructions.MoveRight, Instructions.MoveHome }.Any(instruction.Contains))
+            else if (new List<string>() { Instructions.MoveUp, Instructions.MoveDown, Instructions.MoveLeft, Instructions.MoveRight, Instructions.MoveHome, Instructions.MoveRandom }.Any(instruction.Contains))
             {
                 bodyAnimator.Play("Walk");
             }
