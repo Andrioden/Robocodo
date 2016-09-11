@@ -10,7 +10,7 @@ using UnityEngine.Networking.Types;
 
 public class NetworkPanel : MonoBehaviour
 {
-    private CustomNetworkManager manager;
+    private CustomNetworkManager networkManager;
 
     public Button quitButton;
     public InputField nickInput;
@@ -41,10 +41,13 @@ public class NetworkPanel : MonoBehaviour
     // Use this for initialization
     private void Start()
     {
-        manager = FindObjectOfType<CustomNetworkManager>();
+        networkManager = FindObjectOfType<CustomNetworkManager>();
 
-        if (manager.matchMaker == null)
-            manager.StartMatchMaker();
+        networkManager.SetMatchHost("eu1-mm.unet.unity3d.com", networkManager.matchPort, true); //TODO: Maybe make a user choice in the far future
+        Debug.LogFormat("Connecting to match making host {0}:{1}", networkManager.matchHost, networkManager.matchPort);
+
+        if (networkManager.matchMaker == null)
+            networkManager.StartMatchMaker();
 
         if (nickInput.text.Length == 0)
             nickInput.text = "Andriod";
@@ -78,10 +81,10 @@ public class NetworkPanel : MonoBehaviour
         feedbackText.text = "";
         if (ValidateMandatoryInput())
         {
-            manager.StartHost();
-            Debug.LogFormat("Hosting on {0}:{1}", manager.networkAddress, manager.networkPort);
+            networkManager.StartHost();
+            Debug.LogFormat("Hosting on {0}:{1}", networkManager.networkAddress, networkManager.networkPort);
 
-            if (manager.isNetworkActive)
+            if (networkManager.isNetworkActive)
                 Ingame();
             else
                 feedbackText.text = "Hosting failed";
@@ -93,8 +96,8 @@ public class NetworkPanel : MonoBehaviour
         feedbackText.text = "";
         if (ValidateMandatoryInput())
         {
-            manager.StartClient();
-            Debug.LogFormat("Joining {0}:{1}", manager.networkAddress, manager.networkPort);
+            networkManager.StartClient();
+            Debug.LogFormat("Joining {0}:{1}", networkManager.networkAddress, networkManager.networkPort);
             feedbackText.text = "Joining...";
             Ingame();
         }
@@ -113,7 +116,7 @@ public class NetworkPanel : MonoBehaviour
 
             Debug.Log("Hosting matchmaking server " + MMGameNameField.text);
             uint matchSize = (uint)Convert.ToInt32(MMGameSizeField.text);
-            manager.matchMaker.CreateMatch(MMGameNameField.text, matchSize, true, "", "", "", 0, 0, manager.OnMatchCreate);
+            networkManager.matchMaker.CreateMatch(MMGameNameField.text, matchSize, true, "", "", "", 0, 0, networkManager.OnMatchCreate);
             Ingame();
         }
     }
@@ -123,7 +126,7 @@ public class NetworkPanel : MonoBehaviour
         feedbackText.text = "";
         if (ValidateMandatoryInput())
         {
-            manager.matchMaker.ListMatches(0, 20, "", false, 0, 0, MM_BuildGamesList);
+            networkManager.matchMaker.ListMatches(0, 20, "", false, 0, 0, MM_BuildGamesList);
         }
     }
 
@@ -156,7 +159,7 @@ public class NetworkPanel : MonoBehaviour
     private void MM_OnJoinGameClick(NetworkID networkId)
     {
         Debug.Log("Joining matchmaking game with match id: " + networkId);
-        manager.matchMaker.JoinMatch(networkId, "", "", "", 0, 0, manager.OnMatchJoined);
+        networkManager.matchMaker.JoinMatch(networkId, "", "", "", 0, 0, networkManager.OnMatchJoined);
         feedbackText.text = "Joining...";
         Ingame();
     }
@@ -165,10 +168,10 @@ public class NetworkPanel : MonoBehaviour
     {
         feedbackText.text = "";
 
-        if (NetworkServer.active || manager.IsClientConnected())
-            manager.StopHost();
+        if (NetworkServer.active || networkManager.IsClientConnected())
+            networkManager.StopHost();
         else
-            manager.StopClient();
+            networkManager.StopClient();
 
         ReadyToHostOrJoin();
     }
