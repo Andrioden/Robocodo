@@ -26,6 +26,7 @@ public class RobotPanel : MonoBehaviour
 
     public Button reprogramButton;
     private Image reprogramButtonImage;
+    private Text reprogramButtonText;
 
     public Button salvageButton;
     private Image salvageButtonImage;
@@ -92,6 +93,14 @@ public class RobotPanel : MonoBehaviour
 
         _highlightColor = Utils.HexToColor("#D5A042FF");
         _defaultButtonStateColors = runButton.GetComponent<Image>().color;
+
+        if (reprogramButtonImage == null)
+            reprogramButtonImage = reprogramButton.GetComponent<Image>();
+        if (reprogramButtonText == null)
+            reprogramButtonText = reprogramButton.GetComponentInChildren<Text>();
+
+        if (salvageButtonImage == null)
+            salvageButtonImage = salvageButton.GetComponent<Image>();
     }
 
     private void Update()
@@ -412,8 +421,11 @@ public class RobotPanel : MonoBehaviour
 
         reprogramButton.onClick.RemoveAllListeners();
         reprogramButton.onClick.AddListener(ToggleReprogramming);
+        reprogramButtonText.text = string.Format("REPROGRAM when home ({0}t)", robot.GetInstructions().Count * Settings.Robot_ReprogramClearEachInstructionTicks);
+
         salvageButton.onClick.RemoveAllListeners();
         salvageButton.onClick.AddListener(ToggleSalvaging);
+
         closeButton.onClick.RemoveAllListeners();
         closeButton.onClick.AddListener(Close);
 
@@ -423,12 +435,6 @@ public class RobotPanel : MonoBehaviour
 
     private void UpdateReprogramAndSalvageButtonsState()
     {
-        if (reprogramButtonImage == null)
-            reprogramButtonImage = reprogramButton.GetComponent<Image>();
-
-        if (salvageButtonImage == null)
-            salvageButtonImage = salvageButton.GetComponent<Image>();
-
         if (robot.WillReprogramWhenHome)
             reprogramButtonImage.color = _highlightColor;
         else
