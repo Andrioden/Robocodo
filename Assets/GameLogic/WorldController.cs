@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System;
-using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine.Networking;
+using Assets.GameLogic;
 
 public class WorldController : NetworkBehaviour
 {
@@ -17,6 +18,7 @@ public class WorldController : NetworkBehaviour
     private GameObject groundGameObject;
 
     private WorldBuilder worldBuilder;
+    private PlayerColorManager playerColorManager = new PlayerColorManager();
 
     [SyncVar]
     private int width;
@@ -63,12 +65,12 @@ public class WorldController : NetworkBehaviour
         Destroy(groundGameObject);
     }
 
-    public void BuildWorld(int width, int height)
+    public void BuildWorld(int width, int height, int matchSize)
     {
         this.width = width;
         this.height = height;
 
-        worldBuilder = new WorldBuilder(width, height, 10, 10, 10);
+        worldBuilder = new WorldBuilder(width, height, matchSize, 10, 10);
 
         foreach (Coordinate coord in worldBuilder.copperNodeCoordinates)
             SpawnResourceNode(copperNodePrefab, coord.x, coord.z);
@@ -81,7 +83,7 @@ public class WorldController : NetworkBehaviour
     {
         classIsUsedAsDemo = true;
         worldParent = demoWorldParent;
-        BuildWorld(width, height);
+        BuildWorld(width, height, 10);
         SpawnPlayer(null, 0);
         SpawnAndAdjustGround();
     }
@@ -100,6 +102,13 @@ public class WorldController : NetworkBehaviour
 
         if (NetworkServer.active)
             NetworkServer.AddPlayerForConnection(conn, playerCityGameObject, playerControllerId);
+
+        var robot = playerCityGameObject.GetComponent<PlayerCityController>();
+        if (robot != null)
+        {
+            robot.owner = conn.connectionId.ToString();
+            robot.SetTeamColor(playerColorManager.GetPlayerColor(conn.connectionId.ToString()));
+        }        
 
         ScenarioSetup.Run(NetworkPanel.instance.gameModeDropdown.value, conn, playerCityGameObject);
 
@@ -138,7 +147,9 @@ public class WorldController : NetworkBehaviour
 
             var robot = newGameObject.GetComponent<RobotController>();
             if (robot != null)
-                robot.owner = conn.connectionId.ToString();
+            {
+                robot.owner = conn.connectionId.ToString();                
+            }
         }
 
         playerCity.AddOwnedGameObject(newGameObject);

@@ -12,8 +12,14 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, 
     public GameObject playerCityRubblePrefab;
 
     [SyncVar]
+    public string owner = "";
+
+    [SyncVar]
     private string playerNick;
     public string PlayerNick { get { return playerNick; } }
+
+    [SyncVar]
+    public string teamColorHex;
 
     public int X { get { return (int)gameObject.transform.position.x; } }
     public int Z { get { return (int)gameObject.transform.position.z; } }
@@ -31,6 +37,7 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, 
     private void Start()
     {
         health = Settings_StartHealth;
+        bodyMeshRenderer.material.color = Utils.HexToColor(teamColorHex);
 
         if (isLocalPlayer)
         {
@@ -54,8 +61,6 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, 
     public override void OnStartAuthority()
     {
         base.OnStartAuthority();
-        bodyMeshRenderer.material.color = Color.blue;
-
         AdjustCameraRelativeToPlayer();
     }
 
@@ -79,7 +84,7 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, 
 
     public string GetOwner()
     {
-        return connectionToClient.connectionId.ToString();
+        return owner;
     }
 
     public void AddOwnedGameObject(GameObject go)
@@ -118,6 +123,12 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, 
             WorldController.instance.SpawnTransporterRobotWithClientAuthority(connectionToClient, X, Z, this);
             RemoveResources(TransporterRobotController.Settings_copperCost, TransporterRobotController.Settings_ironCost);
         }
+    }
+
+    [Server]
+    public void SetTeamColor(Color32 teamColor)
+    {
+        teamColorHex = Utils.ColorToHex(teamColor);
     }
 
     /// <summary>

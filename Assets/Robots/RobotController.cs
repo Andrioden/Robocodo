@@ -11,6 +11,11 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [SyncVar]
     public string owner = "";
 
+    private PlayerCityController playerCityController;
+    public PlayerCityController PlayerCityController { get { return playerCityController; } }
+
+    public Renderer[] teamColorRenderers;
+
     [SyncVar]
     protected float x;
     [SyncVar]
@@ -108,6 +113,10 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private void Start()
     {
         InitDefaultValues();
+        playerCityController = FindObjectsOfType<PlayerCityController>().FirstOrDefault(x => x.GetOwner() == GetOwner());
+        if (playerCityController == null)
+            Debug.LogError(name + " did not find it's own PlayerCityController.");
+        SetTeamColor();
     }
 
     // Update is called once per frame
@@ -244,7 +253,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [Command]
     private void CmdSetInstructions(string instructionsCSV)
     {
-        SetInstructions(instructionsCSV);        
+        SetInstructions(instructionsCSV);
     }
 
     private IEnumerator ClearFeedbackAfterSeconds(float s)
@@ -703,6 +712,21 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
         if (OnInventoryChanged != null)
             OnInventoryChanged(this);
+    }
+
+    private void SetTeamColor()
+    {
+        if (teamColorRenderers.Length == 0)
+        {
+            Debug.LogError(Settings_Name() + " has no team color renderers. Won't be able to indicate team color.");
+            return;
+        }
+
+        var teamColor = Utils.HexToColor(playerCityController.teamColorHex);
+        foreach (Renderer renderer in teamColorRenderers)
+        {
+            renderer.material.color = teamColor;
+        }
     }
 
     [Server]
