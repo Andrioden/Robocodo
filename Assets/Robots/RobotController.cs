@@ -159,6 +159,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     private void FindPlayerCityController()
     {
+        if (string.IsNullOrEmpty(GetOwner()))
+            return;
+
         playerCityController = FindObjectsOfType<PlayerCityController>().FirstOrDefault(x => x.GetOwner() == GetOwner());
         if (playerCityController == null)
             Debug.LogError(name + " did not find it's own PlayerCityController.");
@@ -735,6 +738,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     private void SetTeamColor()
     {
+        if (playerCityController == null) //Neutral
+            return;
+
         if (teamColorRenderers.Length == 0)
         {
             Debug.LogError(Settings_Name() + " has no team color renderers. Won't be able to indicate team color.");

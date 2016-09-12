@@ -52,10 +52,6 @@ public class CombatRobotController : RobotController
             Instructions.MoveDown,
             Instructions.MoveDown,
             Instructions.MoveHome,
-
-            //Instructions.LoopStartNumberedSet(0, 5),
-            //Instructions.MoveUp,
-            //Instructions.LoopEnd
         };
     }
 
