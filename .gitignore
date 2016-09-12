@@ -7,6 +7,8 @@
 *Robocodo.sln
 *Robocodo.CSharp.csproj
 *Robocodo.CSharp.Editor.csproj
+*Assembly-CSharp.csproj
+*Assembly-CSharp-Editor.csproj
 
 # From Template
 
