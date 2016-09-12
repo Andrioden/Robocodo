@@ -59,21 +59,19 @@ public class CombatRobotController : RobotController
     {
         if (ShouldAnimationBePlayed())
         {
-            string instruction = instructions.Count > 0 ? instructions[currentInstructionIndex] : string.Empty;
-
-            if (new List<string>() { Instructions.AttackUp, Instructions.AttackLeft, Instructions.AttackRight, Instructions.AttackDown, Instructions.AttackRandom }.Any(instruction.Contains))
+            if (new List<string>() { Instructions.AttackUp, Instructions.AttackLeft, Instructions.AttackRight, Instructions.AttackDown, Instructions.AttackRandom }.Contains(lastAppliedInstruction))
             {
                 bodyAnimator.Play("Idle");
                 leftWeaponAnimator.Play("Shoot");
                 rightWeaponAnimator.Play("Shoot");
             }
-            else if (instruction == Instructions.AttackMelee)
+            else if (lastAppliedInstruction == Instructions.AttackMelee)
             {
                 bodyAnimator.Play("Idle");
                 leftWeaponAnimator.Play("Shoot");
                 rightWeaponAnimator.Play("Shoot");
             }
-            else if (new List<string>() { Instructions.MoveUp, Instructions.MoveDown, Instructions.MoveLeft, Instructions.MoveRight, Instructions.MoveHome, Instructions.MoveRandom }.Any(instruction.Contains))
+            else if (new List<string>() { Instructions.MoveUp, Instructions.MoveDown, Instructions.MoveLeft, Instructions.MoveRight, Instructions.MoveHome, Instructions.MoveRandom }.Contains(lastAppliedInstruction))
             {
                 bodyAnimator.Play("Walk");
             }

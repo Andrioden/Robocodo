@@ -17,14 +17,14 @@ public class WorldBuilder
     public List<Coordinate> copperNodeCoordinates = new List<Coordinate>(); // Should never be manipulated directly, only through the designated method
     public List<Coordinate> ironNodeCoordinates = new List<Coordinate>(); // Should never be manipulated directly, only through the designated method
 
-    public WorldBuilder(int width, int height, int maxPlayersLimit, int extraCopperNodeCount, int extraIronNodeCount)
+    public WorldBuilder(int width, int height, int reservedPlayerSpotCount, int extraCopperNodeCount, int extraIronNodeCount)
     {
         this.width = width;
         this.height = height;
         tiles = new bool[width, height];
 
         /* Reserve <playerCount> number of spots for playerCities before allocating any other tiles */
-        for (int i = 0; i < maxPlayersLimit; i++)
+        for (int i = 0; i < reservedPlayerSpotCount; i++)
             ReservePlayerCoordinate(GetRandomOpenCoordinate());
 
         for (int i = 0; i < extraCopperNodeCount; i++)
@@ -36,7 +36,7 @@ public class WorldBuilder
 
     public Coordinate GetNextPlayerPosition()
     {
-        if (playerCordIncrement > reservedPlayerCoordinates.Count)
+        if (playerCordIncrement >= reservedPlayerCoordinates.Count)
             return GetRandomOpenCoordinate();
 
         var nextPos = reservedPlayerCoordinates[playerCordIncrement];

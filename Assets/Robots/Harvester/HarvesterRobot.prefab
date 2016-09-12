@@ -1368,7 +1368,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: 
-  teamColorRenderers:
+  colorRenderers:
   - {fileID: 2343666}
   isPreviewRobot: 0
   bodyAnimator: {fileID: 9599532}

@@ -58,9 +58,7 @@ public class HarvesterRobotController : RobotController
     {
         if (ShouldAnimationBePlayed())
         {
-            string instruction = instructions.Count > 0 ? instructions[currentInstructionIndex] : string.Empty;
-
-            if (instruction == Instructions.Harvest)
+            if (lastAppliedInstruction == Instructions.Harvest)
             {
                 bodyAnimator.Play("Idle");
                 PlayHarvestParticleSystem();

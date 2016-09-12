@@ -14,7 +14,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private PlayerCityController playerCityController;
     public PlayerCityController PlayerCityController { get { return playerCityController; } }
 
-    public Renderer[] teamColorRenderers;
+    public Renderer[] colorRenderers;
+    private bool isColorSet = false;
 
     [SyncVar]
     protected float x;
@@ -40,13 +41,16 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [SyncVar]
     private int nextInstructionIndex = 0;
 
-    [SyncVar(hook = "OnCurrentInstructionIndexUpdates")]
+    [SyncVar]
     protected int currentInstructionIndex = 0;
     public int CurrentInstructionIndex { get { return currentInstructionIndex; } }
 
     [SyncVar]
     private bool currentInstructionIndexIsValid = true;
     public bool CurrentInstructionIndexIsValid { get { return currentInstructionIndexIsValid; } }
+
+    [SyncVar(hook = "OnLastAppliedInstrucion")]
+    protected string lastAppliedInstruction;
 
     private List<string> _allowedInstructions = new List<string>();
 
@@ -104,6 +108,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         Instructions.LoopEnd,
         Instructions.DetectThen
     };
+
     public List<string> CommonInstructions { get { return commonInstructions; } }
 
 
@@ -119,15 +124,15 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         InitDefaultValues();
         FindPlayerCityController();
-        SetTeamColor();
         CacheAllowedInstructions();
     }
 
     // Update is called once per frame
     private void Update()
     {
+        if (!isColorSet)
+            SetColor();
         Move();
-        FaceDirection();
     }
 
     private void OnDestroy()
@@ -157,6 +162,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             SetInstructions(GetSuggestedInstructionSet());
     }
 
+    [Client]
     private void FindPlayerCityController()
     {
         if (string.IsNullOrEmpty(GetOwner()))
@@ -200,15 +206,13 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
         if (instructions.Count > 0)
         {
-            string currentInstruction = instructions[currentInstructionIndex];
-
-            if (currentInstruction == Instructions.AttackUp || currentInstruction == Instructions.MoveUp)
+            if (lastAppliedInstruction == Instructions.AttackUp || lastAppliedInstruction == Instructions.MoveUp)
                 facePosition = new Vector3(x, transform.position.y, z + 1);
-            else if (currentInstruction == Instructions.AttackDown || currentInstruction == Instructions.MoveDown)
+            else if (lastAppliedInstruction == Instructions.AttackDown || lastAppliedInstruction == Instructions.MoveDown)
                 facePosition = new Vector3(x, transform.position.y, z - 1);
-            else if (currentInstruction == Instructions.AttackRight || currentInstruction == Instructions.MoveRight)
+            else if (lastAppliedInstruction == Instructions.AttackRight || lastAppliedInstruction == Instructions.MoveRight)
                 facePosition = new Vector3(x + 1, transform.position.y, z);
-            else if (currentInstruction == Instructions.AttackLeft || currentInstruction == Instructions.MoveLeft)
+            else if (lastAppliedInstruction == Instructions.AttackLeft || lastAppliedInstruction == Instructions.MoveLeft)
                 facePosition = new Vector3(x - 1, transform.position.y, z);
         }
 
@@ -218,9 +222,11 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         transform.LookAt(facePosition.Value);
     }
 
-    private void OnCurrentInstructionIndexUpdates(int newCurrentInstructionIndex)
+    [Client]
+    private void OnLastAppliedInstrucion(string newLastAppliedInstruction)
     {
-        currentInstructionIndex = newCurrentInstructionIndex;
+        lastAppliedInstruction = newLastAppliedInstruction;
+        FaceDirection();
         Animate();
     }
 
@@ -230,6 +236,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         RobotPanel.instance.Refresh(this);
     }
 
+    [Client]
     protected bool ShouldAnimationBePlayed()
     {
         return energy > 0 && IsStarted && CurrentInstructionIndexIsValid && !isReprogrammingRobot;
@@ -330,6 +337,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             WorldTickController.instance.HalfTickEvent -= RunNextTick;
     }
 
+    /// <summary>
+    /// Is not set to server because it is used by the preview
+    /// </summary>
     public void RunNextTick(object sender)
     {
         SetFeedbackIfNotPreview("");
@@ -384,7 +394,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     private bool ApplyInstruction(string instruction)
     {
-        //Debug.Log("Applying instruction: " + instruction);
+        lastAppliedInstruction = instruction;
 
         if (!_allowedInstructions.Contains(instruction))
             SetFeedbackIfNotPreview(string.Format("INSTRUCTION NOT ALLOWED: '{0}'", instruction));
@@ -736,22 +746,25 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             OnInventoryChanged(this);
     }
 
-    private void SetTeamColor()
+    private void SetColor()
     {
         if (playerCityController == null) //Neutral
             return;
 
-        if (teamColorRenderers.Length == 0)
+        if (string.IsNullOrEmpty(playerCityController.hexColor))
+            return;
+
+        if (colorRenderers.Length == 0)
         {
             Debug.LogError(Settings_Name() + " has no team color renderers. Won't be able to indicate team color.");
             return;
         }
 
-        var teamColor = Utils.HexToColor(playerCityController.teamColorHex);
-        foreach (Renderer renderer in teamColorRenderers)
-        {
-            renderer.material.color = teamColor;
-        }
+        var color = Utils.HexToColor(playerCityController.hexColor);
+        foreach (Renderer renderer in colorRenderers)
+            renderer.material.color = color;
+
+        isColorSet = true;
     }
 
     [Server]

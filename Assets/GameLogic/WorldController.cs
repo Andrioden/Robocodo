@@ -103,11 +103,11 @@ public class WorldController : NetworkBehaviour
         if (NetworkServer.active)
             NetworkServer.AddPlayerForConnection(conn, playerCityGameObject, playerControllerId);
 
-        var robot = playerCityGameObject.GetComponent<PlayerCityController>();
-        if (robot != null)
+        var playerCityController = playerCityGameObject.GetComponent<PlayerCityController>();
+        if (playerCityController != null)
         {
-            robot.owner = conn.connectionId.ToString();
-            robot.SetTeamColor(playerColorManager.GetPlayerColor(conn.connectionId.ToString()));
+            playerCityController.owner = conn.connectionId.ToString();
+            playerCityController.SetColor(playerColorManager.GetNextColor());
         }        
 
         ScenarioSetup.Run(NetworkPanel.instance.gameModeDropdown.value, conn, playerCityGameObject);

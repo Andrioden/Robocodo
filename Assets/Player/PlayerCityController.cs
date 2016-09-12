@@ -15,11 +15,13 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, 
     public string owner = "";
 
     [SyncVar]
-    private string playerNick;
-    public string PlayerNick { get { return playerNick; } }
+    private string nick;
+    public string Nick { get { return nick; } }
 
     [SyncVar]
-    public string teamColorHex;
+    public string hexColor;
+
+    private bool isColorSet = false;
 
     public int X { get { return (int)gameObject.transform.position.x; } }
     public int Z { get { return (int)gameObject.transform.position.z; } }
@@ -37,7 +39,6 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, 
     private void Start()
     {
         health = Settings_StartHealth;
-        bodyMeshRenderer.material.color = Utils.HexToColor(teamColorHex);
 
         if (isLocalPlayer)
         {
@@ -48,8 +49,18 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, 
 
     // Update is called once per frame
     private void Update()
-    {
+    {        
+        if (!isColorSet)
+            SetColor();
+    }
 
+    private void SetColor()
+    {
+        if (string.IsNullOrEmpty(hexColor))
+            return;
+
+        bodyMeshRenderer.material.color = Utils.HexToColor(hexColor);
+        isColorSet = true;
     }
 
     private void OnDestroy()
@@ -126,9 +137,9 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, 
     }
 
     [Server]
-    public void SetTeamColor(Color32 teamColor)
+    public void SetColor(Color32 teamColor)
     {
-        teamColorHex = Utils.ColorToHex(teamColor);
+        hexColor = Utils.ColorToHex(teamColor);
     }
 
     /// <summary>
@@ -187,14 +198,14 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, 
         foreach (GameObject go in GameObject.FindGameObjectsWithTag("PlayerCity"))
         {
             PlayerCityController playerCity = go.GetComponent<PlayerCityController>();
-            if (playerCity != null && !string.IsNullOrEmpty(playerCity.PlayerNick))
-                currentNicks.Add(playerCity.PlayerNick);
+            if (playerCity != null && !string.IsNullOrEmpty(playerCity.Nick))
+                currentNicks.Add(playerCity.Nick);
         }
 
         if (!currentNicks.Contains(nick))
-            playerNick = nick;
+            this.nick = nick;
         else
-            playerNick = nick + (currentNicks.Count(n => n.Contains(nick)) + 1);
+            this.nick = nick + (currentNicks.Count(n => n.Contains(nick)) + 1);
     }
 
 }

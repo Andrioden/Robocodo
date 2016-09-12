@@ -56,7 +56,7 @@ public class ResourcePanel : MonoBehaviour
     {
         if (localPlayerCity != null)
         {
-            nickLabel.text = localPlayerCity.PlayerNick;
+            nickLabel.text = localPlayerCity.Nick;
             copperLabel.text = "Copper: " + localPlayerCity.GetCopperCount();
             ironLabel.text = "Iron: " + localPlayerCity.GetIronCount();
         }
