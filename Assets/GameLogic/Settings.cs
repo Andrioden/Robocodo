@@ -12,7 +12,7 @@
     public static int Scenario_Normal_AmountOfStartingIron = 50;
 
     public static int Robot_SalvagePercentage = 25;
-    public static int Robot_ReprogramPercentage = 25;
+    public static int Robot_ReprogramClearEachInstructionTicks = 5;
 
     public static bool GUI_EnableEdgeScrolling = false;
 }

@@ -48,6 +48,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private bool currentInstructionIndexIsValid = true;
     public bool CurrentInstructionIndexIsValid { get { return currentInstructionIndexIsValid; } }
 
+    private List<string> _allowedInstructions = new List<string>();
+
     [SyncVar]
     private int mainLoopIterationCount = 0;
     public int MainLoopIterationCount { get { return mainLoopIterationCount; } }
@@ -63,6 +65,10 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [SyncVar]
     private bool willReprogramWhenHome = false;
     public bool WillReprogramWhenHome { get { return willReprogramWhenHome; } }
+
+    private bool isReprogrammingRobot = false;
+    private int currentInstructionBeingCleared = 0;
+    private int currentInstructionClearTickCounter = 0;
 
     [SyncVar]
     protected int energy;
@@ -98,25 +104,23 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         Instructions.LoopEnd,
         Instructions.DetectThen
     };
-
     public List<string> CommonInstructions { get { return commonInstructions; } }
 
 
     // ********** ABSTRACT METHODS  **********
 
     protected abstract void Animate();
-    public abstract List<string> GetSpecializedInstruction();
+    public abstract List<string> GetSpecializedInstructions();
     public abstract GameObject SpawnPreviewGameObjectClone();
-    protected abstract List<string> GetDefaultInstructions();
+    protected abstract List<string> GetSuggestedInstructionSet();
 
     // Use this for initialization
     private void Start()
     {
         InitDefaultValues();
-        playerCityController = FindObjectsOfType<PlayerCityController>().FirstOrDefault(x => x.GetOwner() == GetOwner());
-        if (playerCityController == null)
-            Debug.LogError(name + " did not find it's own PlayerCityController.");
+        FindPlayerCityController();
         SetTeamColor();
+        CacheAllowedInstructions();
     }
 
     // Update is called once per frame
@@ -138,7 +142,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             RobotPanel.instance.Show(this);
     }
 
-
     public void InitDefaultValues()
     {
         x = transform.position.x;
@@ -151,7 +154,14 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         health = Settings_StartHealth();
 
         if (instructions.Count == 0)
-            SetInstructions(GetDefaultInstructions());
+            SetInstructions(GetSuggestedInstructionSet());
+    }
+
+    private void FindPlayerCityController()
+    {
+        playerCityController = FindObjectsOfType<PlayerCityController>().FirstOrDefault(x => x.GetOwner() == GetOwner());
+        if (playerCityController == null)
+            Debug.LogError(name + " did not find it's own PlayerCityController.");
     }
 
     public Coordinate GetCoordinate()
@@ -219,7 +229,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     protected bool ShouldAnimationBePlayed()
     {
-        return energy > 0 && IsStarted && CurrentInstructionIndexIsValid;
+        return energy > 0 && IsStarted && CurrentInstructionIndexIsValid && !isReprogrammingRobot;
     }
 
     [Client]
@@ -283,15 +293,22 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         return instructions;
     }
 
+    private void CacheAllowedInstructions()
+    {
+        _allowedInstructions = commonInstructions
+            .Concat(GetSpecializedInstructions())
+            .ToList();
+    }
+
     [Command]
     public void CmdStartRobot()
     {
         Debug.Log("Server: Starting robot");
         isStarted = true;
         if (Settings_IPT() == 1)
-            WorldTickController.instance.TickEvent += RunNextInstruction;
+            WorldTickController.instance.TickEvent += RunNextTick;
         else if (Settings_IPT() == 2)
-            WorldTickController.instance.HalfTickEvent += RunNextInstruction;
+            WorldTickController.instance.HalfTickEvent += RunNextTick;
         else
             throw new Exception("IPT value not supported: " + Settings_IPT());
     }
@@ -305,12 +322,12 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         isStarted = false;
 
         if (Settings_IPT() == 1)
-            WorldTickController.instance.TickEvent -= RunNextInstruction;
+            WorldTickController.instance.TickEvent -= RunNextTick;
         else if (Settings_IPT() == 2)
-            WorldTickController.instance.HalfTickEvent -= RunNextInstruction;
+            WorldTickController.instance.HalfTickEvent -= RunNextTick;
     }
 
-    public void RunNextInstruction(object sender)
+    public void RunNextTick(object sender)
     {
         SetFeedbackIfNotPreview("");
 
@@ -366,7 +383,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         //Debug.Log("Applying instruction: " + instruction);
 
-        if (instruction == Instructions.Idle)
+        if (!_allowedInstructions.Contains(instruction))
+            SetFeedbackIfNotPreview(string.Format("INSTRUCTION NOT ALLOWED: '{0}'", instruction));
+        else if (instruction == Instructions.Idle)
             return true;
         else if (instruction == Instructions.MoveUp)
             ChangePosition(x, z + 1);
@@ -464,20 +483,20 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         return true;
     }
 
-    private void SetFeedbackIfNotPreview(string message)
+    private void SetFeedbackIfNotPreview(string message, bool setIsCurrentInstructionIndexValid = false)
     {
         if (!isPreviewRobot)
-            _SetFeedback(message);
+            _SetFeedback(message, setIsCurrentInstructionIndexValid);
     }
 
     /// <summary>
     /// Never run this method directly, always use SetFeedbackIfNotPreview
     /// </summary>
     [Server]
-    private void _SetFeedback(string message)
+    private void _SetFeedback(string message, bool setIsCurrentInstructionIndexValid)
     {
         feedback = message;
-        currentInstructionIndexIsValid = false;
+        currentInstructionIndexIsValid = setIsCurrentInstructionIndexValid;
     }
 
     [Command]
@@ -847,24 +866,46 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [Server]
     private void ReprogramRobot()
     {
-        willReprogramWhenHome = false;
+        if (!isReprogrammingRobot)
+            StartReprogrammingRobot();
 
-        PlayerCityController playerCity = FindOnCurrentPosition<PlayerCityController>();
+        if (isReprogrammingRobot)
+            ContinueReprogrammingRobot();
+    }
 
-        int reprogramCopperCost = MathUtils.RoundMin1IfHasValue(Settings_CopperCost() * Settings.Robot_ReprogramPercentage / 100.0);
-        int reprogramIronCost = MathUtils.RoundMin1IfHasValue(Settings_IronCost() * Settings.Robot_ReprogramPercentage / 100.0);
+    private void StartReprogrammingRobot()
+    {
+        isReprogrammingRobot = true;
+        currentInstructionBeingCleared = 1;
+    }
 
-        if (playerCity.GetCopperCount() >= reprogramCopperCost && playerCity.GetIronCount() >= reprogramIronCost)
+    private void ContinueReprogrammingRobot()
+    {
+        currentInstructionClearTickCounter++;
+
+        if (currentInstructionClearTickCounter == Settings.Robot_ReprogramClearEachInstructionTicks)
         {
-            playerCity.RemoveResources(reprogramCopperCost, reprogramIronCost);
+            currentInstructionBeingCleared++;
+            currentInstructionClearTickCounter = 0;
+        }
+
+        string feedback = string.Format("Clearing memory {0}/{1}", currentInstructionBeingCleared, instructions.Count);
+        for (int i = 0; i < currentInstructionClearTickCounter; i++)
+            feedback += ".";
+
+        if (currentInstructionBeingCleared == instructions.Count + 1) // Done reprogramming
+        {
+            willReprogramWhenHome = false;
+            isReprogrammingRobot = false;
 
             StopRobot();
             currentInstructionIndex = 0;
             currentInstructionIndexIsValid = true;
             mainLoopIterationCount = 0;
+            SetFeedbackIfNotPreview("", true);
         }
         else
-            SetFeedbackIfNotPreview("NOT ENOUGH RESOURCES TO REPROGRAM");
+            SetFeedbackIfNotPreview(feedback, true);
     }
 
     public string GetOwner()

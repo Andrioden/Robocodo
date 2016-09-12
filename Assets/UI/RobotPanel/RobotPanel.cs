@@ -26,6 +26,7 @@ public class RobotPanel : MonoBehaviour
 
     public Button reprogramButton;
     private Image reprogramButtonImage;
+    private Text reprogramButtonText;
 
     public Button salvageButton;
     private Image salvageButtonImage;
@@ -92,6 +93,14 @@ public class RobotPanel : MonoBehaviour
 
         _highlightColor = Utils.HexToColor("#D5A042FF");
         _defaultButtonStateColors = runButton.GetComponent<Image>().color;
+
+        if (reprogramButtonImage == null)
+            reprogramButtonImage = reprogramButton.GetComponent<Image>();
+        if (reprogramButtonText == null)
+            reprogramButtonText = reprogramButton.GetComponentInChildren<Text>();
+
+        if (salvageButtonImage == null)
+            salvageButtonImage = salvageButton.GetComponent<Image>();
     }
 
     private void Update()
@@ -384,6 +393,7 @@ public class RobotPanel : MonoBehaviour
         SetupPossibleInstructions();
 
         codeInputPanel.SetActive(true);
+        //TODO: Is the listeners added several times?
         codeInputField.onValueChanged.AddListener(KeyboardManager.KeyboardLockOn);
         codeInputField.onValueChanged.AddListener(CodeInputAutoIndentAndUpperCase);
         codeInputField.onEndEdit.AddListener(KeyboardManager.KeyboardLockOff);
@@ -411,8 +421,11 @@ public class RobotPanel : MonoBehaviour
 
         reprogramButton.onClick.RemoveAllListeners();
         reprogramButton.onClick.AddListener(ToggleReprogramming);
+        reprogramButtonText.text = string.Format("REPROGRAM when home ({0}t)", robot.GetInstructions().Count * Settings.Robot_ReprogramClearEachInstructionTicks);
+
         salvageButton.onClick.RemoveAllListeners();
         salvageButton.onClick.AddListener(ToggleSalvaging);
+
         closeButton.onClick.RemoveAllListeners();
         closeButton.onClick.AddListener(Close);
 
@@ -422,12 +435,6 @@ public class RobotPanel : MonoBehaviour
 
     private void UpdateReprogramAndSalvageButtonsState()
     {
-        if (reprogramButtonImage == null)
-            reprogramButtonImage = reprogramButton.GetComponent<Image>();
-
-        if (salvageButtonImage == null)
-            salvageButtonImage = salvageButton.GetComponent<Image>();
-
         if (robot.WillReprogramWhenHome)
             reprogramButtonImage.color = _highlightColor;
         else
@@ -459,7 +466,7 @@ public class RobotPanel : MonoBehaviour
         var combinedList = robot.CommonInstructions.ToList();
         combinedList.Add(string.Empty);
         combinedList.Add(string.Empty);
-        combinedList.AddRange(robot.GetSpecializedInstruction());
+        combinedList.AddRange(robot.GetSpecializedInstructions());
         possibleInstructionsContainer.transform.DestroyChildren();
 
         foreach (string instruction in combinedList)
@@ -502,11 +509,10 @@ public class RobotPanel : MonoBehaviour
 
     private void UpdateRobotInfoLabels()
     {
-        //If robot has no instructions at this time, get instructions from CodeInputField.
-        _formattedInstructions = _formattedInstructions.Count > 0 ? _formattedInstructions : codeInputField.text.Split('\n').ToList();
+        int instructionsCount = codeInputField.text.Split('\n').Length;
 
         inventoryLabel.text = "INVENTORY (" + robot.Inventory.Count + "/" + robot.Settings_InventoryCapacity() + ")";
-        memoryText.text = ColorTextOnCondition(_formattedInstructions.Count > robot.Settings_Memory(), Color.red, string.Format("MEMORY: {0}/{1}", _formattedInstructions.Count, robot.Settings_Memory()));
+        memoryText.text = ColorTextOnCondition(instructionsCount > robot.Settings_Memory(), Color.red, string.Format("MEMORY: {0}/{1}", instructionsCount, robot.Settings_Memory()));
         iptText.text = string.Format("IPT: {0}", robot.Settings_IPT());
         inventoryCapacityText.text = string.Format("INVENTORY CAPACITY: {0}", robot.Settings_InventoryCapacity());
         harvestYieldText.text = string.Format("HARVEST YIELD: {0}", robot.Settings_HarvestYield());
