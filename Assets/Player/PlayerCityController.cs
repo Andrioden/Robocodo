@@ -177,6 +177,24 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, 
     }
 
     [Server]
+    public void ShowPopupForOwner(string text, Vector3 position, Color color)
+    {
+        TargetShowPopup(connectionToClient, text, position, color);
+    }
+
+    [Server]
+    public void ShowPopupForAll(string text, Vector3 position, Color color)
+    {
+        TextPopupManager.instance.ShowPopupGeneric(text, position, color);
+    }
+
+    [TargetRpc]
+    private void TargetShowPopup(NetworkConnection target, string text, Vector3 position, Color color)
+    {
+        TextPopupManager.instance.ShowPopupGeneric(text, position, color);
+    }
+
+    [Server]
     public void TakeDamage(int damage)
     {
         health -= damage;
