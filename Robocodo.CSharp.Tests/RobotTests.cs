@@ -39,16 +39,16 @@ namespace Robocodo.CSharp.Tests
         [TestMethod]
         public void IsValidDetectTest()
         {
-            Assert.IsTrue(Instructions.IsValidDetect("DETECT ENEMY THEN MOVE HOME"));
-            Assert.IsTrue(Instructions.IsValidDetect("DETECT COPPER THEN MOVE HOME"));
-            Assert.IsTrue(Instructions.IsValidDetect("DETECT IRON THEN MOVE HOME"));
-            Assert.IsTrue(Instructions.IsValidDetect("DETECT COPPER THEN HARVEST"));
+            Assert.IsTrue(Instructions.IsValidDetectThen("DETECT ENEMY THEN MOVE HOME"));
+            Assert.IsTrue(Instructions.IsValidDetectThen("DETECT COPPER THEN MOVE HOME"));
+            Assert.IsTrue(Instructions.IsValidDetectThen("DETECT IRON THEN MOVE HOME"));
+            Assert.IsTrue(Instructions.IsValidDetectThen("DETECT COPPER THEN HARVEST"));
 
-            Assert.IsFalse(Instructions.IsValidDetect("LOL DETECT ENEMY THEN MOVE HOME"));
-            Assert.IsFalse(Instructions.IsValidDetect("DETECT"));
-            Assert.IsFalse(Instructions.IsValidDetect("DETECT ENEMY"));
-            Assert.IsFalse(Instructions.IsValidDetect("DETECT ENEMY THEN"));
-            Assert.IsFalse(Instructions.IsValidDetect("DETECT ENEMY THEN "));
+            Assert.IsFalse(Instructions.IsValidDetectThen("LOL DETECT ENEMY THEN MOVE HOME"));
+            Assert.IsFalse(Instructions.IsValidDetectThen("DETECT"));
+            Assert.IsFalse(Instructions.IsValidDetectThen("DETECT ENEMY"));
+            Assert.IsFalse(Instructions.IsValidDetectThen("DETECT ENEMY THEN"));
+            Assert.IsFalse(Instructions.IsValidDetectThen("DETECT ENEMY THEN "));
         }
 
         [TestMethod]
@@ -57,11 +57,11 @@ namespace Robocodo.CSharp.Tests
             Assert.IsTrue(Instructions.IsValidIdleUntil("IDLE UNTIL FULL THEN MOVE HOME"));
             Assert.IsTrue(Instructions.IsValidIdleUntil("UDLE UNTIL FULL THEN MOVE LEFT"));
 
-            Assert.IsFalse(Instructions.IsValidDetect("IDLE FULL THEN MOVE HOME"));
-            Assert.IsFalse(Instructions.IsValidDetect("IDLE UNTIL FULLJ THEN MOVE HOME"));
-            Assert.IsFalse(Instructions.IsValidDetect("IDLE UNTIL STUPID THEN MOVE HOME"));
-            Assert.IsFalse(Instructions.IsValidDetect("IDLES UNTIL FULL THEN MOVE HOME"));
-            Assert.IsFalse(Instructions.IsValidDetect("IDLEUNTIL FULL THEN MOVE HOME"));
+            Assert.IsFalse(Instructions.IsValidDetectThen("IDLE FULL THEN MOVE HOME"));
+            Assert.IsFalse(Instructions.IsValidDetectThen("IDLE UNTIL FULLJ THEN MOVE HOME"));
+            Assert.IsFalse(Instructions.IsValidDetectThen("IDLE UNTIL STUPID THEN MOVE HOME"));
+            Assert.IsFalse(Instructions.IsValidDetectThen("IDLES UNTIL FULL THEN MOVE HOME"));
+            Assert.IsFalse(Instructions.IsValidDetectThen("IDLEUNTIL FULL THEN MOVE HOME"));
         }
 
         [TestMethod]

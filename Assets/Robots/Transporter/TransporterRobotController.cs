@@ -23,7 +23,7 @@ public class TransporterRobotController : RobotController
     private List<string> spezializedInstructions = new List<string>()
     {
         Instructions.DropInventory,
-        Instructions.IdleUntilDefined("FULL", "[INSTRUCTION]")
+        Instructions.IdleUntil
     };
     public override List<string> GetSpecializedInstructions() { return spezializedInstructions; }
 

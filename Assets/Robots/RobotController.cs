@@ -397,7 +397,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         lastAppliedInstruction = instruction;
 
-        if (!_allowedInstructions.Contains(instruction))
+        if (!Instructions.IsValidInstruction(_allowedInstructions, instruction))
             SetFeedbackIfNotPreview(string.Format("INSTRUCTION NOT ALLOWED: '{0}'", instruction));
         else if (instruction == Instructions.Idle)
             return true;
@@ -466,7 +466,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
                 Instructions.AttackLeft
             }));
         }
-        else if (Instructions.IsValidDetect(instruction) && !isPreviewRobot)
+        else if (Instructions.IsValidDetectThen(instruction) && !isPreviewRobot)
         {
             string detectionSource = instruction.Split(' ')[1];
             if (detectionSource == "ENEMY" && FindNearbyEnemy((int)x, (int)z, 3.0) == null)
