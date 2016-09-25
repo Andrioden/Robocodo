@@ -124,7 +124,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         InitDefaultValues();
         FindPlayerCityController();
-        CacheAllowedInstructions();
     }
 
     // Update is called once per frame
@@ -149,6 +148,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     public void InitDefaultValues()
     {
+        CacheAllowedInstructions();
+
         x = transform.position.x;
         z = transform.position.z;
 
