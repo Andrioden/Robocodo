@@ -7,7 +7,7 @@ using System;
 public class RTSCamera : MonoBehaviour
 {
     public float cameraHeight = 10;
-    public float cameraDistance = 4;
+    public float cameraDistance; // Set by the camera
     public float horizontalSpeed = 40;
     public float verticalSpeed = 40;
     public int edgeScrollBoundrary = 15;
@@ -31,6 +31,7 @@ public class RTSCamera : MonoBehaviour
     {
         screenHeight = Screen.height;
         screenWidth = Screen.width;
+        transform.position = new Vector3(transform.position.x, cameraHeight, transform.position.z);
     }
 
     private void LateUpdate()
@@ -45,7 +46,7 @@ public class RTSCamera : MonoBehaviour
 
     public void PositionRelativeTo(Transform relativeToTransform, float xOffset = 0.0f, float zOffSet = 0.0f)
     {
-        transform.position = new Vector3(relativeToTransform.position.x, cameraHeight, relativeToTransform.position.z - cameraDistance);
+        transform.position = new Vector3(relativeToTransform.position.x + xOffset, transform.position.y, relativeToTransform.position.z - cameraDistance + zOffSet);
     }
 
     private void MoveCameraWithKeyboard()

@@ -149,6 +149,7 @@ public class RobotPanel : MonoBehaviour
             EnableSetupModePanel();
 
         animator.Play("RobotMenuSlideIn");
+        RTSCamera.instance.PositionRelativeTo(robot.transform, 3);
     }
 
     public void Close()

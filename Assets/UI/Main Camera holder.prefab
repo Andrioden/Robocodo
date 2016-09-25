@@ -45,6 +45,7 @@ Transform:
   m_LocalRotation: {x: 0.5372997, y: 0, z: 0, w: 0.8433914}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 484968}
   m_RootOrder: 0
@@ -55,8 +56,9 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 128812}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 10, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 476710}
   m_Father: {fileID: 0}
@@ -199,7 +201,6 @@ MonoBehaviour:
   cameraDistance: 4
   horizontalSpeed: 40
   verticalSpeed: 40
-  enableEdgeScroll: 0
   edgeScrollBoundrary: 15
 --- !u!124 &12481308
 Behaviour:

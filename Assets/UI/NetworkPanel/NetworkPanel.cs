@@ -44,7 +44,6 @@ public class NetworkPanel : MonoBehaviour
         networkManager = FindObjectOfType<CustomNetworkManager>();
 
         networkManager.SetMatchHost("eu1-mm.unet.unity3d.com", networkManager.matchPort, true); //TODO: Maybe make a user choice in the far future
-        Debug.LogFormat("Connecting to match making host {0}:{1}", networkManager.matchHost, networkManager.matchPort);
 
         if (networkManager.matchMaker == null)
             networkManager.StartMatchMaker();
@@ -126,6 +125,7 @@ public class NetworkPanel : MonoBehaviour
         feedbackText.text = "";
         if (ValidateMandatoryInput())
         {
+            Debug.LogFormat("Loading matches from match making server {0}:{1}", networkManager.matchHost, networkManager.matchPort);
             networkManager.matchMaker.ListMatches(0, 20, "", false, 0, 0, MM_BuildGamesList);
         }
     }
