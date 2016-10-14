@@ -12,7 +12,8 @@ public class HarvesterRobotController : RobotController
     public Animator bodyAnimator;
     public ParticleSystem leftToolParticleSystem;
     public ParticleSystem rightToolParticleSystem;
-
+    public Sprite sprite;
+    public override Sprite Sprite() { return sprite; }
 
     // ********** SETTINGS **********
 

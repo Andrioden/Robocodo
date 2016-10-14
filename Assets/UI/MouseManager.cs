@@ -33,22 +33,32 @@ public class MouseManager : MonoBehaviour
                 else
                     ourHitObject = ourHitObject.transform.parent.gameObject;
 
-                IClickable clickableObject = ourHitObject.GetComponent<IClickable>();
-                if (clickableObject != null)
-                {
-                    clickableObject.Click();
-                    if (clickableObject is ISelectable)
-                        currentlySelected = ourHitObject;
-                    else
-                        currentlySelected = null;
-
-                    return;
-                }
-                else
-                    currentlySelected = null;
+                ClickGameObject(ourHitObject);
             }
 
         }
 
+    }
+
+    private static void ClickGameObject(GameObject gameObject)
+    {
+        IClickable clickableObject = gameObject.GetComponent<IClickable>();
+        if (clickableObject != null)
+        {
+            clickableObject.Click();
+            if (clickableObject is ISelectable)
+                currentlySelected = gameObject;
+            else
+                currentlySelected = null;
+
+            return;
+        }
+        else
+            currentlySelected = null;
+    }
+
+    public static void SimulateClick(GameObject clickableGameObject)
+    {
+        ClickGameObject(clickableGameObject);
     }
 }

@@ -148,7 +148,7 @@ public class WorldController : NetworkBehaviour
             var robot = newGameObject.GetComponent<RobotController>();
             if (robot != null)
             {
-                robot.owner = conn.connectionId.ToString();                
+                robot.owner = conn.connectionId.ToString();          
             }
         }
 

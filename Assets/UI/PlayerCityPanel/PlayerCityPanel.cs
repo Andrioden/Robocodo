@@ -4,8 +4,9 @@ using System;
 
 public class PlayerCityPanel : MonoBehaviour
 {
-
+    public TabController tabController;
     public BuildMenu buildMenu;
+    public GarageTabController garage;
     public Sprite harvesterRobotSprite;
     public Sprite combatRobotSprite;
     public Sprite transporterRobotSprite;
@@ -29,7 +30,7 @@ public class PlayerCityPanel : MonoBehaviour
     void Start()
     {
         animator = GetComponent<Animator>();
-        AddBuildableItemsToBuildMenu();
+        AddBuildableItemsToBuildMenu();  
     }
 
     void Update()
@@ -38,22 +39,24 @@ public class PlayerCityPanel : MonoBehaviour
         {
             if (MouseManager.currentlySelected == null || MouseManager.currentlySelected != playerCityController.gameObject)
             {
-                ClosePanel();
+                Close();
                 return;
             }
         }
     }
 
-    public void ShowPanel(PlayerCityController playerCityController)
+    public void Show(PlayerCityController playerCityController)
     {
         this.playerCityController = playerCityController;
         KeyboardManager.KeyboardLockOff();
-
+        tabController.SetFirstTabActive();
+        garage.Show(playerCityController);
         animator.Play("RobotMenuSlideIn");
     }
 
-    private void ClosePanel()
+    private void Close()
     {
+        garage.Close();
         playerCityController = null;
         animator.Play("RobotMenuSlideOut");
     }

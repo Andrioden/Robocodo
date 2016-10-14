@@ -10,6 +10,8 @@ public class CombatRobotController : RobotController
     public Animator bodyAnimator;
     public Animator leftWeaponAnimator;
     public Animator rightWeaponAnimator;
+    public Sprite sprite;
+    public override Sprite Sprite() { return sprite; }
 
     // ********** SETTINGS **********
 

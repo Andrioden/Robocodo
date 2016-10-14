@@ -14,6 +14,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private PlayerCityController playerCityController;
     public PlayerCityController PlayerCityController { get { return playerCityController; } }
 
+    public GameObject meshGO;
+
     public Renderer[] colorRenderers;
     private bool isColorSet = false;
 
@@ -24,6 +26,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     private float homeX;
     private float homeZ;
+
+    private bool isAlreadyHome = false;
 
     [SyncVar]
     private string feedback = "";
@@ -94,6 +98,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     public abstract int Settings_HarvestYield();
     public abstract int Settings_Damage();
     public abstract int Settings_StartHealth();
+    public abstract Sprite Sprite();
 
     private List<string> commonInstructions = new List<string>()
     {
@@ -122,6 +127,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     // Use this for initialization
     private void Start()
     {
+        if (!meshGO)
+            Debug.LogError("Mesh game object reference missing. Will not be able to hide physical robot when in garage etc.");
+
         InitDefaultValues();
         FindPlayerCityController();
         CacheAllowedInstructions();
@@ -132,6 +140,20 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         if (!isColorSet)
             SetColor();
+
+        if (IsHomeByTransform() && !isAlreadyHome)
+        {
+            isAlreadyHome = true;
+            meshGO.SetActive(false);
+            playerCityController.EnterGarage(this);
+        }
+        else if (!IsHomeByTransform() && isAlreadyHome)
+        {
+            isAlreadyHome = false;
+            meshGO.SetActive(true);
+            playerCityController.ExitGarage(this);
+        }
+
         Move();
     }
 
@@ -565,6 +587,11 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         return x == homeX && z == homeZ;
     }
 
+    private bool IsHomeByTransform()
+    {
+        return transform.position.x == homeX && transform.position.z == homeZ;
+    }
+
     private void InstructionCompleted()
     {
         nextInstructionIndex++;
@@ -881,8 +908,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             salvagedResources.Add(new IronItem());
 
         playerCity.TransferToInventory(salvagedResources);
-        
-        playerCityController.ShowPopupForOwner("SALVAGED!", transform.position,Utils.HexToColor("F9862DFF"));
+
+        playerCityController.ShowPopupForOwner("SALVAGED!", transform.position, Utils.HexToColor("F9862DFF"));
 
         NetworkServer.Destroy(gameObject);
     }
@@ -897,6 +924,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             ContinueReprogrammingRobot();
     }
 
+    [Server]
     private void StartReprogrammingRobot()
     {
         isReprogrammingRobot = true;
@@ -905,6 +933,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         playerCityController.ShowPopupForOwner("REPROGRAMMNIG!", transform.position, Utils.HexToColor("12FFFFFF"));
     }
 
+    [Server]
     private void ContinueReprogrammingRobot()
     {
         currentInstructionClearTickCounter++;
@@ -930,7 +959,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             mainLoopIterationCount = 0;
             SetFeedbackIfNotPreview("", true);
 
-            playerCityController.ShowPopupForOwner("MEMORY CLEARED!", transform.position,Utils.HexToColor("12FFFFFF"));
+            playerCityController.ShowPopupForOwner("MEMORY CLEARED!", transform.position, Utils.HexToColor("12FFFFFF"));
         }
         else
             SetFeedbackIfNotPreview(feedback, true);

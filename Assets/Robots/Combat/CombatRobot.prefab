@@ -4100,6 +4100,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: 
+  meshGO: {fileID: 191336}
   colorRenderers:
   - {fileID: 2308666}
   - {fileID: 2364686}
@@ -4107,6 +4108,7 @@ MonoBehaviour:
   bodyAnimator: {fileID: 9535814}
   leftWeaponAnimator: {fileID: 9581024}
   rightWeaponAnimator: {fileID: 9508792}
+  sprite: {fileID: 21300000, guid: c7b8229ed1acf53419b0ec9d6594ad5a, type: 3}
 --- !u!114 &11445986
 MonoBehaviour:
   m_ObjectHideFlags: 1

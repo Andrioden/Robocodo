@@ -1368,12 +1368,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: 
+  meshGO: {fileID: 197684}
   colorRenderers:
   - {fileID: 2343666}
   isPreviewRobot: 0
   bodyAnimator: {fileID: 9599532}
   leftToolParticleSystem: {fileID: 19870032}
   rightToolParticleSystem: {fileID: 19858164}
+  sprite: {fileID: 21300000, guid: 2f50f9a46a7e68e4988f223f8cad3cf4, type: 3}
 --- !u!114 &11491300
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -28,6 +28,12 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, 
 
     private List<GameObject> ownedGameObjects = new List<GameObject>();
     private List<InventoryItem> inventory = new List<InventoryItem>();
+    private List<RobotController> garage = new List<RobotController>();
+    public List<RobotController> Garage { get { return garage; } }
+
+    public delegate void GarageEventHandler(RobotController robot);
+    public event GarageEventHandler OnRobotAddedToGarage;
+    public event GarageEventHandler OnRobotRemovedFromGarage;
 
     [SyncVar]
     private int health;
@@ -49,7 +55,7 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, 
 
     // Update is called once per frame
     private void Update()
-    {        
+    {
         if (!isColorSet)
             SetColor();
     }
@@ -79,7 +85,7 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, 
     {
         if (hasAuthority)
         {
-            PlayerCityPanel.instance.ShowPanel(this);
+            PlayerCityPanel.instance.Show(this);
         }
     }
 
@@ -151,6 +157,20 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, 
         inventory.AddRange(items);
         RpcSyncInventory(InventoryItem.SerializeList(inventory));
         return new List<InventoryItem>(); // No items was not added
+    }
+
+    public void EnterGarage(RobotController robot)
+    {
+        garage.Add(robot);
+        if (OnRobotAddedToGarage != null)
+            OnRobotAddedToGarage(robot);
+    }
+
+    public void ExitGarage(RobotController robot)
+    {
+        garage.Remove(robot);
+        if (OnRobotAddedToGarage != null)
+            OnRobotRemovedFromGarage(robot);
     }
 
     [Server]

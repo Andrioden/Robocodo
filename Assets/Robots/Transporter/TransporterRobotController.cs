@@ -8,6 +8,8 @@ public class TransporterRobotController : RobotController
     public static string Settings_name = "TRANSPORTER";
     public static int Settings_copperCost = 5;
     public static int Settings_ironCost = 20;
+    public Sprite sprite;
+    public override Sprite Sprite() { return sprite; }
 
     public override string Settings_Name() { return Settings_name; }
     public override int Settings_CopperCost() { return Settings_copperCost; }
