@@ -9,6 +9,7 @@ public class ResourcePanel : MonoBehaviour
     public Text nickLabel;
     public Text copperLabel;
     public Text ironLabel;
+    public Text garageLabel;
 
     private PlayerCityController localPlayerCity;
 
@@ -59,12 +60,14 @@ public class ResourcePanel : MonoBehaviour
             nickLabel.text = localPlayerCity.Nick;
             copperLabel.text = "Copper: " + localPlayerCity.GetCopperCount();
             ironLabel.text = "Iron: " + localPlayerCity.GetIronCount();
+            garageLabel.text = "Garage: " + localPlayerCity.Garage.Count();
         }
         else
         {
             nickLabel.text = "";
             copperLabel.text = "Copper: " + 0;
             ironLabel.text = "Iron: " + 0;
+            garageLabel.text = "Garage: " + 0;
         }
     }
 

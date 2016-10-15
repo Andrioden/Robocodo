@@ -47,12 +47,12 @@ public class TabController : MonoBehaviour
         otherTabs.ForEach(x =>
         {
             x.text.fontStyle = FontStyle.Normal;
-            x.text.fontSize = 30;
+            x.text.fontSize = 28;
             x.panel.SetActive(false);
         });
 
         currentTab.text.fontStyle = FontStyle.Bold;
-        currentTab.text.fontSize = 35;
+        currentTab.text.fontSize = 36;
         currentTab.panel.SetActive(true);
     }
 
