@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.Events;
-using System.Collections;
 
 public class GarageTabController : MonoBehaviour
 {
@@ -48,9 +45,7 @@ public class GarageTabController : MonoBehaviour
         if (!garageRobot)
             return;
 
-        //Destroy menu item
         Destroy(garageRobot.gameObject);
-
         //Consider resetting columns for all menu items.
     }
 
