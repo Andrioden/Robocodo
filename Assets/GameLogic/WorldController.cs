@@ -108,7 +108,7 @@ public class WorldController : NetworkBehaviour
         {
             playerCityController.owner = conn.connectionId.ToString();
             playerCityController.SetColor(playerColorManager.GetNextColor());
-        }        
+        }
 
         ScenarioSetup.Run(NetworkPanel.instance.gameModeDropdown.value, conn, playerCityGameObject);
 
@@ -147,9 +147,7 @@ public class WorldController : NetworkBehaviour
 
             var robot = newGameObject.GetComponent<RobotController>();
             if (robot != null)
-            {
-                robot.owner = conn.connectionId.ToString();          
-            }
+                robot.owner = conn.connectionId.ToString();
         }
 
         playerCity.AddOwnedGameObject(newGameObject);
@@ -205,7 +203,7 @@ public class WorldController : NetworkBehaviour
         if (resourceController != null)
         {
             resourceController.HarvestOneResourceItem();
-            Debug.LogFormat("Server: HARVESTED! Resource node at {0},{1} has {2} items left", x, z, resourceController.GetRemainingResourceItems());
+            //Debug.LogFormat("Server: HARVESTED! Resource node at {0},{1} has {2} items left", x, z, resourceController.GetRemainingResourceItems());
             if (resourceController.GetRemainingResourceItems() <= 0)
             {
                 resourceControllers.Remove(resourceController);
@@ -215,7 +213,7 @@ public class WorldController : NetworkBehaviour
         }
         else
         {
-            Debug.LogFormat("Server: No resource found at {0},{1}", x, z);
+            //Debug.LogFormat("Server: No resource found at {0},{1}", x, z);
             return false;
         }
     }

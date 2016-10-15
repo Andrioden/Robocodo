@@ -152,6 +152,10 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             meshGO.SetActive(true);
             playerCityController.ExitGarage(this);
         }
+        else if (IsHomeByTransform() && isAlreadyHome && MouseManager.currentlySelected == gameObject && !isStarted)
+            meshGO.SetActive(true);
+        else if (IsHomeByTransform() && isAlreadyHome && MouseManager.currentlySelected != this && !isStarted)
+            meshGO.SetActive(false);
 
         Move();
     }
@@ -249,6 +253,11 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private void OnLastAppliedInstrucion(string newLastAppliedInstruction)
     {
         lastAppliedInstruction = newLastAppliedInstruction;
+
+        /* We never want to change facing or animate preview robot */
+        if (isPreviewRobot)
+            return;
+
         FaceDirection();
         Animate();
     }
@@ -336,7 +345,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [Command]
     public void CmdStartRobot()
     {
-        Debug.Log("Server: Starting robot");
+        //Debug.Log("Server: Starting robot");
         isStarted = true;
         if (Settings_IPT() == 1)
             WorldTickController.instance.TickEvent += RunNextTick;
@@ -705,12 +714,12 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [Server]
     private void DropInventory()
     {
-        Debug.Log("SERVER: Dropping inventory items count: " + inventory.Count);
+        //Debug.Log("SERVER: Dropping inventory items count: " + inventory.Count);
 
         IHasInventory droppableTarget = FindDroppableTarget((int)x, (int)z);
         if (droppableTarget != null)
         {
-            Debug.Log("SERVER: Found something to drop on, dropping inventory on it");
+            //Debug.Log("SERVER: Found something to drop on, dropping inventory on it");
             List<InventoryItem> itemsNotAdded = droppableTarget.TransferToInventory(inventory);
             SetInventory(itemsNotAdded);
             if (itemsNotAdded.Count > 0)
