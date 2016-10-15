@@ -222,31 +222,37 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [Client]
     private void Move()
     {
-        var newPos = new Vector3(x, transform.position.y, z);
-        transform.position = Vector3.MoveTowards(transform.position, newPos, (1.0f / Settings.World_IrlSecondsPerTick) * Time.deltaTime * Settings_IPT());
+        var newPosition = new Vector3(x, transform.position.y, z);
+        MovementBasedFacingDirection(newPosition);
+        transform.position = Vector3.MoveTowards(transform.position, newPosition, (1.0f / Settings.World_IrlSecondsPerTick) * Time.deltaTime * Settings_IPT());
     }
 
     [Client]
-    public void FaceDirection()
+    private void MovementBasedFacingDirection(Vector3 newPosition)
+    {
+        if (!string.IsNullOrEmpty(lastAppliedInstruction) && lastAppliedInstruction.StartsWith("MOVE"))
+            transform.LookAt(newPosition);
+    }
+
+    [Client]
+    public void NonMovementBasedFacingDirection()
     {
         Vector3? facePosition = null;
 
         if (instructions.Count > 0)
         {
-            if (lastAppliedInstruction == Instructions.AttackUp || lastAppliedInstruction == Instructions.MoveUp)
-                facePosition = new Vector3(x, transform.position.y, z + 1);
-            else if (lastAppliedInstruction == Instructions.AttackDown || lastAppliedInstruction == Instructions.MoveDown)
-                facePosition = new Vector3(x, transform.position.y, z - 1);
-            else if (lastAppliedInstruction == Instructions.AttackRight || lastAppliedInstruction == Instructions.MoveRight)
-                facePosition = new Vector3(x + 1, transform.position.y, z);
-            else if (lastAppliedInstruction == Instructions.AttackLeft || lastAppliedInstruction == Instructions.MoveLeft)
-                facePosition = new Vector3(x - 1, transform.position.y, z);
+            if (lastAppliedInstruction == Instructions.AttackUp)
+                facePosition = new Vector3(x, transform.position.y, z + 2);
+            else if (lastAppliedInstruction == Instructions.AttackDown)
+                facePosition = new Vector3(x, transform.position.y, z - 2);
+            else if (lastAppliedInstruction == Instructions.AttackRight)
+                facePosition = new Vector3(x + 2, transform.position.y, z);
+            else if (lastAppliedInstruction == Instructions.AttackLeft)
+                facePosition = new Vector3(x - 2, transform.position.y, z);
         }
 
-        if (!facePosition.HasValue)
-            facePosition = new Vector3(x, transform.position.y, z);
-
-        transform.LookAt(facePosition.Value);
+        if (facePosition.HasValue)
+            transform.LookAt(facePosition.Value);
     }
 
     [Client]
@@ -258,7 +264,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         if (isPreviewRobot)
             return;
 
-        FaceDirection();
+        NonMovementBasedFacingDirection();
         Animate();
     }
 
