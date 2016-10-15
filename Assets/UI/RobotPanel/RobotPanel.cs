@@ -22,6 +22,7 @@ public class RobotPanel : MonoBehaviour
     public Text energyText;
 
     public Button runButton;
+    public Button solarPlexusButton;
     public Button closeButton;
 
     public Button reprogramButton;
@@ -404,11 +405,19 @@ public class RobotPanel : MonoBehaviour
         runButton.onClick.RemoveAllListeners();
         runButton.onClick.AddListener(RunCode);
 
+        solarPlexusButton.onClick.RemoveAllListeners();
+        solarPlexusButton.onClick.AddListener(InstallSolarPlexus);
+
         inventoryPanel.SetActive(false);
         codeRunningPanel.SetActive(false);
 
         previewer = new RobotMovementPreviewer(robot, exampleInstructions);
         DrawPreviewArrows();
+    }
+
+    private void InstallSolarPlexus()
+    {
+        robot.AddModule(new SolarPanelModule());
     }
 
     private void EnableRunningModePanel()

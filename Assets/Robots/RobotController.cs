@@ -67,6 +67,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     public delegate void InventoryChanged(RobotController robot);
     public static event InventoryChanged OnInventoryChanged;
 
+    private List<Module> modules = new List<Module>();
+
     [SyncVar]
     private bool willSalvageWhenHome = false;
     public bool WillSalvageWhenHome { get { return willSalvageWhenHome; } }
@@ -163,7 +165,10 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private void OnDestroy()
     {
         if (Application.isPlaying)
+        {
             StopRobot();
+            modules.ForEach(module => module.Uninstall());
+        }
     }
 
     public void Click()
@@ -187,6 +192,13 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
         if (instructions.Count == 0)
             SetInstructions(GetSuggestedInstructionSet());
+    }
+
+    [Client]
+    public void AddModule(Module module)
+    {
+        modules.Add(module);
+        module.Install(this);
     }
 
     [Client]
@@ -341,11 +353,17 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         return instructions;
     }
 
-    private void CacheAllowedInstructions()
+    public void CacheAllowedInstructions()
     {
         _allowedInstructions = commonInstructions
             .Concat(GetSpecializedInstructions())
+            .Concat(GetAllModuleInstructions())
             .ToList();
+    }
+
+    private List<string> GetAllModuleInstructions()
+    {
+        return modules.Select(m => m.GetInstructions()).SelectMany(x => x).ToList();
     }
 
     [Command]
@@ -395,7 +413,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         //Debug.Log("SERVER: Running instruction: " + instruction);
 
         if (IsOnEnergySource())
-            energy = Settings_MaxEnergy();
+            AddEnergy(Settings_MaxEnergy());
 
         if (SalvageOrReprogramCheck())
             return;
@@ -873,6 +891,14 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         return FindOnCurrentPosition<IEnergySource>() != null;
     }
 
+    public void AddEnergy(int change)
+    {
+        if (change < 0)
+            throw new Exception("Tried to add negative energy: " + change);
+
+        energy = Math.Min(Settings_MaxEnergy(), energy + change);
+    }
+
     private T FindOnCurrentPosition<T>()
     {
         return FindNearbyCollidingGameObjects<T>()
@@ -974,6 +1000,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             currentInstructionIndexIsValid = true;
             mainLoopIterationCount = 0;
             SetFeedbackIfNotPreview("", true);
+
+            modules.ForEach(module => module.Uninstall(false));
+            CacheAllowedInstructions();
 
             playerCityController.ShowPopupForOwner("MEMORY CLEARED!", transform.position, Utils.HexToColor("12FFFFFF"));
         }

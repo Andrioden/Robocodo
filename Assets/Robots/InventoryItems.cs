@@ -6,6 +6,7 @@ using System;
 
 public abstract class InventoryItem
 {
+    // To force the implementator of this class to create the serialize pattern, later serializing might also include more info
     public abstract string Serialize();
 
     /// <summary>
