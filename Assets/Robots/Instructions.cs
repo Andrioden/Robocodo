@@ -52,6 +52,32 @@ public static class Instructions
         AttackRight
     };
 
+    public static bool IsValidInstruction(List<string> allowedInstructions, string instruction)
+    {
+        foreach (string allowedInstruction in allowedInstructions)
+        {
+            if (allowedInstruction == LoopStart)
+            {
+                if (IsValidLoopStart(instruction))
+                    return true;
+            }
+            else if (allowedInstruction == DetectThen)
+            {
+                if (IsValidDetectThen(instruction))
+                    return true;
+            }
+            else if (allowedInstruction == IdleUntil)
+            {
+                if (IsValidIdleUntil(instruction))
+                    return true;
+            }
+            else if (allowedInstruction == instruction)
+                return true;
+        }
+
+        return false;
+    }
+
     public static bool IsValidLoopStart(string instruction)
     {
         if (instruction == "LOOP START")
@@ -63,7 +89,7 @@ public static class Instructions
         return false;
     }
 
-    public static bool IsValidDetect(string instruction)
+    public static bool IsValidDetectThen(string instruction)
     {
         if (Regex.Match(instruction, @"^DETECT \b(ENEMY|COPPER|IRON|FULL)\b THEN .+$").Success) // Understand regex better: https://regex101.com/r/aK2aM2/1
         {

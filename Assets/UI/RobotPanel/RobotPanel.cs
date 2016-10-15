@@ -149,6 +149,7 @@ public class RobotPanel : MonoBehaviour
             EnableSetupModePanel();
 
         animator.Play("RobotMenuSlideIn");
+        RTSCamera.instance.PositionRelativeTo(robot.transform, 3);
     }
 
     public void Close()
@@ -570,7 +571,7 @@ public class RobotPanel : MonoBehaviour
     /// <summary>
     /// Has to have a middlemethod run the robot method, cant run the robot.Cmd.. method directly 
     /// </summary>
-    public void ToggleReprogramming()
+    private void ToggleReprogramming()
     {
         robot.CmdToggleReprogramWhenHome();
     }
@@ -578,7 +579,7 @@ public class RobotPanel : MonoBehaviour
     /// <summary>
     /// Has to have a middlemethod run the robot method, cant run the robot.Cmd.. method directly 
     /// </summary>
-    public void ToggleSalvaging()
+    private void ToggleSalvaging()
     {
         robot.CmdToggleSalvageWhenHome();
     }
