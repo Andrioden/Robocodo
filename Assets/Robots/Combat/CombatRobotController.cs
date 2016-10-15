@@ -26,6 +26,7 @@ public class CombatRobotController : RobotController
     public override int Settings_IPT() { return 1; }
     public override int Settings_MaxEnergy() { return 50; }
     public override int Settings_InventoryCapacity() { return 0; }
+    public override int Settings_ModuleCapacity() { return 1; }
     public override int Settings_HarvestYield() { return 0; }
     public override int Settings_Damage() { return 1; }
     public override int Settings_StartHealth() { return 5; }

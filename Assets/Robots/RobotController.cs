@@ -68,6 +68,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     public static event InventoryChanged OnInventoryChanged;
 
     private List<Module> modules = new List<Module>();
+    public List<Module> Modules { get { return modules; } }
+    public delegate void ModulesChanged(RobotController robot);
+    public static event ModulesChanged OnModulesChanged;
 
     [SyncVar]
     private bool willSalvageWhenHome = false;
@@ -97,6 +100,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     public abstract int Settings_IPT(); // Instructions Per Tick. Cant call it speed because it can be confused with move speed.
     public abstract int Settings_MaxEnergy();
     public abstract int Settings_InventoryCapacity();
+    public abstract int Settings_ModuleCapacity();
     public abstract int Settings_HarvestYield();
     public abstract int Settings_Damage();
     public abstract int Settings_StartHealth();
@@ -167,7 +171,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         if (Application.isPlaying)
         {
             StopRobot();
-            modules.ForEach(module => module.Uninstall());
+            if (isServer)
+                modules.ForEach(module => module.Uninstall());
         }
     }
 
@@ -192,13 +197,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
         if (instructions.Count == 0)
             SetInstructions(GetSuggestedInstructionSet());
-    }
-
-    [Client]
-    public void AddModule(Module module)
-    {
-        modules.Add(module);
-        module.Install(this);
     }
 
     [Client]
@@ -799,12 +797,48 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     }
 
     [ClientRpc]
-    private void RpcSyncInventory(string[] itemCounts)
+    private void RpcSyncInventory(string[] serializedItemCounts)
     {
-        inventory = InventoryItem.DeserializeList(itemCounts);
+        inventory = InventoryItem.DeserializeList(serializedItemCounts);
 
         if (OnInventoryChanged != null)
             OnInventoryChanged(this);
+    }
+
+    [Client]
+    public void AddModule(Module module)
+    {
+        CmdAddModule(module.Serialize());
+    }
+
+    [Command]
+    private void CmdAddModule(string serializedModule)
+    {
+        if (NoFreeModuleSlot())
+        {
+            SetFeedbackIfNotPreview("No free module slot", true);
+            return;
+        }
+
+        Module module = Module.Deserialize(serializedModule);
+        modules.Add(module);
+        module.Install(this);
+
+        RpcSyncModules(Module.SerializeList(modules));
+    }
+
+    private bool NoFreeModuleSlot()
+    {
+        return modules.Count >= Settings_ModuleCapacity();
+    }
+
+    [ClientRpc]
+    private void RpcSyncModules(string[] serializedModules)
+    {
+        modules = Module.DeserializeList(serializedModules); // Not installed on client.
+
+        if (OnModulesChanged != null)
+            OnModulesChanged(this);
     }
 
     private void SetColor()
@@ -1002,6 +1036,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             SetFeedbackIfNotPreview("", true);
 
             modules.ForEach(module => module.Uninstall(false));
+            modules.Clear();
             CacheAllowedInstructions();
 
             playerCityController.ShowPopupForOwner("MEMORY CLEARED!", transform.position, Utils.HexToColor("12FFFFFF"));

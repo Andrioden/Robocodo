@@ -18,6 +18,7 @@ public class TransporterRobotController : RobotController
     public override int Settings_IPT() { return 2; }
     public override int Settings_MaxEnergy() { return 200; }
     public override int Settings_InventoryCapacity() { return 10; }
+    public override int Settings_ModuleCapacity() { return 1; }
     public override int Settings_HarvestYield() { return 0; }
     public override int Settings_Damage() { return 0; }
     public override int Settings_StartHealth() { return 1; }

@@ -9,9 +9,6 @@ public abstract class InventoryItem
     // To force the implementator of this class to create the serialize pattern, later serializing might also include more info
     public abstract string Serialize();
 
-    /// <summary>
-    /// Serialize helper method for entities that want to sync inventory accross the network
-    /// </summary>
     public static string[] SerializeList(List<InventoryItem> inventory)
     {
         List<string> itemCounts = new List<string>();
@@ -22,14 +19,11 @@ public abstract class InventoryItem
         return itemCounts.ToArray();
     }
 
-    /// <summary>
-    /// Deserialize helper method for entities that want to sync inventory accross the network
-    /// </summary>
-    public static List<InventoryItem> DeserializeList(string[] itemCounts)
+    public static List<InventoryItem> DeserializeList(string[] serializedItemCounts)
     {
         List<InventoryItem> inventory = new List<InventoryItem>();
 
-        foreach (string itemCount in itemCounts)
+        foreach (string itemCount in serializedItemCounts)
         {
             string[] itemCountSplit = itemCount.Split(',');
             for (int i = 0; i < Convert.ToInt32(itemCountSplit[1]); i++)

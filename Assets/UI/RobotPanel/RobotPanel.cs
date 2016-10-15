@@ -51,6 +51,10 @@ public class RobotPanel : MonoBehaviour
     public GameObject ironPrefab;
     public GameObject copperPrefab;
 
+    public Text modulesLabel;
+    public GameObject modulesPanel;
+    public Text modulesListTextField;
+
     public GameObject arrowPrefab;
 
     public static RobotPanel instance;
@@ -91,6 +95,7 @@ public class RobotPanel : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         RobotController.OnInventoryChanged += InventoryUpdated;
+        RobotController.OnModulesChanged += ModulesUpdated;
 
         _highlightColor = Utils.HexToColor("#D5A042FF");
         _defaultButtonStateColors = runButton.GetComponent<Image>().color;
@@ -386,6 +391,14 @@ public class RobotPanel : MonoBehaviour
         AutoIndentInstructions(_indentation, _indentedInstructionsCache);
     }
 
+    private void ModulesUpdated(RobotController robot)
+    {
+        if (this.robot != null && robot == this.robot)
+        {
+            modulesListTextField.text = string.Join("\n", robot.Modules.Select(m => m.Serialize()).ToArray());
+        }
+    }
+
     private void EnableSetupModePanel()
     {
         if (robot.isPreviewRobot)
@@ -425,6 +438,7 @@ public class RobotPanel : MonoBehaviour
         titleText.text = robot.Settings_Name();
         LoadInstructionsFromRobot();
         InventoryUpdated(robot);
+        ModulesUpdated(robot);
 
         codeRunningPanel.SetActive(true);
         inventoryPanel.SetActive(true);
@@ -521,7 +535,9 @@ public class RobotPanel : MonoBehaviour
     {
         int instructionsCount = codeInputField.text.Split('\n').Length;
 
-        inventoryLabel.text = "INVENTORY (" + robot.Inventory.Count + "/" + robot.Settings_InventoryCapacity() + ")";
+        inventoryLabel.text = string.Format("INVENTORY ({0}/{1})", robot.Inventory.Count, robot.Settings_InventoryCapacity());
+        modulesLabel.text = string.Format("MODULES ({0}/{1})", robot.Modules.Count, robot.Settings_ModuleCapacity());
+
         memoryText.text = ColorTextOnCondition(instructionsCount > robot.Settings_Memory(), Color.red, string.Format("MEMORY: {0}/{1}", instructionsCount, robot.Settings_Memory()));
         iptText.text = string.Format("IPT: {0}", robot.Settings_IPT());
         inventoryCapacityText.text = string.Format("INVENTORY CAPACITY: {0}", robot.Settings_InventoryCapacity());
