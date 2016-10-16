@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, IHasInventory, IEnergySource
+public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory, IEnergySource
 {
     public MeshRenderer bodyMeshRenderer;
     public GameObject playerCityRubblePrefab;
@@ -214,21 +214,6 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, 
         TextPopupManager.instance.ShowPopupGeneric(text, position, color);
     }
 
-    [Server]
-    public void TakeDamage(int damage)
-    {
-        health -= damage;
-        Debug.LogFormat("Robot {0} took {1} damage and now has {2} health", name, damage, health);
-
-        if (health <= 0)
-        {
-            foreach (GameObject go in ownedGameObjects)
-                Destroy(go);
-            Destroy(gameObject);
-            WorldController.instance.SpawnObject(playerCityRubblePrefab, (int)transform.position.x, (int)transform.position.z);
-        }
-    }
-
     [Command]
     private void CmdRegisterPlayerNick(string nick)
     {
@@ -247,3 +232,18 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IAttackable, 
     }
 
 }
+
+//[Server]
+//public void TakeDamage(int damage)
+//{
+//    health -= damage;
+//    Debug.LogFormat("Robot {0} took {1} damage and now has {2} health", name, damage, health);
+
+//    if (health <= 0)
+//    {
+//        foreach (GameObject go in ownedGameObjects)
+//            Destroy(go);
+//        Destroy(gameObject);
+//        WorldController.instance.SpawnObject(playerCityRubblePrefab, (int)transform.position.x, (int)transform.position.z);
+//    }
+//}
