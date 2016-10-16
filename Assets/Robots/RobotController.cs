@@ -24,9 +24,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [SyncVar]
     protected float z;
 
-    private float homeX;
-    private float homeZ;
-
     private bool isAlreadyHome = false;
 
     [SyncVar]
@@ -137,7 +134,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             Debug.LogError("Mesh game object reference missing. Will not be able to hide physical robot when in garage etc.");
 
         InitDefaultValues();
-        FindPlayerCityController();
     }
 
     // Update is called once per frame
@@ -186,11 +182,10 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         CacheAllowedInstructions();
 
+        FindPlayerCityController();
+
         x = transform.position.x;
         z = transform.position.z;
-
-        homeX = transform.position.x;
-        homeZ = transform.position.z;
 
         energy = Settings_MaxEnergy();
         health = Settings_StartHealth();
@@ -429,7 +424,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     private bool SalvageOrReprogramCheck()
     {
-        if (IsHome())
+        if (IsAtPlayerCity())
         {
             if (willSalvageWhenHome)
             {
@@ -474,17 +469,20 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         }
         else if (instruction == Instructions.MoveHome)
         {
+            if (playerCityController == null)
+                throw new Exception("Robot has no playerCityController.");
+
             SanityCheckIfPositionNumbersAreWhole();
 
-            float difX = Math.Abs(x - homeX);
-            float difZ = Math.Abs(z - homeZ);
+            float difX = Math.Abs(x - playerCityController.X);
+            float difZ = Math.Abs(z - playerCityController.Z);
 
-            if (difX >= difZ && !IsHome())
-                x += GetIncremementOrDecrementToGetCloser(x, homeX);
+            if (difX >= difZ && !IsAtPlayerCity())
+                x += GetIncremementOrDecrementToGetCloser(x, playerCityController.X);
             else if (difX < difZ)
-                z += GetIncremementOrDecrementToGetCloser(z, homeZ);
+                z += GetIncremementOrDecrementToGetCloser(z, playerCityController.Z);
 
-            if (!IsHome())
+            if (!IsAtPlayerCity())
                 return false;
         }
         else if (Instructions.IsValidLoopStart(instruction))
@@ -594,8 +592,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         SanityCheckIsWholeNumber("position X", x);
         SanityCheckIsWholeNumber("position Z", z);
-        SanityCheckIsWholeNumber("home X", homeX);
-        SanityCheckIsWholeNumber("home Z", homeZ);
+        SanityCheckIsWholeNumber("home X", playerCityController.X);
+        SanityCheckIsWholeNumber("home Z", playerCityController.Z);
     }
 
     private void SanityCheckIsWholeNumber(string friendlyName, float number)
@@ -614,14 +612,14 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             throw new Exception("Should not call this method withot a value difference");
     }
 
-    private bool IsHome()
+    private bool IsAtPlayerCity()
     {
-        return x == homeX && z == homeZ;
+        return x == playerCityController.X && z == playerCityController.Z;
     }
 
     private bool IsHomeByTransform()
     {
-        return transform.position.x == homeX && transform.position.z == homeZ;
+        return transform.position.x == playerCityController.X && transform.position.z == playerCityController.Z;
     }
 
     private void InstructionCompleted()
@@ -1052,8 +1050,10 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     public void PreviewResetRobot()
     {
-        x = homeX;
-        z = homeZ;
+        FindPlayerCityController();
+
+        x = playerCityController.X;
+        z = playerCityController.Z;
         transform.position = new Vector3(x, 1, z);
         energy = Settings_MaxEnergy();
         currentInstructionIndex = 0;
