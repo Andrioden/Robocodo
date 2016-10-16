@@ -6,6 +6,9 @@ using System;
 public abstract class Module
 {
     public abstract string Serialize();
+    public abstract string Settings_Name();
+    public abstract string Settings_Description();
+
     protected RobotController robot;
 
     protected abstract void Tick(object sender);

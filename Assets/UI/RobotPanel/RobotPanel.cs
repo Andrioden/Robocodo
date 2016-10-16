@@ -22,7 +22,7 @@ public class RobotPanel : MonoBehaviour
     public Text energyText;
 
     public Button runButton;
-    public Button solarPlexusButton;
+    public Button moduleMenuButton;
     public Button closeButton;
 
     public Button reprogramButton;
@@ -51,9 +51,11 @@ public class RobotPanel : MonoBehaviour
     public GameObject ironPrefab;
     public GameObject copperPrefab;
 
-    public Text modulesLabel;
-    public GameObject modulesPanel;
-    public Text modulesListTextField;
+    public Text installedModulesLabel;
+    public GameObject installedModulesPanel;
+    public Text installedModulesListTextField;
+
+    public ModuleMenuController moduleMenuController;
 
     public GameObject arrowPrefab;
 
@@ -94,6 +96,7 @@ public class RobotPanel : MonoBehaviour
     private void Start()
     {
         animator = GetComponent<Animator>();
+
         RobotController.OnInventoryChanged += InventoryUpdated;
         RobotController.OnModulesChanged += ModulesUpdated;
 
@@ -163,6 +166,7 @@ public class RobotPanel : MonoBehaviour
         KeyboardManager.KeyboardLockOff();
         UnloadCurrentRobot();
         CleanUpPreviewer();
+        moduleMenuController.gameObject.SetActive(false);
         animator.Play("RobotMenuSlideOut");
     }
 
@@ -395,7 +399,7 @@ public class RobotPanel : MonoBehaviour
     {
         if (this.robot != null && robot == this.robot)
         {
-            modulesListTextField.text = string.Join("\n", robot.Modules.Select(m => m.Serialize()).ToArray());
+            installedModulesListTextField.text = string.Join("\n", robot.Modules.Select(m => m.Serialize()).ToArray());
         }
     }
 
@@ -406,6 +410,7 @@ public class RobotPanel : MonoBehaviour
 
         titleText.text = robot.Settings_Name() + " SETUP";
         SetupPossibleInstructions();
+        ModulesUpdated(robot);
 
         codeInputPanel.SetActive(true);
         //TODO: Is the listeners added several times?
@@ -418,8 +423,8 @@ public class RobotPanel : MonoBehaviour
         runButton.onClick.RemoveAllListeners();
         runButton.onClick.AddListener(RunCode);
 
-        solarPlexusButton.onClick.RemoveAllListeners();
-        solarPlexusButton.onClick.AddListener(InstallSolarPlexus);
+        moduleMenuButton.onClick.RemoveAllListeners();
+        moduleMenuButton.onClick.AddListener(ToggleShowModuleMenu);
 
         inventoryPanel.SetActive(false);
         codeRunningPanel.SetActive(false);
@@ -428,9 +433,15 @@ public class RobotPanel : MonoBehaviour
         DrawPreviewArrows();
     }
 
-    private void InstallSolarPlexus()
+    private void ToggleShowModuleMenu()
     {
-        robot.AddModule(new SolarPanelModule());
+        if (moduleMenuController.gameObject.activeSelf)
+            moduleMenuController.gameObject.SetActive(false);
+        else
+        {
+            moduleMenuController.Setup(robot);
+            moduleMenuController.gameObject.SetActive(true);
+        }
     }
 
     private void EnableRunningModePanel()
@@ -536,7 +547,7 @@ public class RobotPanel : MonoBehaviour
         int instructionsCount = codeInputField.text.Split('\n').Length;
 
         inventoryLabel.text = string.Format("INVENTORY ({0}/{1})", robot.Inventory.Count, robot.Settings_InventoryCapacity());
-        modulesLabel.text = string.Format("MODULES ({0}/{1})", robot.Modules.Count, robot.Settings_ModuleCapacity());
+        installedModulesLabel.text = string.Format("MODULES ({0}/{1})", robot.Modules.Count, robot.Settings_ModuleCapacity());
 
         memoryText.text = ColorTextOnCondition(instructionsCount > robot.Settings_Memory(), Color.red, string.Format("MEMORY: {0}/{1}", instructionsCount, robot.Settings_Memory()));
         iptText.text = string.Format("IPT: {0}", robot.Settings_IPT());
