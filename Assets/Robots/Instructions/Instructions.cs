@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
+
 public static class Instructions
 {
     public const string Idle = "IDLE";
@@ -34,7 +35,6 @@ public static class Instructions
     public const string IdleUntil = "IDLE UNTIL [WHAT] THEN [INSTRUCTION]";
     public static string IdleUntilDefined(string what, string thenInstruction) { return IdleUntil.Replace("[WHAT]", what).Replace("[INSTRUCTION]", thenInstruction); }
 
-
     public static List<string> ValidConditionaledInstructions = new List<string>()
     {
         Idle,
@@ -52,53 +52,42 @@ public static class Instructions
         AttackRight
     };
 
-    public static bool IsValidInstruction(List<string> allowedInstructions, string instruction)
-    {
-        foreach (string allowedInstruction in allowedInstructions)
-        {
-            if (allowedInstruction == LoopStart)
-            {
-                if (IsValidLoopStart(instruction))
-                    return true;
-            }
-            else if (allowedInstruction == DetectThen)
-            {
-                if (IsValidDetectThen(instruction))
-                    return true;
-            }
-            else if (allowedInstruction == IdleUntil)
-            {
-                if (IsValidIdleUntil(instruction))
-                    return true;
-            }
-            else if (allowedInstruction == instruction)
-                return true;
-        }
+    //public static bool IsValidInstruction(List<string> allowedInstructions, string instruction)
+    //{
+    //    foreach (string allowedInstruction in allowedInstructions)
+    //    {
+    //        if (allowedInstruction == LoopStart)
+    //        {
+    //            if (IsValidLoopStart(instruction))
+    //                return true;
+    //        }
+    //        else if (allowedInstruction == DetectThen)
+    //        {
+    //            if (IsValidDetectThen(instruction))
+    //                return true;
+    //        }
+    //        else if (allowedInstruction == IdleUntil)
+    //        {
+    //            if (IsValidIdleUntil(instruction))
+    //                return true;
+    //        }
+    //        else if (allowedInstruction == instruction)
+    //            return true;
+    //    }
 
-        return false;
-    }
+    //    return false;
+    //}
 
-    public static bool IsValidLoopStart(string instruction)
-    {
-        if (instruction == "LOOP START")
-            return true;
-        if (Regex.Match(instruction, @"^LOOP START \d+$").Success) // Understand regex better: https://regex101.com/r/lY9pP4/2
-            return true;
-        if (Regex.Match(instruction, @"^LOOP START \d+\/\d+$").Success) // Understand regex better: https://regex101.com/r/bR3kG5/2
-            return true;
-        return false;
-    }
-
-    public static bool IsValidDetectThen(string instruction)
-    {
-        if (Regex.Match(instruction, @"^DETECT \b(ENEMY|COPPER|IRON|FULL)\b THEN .+$").Success) // Understand regex better: https://regex101.com/r/aK2aM2/1
-        {
-            string detectInstruction = GetStringAfterSpace(instruction, 3);
-            if (ValidConditionaledInstructions.Contains(detectInstruction))
-                return true;
-        }
-        return false;
-    }
+    //public static bool IsValidDetectThen(string instruction)
+    //{
+    //    if (Regex.Match(instruction, @"^DETECT \b(ENEMY|COPPER|IRON|FULL)\b THEN .+$").Success) // Understand regex better: https://regex101.com/r/aK2aM2/1
+    //    {
+    //        string detectInstruction = GetStringAfterSpace(instruction, 3);
+    //        if (ValidConditionaledInstructions.Contains(detectInstruction))
+    //            return true;
+    //    }
+    //    return false;
+    //}
 
     public static bool IsValidIdleUntil(string instruction)
     {
@@ -111,35 +100,35 @@ public static class Instructions
         return false;
     }
 
-    public static string LoopStartNumberedSet(int current, int total)
-    {
-        return LoopStartNumbered.Replace("[NUMBER]", string.Format("{0}/{1}", current, total));
-    }
+    //public static string LoopStartNumberedSet(int current, int total)
+    //{
+    //    return LoopStartNumbered.Replace("[NUMBER]", string.Format("{0}/{1}", current, total));
+    //}
 
-    public static bool IsLoopStartCompleted(string instruction)
-    {
-        if (instruction == LoopStart)
-            return false;
+    //public static bool IsLoopStartCompleted(string instruction)
+    //{
+    //    if (instruction == LoopStart)
+    //        return false;
 
-        string loopNumber = instruction.Replace(LoopStart, "").Trim();
-        string[] loopNumberSplit = loopNumber.Split('/');
+    //    string loopNumber = instruction.Replace(LoopStart, "").Trim();
+    //    string[] loopNumberSplit = loopNumber.Split('/');
 
-        return loopNumberSplit[0] == loopNumberSplit[1];
-    }
+    //    return loopNumberSplit[0] == loopNumberSplit[1];
+    //}
 
-    public static string LoopStartReset(string instruction)
-    {
-        if (instruction == LoopStart)
-            return instruction;
+    //public static string LoopStartReset(string instruction)
+    //{
+    //    if (instruction == LoopStart)
+    //        return instruction;
 
-        string loopNumber = instruction.Replace(LoopStart, "").Trim();
-        string[] loopNumberSplit = loopNumber.Split('/');
+    //    string loopNumber = instruction.Replace(LoopStart, "").Trim();
+    //    string[] loopNumberSplit = loopNumber.Split('/');
 
-        if (loopNumberSplit.Length == 1)
-            return instruction;
+    //    if (loopNumberSplit.Length == 1)
+    //        return instruction;
 
-        return LoopStartNumberedSet(0, Convert.ToInt32(loopNumberSplit[1]));
-    }
+    //    return LoopStartNumberedSet(0, Convert.ToInt32(loopNumberSplit[1]));
+    //}
 
     public static string GetStringAfterSpace(string str, int spaceNumber)
     {

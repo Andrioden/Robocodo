@@ -20,9 +20,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private bool isColorSet = false;
 
     [SyncVar]
-    protected float x;
+    public float x;
     [SyncVar]
-    protected float z;
+    public float z;
 
     private bool isAlreadyHome = false;
 
@@ -41,6 +41,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     protected SyncListString instructions = new SyncListString();
     [SyncVar]
     private int nextInstructionIndex = 0;
+    public int NextInstructionIndex { get { return nextInstructionIndex; } }
 
     [SyncVar]
     protected int currentInstructionIndex = 0;
@@ -105,6 +106,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     private List<string> commonInstructions = new List<string>()
     {
+        Instructions.Idle,
         Instructions.MoveUp,
         Instructions.MoveDown,
         Instructions.MoveLeft,
@@ -415,7 +417,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             SetFeedbackIfNotPreview("NOT ENOUGH ENERGY");
         else
         {
-            if (ApplyInstruction(instruction))
+            if (ExecuteInstruction(instruction))
                 InstructionCompleted();
             if (owner != "") //TODO REMOVE AND INSTEAD REPLACE WITH A MODULE ON THE ROBOTS
                 energy--;
@@ -441,114 +443,25 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         return false;
     }
 
-    private bool ApplyInstruction(string instruction)
+    private bool ExecuteInstruction(string instruction)
     {
         lastAppliedInstruction = instruction;
 
-        if (!Instructions.IsValidInstruction(_allowedInstructions, instruction))
-            SetFeedbackIfNotPreview(string.Format("INSTRUCTION NOT ALLOWED: '{0}'", instruction));
-        else if (instruction == Instructions.Idle)
-            return true;
-        else if (instruction == Instructions.MoveUp)
-            ChangePosition(x, z + 1);
-        else if (instruction == Instructions.MoveDown)
-            ChangePosition(x, z - 1);
-        else if (instruction == Instructions.MoveRight)
-            ChangePosition(x + 1, z);
-        else if (instruction == Instructions.MoveLeft)
-            ChangePosition(x - 1, z);
-        else if (instruction == Instructions.MoveRandom && !isPreviewRobot)
-        {
-            ApplyInstruction(Utils.Random(new List<string>
-            {
-                Instructions.MoveUp,
-                Instructions.MoveDown,
-                Instructions.MoveRight,
-                Instructions.MoveLeft
-            }));
-        }
-        else if (instruction == Instructions.MoveHome)
-        {
-            if (playerCityController == null)
-                throw new Exception("Robot has no playerCityController.");
+        //if (!Instructions.IsValidInstruction(_allowedInstructions, instruction))
+        //{
+        //    SetFeedbackIfNotPreview(string.Format("INSTRUCTION NOT ALLOWED: '{0}'", instruction));
+        //    return true;
+        //}
 
-            SanityCheckIfPositionNumbersAreWhole();
-
-            float difX = Math.Abs(x - playerCityController.X);
-            float difZ = Math.Abs(z - playerCityController.Z);
-
-            if (difX >= difZ && !IsAtPlayerCity())
-                x += GetIncremementOrDecrementToGetCloser(x, playerCityController.X);
-            else if (difX < difZ)
-                z += GetIncremementOrDecrementToGetCloser(z, playerCityController.Z);
-
-            if (!IsAtPlayerCity())
-                return false;
-        }
-        else if (Instructions.IsValidLoopStart(instruction))
-        {
-            IterateLoopStartCounterIfNeeded(instruction);
-            ResetAllInnerLoopStarts(nextInstructionIndex + 1);
-        }
-        else if (instruction == Instructions.LoopEnd)
-            SetInstructionToMatchingLoopStart();
-        else if (instruction == Instructions.Harvest && !isPreviewRobot)
-            Harvest();
-        else if (instruction == Instructions.DropInventory && !isPreviewRobot)
-            DropInventory();
-        else if (instruction == Instructions.AttackMelee && !isPreviewRobot)
-            AttackPosition(x, z);
-        else if (instruction == Instructions.AttackUp && !isPreviewRobot)
-            AttackPosition(x, z + 1);
-        else if (instruction == Instructions.AttackDown && !isPreviewRobot)
-            AttackPosition(x, z - 1);
-        else if (instruction == Instructions.AttackRight && !isPreviewRobot)
-            AttackPosition(x + 1, z);
-        else if (instruction == Instructions.AttackLeft && !isPreviewRobot)
-            AttackPosition(x - 1, z);
-        else if (instruction == Instructions.AttackRandom && !isPreviewRobot)
-        {
-            ApplyInstruction(Utils.Random(new List<string>
-            {
-                Instructions.AttackMelee,
-                Instructions.AttackUp,
-                Instructions.AttackDown,
-                Instructions.AttackRight,
-                Instructions.AttackLeft
-            }));
-        }
-        else if (Instructions.IsValidDetectThen(instruction) && !isPreviewRobot)
-        {
-            string detectionSource = instruction.Split(' ')[1];
-            if (detectionSource == "ENEMY" && FindNearbyEnemy((int)x, (int)z, 3.0) == null)
-                return true;
-            else if (detectionSource == "FULL" && !IsInventoryFull())
-                return true;
-            else if (detectionSource == "IRON" || detectionSource == "COPPER")
-            {
-                SetFeedbackIfNotPreview("Cant detect IRON or COPPER yet. Not implemented");
-                return true;
-            }
-
-            string detectInstruction = Instructions.GetStringAfterSpace(instruction, 3);
-            return ApplyInstruction(detectInstruction);
-        }
-        else if (Instructions.IsValidIdleUntil(instruction))
-        {
-            string detectionSource = instruction.Split(' ')[2];
-            if (detectionSource == "FULL" && !IsInventoryFull())
-                return false;
-
-            string detectInstruction = Instructions.GetStringAfterSpace(instruction, 4);
-            return ApplyInstruction(detectInstruction);
-        }
+        if (instruction == Instruction_Idle.SerializedType)
+            return (new Instruction_Idle()).Execute(this);
         else
             SetFeedbackIfNotPreview(string.Format("UNKNOWN INSTRUCTION: '{0}'", instruction));
 
         return true;
     }
 
-    private void SetFeedbackIfNotPreview(string message, bool setIsCurrentInstructionIndexValid = false)
+    public void SetFeedbackIfNotPreview(string message, bool setIsCurrentInstructionIndexValid = false)
     {
         if (!isPreviewRobot)
             _SetFeedback(message, setIsCurrentInstructionIndexValid);
@@ -577,42 +490,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         StartCoroutine(feedbackClearCoroutine);
     }
 
-    private void ChangePosition(float newPosX, float newPosZ)
-    {
-        if (newPosX >= WorldController.instance.Width || newPosX < 0 || newPosZ >= WorldController.instance.Height || newPosZ < 0)
-            SetFeedbackIfNotPreview("CAN NOT MOVE THERE");
-        else
-        {
-            x = newPosX;
-            z = newPosZ;
-        }
-    }
-
-    private void SanityCheckIfPositionNumbersAreWhole()
-    {
-        SanityCheckIsWholeNumber("position X", x);
-        SanityCheckIsWholeNumber("position Z", z);
-        SanityCheckIsWholeNumber("home X", playerCityController.X);
-        SanityCheckIsWholeNumber("home Z", playerCityController.Z);
-    }
-
-    private void SanityCheckIsWholeNumber(string friendlyName, float number)
-    {
-        if ((number % 1) != 0)
-            throw new Exception("Robot " + friendlyName + " is not a whole number");
-    }
-
-    private int GetIncremementOrDecrementToGetCloser(float posValue, float homeValue)
-    {
-        if (posValue > homeValue)
-            return -1;
-        else if (posValue < homeValue)
-            return 1;
-        else
-            throw new Exception("Should not call this method withot a value difference");
-    }
-
-    private bool IsAtPlayerCity()
+    public bool IsAtPlayerCity()
     {
         return x == playerCityController.X && z == playerCityController.Z;
     }
@@ -634,126 +512,35 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         }
     }
 
-    private void IterateLoopStartCounterIfNeeded(string instruction)
+    /// <summary>
+    /// Keeps this at the robot class for now, maybe moved to Instruction_LoopStart class later
+    /// </summary>
+    /// <param name="startingIndex"></param>
+    public void ResetAllInnerLoopStarts(int startingIndex)
     {
-        if (instruction == Instructions.LoopStart)
-            return;
-
-        string loopNumber = instruction.Replace(Instructions.LoopStart, "").Trim();
-        string[] loopNumberSplit = loopNumber.Split('/');
-
-        int currentLoopCount = -1;
-        int totalLoopCount = -1;
-
-        if (loopNumberSplit.Length == 1)
-        {
-            // First time running Loop
-            currentLoopCount = 1;
-            totalLoopCount = Convert.ToInt32(loopNumberSplit[0]);
-        }
-        else if (loopNumberSplit.Length == 2)
-        {
-            // Loop has been run before, example 'LOOP START (1/2)' means that it has been run 1 of 2 times
-            currentLoopCount = Convert.ToInt32(loopNumberSplit[0]) + 1;
-            totalLoopCount = Convert.ToInt32(loopNumberSplit[1]);
-        }
-        else
-            throw new Exception("Illegal amount of forward slashes in instruction: " + instruction);
-
-        instructions[nextInstructionIndex] = Instructions.LoopStartNumberedSet(currentLoopCount, totalLoopCount);
-        instructions.Dirty(nextInstructionIndex);
-    }
-
-    private void ResetAllInnerLoopStarts(int startingIndex)
-    {
-        int loopEndSkippingUntilDone = 0;
-        for (int i = startingIndex; i < instructions.Count; i++)
-        {
-            if (Instructions.IsValidLoopStart(instructions[i]))
-            {
-                loopEndSkippingUntilDone++;
-                instructions[i] = Instructions.LoopStartReset(instructions[i]);
-            }
-            else if (instructions[i] == Instructions.LoopEnd)
-            {
-                if (loopEndSkippingUntilDone == 0)
-                    return;
-                else
-                    loopEndSkippingUntilDone--;
-            }
-        }
-    }
-
-    private void SetInstructionToMatchingLoopStart()
-    {
-        int skippingLoopStarts = 0;
-        for (int i = nextInstructionIndex - 1; i >= 0; i--)
-        {
-            if (instructions[i] == Instructions.LoopEnd)
-                skippingLoopStarts++;
-            else if (Instructions.IsValidLoopStart(instructions[i]))
-            {
-                if (skippingLoopStarts == 0)
-                {
-                    if (Instructions.IsLoopStartCompleted(instructions[i]))
-                        return;
-                    else
-                    {
-                        nextInstructionIndex = i - 1;
-                        return;
-                    }
-                }
-                else
-                    skippingLoopStarts--;
-            }
-        }
-
-        SetFeedbackIfNotPreview("COULD NOT FIND MATCHING LOOP START");
-    }
-
-    private void Harvest()
-    {
-        for (int i = 0; i < Settings_HarvestYield(); i++)
-        {
-            if (Settings_InventoryCapacity() == 0)
-                SetFeedbackIfNotPreview("NO INVENTORY CAPACITY");
-            else if (IsInventoryFull())
-                SetFeedbackIfNotPreview("INVENTORY FULL");
-            else if (WorldController.instance.HarvestFromNode(CopperItem.SerializedType, x, z))
-                TransferToInventory(new CopperItem());
-            else if (WorldController.instance.HarvestFromNode(IronItem.SerializedType, x, z))
-                TransferToInventory(new IronItem());
-            else
-                SetFeedbackIfNotPreview("NOTHING TO HARVEST");
-        }
-
-        if (Settings_HarvestYield() == 0)
-            SetFeedbackIfNotPreview("NO HARVEST YIELD");
-    }
-
-    [Server]
-    private void DropInventory()
-    {
-        //Debug.Log("SERVER: Dropping inventory items count: " + inventory.Count);
-
-        IHasInventory droppableTarget = FindDroppableTarget((int)x, (int)z);
-        if (droppableTarget != null)
-        {
-            //Debug.Log("SERVER: Found something to drop on, dropping inventory on it");
-            List<InventoryItem> itemsNotAdded = droppableTarget.TransferToInventory(inventory);
-            SetInventory(itemsNotAdded);
-            if (itemsNotAdded.Count > 0)
-                SetFeedbackIfNotPreview("NOT ALL ITEMS DROPPED, TARGET FULL");
-        }
-        else
-            Debug.Log("SERVER: No droppable, should drop items on ground. Not fully implemented.");
+        //int loopEndSkippingUntilDone = 0;
+        //for (int i = startingIndex; i < instructions.Count; i++)
+        //{
+        //    if (Instruction_LoopStart.IsValid(instructions[i]))
+        //    {
+        //        loopEndSkippingUntilDone++;
+        //        instructions[i] = Instructions.LoopStartReset(instructions[i]);
+        //    }
+        //    else if (instructions[i] == Instructions.LoopEnd)
+        //    {
+        //        if (loopEndSkippingUntilDone == 0)
+        //            return;
+        //        else
+        //            loopEndSkippingUntilDone--;
+        //    }
+        //}
     }
 
     /// <summary>
     /// Returns true if the item was added successfully
     /// </summary>
     [Server]
-    private bool TransferToInventory(InventoryItem item)
+    public bool TransferToInventory(InventoryItem item)
     {
         List<InventoryItem> notAddedItems = TransferToInventory(new List<InventoryItem> { item });
         return notAddedItems.Count == 0;
@@ -780,7 +567,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     }
 
     [Server]
-    private void SetInventory(List<InventoryItem> items)
+    public void SetInventory(List<InventoryItem> items)
     {
         inventory = items;
         if (OnInventoryChanged != null)
@@ -789,7 +576,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         RpcSyncInventory(InventoryItem.SerializeList(inventory));
     }
 
-    private bool IsInventoryFull()
+    public bool IsInventoryFull()
     {
         return inventory.Count >= Settings_InventoryCapacity();
     }
@@ -867,33 +654,22 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         isColorSet = true;
     }
 
-    [Server]
-    private void AttackPosition(float x, float z)
+    private bool IsOnEnergySource()
     {
-        IAttackable attackable = FindAttackableEnemy((int)x, (int)z);
-        if (attackable != null)
-            attackable.TakeDamage(Settings_Damage());
-        else
-            SetFeedbackIfNotPreview("NO TARGET TO ATTACK");
+        return FindOnCurrentPosition<IEnergySource>() != null;
     }
 
-    private IAttackable FindAttackableEnemy(int x, int z)
+    public void AddEnergy(int change)
     {
-        foreach (GameObject potentialGO in FindNearbyCollidingGameObjects())
-        {
-            IAttackable attackable = potentialGO.transform.root.GetComponent<IAttackable>();
+        if (change < 0)
+            throw new Exception("Tried to add negative energy: " + change);
 
-            if (attackable != null && potentialGO.transform.position.x == x && potentialGO.transform.position.z == z)
-            {
-                if (attackable.GetOwner() != GetOwner())
-                    return attackable;
-            }
-        }
-
-        //Debug.Log("Did not find attackable");
-        return null;
+        energy = Math.Min(Settings_MaxEnergy(), energy + change);
     }
 
+    /// <summary>
+    /// TODO: MOVE TO INSTRUCTION CLASS?
+    /// </summary>
     private IAttackable FindNearbyEnemy(int x, int z, double maxDistance)
     {
         foreach (GameObject potentialGO in FindNearbyCollidingGameObjects<IAttackable>())
@@ -912,33 +688,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         return null;
     }
 
-    private IHasInventory FindDroppableTarget(int x, int z)
-    {
-        foreach (GameObject potentialGO in FindNearbyCollidingGameObjects<IHasInventory>())
-        {
-            IHasInventory droppable = potentialGO.transform.root.GetComponent<IHasInventory>();
-            if (potentialGO.transform.position.x == x && potentialGO.transform.position.z == z)
-                return droppable;
-        }
-
-        Debug.Log("Did not find attackable");
-        return null;
-    }
-
-    private bool IsOnEnergySource()
-    {
-        return FindOnCurrentPosition<IEnergySource>() != null;
-    }
-
-    public void AddEnergy(int change)
-    {
-        if (change < 0)
-            throw new Exception("Tried to add negative energy: " + change);
-
-        energy = Math.Min(Settings_MaxEnergy(), energy + change);
-    }
-
-    private T FindOnCurrentPosition<T>()
+    public T FindOnCurrentPosition<T>()
     {
         return FindNearbyCollidingGameObjects<T>()
             .Where(go => go.transform.position.x == x && go.transform.position.z == z)
@@ -946,12 +696,12 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             .FirstOrDefault();
     }
 
-    private List<GameObject> FindNearbyCollidingGameObjects<T>(float radius = 7.0f)
+    public List<GameObject> FindNearbyCollidingGameObjects<T>(float radius = 7.0f)
     {
         return FindNearbyCollidingGameObjects(radius).Where(go => go.transform.root.GetComponent<T>() != null).ToList();
     }
 
-    private List<GameObject> FindNearbyCollidingGameObjects(float radius = 7.0f)
+    public List<GameObject> FindNearbyCollidingGameObjects(float radius = 7.0f)
     {
         return Physics.OverlapSphere(transform.position, radius)
              .Except(new[] { GetComponent<Collider>() })                // Should check if its not the same collider as current collider, not sure if it works
