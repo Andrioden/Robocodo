@@ -8,6 +8,8 @@ public abstract class Module
     public abstract string Serialize();
     public abstract string Settings_Name();
     public abstract string Settings_Description();
+    public abstract int Settings_CopperCost();
+    public abstract int Settings_IronCost();
 
     protected RobotController robot;
 

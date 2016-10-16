@@ -819,8 +819,15 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         }
 
         Module module = Module.Deserialize(serializedModule);
+        if (playerCityController.GetCopperCount() < module.Settings_CopperCost() || playerCityController.GetIronCount() < module.Settings_IronCost())
+        {
+            SetFeedbackIfNotPreview("Not enough resources for module", true);
+            return;
+        }
+        
         modules.Add(module);
         module.Install(this);
+        playerCityController.RemoveResources(module.Settings_CopperCost(), module.Settings_IronCost());
 
         RpcSyncModules(Module.SerializeList(modules));
     }

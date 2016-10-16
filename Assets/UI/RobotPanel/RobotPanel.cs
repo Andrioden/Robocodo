@@ -399,7 +399,7 @@ public class RobotPanel : MonoBehaviour
     {
         if (this.robot != null && robot == this.robot)
         {
-            installedModulesListTextField.text = string.Join("\n", robot.Modules.Select(m => m.Serialize()).ToArray());
+            installedModulesListTextField.text = string.Join("\n", robot.Modules.Select(m => m.Settings_Name()).ToArray());
         }
     }
 
@@ -425,6 +425,7 @@ public class RobotPanel : MonoBehaviour
 
         moduleMenuButton.onClick.RemoveAllListeners();
         moduleMenuButton.onClick.AddListener(ToggleShowModuleMenu);
+        moduleMenuButton.GetComponentInChildren<Text>().text = "ADD MODULES";
 
         inventoryPanel.SetActive(false);
         codeRunningPanel.SetActive(false);
@@ -436,11 +437,15 @@ public class RobotPanel : MonoBehaviour
     private void ToggleShowModuleMenu()
     {
         if (moduleMenuController.gameObject.activeSelf)
+        {
             moduleMenuController.gameObject.SetActive(false);
+            moduleMenuButton.GetComponentInChildren<Text>().text = "ADD MODULES";
+        }
         else
         {
             moduleMenuController.Setup(robot);
             moduleMenuController.gameObject.SetActive(true);
+            moduleMenuButton.GetComponentInChildren<Text>().text = "CLOSE";
         }
     }
 
