@@ -113,7 +113,19 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
     public void CmdBuyHarvesterRobot()
     {
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
-        if (GetCopperCount() >= HarvesterRobotController.Settings_copperCost && GetIronCount() >= HarvesterRobotController.Settings_ironCost)
+        bool canAfford = true;
+        if (GetCopperCount() < HarvesterRobotController.Settings_copperCost)
+        {
+            TargetFlashMissingResource(connectionToClient, "Copper");
+            canAfford = false;
+        }
+        if (GetIronCount() < HarvesterRobotController.Settings_ironCost)
+        {
+            TargetFlashMissingResource(connectionToClient, "Iron");
+            canAfford = false;
+        }
+
+        if (canAfford)
         {
             WorldController.instance.SpawnHarvesterRobotWithClientAuthority(connectionToClient, X, Z, this);
             RemoveResources(HarvesterRobotController.Settings_copperCost, HarvesterRobotController.Settings_ironCost);
@@ -124,7 +136,19 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
     public void CmdBuyCombatRobot()
     {
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
-        if (GetCopperCount() >= CombatRobotController.Settings_copperCost && GetIronCount() >= CombatRobotController.Settings_ironCost)
+        bool canAfford = true;
+        if (GetCopperCount() < CombatRobotController.Settings_copperCost)
+        {
+            TargetFlashMissingResource(connectionToClient, "Copper");
+            canAfford = false;
+        }
+        if (GetIronCount() < CombatRobotController.Settings_ironCost)
+        {
+            TargetFlashMissingResource(connectionToClient, "Iron");
+            canAfford = false;
+        }
+
+        if (canAfford)
         {
             WorldController.instance.SpawnCombatRobotWithClientAuthority(connectionToClient, X, Z, this);
             RemoveResources(CombatRobotController.Settings_copperCost, CombatRobotController.Settings_ironCost);
@@ -135,7 +159,19 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
     public void CmdBuyTransporterRobot()
     {
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
-        if (GetCopperCount() >= TransporterRobotController.Settings_copperCost && GetIronCount() >= TransporterRobotController.Settings_ironCost)
+        bool canAfford = true;
+        if (GetCopperCount() < TransporterRobotController.Settings_copperCost)
+        {
+            TargetFlashMissingResource(connectionToClient, "Copper");
+            canAfford = false;
+        }
+        if (GetIronCount() < TransporterRobotController.Settings_ironCost)
+        {
+            TargetFlashMissingResource(connectionToClient, "Iron");
+            canAfford = false;
+        }
+
+        if (canAfford)
         {
             WorldController.instance.SpawnTransporterRobotWithClientAuthority(connectionToClient, X, Z, this);
             RemoveResources(TransporterRobotController.Settings_copperCost, TransporterRobotController.Settings_ironCost);
@@ -212,6 +248,12 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
     private void TargetShowPopup(NetworkConnection target, string text, Vector3 position, Color color)
     {
         TextPopupManager.instance.ShowPopupGeneric(text, position, color);
+    }
+
+    [TargetRpc]
+    private void TargetFlashMissingResource(NetworkConnection target, string nameOfResource)
+    {
+        ResourcePanel.instance.FlashMissingResource(nameOfResource);
     }
 
     [Command]
