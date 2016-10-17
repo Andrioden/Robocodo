@@ -6,7 +6,7 @@ using System.Text;
 public class Instruction_Idle : Instruction
 {
 
-    public static readonly string SerializedType = "IDLE";
+    public static readonly string Format = "IDLE";
 
     public override bool Execute(RobotController robot)
     {
@@ -20,7 +20,7 @@ public class Instruction_Idle : Instruction
 
     public override string Serialize()
     {
-        return SerializedType;
+        return Format;
     }
 
 }

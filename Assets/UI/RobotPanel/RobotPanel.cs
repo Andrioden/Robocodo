@@ -186,14 +186,14 @@ public class RobotPanel : MonoBehaviour
     private void LoadRobot(RobotController robot)
     {
         this.robot = robot;
-        this.robot.GetInstructions().Callback += RobotInstructionsWasUpdated;
+        RobotController.OnInstructionsChanged += RobotInstructionsWasUpdated;
     }
 
     private void UnloadCurrentRobot()
     {
         if (robot != null)
         {
-            robot.GetInstructions().Callback -= RobotInstructionsWasUpdated;
+            RobotController.OnInstructionsChanged -= RobotInstructionsWasUpdated;
             if (!robot.IsStarted)
                 robot.SetInstructions(GetCleanedCodeInput());
 
@@ -257,7 +257,7 @@ public class RobotPanel : MonoBehaviour
 
         if (previewer != null)
         {
-            previewer.UpdateInstructions(instructions);
+            previewer.UpdateInstructions(InstructionsHelper.DeserializeList(instructions));
             DrawPreviewArrowsIfNoNewInput();
         }
     }
@@ -267,12 +267,12 @@ public class RobotPanel : MonoBehaviour
         int currentIndentionLevel = 0;
         for (int i = 0; i < instructions.Count; i++)
         {
-            if (instructions[i].Contains(Instructions.LoopEnd) && currentIndentionLevel > 0)
+            if (instructions[i] == Instruction_LoopEnd.Format && currentIndentionLevel > 0)
                 currentIndentionLevel--;
 
             instructions[i] = Utils.RepeatString(indentation, currentIndentionLevel) + instructions[i];
 
-            if (instructions[i].Contains(Instructions.LoopStart))
+            if (Instruction_LoopStart.IsValid(instructions[i]))
                 currentIndentionLevel++;
         }
     }
@@ -302,7 +302,7 @@ public class RobotPanel : MonoBehaviour
         if (codeInputField.text.IndexOf("\n", caretPosition) == -1)
             return;
 
-        if (caretTextLine.Trim() == Instructions.LoopEnd)
+        if (caretTextLine.Trim() == Instruction_LoopEnd.Format)
             codeInputField.caretPosition -= indentation.Count();
     }
 
@@ -384,14 +384,15 @@ public class RobotPanel : MonoBehaviour
         inventoryImage.transform.SetParent(inventoryContainer.transform, false);
     }
 
-    private void RobotInstructionsWasUpdated(SyncList<string>.Operation op, int itemIndex)
+    private void RobotInstructionsWasUpdated(RobotController eventRobot)
     {
-        LoadInstructionsFromRobot();
+        if (eventRobot == robot)
+            LoadInstructionsFromRobot();
     }
 
     private void LoadInstructionsFromRobot()
     {
-        _indentedInstructionsCache = robot.GetInstructions().Select(instruction => instruction.ToString()).ToList();
+        _indentedInstructionsCache = robot.Instructions.Select(i => i.Serialize()).ToList();
         AutoIndentInstructions(_indentation, _indentedInstructionsCache);
     }
 
@@ -417,8 +418,8 @@ public class RobotPanel : MonoBehaviour
         codeInputField.onValueChanged.AddListener(KeyboardManager.KeyboardLockOn);
         codeInputField.onValueChanged.AddListener(CodeInputAutoIndentAndUpperCase);
         codeInputField.onEndEdit.AddListener(KeyboardManager.KeyboardLockOff);
-        List<string> exampleInstructions = robot.GetInstructions().ToList();
-        codeInputField.text = string.Join("\n", exampleInstructions.ToArray());  /* Pre filled example data */
+        List<Instruction> exampleInstructions = robot.Instructions.ToList();
+        codeInputField.text = string.Join("\n", InstructionsHelper.SerializeList(exampleInstructions));  /* Pre filled example data */
 
         runButton.onClick.RemoveAllListeners();
         runButton.onClick.AddListener(RunCode);
@@ -461,7 +462,7 @@ public class RobotPanel : MonoBehaviour
 
         reprogramButton.onClick.RemoveAllListeners();
         reprogramButton.onClick.AddListener(ToggleReprogramming);
-        reprogramButtonText.text = string.Format("REPROGRAM when home ({0}t)", robot.GetInstructions().Count * Settings.Robot_ReprogramClearEachInstructionTicks);
+        reprogramButtonText.text = string.Format("REPROGRAM when home ({0}t)", robot.Instructions.Count * Settings.Robot_ReprogramClearEachInstructionTicks);
 
         salvageButton.onClick.RemoveAllListeners();
         salvageButton.onClick.AddListener(ToggleSalvaging);
@@ -503,10 +504,10 @@ public class RobotPanel : MonoBehaviour
     private void SetupPossibleInstructions()
     {
         possibleInstructionsPanel.SetActive(true);
-        var combinedList = robot.CommonInstructions.ToList();
+        var combinedList = InstructionsHelper.SerializeList(robot.CommonInstructions).ToList();
         combinedList.Add(string.Empty);
         combinedList.Add(string.Empty);
-        combinedList.AddRange(robot.GetSpecializedInstructions());
+        combinedList.AddRange(InstructionsHelper.SerializeList(robot.GetSpecializedInstructions()));
         possibleInstructionsContainer.transform.DestroyChildren();
 
         foreach (string instruction in combinedList)

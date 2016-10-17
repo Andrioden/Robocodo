@@ -38,10 +38,14 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     public bool isPreviewRobot = false;
 
-    protected SyncListString instructions = new SyncListString();
+    protected List<Instruction> instructions = new List<Instruction>();
+    public List<Instruction> Instructions { get { return instructions; } }
+    public delegate void InstructionsChanged(RobotController robot);
+    public static event InstructionsChanged OnInstructionsChanged = delegate { };
+    public void NotifyInstructionsChanged() { OnInstructionsChanged(this); }
+
     [SyncVar]
-    private int nextInstructionIndex = 0;
-    public int NextInstructionIndex { get { return nextInstructionIndex; } }
+    public int nextInstructionIndex = 0;
 
     [SyncVar]
     protected int currentInstructionIndex = 0;
@@ -51,10 +55,11 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private bool currentInstructionIndexIsValid = true;
     public bool CurrentInstructionIndexIsValid { get { return currentInstructionIndexIsValid; } }
 
-    [SyncVar(hook = "OnLastAppliedInstrucion")]
-    protected string lastAppliedInstruction;
+    //TODO: FIX
+    //[SyncVar(hook = "OnLastAppliedInstrucion")]
+    protected Instruction lastAppliedInstruction;
 
-    private List<string> _allowedInstructions = new List<string>();
+    private List<Instruction> _allowedInstructions = new List<Instruction>();
 
     [SyncVar]
     private int mainLoopIterationCount = 0;
@@ -63,12 +68,12 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private List<InventoryItem> inventory = new List<InventoryItem>();
     public List<InventoryItem> Inventory { get { return inventory; } }
     public delegate void InventoryChanged(RobotController robot);
-    public static event InventoryChanged OnInventoryChanged;
+    public static event InventoryChanged OnInventoryChanged = delegate { };
 
     private List<Module> modules = new List<Module>();
     public List<Module> Modules { get { return modules; } }
     public delegate void ModulesChanged(RobotController robot);
-    public static event ModulesChanged OnModulesChanged;
+    public static event ModulesChanged OnModulesChanged = delegate { };
 
     [SyncVar]
     private bool willSalvageWhenHome = false;
@@ -104,30 +109,30 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     public abstract int Settings_StartHealth();
     public abstract Sprite Sprite();
 
-    private List<string> commonInstructions = new List<string>()
+    private List<Instruction> commonInstructions = new List<Instruction>()
     {
-        Instructions.Idle,
-        Instructions.MoveUp,
-        Instructions.MoveDown,
-        Instructions.MoveLeft,
-        Instructions.MoveRight,
-        Instructions.MoveRandom,
-        Instructions.MoveHome,
-        Instructions.LoopStartNumbered,
-        Instructions.LoopStart,
-        Instructions.LoopEnd,
-        Instructions.DetectThen
+        new Instruction_Idle(),
+        new Instruction_Move(MoveDirection.Up),
+        new Instruction_Move(MoveDirection.Down),
+        new Instruction_Move(MoveDirection.Left),
+        new Instruction_Move(MoveDirection.Right),
+        new Instruction_Move(MoveDirection.Random),
+        new Instruction_Move(MoveDirection.Home),
+        new Instruction_LoopStart(),
+        new Instruction_LoopEnd(),
+        new Instruction_DetectThen(DetectSource.Enemy, null),
+        new Instruction_DetectThen(DetectSource.Full, null),
     };
 
-    public List<string> CommonInstructions { get { return commonInstructions; } }
+    public List<Instruction> CommonInstructions { get { return commonInstructions; } }
 
 
     // ********** ABSTRACT METHODS  **********
 
-    protected abstract void Animate();
-    public abstract List<string> GetSpecializedInstructions();
+    public abstract List<Instruction> GetSpecializedInstructions();
+    protected abstract List<Instruction> GetSuggestedInstructionSet();
     public abstract GameObject SpawnPreviewGameObjectClone();
-    protected abstract List<string> GetSuggestedInstructionSet();
+    protected abstract void Animate();
 
     // Use this for initialization
     private void Start()
@@ -144,22 +149,25 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         if (!isColorSet)
             SetColor();
 
-        if (IsHomeByTransform() && !isAlreadyHome)
+        if (playerCityController != null)
         {
-            isAlreadyHome = true;
-            meshGO.SetActive(false);
-            playerCityController.EnterGarage(this);
+            if (IsHomeByTransform() && !isAlreadyHome)
+            {
+                isAlreadyHome = true;
+                meshGO.SetActive(false);
+                playerCityController.EnterGarage(this);
+            }
+            else if (!IsHomeByTransform() && isAlreadyHome)
+            {
+                isAlreadyHome = false;
+                meshGO.SetActive(true);
+                playerCityController.ExitGarage(this);
+            }
+            else if (IsHomeByTransform() && isAlreadyHome && MouseManager.currentlySelected == gameObject && !isStarted)
+                meshGO.SetActive(true);
+            else if (IsHomeByTransform() && isAlreadyHome && MouseManager.currentlySelected != this && !isStarted)
+                meshGO.SetActive(false);
         }
-        else if (!IsHomeByTransform() && isAlreadyHome)
-        {
-            isAlreadyHome = false;
-            meshGO.SetActive(true);
-            playerCityController.ExitGarage(this);
-        }
-        else if (IsHomeByTransform() && isAlreadyHome && MouseManager.currentlySelected == gameObject && !isStarted)
-            meshGO.SetActive(true);
-        else if (IsHomeByTransform() && isAlreadyHome && MouseManager.currentlySelected != this && !isStarted)
-            meshGO.SetActive(false);
 
         Move();
     }
@@ -237,7 +245,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [Client]
     private void MovementBasedFacingDirection(Vector3 newPosition)
     {
-        if (!string.IsNullOrEmpty(lastAppliedInstruction) && lastAppliedInstruction.StartsWith("MOVE"))
+        if (lastAppliedInstruction != null && (lastAppliedInstruction.GetType() == typeof(Instruction_Move)))
             transform.LookAt(newPosition);
     }
 
@@ -246,34 +254,36 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         Vector3? facePosition = null;
 
-        if (instructions.Count > 0)
+        if (instructions.Count > 0 && lastAppliedInstruction.GetType() == typeof(Instruction_Attack))
         {
-            if (lastAppliedInstruction == Instructions.AttackUp)
+            Instruction_Attack attackInstruction = (Instruction_Attack)lastAppliedInstruction;
+
+            if (attackInstruction.direction == AttackDirection.Up)
                 facePosition = new Vector3(x, transform.position.y, z + 2);
-            else if (lastAppliedInstruction == Instructions.AttackDown)
+            else if (attackInstruction.direction == AttackDirection.Down)
                 facePosition = new Vector3(x, transform.position.y, z - 2);
-            else if (lastAppliedInstruction == Instructions.AttackRight)
-                facePosition = new Vector3(x + 2, transform.position.y, z);
-            else if (lastAppliedInstruction == Instructions.AttackLeft)
+            else if (attackInstruction.direction == AttackDirection.Left)
                 facePosition = new Vector3(x - 2, transform.position.y, z);
+            else if (attackInstruction.direction == AttackDirection.Right)
+                facePosition = new Vector3(x + 2, transform.position.y, z);
         }
 
         if (facePosition.HasValue)
             transform.LookAt(facePosition.Value);
     }
 
-    [Client]
-    private void OnLastAppliedInstrucion(string newLastAppliedInstruction)
-    {
-        lastAppliedInstruction = newLastAppliedInstruction;
+    //[Client]
+    //private void OnLastAppliedInstrucion(string newLastAppliedInstruction)
+    //{
+    //    lastAppliedInstruction = newLastAppliedInstruction;
 
-        /* We never want to change facing or animate preview robot */
-        if (isPreviewRobot)
-            return;
+    //    /* We never want to change facing or animate preview robot */
+    //    if (isPreviewRobot)
+    //        return;
 
-        NonMovementBasedFacingDirection();
-        Animate();
-    }
+    //    NonMovementBasedFacingDirection();
+    //    Animate();
+    //}
 
     private void OnIsStartedChanged(bool newValue)
     {
@@ -298,8 +308,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
                 return;
             }
 
-            string instructionsCSV = string.Join(",", newInstructions.ToArray());
-            SetInstructions(instructionsCSV);
+            SetInstructions(newInstructions);
 
             if (instructions.Count <= 0)
             {
@@ -307,7 +316,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
                 return;
             }
 
-            CmdSetInstructions(instructionsCSV);
+            CmdSetInstructions(InstructionsHelper.SerializeList(instructions));
             CmdStartRobot();
 
             //For quicker response when changing from setup mode to running mode in GUI. Will be overridden by server when syncvar is synced.
@@ -316,36 +325,21 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     }
 
     [Command]
-    private void CmdSetInstructions(string instructionsCSV)
+    private void CmdSetInstructions(string[] instructionStrings)
     {
-        SetInstructions(instructionsCSV);
+        instructions = InstructionsHelper.DeserializeList(instructionStrings.ToList());
     }
 
-    private IEnumerator ClearFeedbackAfterSeconds(float s)
+    [Client]
+    public void SetInstructions(List<Instruction> newInstructions)
     {
-        yield return new WaitForSeconds(s);
-        feedback = string.Empty;
+        instructions = newInstructions;
     }
-
+    
+    [Client]
     public void SetInstructions(List<string> instructionsList)
     {
-        instructions.Clear();
-
-        foreach (string instruction in instructionsList)
-            instructions.Add(instruction);
-    }
-
-    private void SetInstructions(string instructionsCSV)
-    {
-        instructions.Clear();
-
-        foreach (string instruction in instructionsCSV.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-            instructions.Add(instruction);
-    }
-
-    public SyncListString GetInstructions()
-    {
-        return instructions;
+        instructions = InstructionsHelper.DeserializeList(instructionsList);
     }
 
     public void CacheAllowedInstructions()
@@ -356,7 +350,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             .ToList();
     }
 
-    private List<string> GetAllModuleInstructions()
+    private List<Instruction> GetAllModuleInstructions()
     {
         return modules.Select(m => m.GetInstructions()).SelectMany(x => x).ToList();
     }
@@ -403,7 +397,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
         currentInstructionIndexIsValid = true;
         currentInstructionIndex = nextInstructionIndex;
-        string instruction = instructions[nextInstructionIndex].Trim();
+        Instruction instruction = instructions[nextInstructionIndex];
 
         //Debug.Log("SERVER: Running instruction: " + instruction);
 
@@ -443,22 +437,24 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         return false;
     }
 
-    private bool ExecuteInstruction(string instruction)
+    private bool ExecuteInstruction(Instruction instruction)
     {
         lastAppliedInstruction = instruction;
 
-        //if (!Instructions.IsValidInstruction(_allowedInstructions, instruction))
-        //{
-        //    SetFeedbackIfNotPreview(string.Format("INSTRUCTION NOT ALLOWED: '{0}'", instruction));
-        //    return true;
-        //}
-
-        if (instruction == Instruction_Idle.SerializedType)
-            return (new Instruction_Idle()).Execute(this);
+        if (isPreviewRobot && !instruction.CanBePreviewed())
+            return true;
+        else if (instruction.GetType() == typeof(Instruction_Unknown))
+        {
+            SetFeedbackIfNotPreview(string.Format("UNKNOWN INSTRUCTION: '{0}'", instruction.Serialize()));
+            return true;
+        }
+        else if (!_allowedInstructions.Any(a => a.GetType() == instruction.GetType()))
+        {
+            SetFeedbackIfNotPreview(string.Format("INSTRUCTION NOT ALLOWED: '{0}'", instruction.Serialize()));
+            return true;
+        }
         else
-            SetFeedbackIfNotPreview(string.Format("UNKNOWN INSTRUCTION: '{0}'", instruction));
-
-        return true;
+            return instruction.Execute(this);
     }
 
     public void SetFeedbackIfNotPreview(string message, bool setIsCurrentInstructionIndexValid = false)
@@ -490,6 +486,12 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         StartCoroutine(feedbackClearCoroutine);
     }
 
+    private IEnumerator ClearFeedbackAfterSeconds(float s)
+    {
+        yield return new WaitForSeconds(s);
+        feedback = string.Empty;
+    }
+
     public bool IsAtPlayerCity()
     {
         return x == playerCityController.X && z == playerCityController.Z;
@@ -512,28 +514,25 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         }
     }
 
-    /// <summary>
-    /// Keeps this at the robot class for now, maybe moved to Instruction_LoopStart class later
-    /// </summary>
-    /// <param name="startingIndex"></param>
     public void ResetAllInnerLoopStarts(int startingIndex)
     {
-        //int loopEndSkippingUntilDone = 0;
-        //for (int i = startingIndex; i < instructions.Count; i++)
-        //{
-        //    if (Instruction_LoopStart.IsValid(instructions[i]))
-        //    {
-        //        loopEndSkippingUntilDone++;
-        //        instructions[i] = Instructions.LoopStartReset(instructions[i]);
-        //    }
-        //    else if (instructions[i] == Instructions.LoopEnd)
-        //    {
-        //        if (loopEndSkippingUntilDone == 0)
-        //            return;
-        //        else
-        //            loopEndSkippingUntilDone--;
-        //    }
-        //}
+        int loopEndSkippingUntilDone = 0;
+        for (int i = startingIndex; i < instructions.Count; i++)
+        {
+            if (Instructions[i].GetType() == typeof(Instruction_LoopStart))
+            {
+                Instruction_LoopStart loopStartInstruction = (Instruction_LoopStart)Instructions[i];
+                loopEndSkippingUntilDone++;
+                loopStartInstruction.ResetCurrentIterations();
+            }
+            else if (Instructions[i].GetType() == typeof(Instruction_LoopEnd))
+            {
+                if (loopEndSkippingUntilDone == 0)
+                    return;
+                else
+                    loopEndSkippingUntilDone--;
+            }
+        }
     }
 
     /// <summary>
@@ -558,8 +557,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
                 inventory.Add(item);
         }
 
-        if (OnInventoryChanged != null)
-            OnInventoryChanged(this);
+        OnInventoryChanged(this);
 
         RpcSyncInventory(InventoryItem.SerializeList(inventory));
 
@@ -570,8 +568,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     public void SetInventory(List<InventoryItem> items)
     {
         inventory = items;
-        if (OnInventoryChanged != null)
-            OnInventoryChanged(this);
+        OnInventoryChanged(this);
 
         RpcSyncInventory(InventoryItem.SerializeList(inventory));
     }
@@ -585,9 +582,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private void RpcSyncInventory(string[] serializedItemCounts)
     {
         inventory = InventoryItem.DeserializeList(serializedItemCounts);
-
-        if (OnInventoryChanged != null)
-            OnInventoryChanged(this);
+        OnInventoryChanged(this);
     }
 
     [Client]
@@ -667,27 +662,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         energy = Math.Min(Settings_MaxEnergy(), energy + change);
     }
 
-    /// <summary>
-    /// TODO: MOVE TO INSTRUCTION CLASS?
-    /// </summary>
-    private IAttackable FindNearbyEnemy(int x, int z, double maxDistance)
-    {
-        foreach (GameObject potentialGO in FindNearbyCollidingGameObjects<IAttackable>())
-        {
-            IAttackable attackable = potentialGO.transform.root.GetComponent<IAttackable>();
-            int toX = (int)potentialGO.transform.position.x;
-            int toZ = (int)potentialGO.transform.position.z;
-            if (MathUtils.Distance(x, z, toX, toZ) <= maxDistance)
-            {
-                if (attackable.GetOwner() != GetOwner())
-                    return attackable;
-            }
-        }
-
-        Debug.Log("Nothing nearby");
-        return null;
-    }
-
     public T FindOnCurrentPosition<T>()
     {
         return FindNearbyCollidingGameObjects<T>()
@@ -718,7 +692,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
         if (health <= 0)
         {
-            playerCityController.ShowPopupForOwner("DESTROYED!", transform.position, Color.red);
+            if (playerCityController != null)
+                playerCityController.ShowPopupForOwner("DESTROYED!", transform.position, Color.red);
             NetworkServer.Destroy(gameObject);
         }
     }

@@ -1704,7 +1704,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &191932
 GameObject:
   m_ObjectHideFlags: 1
@@ -4104,7 +4104,10 @@ MonoBehaviour:
   colorRenderers:
   - {fileID: 2308666}
   - {fileID: 2364686}
+  x: 0
+  z: 0
   isPreviewRobot: 0
+  nextInstructionIndex: 0
   bodyAnimator: {fileID: 9535814}
   leftWeaponAnimator: {fileID: 9581024}
   rightWeaponAnimator: {fileID: 9508792}

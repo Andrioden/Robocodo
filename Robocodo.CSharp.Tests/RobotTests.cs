@@ -67,10 +67,10 @@ namespace Robocodo.CSharp.Tests
         [TestMethod]
         public void GetStringAfterSpaceTest()
         {
-            Assert.AreEqual("MOVE HOME", Instructions.GetStringAfterSpace("DETECT COPPER THEN MOVE HOME", 3));
-            Assert.AreEqual("Two Three Four", Instructions.GetStringAfterSpace("One Two Three Four", 1));
-            Assert.AreEqual("Three Four", Instructions.GetStringAfterSpace("One Two Three Four", 2));
-            Assert.AreEqual("Four", Instructions.GetStringAfterSpace("One Two Three Four", 3));
+            Assert.AreEqual("MOVE HOME", InstructionsHelper.GetStringAfterSpace("DETECT COPPER THEN MOVE HOME", 3));
+            Assert.AreEqual("Two Three Four", InstructionsHelper.GetStringAfterSpace("One Two Three Four", 1));
+            Assert.AreEqual("Three Four", InstructionsHelper.GetStringAfterSpace("One Two Three Four", 2));
+            Assert.AreEqual("Four", InstructionsHelper.GetStringAfterSpace("One Two Three Four", 3));
         }
     }
 }

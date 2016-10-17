@@ -6,7 +6,7 @@ using System.Text;
 public class Instruction_Harvest : Instruction
 {
 
-    public static readonly string SerializedType = "IDLE";
+    public static readonly string Format = "HARVEST";
 
     private RobotController robot;
 
@@ -24,7 +24,7 @@ public class Instruction_Harvest : Instruction
 
     public override string Serialize()
     {
-        return SerializedType;
+        return Format;
     }
 
     private void Harvest()

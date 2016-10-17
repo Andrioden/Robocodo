@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 public static class Utils
@@ -81,4 +82,27 @@ public static class Utils
 
         return string.Empty;
     }
+
+    public static bool IsStringValueInEnum<T>(string value)
+    {
+        return Enum.GetValues(typeof(T)).Cast<T>().Any(e => e.ToString().ToUpper() == value.ToUpper());
+    }
+
+    public static T ParseEnum<T>(string value)
+    {
+        value = FirstLetterToUpper(value.ToLower());
+        return (T)Enum.Parse(typeof(T), value, true);
+    }
+
+    public static string FirstLetterToUpper(string str)
+    {
+        if (str == null)
+            return null;
+
+        if (str.Length > 1)
+            return char.ToUpper(str[0]) + str.Substring(1);
+
+        return str.ToUpper();
+    }
+
 }

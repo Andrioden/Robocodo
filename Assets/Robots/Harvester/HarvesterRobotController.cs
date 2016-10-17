@@ -33,26 +33,26 @@ public class HarvesterRobotController : RobotController
     public override int Settings_Damage() { return 0; }
     public override int Settings_StartHealth() { return 1; }
 
-    private List<string> spezializedInstructions = new List<string>()
+    private List<Instruction> spezializedInstructions = new List<Instruction>()
     {
-        Instructions.Harvest,
-        Instructions.DropInventory
+        new Instruction_Harvest(),
+        new Instruction_DropInventory(),
     };
-    public override List<string> GetSpecializedInstructions() { return spezializedInstructions; }
+    public override List<Instruction> GetSpecializedInstructions() { return spezializedInstructions; }
 
-    protected override List<string> GetSuggestedInstructionSet()
+    protected override List<Instruction> GetSuggestedInstructionSet()
     {
-        return new List<string>()
+        return new List<Instruction>()
         {
-            Instructions.MoveUp,
-            Instructions.MoveUp,
-            Instructions.MoveUp,
-            Instructions.MoveUp,
-            Instructions.MoveUp,
-            Instructions.Harvest,
-            Instructions.Harvest,
-            Instructions.MoveHome,
-            Instructions.DropInventory
+            new Instruction_Move(MoveDirection.Up),
+            new Instruction_Move(MoveDirection.Up),
+            new Instruction_Move(MoveDirection.Up),
+            new Instruction_Move(MoveDirection.Up),
+            new Instruction_Move(MoveDirection.Up),
+            new Instruction_Harvest(),
+            new Instruction_Harvest(),
+            new Instruction_Move(MoveDirection.Home),
+            new Instruction_DropInventory(),
         };
     }
 
@@ -60,7 +60,7 @@ public class HarvesterRobotController : RobotController
     {
         if (ShouldAnimationBePlayed())
         {
-            if (lastAppliedInstruction == Instructions.Harvest)
+            if (lastAppliedInstruction.GetType() == typeof(Instruction_Harvest))
             {
                 bodyAnimator.Play("Idle");
                 PlayHarvestParticleSystem();

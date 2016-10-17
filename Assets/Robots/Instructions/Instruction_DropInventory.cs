@@ -7,7 +7,7 @@ using UnityEngine;
 public class Instruction_DropInventory : Instruction
 {
 
-    public static readonly string SerializedType = "DROP INVENTORY";
+    public static readonly string Format = "DROP INVENTORY";
 
     private RobotController robot;
 
@@ -25,7 +25,7 @@ public class Instruction_DropInventory : Instruction
 
     public override string Serialize()
     {
-        return SerializedType;
+        return Format;
     }
 
     private void DropInventory()

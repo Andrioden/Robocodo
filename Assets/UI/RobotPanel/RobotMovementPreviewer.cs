@@ -11,7 +11,7 @@ public class RobotMovementPreviewer
     private GameObject robotClone;
     private RobotController robotCloneController;
 
-    public RobotMovementPreviewer(RobotController selectedRobot, List<string> instructions)
+    public RobotMovementPreviewer(RobotController selectedRobot, List<Instruction> instructions)
     {
         robotClone = selectedRobot.SpawnPreviewGameObjectClone();
         robotClone.SetActive(false);
@@ -28,7 +28,7 @@ public class RobotMovementPreviewer
         GameObject.Destroy(robotClone);
     }
 
-    public void UpdateInstructions(List<string> instructions)
+    public void UpdateInstructions(List<Instruction> instructions)
     {
         robotCloneController.SetInstructions(instructions);
         robotCloneController.PreviewResetRobot();
@@ -36,7 +36,7 @@ public class RobotMovementPreviewer
 
     public List<CoordinateDirection> GetPreviewCoordinateDirections()
     {
-        if (robotCloneController.GetInstructions().Count == 0)
+        if (robotCloneController.Instructions.Count == 0)
             return new List<CoordinateDirection>();
 
         List<Coordinate> coords = new List<Coordinate>();

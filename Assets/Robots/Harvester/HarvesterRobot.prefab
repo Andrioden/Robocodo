@@ -477,7 +477,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &198752
 GameObject:
   m_ObjectHideFlags: 1
@@ -1371,7 +1371,10 @@ MonoBehaviour:
   meshGO: {fileID: 197684}
   colorRenderers:
   - {fileID: 2343666}
+  x: 0
+  z: 0
   isPreviewRobot: 0
+  nextInstructionIndex: 0
   bodyAnimator: {fileID: 9599532}
   leftToolParticleSystem: {fileID: 19870032}
   rightToolParticleSystem: {fileID: 19858164}

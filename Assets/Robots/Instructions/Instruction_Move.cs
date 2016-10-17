@@ -6,7 +6,7 @@ using System.Text;
 public class Instruction_Move : Instruction
 {
 
-    public static readonly string SerializedType = "IDLE";
+    public static readonly string Format = "MOVE [DIRECTION]";
 
     private RobotController robot;
     public MoveDirection direction;
@@ -32,7 +32,20 @@ public class Instruction_Move : Instruction
 
     public override string Serialize()
     {
-        return SerializedType + " " + GetDirectionString();
+        return Format.Replace("[DIRECTION]", direction.ToString().ToUpper());
+    }
+
+    public static Instruction Deserialize(string instruction)
+    {
+        string directionString = instruction.Replace("MOVE ", "");
+        MoveDirection direction = Utils.ParseEnum<MoveDirection>(directionString);
+        return new Instruction_Move(direction);
+    }
+
+    public static bool IsValid(string instruction)
+    {
+        string direction = instruction.Replace("MOVE ", "");
+        return Utils.IsStringValueInEnum<MoveDirection>(direction);
     }
 
     private bool MoveInDirection(MoveDirection direction)
@@ -118,23 +131,6 @@ public class Instruction_Move : Instruction
             throw new Exception("Robot " + friendlyName + " is not a whole number");
     }
 
-    private string GetDirectionString()
-    {
-        if (direction == MoveDirection.Up)
-            return "UP";
-        else if (direction == MoveDirection.Down)
-            return "DOWN";
-        else if (direction == MoveDirection.Left)
-            return "LEFT";
-        else if (direction == MoveDirection.Right)
-            return "RIGHT";
-        else if (direction == MoveDirection.Home)
-            return "HOME";
-        else if (direction == MoveDirection.Random)
-            return "RANDOM";
-        else
-            throw new Exception("Unsupported MoveDirection: " + direction);
-    }
 }
 
 public enum MoveDirection

@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 public class Instruction_LoopStart : Instruction
 {
 
-    public static readonly string SerializedType = "LOOP START";
+    public static readonly string Format = "LOOP START";
 
     private RobotController robot;
     private int iterations;
@@ -18,12 +18,18 @@ public class Instruction_LoopStart : Instruction
         this.iterations = iterations;
     }
 
+    public Instruction_LoopStart(int currentIteration, int iterations)
+    {
+        this.currentIteration = currentIteration;
+        this.iterations = iterations;
+    }
+
     public override bool Execute(RobotController robot)
     {
         this.robot = robot;
 
         IterateCounterIfNeeded();
-        robot.ResetAllInnerLoopStarts(robot.NextInstructionIndex + 1);
+        robot.ResetAllInnerLoopStarts(robot.nextInstructionIndex + 1);
 
         return true;
     }
@@ -36,9 +42,25 @@ public class Instruction_LoopStart : Instruction
     public override string Serialize()
     {
         if (iterations == 0)
-            return SerializedType;
+            return Format;
         else
-            return string.Format("{0} {1}/{2}", SerializedType, currentIteration, iterations);
+            return string.Format("{0} {1}/{2}", Format, currentIteration, iterations);
+    }
+
+    public static Instruction Deserialize(string instruction)
+    {
+        if (instruction == Format)
+            return new Instruction_LoopStart();
+
+        string loopNumber = instruction.Replace(Format, "").Trim();
+        string[] loopNumberSplit = loopNumber.Split('/');
+
+        if (loopNumberSplit.Length == 1)
+            return new Instruction_LoopStart(0, Convert.ToInt32(loopNumberSplit[0]));
+        else if (loopNumberSplit.Length == 2)
+            return new Instruction_LoopStart(Convert.ToInt32(loopNumberSplit[0]), Convert.ToInt32(loopNumberSplit[1]));
+        else
+            throw new Exception("Unknown loop start instruction format, should not reach this code as it should be validated ahead: " + instruction);
     }
 
     public static bool IsValid(string instruction)
@@ -52,43 +74,25 @@ public class Instruction_LoopStart : Instruction
         return false;
     }
 
+    public bool IsIterationsCompleted()
+    {
+        return currentIteration == iterations;
+    }
+
+    public void ResetCurrentIterations()
+    {
+        currentIteration = 0;
+        robot.NotifyInstructionsChanged();
+    }
+
     private void IterateCounterIfNeeded()
     {
         if (iterations == 0)
             return;
         else
+        {
             currentIteration++;
-
-        //TODO: What do I have to do here?
-        //instructions[nextInstructionIndex] = Instructions.LoopStartNumberedSet(currentLoopCount, totalLoopCount);
-        //instructions.Dirty(nextInstructionIndex);
-
-
-
-
-
-        //string loopNumber = instruction.Replace(Instructions.LoopStart, "").Trim();
-        //string[] loopNumberSplit = loopNumber.Split('/');
-
-        //int currentLoopCount = -1;
-        //int totalLoopCount = -1;
-
-        //if (loopNumberSplit.Length == 1)
-        //{
-        //    // First time running Loop
-        //    currentLoopCount = 1;
-        //    totalLoopCount = Convert.ToInt32(loopNumberSplit[0]);
-        //}
-        //else if (loopNumberSplit.Length == 2)
-        //{
-        //    // Loop has been run before, example 'LOOP START (1/2)' means that it has been run 1 of 2 times
-        //    currentLoopCount = Convert.ToInt32(loopNumberSplit[0]) + 1;
-        //    totalLoopCount = Convert.ToInt32(loopNumberSplit[1]);
-        //}
-        //else
-        //    throw new Exception("Illegal amount of forward slashes in instruction: " + instruction);
-
-        //instructions[nextInstructionIndex] = Instructions.LoopStartNumberedSet(currentLoopCount, totalLoopCount);
-        //instructions.Dirty(nextInstructionIndex);
+            robot.NotifyInstructionsChanged();
+        }
     }
 }

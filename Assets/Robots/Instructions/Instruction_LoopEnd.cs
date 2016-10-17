@@ -6,12 +6,14 @@ using System.Text;
 public class Instruction_LoopEnd : Instruction
 {
 
-    public static readonly string SerializedType = "LOOP END";
+    public static readonly string Format = "LOOP END";
+
+    private RobotController robot;
 
     public override bool Execute(RobotController robot)
     {
+        this.robot = robot;
         SetInstructionToMatchingLoopStart();
-
         return true;
     }
 
@@ -22,33 +24,34 @@ public class Instruction_LoopEnd : Instruction
 
     public override string Serialize()
     {
-        return SerializedType;
+        return Format;
     }
 
     private void SetInstructionToMatchingLoopStart()
     {
-        //int skippingLoopStarts = 0;
-        //for (int i = nextInstructionIndex - 1; i >= 0; i--)
-        //{
-        //    if (instructions[i] == Instructions.LoopEnd)
-        //        skippingLoopStarts++;
-        //    else if (Instructions.IsValidLoopStart(instructions[i]))
-        //    {
-        //        if (skippingLoopStarts == 0)
-        //        {
-        //            if (Instructions.IsLoopStartCompleted(instructions[i]))
-        //                return;
-        //            else
-        //            {
-        //                nextInstructionIndex = i - 1;
-        //                return;
-        //            }
-        //        }
-        //        else
-        //            skippingLoopStarts--;
-        //    }
-        //}
+        int skippingLoopStarts = 0;
+        for (int i = robot.nextInstructionIndex - 1; i >= 0; i--)
+        {
+            if (robot.Instructions[i].GetType() == typeof(Instruction_LoopEnd))
+                skippingLoopStarts++;
+            else if (robot.Instructions[i].GetType() == typeof(Instruction_LoopStart))
+            {
+                if (skippingLoopStarts == 0)
+                {
+                    Instruction_LoopStart loopStartInstruction = (Instruction_LoopStart)robot.Instructions[i];
+                    if (loopStartInstruction.IsIterationsCompleted())
+                        return;
+                    else
+                    {
+                        robot.nextInstructionIndex = i - 1;
+                        return;
+                    }
+                }
+                else
+                    skippingLoopStarts--;
+            }
+        }
 
-        //SetFeedbackIfNotPreview("COULD NOT FIND MATCHING LOOP START");
+        robot.SetFeedbackIfNotPreview("COULD NOT FIND MATCHING LOOP START");
     }
 }

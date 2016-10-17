@@ -30,8 +30,8 @@ public class SolarPanelModule : Module
 
     }
 
-    public override List<string> GetInstructions()
+    public override List<Instruction> GetInstructions()
     {
-        return new List<string>();
+        return new List<Instruction>();
     }
 }

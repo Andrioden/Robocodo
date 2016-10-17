@@ -23,26 +23,18 @@ public class TransporterRobotController : RobotController
     public override int Settings_Damage() { return 0; }
     public override int Settings_StartHealth() { return 1; }
 
-    private List<string> spezializedInstructions = new List<string>()
+    private List<Instruction> spezializedInstructions = new List<Instruction>()
     {
-        Instructions.DropInventory,
-        Instructions.IdleUntil
+        new Instruction_DropInventory(),
+        new Instruction_IdleUntilThen(UntilWhat.Full, null),
     };
-    public override List<string> GetSpecializedInstructions() { return spezializedInstructions; }
+    public override List<Instruction> GetSpecializedInstructions() { return spezializedInstructions; }
 
-    protected override List<string> GetSuggestedInstructionSet()
+    protected override List<Instruction> GetSuggestedInstructionSet()
     {
-        return new List<string>()
+        return new List<Instruction>()
         {
-            Instructions.MoveUp,
-            Instructions.MoveUp,
-            Instructions.MoveUp,
-            Instructions.MoveUp,
-            Instructions.MoveUp,
-            Instructions.Harvest,
-            Instructions.Harvest,
-            Instructions.MoveHome,
-            Instructions.DropInventory
+            new Instruction_Idle(),
         };
     }
 

@@ -31,30 +31,31 @@ public class CombatRobotController : RobotController
     public override int Settings_Damage() { return 1; }
     public override int Settings_StartHealth() { return 5; }
 
-    private List<string> spezializedInstructions = new List<string>()
+    private List<Instruction> spezializedInstructions = new List<Instruction>()
     {
-        Instructions.AttackMelee,
-        Instructions.AttackUp,
-        Instructions.AttackDown,
-        Instructions.AttackLeft,
-        Instructions.AttackRight,
-        Instructions.AttackRandom
-    };
-    public override List<string> GetSpecializedInstructions() { return spezializedInstructions; }
+        new Instruction_Attack(AttackDirection.Melee),
+        new Instruction_Attack(AttackDirection.Up),
+        new Instruction_Attack(AttackDirection.Down),
+        new Instruction_Attack(AttackDirection.Left),
+        new Instruction_Attack(AttackDirection.Right),
+        new Instruction_Attack(AttackDirection.Random),
 
-    protected override List<string> GetSuggestedInstructionSet()
+    };
+    public override List<Instruction> GetSpecializedInstructions() { return spezializedInstructions; }
+
+    protected override List<Instruction> GetSuggestedInstructionSet()
     {
-        return new List<string>()
+        return new List<Instruction>()
         {
-            Instructions.MoveUp,
-            Instructions.MoveUp,
-            Instructions.MoveRight,
-            Instructions.MoveRight,
-            Instructions.MoveRight,
-            Instructions.MoveRight,
-            Instructions.MoveDown,
-            Instructions.MoveDown,
-            Instructions.MoveHome,
+            new Instruction_Move(MoveDirection.Up),
+            new Instruction_Move(MoveDirection.Up),
+            new Instruction_Move(MoveDirection.Right),
+            new Instruction_Move(MoveDirection.Right),
+            new Instruction_Move(MoveDirection.Right),
+            new Instruction_Move(MoveDirection.Right),
+            new Instruction_Move(MoveDirection.Down),
+            new Instruction_Move(MoveDirection.Down),
+            new Instruction_Move(MoveDirection.Down),
         };
     }
 
@@ -62,19 +63,13 @@ public class CombatRobotController : RobotController
     {
         if (ShouldAnimationBePlayed())
         {
-            if (new List<string>() { Instructions.AttackUp, Instructions.AttackLeft, Instructions.AttackRight, Instructions.AttackDown, Instructions.AttackRandom }.Contains(lastAppliedInstruction))
+            if (lastAppliedInstruction.GetType() == typeof(Instruction_Attack))
             {
                 bodyAnimator.Play("Idle");
                 leftWeaponAnimator.Play("Shoot");
                 rightWeaponAnimator.Play("Shoot");
             }
-            else if (lastAppliedInstruction == Instructions.AttackMelee)
-            {
-                bodyAnimator.Play("Idle");
-                leftWeaponAnimator.Play("Shoot");
-                rightWeaponAnimator.Play("Shoot");
-            }
-            else if (new List<string>() { Instructions.MoveUp, Instructions.MoveDown, Instructions.MoveLeft, Instructions.MoveRight, Instructions.MoveHome, Instructions.MoveRandom }.Contains(lastAppliedInstruction))
+            else if (lastAppliedInstruction.GetType() == typeof(Instruction_Move))
             {
                 bodyAnimator.Play("Walk");
             }

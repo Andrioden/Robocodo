@@ -65,10 +65,10 @@ public static class ScenarioSetup
         {
             GameObject combaRobotGO = wc.SpawnObject(wc.combatRobotPrefab, x, 0);
             CombatRobotController combatRobot = combaRobotGO.GetComponent<CombatRobotController>();
-            combatRobot.SetInstructions(new List<string>
+            combatRobot.SetInstructions(new List<Instruction>
             {
-                Instructions.MoveRandom,
-                Instructions.AttackRandom
+                new Instruction_Move(MoveDirection.Random),
+                new Instruction_Attack(AttackDirection.Random)
             });
             combatRobot.CmdStartRobot();
         }
@@ -82,15 +82,15 @@ public static class ScenarioSetup
 
         GameObject combaRobotGO = wc.SpawnCombatRobotWithClientAuthority(conn, newPlayerCity.X, newPlayerCity.Z, newPlayerCity);
         CombatRobotController combatRobot = combaRobotGO.GetComponent<CombatRobotController>();
-        combatRobot.SetInstructions(new List<string>
+        combatRobot.SetInstructions(new List<Instruction>
         {
-            Instructions.MoveRight,
-            Instructions.AttackRight,
-            Instructions.MoveRight,
-            Instructions.AttackMelee,
-            Instructions.AttackMelee,
-            Instructions.AttackMelee,
-            Instructions.AttackMelee
+            new Instruction_Move(MoveDirection.Right),
+            new Instruction_Attack(AttackDirection.Right),
+            new Instruction_Move(MoveDirection.Right),
+            new Instruction_Attack(AttackDirection.Melee),
+            new Instruction_Attack(AttackDirection.Melee),
+            new Instruction_Attack(AttackDirection.Melee),
+            new Instruction_Attack(AttackDirection.Melee)
         });
     }
 
@@ -102,21 +102,21 @@ public static class ScenarioSetup
 
         GameObject harvesterGO = wc.SpawnHarvesterRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
         HarvesterRobotController harvester = harvesterGO.GetComponent<HarvesterRobotController>();
-        harvester.SetInstructions(new List<string>
+        harvester.SetInstructions(new List<Instruction>
         {
-            Instructions.Harvest,
-            Instructions.MoveLeft,
-            Instructions.DropInventory,
-            Instructions.MoveRight,
+            new Instruction_Harvest(),
+            new Instruction_Move(MoveDirection.Left),
+            new Instruction_DropInventory(),
+            new Instruction_Move(MoveDirection.Right)
         });
 
         GameObject transporterGO = wc.SpawnTransporterRobotWithClientAuthority(conn, newPlayerCity.X + 1, newPlayerCity.Z, newPlayerCity);
         TransporterRobotController transporter = transporterGO.GetComponent<TransporterRobotController>();
-        transporter.SetInstructions(new List<string>
+        transporter.SetInstructions(new List<Instruction>
         {
-            Instructions.IdleUntilDefined("FULL", "MOVE LEFT"),
-            Instructions.DropInventory,
-            Instructions.MoveRight
+            new Instruction_IdleUntilThen(UntilWhat.Full, new Instruction_Move(MoveDirection.Home)),
+            new Instruction_DropInventory(),
+            new Instruction_Move(MoveDirection.Right)
         });
     }
 
