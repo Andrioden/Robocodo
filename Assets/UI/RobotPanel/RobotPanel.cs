@@ -260,6 +260,9 @@ public class RobotPanel : MonoBehaviour
             previewer.UpdateInstructions(InstructionsHelper.DeserializeList(instructions));
             DrawPreviewArrowsIfNoNewInput();
         }
+
+        if (codeInputField.isFocused)
+            KeyboardManager.KeyboardLockOn();
     }
 
     private static void AutoIndentInstructions(string indentation, List<string> instructions)
@@ -413,13 +416,13 @@ public class RobotPanel : MonoBehaviour
         SetupPossibleInstructions();
         ModulesUpdated(robot);
 
-        codeInputPanel.SetActive(true);
-        //TODO: Is the listeners added several times?
-        codeInputField.onValueChanged.AddListener(KeyboardManager.KeyboardLockOn);
-        codeInputField.onValueChanged.AddListener(CodeInputAutoIndentAndUpperCase);
-        codeInputField.onEndEdit.AddListener(KeyboardManager.KeyboardLockOff);
         List<Instruction> exampleInstructions = robot.Instructions.ToList();
+        codeInputPanel.SetActive(true);
         codeInputField.text = string.Join("\n", InstructionsHelper.SerializeList(exampleInstructions));  /* Pre filled example data */
+        codeInputField.onValueChanged.RemoveAllListeners();
+        codeInputField.onValueChanged.AddListener(CodeInputAutoIndentAndUpperCase);
+        codeInputField.onEndEdit.RemoveAllListeners();
+        codeInputField.onEndEdit.AddListener(KeyboardManager.KeyboardLockOff);
 
         runButton.onClick.RemoveAllListeners();
         runButton.onClick.AddListener(RunCode);
