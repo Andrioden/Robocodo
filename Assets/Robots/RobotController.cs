@@ -335,7 +335,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         instructions = newInstructions;
     }
-    
+
     [Client]
     public void SetInstructions(List<string> instructionsList)
     {
@@ -459,8 +459,17 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     public void SetFeedbackIfNotPreview(string message, bool setIsCurrentInstructionIndexValid = false)
     {
-        if (!isPreviewRobot)
-            _SetFeedback(message, setIsCurrentInstructionIndexValid);
+        if (isPreviewRobot)
+            return;
+
+        _SetFeedback(message, setIsCurrentInstructionIndexValid);
+
+        /* If the feedback has not changed after 1 second we will clear it using a coroutine. */
+        if (feedbackClearCoroutine != null)
+            StopCoroutine(feedbackClearCoroutine);
+
+        feedbackClearCoroutine = ClearFeedbackAfterSecondsIfNotChanged(message, 1f);
+        StartCoroutine(feedbackClearCoroutine);
     }
 
     /// <summary>
@@ -477,19 +486,15 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private void CmdSetFeedback(string message)
     {
         SetFeedbackIfNotPreview(message);
-
-        /* When client sets feedback we have to clear it manually as clearing on server is based on tick */
-        if (feedbackClearCoroutine != null)
-            StopCoroutine(feedbackClearCoroutine);
-
-        feedbackClearCoroutine = ClearFeedbackAfterSeconds(1f);
-        StartCoroutine(feedbackClearCoroutine);
     }
 
-    private IEnumerator ClearFeedbackAfterSeconds(float s)
+    private IEnumerator ClearFeedbackAfterSecondsIfNotChanged(string lastFeedback, float secondsDelay)
     {
-        yield return new WaitForSeconds(s);
-        feedback = string.Empty;
+        yield return new WaitForSeconds(secondsDelay);
+
+        /* We will only clear the feedback if it still the same. Trying to avoid clearing a new feedback set from somewhere else. */
+        if (feedback == lastFeedback)
+            feedback = string.Empty;
     }
 
     public bool IsAtPlayerCity()
@@ -596,17 +601,17 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         if (NoFreeModuleSlot())
         {
-            SetFeedbackIfNotPreview("No free module slot", true);
+            SetFeedbackIfNotPreview("NO FREE MODULE SLOT", true);
             return;
         }
 
         Module module = Module.Deserialize(serializedModule);
         if (playerCityController.GetCopperCount() < module.Settings_CopperCost() || playerCityController.GetIronCount() < module.Settings_IronCost())
         {
-            SetFeedbackIfNotPreview("Not enough resources for module", true);
+            SetFeedbackIfNotPreview("NOT ENOUGH RESOURCES FOR MODULE", true);
             return;
         }
-        
+
         modules.Add(module);
         module.Install(this);
         playerCityController.RemoveResources(module.Settings_CopperCost(), module.Settings_IronCost());
