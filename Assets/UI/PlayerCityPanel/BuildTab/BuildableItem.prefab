@@ -319,6 +319,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a76217551c0c5145ac85f2685e16f9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ID: 
   button: {fileID: 11495022}
   icon: {fileID: 11467582}
   nameLabel: {fileID: 11417686}
@@ -626,7 +627,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 10, y: -5}
-  m_SizeDelta: {x: 160, y: 30}
+  m_SizeDelta: {x: 365, y: 30}
   m_Pivot: {x: 0, y: 1}
 --- !u!224 &22422148
 RectTransform:

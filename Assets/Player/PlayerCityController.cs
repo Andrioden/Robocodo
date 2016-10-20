@@ -134,6 +134,7 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         {
             WorldController.instance.SpawnHarvesterRobotWithClientAuthority(connectionToClient, X, Z, this);
             RemoveResources(HarvesterRobotController.Settings_copperCost, HarvesterRobotController.Settings_ironCost);
+            TargetIndicateSuccessfulPurchase(connectionToClient, HarvesterRobotController.Settings_name);
         }
     }
 
@@ -157,6 +158,7 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         {
             WorldController.instance.SpawnCombatRobotWithClientAuthority(connectionToClient, X, Z, this);
             RemoveResources(CombatRobotController.Settings_copperCost, CombatRobotController.Settings_ironCost);
+            TargetIndicateSuccessfulPurchase(connectionToClient, CombatRobotController.Settings_name);
         }
     }
 
@@ -180,6 +182,7 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         {
             WorldController.instance.SpawnTransporterRobotWithClientAuthority(connectionToClient, X, Z, this);
             RemoveResources(TransporterRobotController.Settings_copperCost, TransporterRobotController.Settings_ironCost);
+            TargetIndicateSuccessfulPurchase(connectionToClient, TransporterRobotController.Settings_name);
         }
     }
 
@@ -265,6 +268,12 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
     private void TargetFlashMissingResource(NetworkConnection target, ResourcePanel.ResourceTypes resourceType)
     {
         ResourcePanel.instance.FlashMissingResource(resourceType);
+    }
+
+    [TargetRpc]
+    private void TargetIndicateSuccessfulPurchase(NetworkConnection target, string robotTypeName)
+    {
+        PlayerCityPanel.instance.buildMenu.IndicateSuccessfulPurchase(robotTypeName);
     }
 
     [Command]

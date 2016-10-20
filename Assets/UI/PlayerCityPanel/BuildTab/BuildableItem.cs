@@ -5,6 +5,7 @@ using UnityEngine.Events;
 
 public class BuildableItem : MonoBehaviour
 {
+    public string ID;
     public Button button;
     public Image icon;
     public Text nameLabel;
@@ -13,6 +14,7 @@ public class BuildableItem : MonoBehaviour
 
     public void SetupBuildableItem(string name, UnityAction buyAction, int copperCost, int ironCost, Sprite sprite)
     {
+        ID = name.ToUpper();
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener(buyAction);
         icon.sprite = sprite;
