@@ -8,7 +8,7 @@ using System.Linq;
 public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectable, IHasInventory
 {
     // ********** COMMON VARIABLES **********
-    [SyncVar]
+    [SyncVar(hook = "OnOwnerChanged")]
     public string owner = "";
 
     private PlayerCityController playerCityController;
@@ -151,25 +151,42 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
         if (playerCityController != null)
         {
-            if (IsHomeByTransform() && !isAlreadyHome)
-            {
-                isAlreadyHome = true;
-                meshGO.SetActive(false);
-                playerCityController.EnterGarage(this);
-            }
-            else if (!IsHomeByTransform() && isAlreadyHome)
-            {
-                isAlreadyHome = false;
-                meshGO.SetActive(true);
-                playerCityController.ExitGarage(this);
-            }
-            else if (IsHomeByTransform() && isAlreadyHome && MouseManager.currentlySelected == gameObject && !isStarted)
-                meshGO.SetActive(true);
-            else if (IsHomeByTransform() && isAlreadyHome && MouseManager.currentlySelected != this && !isStarted)
-                meshGO.SetActive(false);
+            EnterExitGarageCheck();
         }
+        else
+            EnsurePlayerCityControllerForPlayerOwnedRobot();
 
         Move();
+    }
+
+    private void EnsurePlayerCityControllerForPlayerOwnedRobot()
+    {
+        if (GetOwner() != Settings.World_NeutralGameObjectOwner)
+        {
+            FindPlayerCityController();
+            if (playerCityController == null)
+                Debug.LogError(string.Format("{0} owned by {1} does not have playerCityController. NetId: {2}", Settings_Name(), GetOwner(), netId));
+        }
+    }
+
+    private void EnterExitGarageCheck()
+    {
+        if (IsHomeByTransform() && !isAlreadyHome)
+        {
+            isAlreadyHome = true;
+            meshGO.SetActive(false);
+            playerCityController.EnterGarage(this);
+        }
+        else if (!IsHomeByTransform() && isAlreadyHome)
+        {
+            isAlreadyHome = false;
+            meshGO.SetActive(true);
+            playerCityController.ExitGarage(this);
+        }
+        else if (IsHomeByTransform() && isAlreadyHome && MouseManager.currentlySelected == gameObject && !isStarted)
+            meshGO.SetActive(true);
+        else if (IsHomeByTransform() && isAlreadyHome && MouseManager.currentlySelected != this && !isStarted)
+            meshGO.SetActive(false);
     }
 
     private void OnDestroy()
@@ -192,8 +209,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         CacheAllowedInstructions();
 
-        FindPlayerCityController();
-
         x = transform.position.x;
         z = transform.position.z;
 
@@ -207,12 +222,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [Client]
     private void FindPlayerCityController()
     {
-        if (string.IsNullOrEmpty(GetOwner()))
-            return;
-
         playerCityController = FindObjectsOfType<PlayerCityController>().FirstOrDefault(x => x.GetOwner() == GetOwner());
         if (playerCityController == null)
-            Debug.LogError(name + " did not find it's own PlayerCityController.");
+            Debug.LogError(name + " did not find it's own PlayerCityController. NetId: " + netId);
     }
 
     public Coordinate GetCoordinate()
@@ -284,6 +296,12 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     //    NonMovementBasedFacingDirection();
     //    Animate();
     //}
+
+    private void OnOwnerChanged(string newValue)
+    {
+        owner = newValue;
+        FindPlayerCityController();
+    }
 
     private void OnIsStartedChanged(bool newValue)
     {
@@ -413,7 +431,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         {
             if (ExecuteInstruction(instruction))
                 InstructionCompleted();
-            if (owner != "") //TODO REMOVE AND INSTEAD REPLACE WITH A MODULE ON THE ROBOTS
+            if (owner != Settings.World_NeutralGameObjectOwner)
                 energy--;
         }
     }
@@ -606,17 +624,32 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         }
 
         Module module = Module.Deserialize(serializedModule);
-        if (playerCityController.GetCopperCount() < module.Settings_CopperCost() || playerCityController.GetIronCount() < module.Settings_IronCost())
+
+        bool canAfford = true;
+        if (playerCityController.GetCopperCount() < module.Settings_CopperCost())
+        {
+            playerCityController.FlashMissingResourceForOwner(ResourcePanel.ResourceTypes.Copper);
+            canAfford = false;
+        }
+        if (playerCityController.GetIronCount() < module.Settings_IronCost())
+        {
+            playerCityController.FlashMissingResourceForOwner(ResourcePanel.ResourceTypes.Iron);
+            canAfford = false;
+        }
+
+        if (canAfford)
+        {
+            modules.Add(module);
+            module.Install(this);
+            playerCityController.RemoveResources(module.Settings_CopperCost(), module.Settings_IronCost());
+
+            RpcSyncModules(Module.SerializeList(modules));
+        }
+        else
         {
             SetFeedbackIfNotPreview("NOT ENOUGH RESOURCES FOR MODULE", true);
             return;
         }
-
-        modules.Add(module);
-        module.Install(this);
-        playerCityController.RemoveResources(module.Settings_CopperCost(), module.Settings_IronCost());
-
-        RpcSyncModules(Module.SerializeList(modules));
     }
 
     private bool NoFreeModuleSlot()
@@ -698,7 +731,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         if (health <= 0)
         {
             if (playerCityController != null)
-                playerCityController.ShowPopupForOwner("DESTROYED!", transform.position, Color.red);
             NetworkServer.Destroy(gameObject);
         }
     }
@@ -706,7 +738,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [Server]
     private void SalvageRobot()
     {
-        PlayerCityController playerCity = FindOnCurrentPosition<PlayerCityController>();
+        PlayerCityController playerCity = FindOnCurrentPosition<PlayerCityController>(); //TODO: Safe to replace with playerCityController reference?
 
         List<InventoryItem> salvagedResources = new List<InventoryItem>();
 
@@ -720,7 +752,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
         playerCity.TransferToInventory(salvagedResources);
 
-        playerCityController.ShowPopupForOwner("SALVAGED!", transform.position, Utils.HexToColor("F9862DFF"));
 
         NetworkServer.Destroy(gameObject);
     }
@@ -741,7 +772,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         isReprogrammingRobot = true;
         currentInstructionBeingCleared = 1;
 
-        playerCityController.ShowPopupForOwner("REPROGRAMMNIG!", transform.position, Utils.HexToColor("12FFFFFF"));
     }
 
     [Server]
@@ -774,7 +804,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             modules.Clear();
             CacheAllowedInstructions();
 
-            playerCityController.ShowPopupForOwner("MEMORY CLEARED!", transform.position, Utils.HexToColor("12FFFFFF"));
         }
         else
             SetFeedbackIfNotPreview(feedback, true);
@@ -783,6 +812,11 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     public string GetOwner()
     {
         return owner;
+    }
+
+    public void SetOwner(string owner)
+    {
+        this.owner = owner;
     }
 
     public void PreviewResetRobot()
@@ -797,5 +831,4 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         nextInstructionIndex = 0;
         mainLoopIterationCount = 0;
     }
-
 }

@@ -145,9 +145,9 @@ public class WorldController : NetworkBehaviour
         {
             NetworkServer.SpawnWithClientAuthority(newGameObject, conn);
 
-            var robot = newGameObject.GetComponent<RobotController>();
-            if (robot != null)
-                robot.owner = conn.connectionId.ToString();
+            var ownedObject = newGameObject.GetComponent<IOwned>();
+            if (ownedObject != null)
+                ownedObject.SetOwner(conn.connectionId.ToString());
         }
 
         playerCity.AddOwnedGameObject(newGameObject);
@@ -189,6 +189,10 @@ public class WorldController : NetworkBehaviour
 
         if (NetworkServer.active)
             NetworkServer.Spawn(newGameObject);
+
+        var ownedObject = newGameObject.GetComponent<IOwned>();
+        if (ownedObject != null)
+            ownedObject.SetOwner(Settings.World_NeutralGameObjectOwner);
 
         return newGameObject;
     }

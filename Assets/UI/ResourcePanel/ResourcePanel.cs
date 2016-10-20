@@ -40,25 +40,20 @@ public class ResourcePanel : MonoBehaviour
         labelsRegisteredForFlashingFeedbackSupportDict.Add(ironLabel, false);
     }
 
-    private void Update()
+    public void FlashMissingResource(ResourceTypes resourceType)
     {
-
-    }
-
-    public void FlashMissingResource(string resourceName)
-    {
-        if (resourceName == "Copper")
+        if (resourceType == ResourceTypes.Copper)
         {
             if (labelsRegisteredForFlashingFeedbackSupportDict[copperLabel] == false)
                 StartCoroutine(AddFlashEffectToTextField(copperLabel, 4));
         }
-        else if (resourceName == "Iron")
+        else if (resourceType == ResourceTypes.Iron)
         {
             if (labelsRegisteredForFlashingFeedbackSupportDict[ironLabel] == false)
                 StartCoroutine(AddFlashEffectToTextField(ironLabel, 4));
         }
         else
-            Debug.LogError("Called FlashMissingResource with invalid resource name: " + resourceName);
+            Debug.LogError(string.Format("ResourceType {0} not registered for flashing feedback support.", resourceType));
     }
 
     public void Show()
@@ -81,15 +76,15 @@ public class ResourcePanel : MonoBehaviour
         if (localPlayerCity != null)
         {
             nickLabel.text = localPlayerCity.Nick;
-            copperLabel.text = "Copper: " + localPlayerCity.GetCopperCount();
-            ironLabel.text = "Iron: " + localPlayerCity.GetIronCount();
+            copperLabel.text = ResourceTypes.Copper + ": " + localPlayerCity.GetCopperCount();
+            ironLabel.text = ResourceTypes.Iron + ": " + localPlayerCity.GetIronCount();
             garageLabel.text = "Garage: " + localPlayerCity.Garage.Count();
         }
         else
         {
             nickLabel.text = "";
-            copperLabel.text = "Copper: " + 0;
-            ironLabel.text = "Iron: " + 0;
+            copperLabel.text = ResourceTypes.Copper + ": " + 0;
+            ironLabel.text = ResourceTypes.Iron + ": " + 0;
             garageLabel.text = "Garage: " + 0;
         }
     }
@@ -123,5 +118,12 @@ public class ResourcePanel : MonoBehaviour
         }
 
         labelsRegisteredForFlashingFeedbackSupportDict[textField] = false;
+    }
+
+    //TODO: Considered using CopperItem.SerializedType instead, but it felt a bit weird.
+    public enum ResourceTypes
+    {
+        Copper = 0,
+        Iron = 1
     }
 }

@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory, IEnergySource
+public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory, IEnergySource, IOwned
 {
     public MeshRenderer bodyMeshRenderer;
     public GameObject playerCityRubblePrefab;
@@ -104,6 +104,11 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         return owner;
     }
 
+    public void SetOwner(string owner)
+    {
+        this.owner = owner;
+    }
+
     public void AddOwnedGameObject(GameObject go)
     {
         ownedGameObjects.Add(go);
@@ -116,12 +121,10 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         bool canAfford = true;
         if (GetCopperCount() < HarvesterRobotController.Settings_copperCost)
         {
-            TargetFlashMissingResource(connectionToClient, "Copper");
             canAfford = false;
         }
         if (GetIronCount() < HarvesterRobotController.Settings_ironCost)
         {
-            TargetFlashMissingResource(connectionToClient, "Iron");
             canAfford = false;
         }
 
@@ -139,12 +142,10 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         bool canAfford = true;
         if (GetCopperCount() < CombatRobotController.Settings_copperCost)
         {
-            TargetFlashMissingResource(connectionToClient, "Copper");
             canAfford = false;
         }
         if (GetIronCount() < CombatRobotController.Settings_ironCost)
         {
-            TargetFlashMissingResource(connectionToClient, "Iron");
             canAfford = false;
         }
 
@@ -162,12 +163,10 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         bool canAfford = true;
         if (GetCopperCount() < TransporterRobotController.Settings_copperCost)
         {
-            TargetFlashMissingResource(connectionToClient, "Copper");
             canAfford = false;
         }
         if (GetIronCount() < TransporterRobotController.Settings_ironCost)
         {
-            TargetFlashMissingResource(connectionToClient, "Iron");
             canAfford = false;
         }
 
@@ -250,10 +249,16 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         TextPopupManager.instance.ShowPopupGeneric(text, position, color);
     }
 
-    [TargetRpc]
-    private void TargetFlashMissingResource(NetworkConnection target, string nameOfResource)
+    [Server]
+    public void FlashMissingResourceForOwner(ResourcePanel.ResourceTypes resourceType)
     {
-        ResourcePanel.instance.FlashMissingResource(nameOfResource);
+        TargetFlashMissingResource(connectionToClient, resourceType);
+    }
+
+    [TargetRpc]
+    private void TargetFlashMissingResource(NetworkConnection target, ResourcePanel.ResourceTypes resourceType)
+    {
+        ResourcePanel.instance.FlashMissingResource(resourceType);
     }
 
     [Command]
@@ -272,7 +277,6 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         else
             this.nick = nick + (currentNicks.Count(n => n.Contains(nick)) + 1);
     }
-
 }
 
 //[Server]

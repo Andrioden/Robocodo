@@ -1,7 +1,4 @@
-﻿public interface IAttackable
+﻿public interface IAttackable : IOwned
 {
-
-    string GetOwner();
     void TakeDamage(int damage);
-
 }

@@ -61,15 +61,21 @@ public static class ScenarioSetup
     {
         Normal(conn, playerGO);
 
+        GameObject neutralPlayerCityGO = wc.SpawnObject(wc.playerCityPrefab, 1, 1);
+        PlayerCityController neutralPlayerCity = neutralPlayerCityGO.GetComponent<PlayerCityController>();
+
         for (int x = 0; x < wc.Width; x++)
         {
             GameObject combaRobotGO = wc.SpawnObject(wc.combatRobotPrefab, x, 0);
             CombatRobotController combatRobot = combaRobotGO.GetComponent<CombatRobotController>();
+            neutralPlayerCity.AddOwnedGameObject(combaRobotGO);
+
             combatRobot.SetInstructions(new List<Instruction>
             {
                 new Instruction_Move(MoveDirection.Random),
                 new Instruction_Attack(AttackDirection.Random)
             });
+
             combatRobot.CmdStartRobot();
         }
     }

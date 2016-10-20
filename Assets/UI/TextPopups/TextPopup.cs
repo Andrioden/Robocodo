@@ -51,4 +51,10 @@ public class TextPopup : MonoBehaviour
         if (color != null && color.HasValue)
             textComponent.color = color.Value;
     }
+
+    {
+        public static readonly string DEFAULT = "12FFFFFF";
+        public static readonly string POSITIVE = "F9862DFF";
+        public static readonly string NEGATIVE = "FF1414FF";
+    }
 }
