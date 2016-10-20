@@ -731,6 +731,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         if (health <= 0)
         {
             if (playerCityController != null)
+                playerCityController.ShowPopupForOwner("DESTROYED!", transform.position, Utils.HexToColor(TextPopup.ColorTypes.NEGATIVE));
             NetworkServer.Destroy(gameObject);
         }
     }
@@ -752,6 +753,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
         playerCity.TransferToInventory(salvagedResources);
 
+        playerCityController.ShowPopupForOwner("SALVAGED!", transform.position, Utils.HexToColor(TextPopup.ColorTypes.DEFAULT));
 
         NetworkServer.Destroy(gameObject);
     }
@@ -772,6 +774,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         isReprogrammingRobot = true;
         currentInstructionBeingCleared = 1;
 
+        playerCityController.ShowPopupForOwner("REPROGRAMMNIG!", transform.position, Utils.HexToColor(TextPopup.ColorTypes.DEFAULT));
     }
 
     [Server]
@@ -804,6 +807,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             modules.Clear();
             CacheAllowedInstructions();
 
+            playerCityController.ShowPopupForOwner("MEMORY CLEARED!", transform.position, Utils.HexToColor(TextPopup.ColorTypes.DEFAULT));
         }
         else
             SetFeedbackIfNotPreview(feedback, true);

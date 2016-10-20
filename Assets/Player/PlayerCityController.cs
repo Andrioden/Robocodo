@@ -121,10 +121,12 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         bool canAfford = true;
         if (GetCopperCount() < HarvesterRobotController.Settings_copperCost)
         {
+            TargetFlashMissingResource(connectionToClient, ResourcePanel.ResourceTypes.Copper);
             canAfford = false;
         }
         if (GetIronCount() < HarvesterRobotController.Settings_ironCost)
         {
+            TargetFlashMissingResource(connectionToClient, ResourcePanel.ResourceTypes.Iron);
             canAfford = false;
         }
 
@@ -142,10 +144,12 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         bool canAfford = true;
         if (GetCopperCount() < CombatRobotController.Settings_copperCost)
         {
+            TargetFlashMissingResource(connectionToClient, ResourcePanel.ResourceTypes.Copper);
             canAfford = false;
         }
         if (GetIronCount() < CombatRobotController.Settings_ironCost)
         {
+            TargetFlashMissingResource(connectionToClient, ResourcePanel.ResourceTypes.Iron);
             canAfford = false;
         }
 
@@ -163,10 +167,12 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         bool canAfford = true;
         if (GetCopperCount() < TransporterRobotController.Settings_copperCost)
         {
+            TargetFlashMissingResource(connectionToClient, ResourcePanel.ResourceTypes.Copper);
             canAfford = false;
         }
         if (GetIronCount() < TransporterRobotController.Settings_ironCost)
         {
+            TargetFlashMissingResource(connectionToClient, ResourcePanel.ResourceTypes.Iron);
             canAfford = false;
         }
 
