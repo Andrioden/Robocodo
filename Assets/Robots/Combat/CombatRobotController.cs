@@ -55,7 +55,7 @@ public class CombatRobotController : RobotController
             new Instruction_Move(MoveDirection.Right),
             new Instruction_Move(MoveDirection.Down),
             new Instruction_Move(MoveDirection.Down),
-            new Instruction_Move(MoveDirection.Down),
+            new Instruction_Move(MoveDirection.Home),
         };
     }
 

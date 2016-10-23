@@ -837,8 +837,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         FindPlayerCityController();
 
-        x = playerCityController.X;
-        z = playerCityController.Z;
+        x = transform.position.x;
+        z = transform.position.z;
         transform.position = new Vector3(x, 1, z);
         energy = Settings_MaxEnergy();
         currentInstructionIndex = 0;
