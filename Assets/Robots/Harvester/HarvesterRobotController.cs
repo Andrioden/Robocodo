@@ -60,7 +60,7 @@ public class HarvesterRobotController : RobotController
     {
         if (ShouldAnimationBePlayed())
         {
-            if (lastAppliedInstruction.GetType() == typeof(Instruction_Harvest))
+            if (LastAppliedInstruction.GetType() == typeof(Instruction_Harvest))
             {
                 bodyAnimator.Play("Idle");
                 PlayHarvestParticleSystem();

@@ -63,13 +63,13 @@ public class CombatRobotController : RobotController
     {
         if (ShouldAnimationBePlayed())
         {
-            if (lastAppliedInstruction.GetType() == typeof(Instruction_Attack))
+            if (LastAppliedInstruction.GetType() == typeof(Instruction_Attack))
             {
                 bodyAnimator.Play("Idle");
                 leftWeaponAnimator.Play("Shoot");
                 rightWeaponAnimator.Play("Shoot");
             }
-            else if (lastAppliedInstruction.GetType() == typeof(Instruction_Move))
+            else if (LastAppliedInstruction.GetType() == typeof(Instruction_Move))
             {
                 bodyAnimator.Play("Walk");
             }

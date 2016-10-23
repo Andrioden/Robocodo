@@ -55,9 +55,19 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     private bool currentInstructionIndexIsValid = true;
     public bool CurrentInstructionIndexIsValid { get { return currentInstructionIndexIsValid; } }
 
-    //TODO: FIX
-    //[SyncVar(hook = "OnLastAppliedInstrucion")]
     protected Instruction lastAppliedInstruction;
+    protected Instruction LastAppliedInstruction
+    {
+        get { return lastAppliedInstruction; }
+        set
+        {
+            lastAppliedInstruction = value;
+            if (isServer)
+                RpcSyncLastAppliedInstruction(lastAppliedInstruction.Serialize());
+            else if (isClient)
+                Debug.LogError("Should not set variable LastAppliedInstruction on client");
+        }
+    }
 
     private List<Instruction> _allowedInstructions = new List<Instruction>();
 
@@ -257,7 +267,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [Client]
     private void MovementBasedFacingDirection(Vector3 newPosition)
     {
-        if (lastAppliedInstruction != null && (lastAppliedInstruction.GetType() == typeof(Instruction_Move)))
+        if (LastAppliedInstruction != null && (LastAppliedInstruction.GetType() == typeof(Instruction_Move)))
             transform.LookAt(newPosition);
     }
 
@@ -266,9 +276,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         Vector3? facePosition = null;
 
-        if (instructions.Count > 0 && lastAppliedInstruction.GetType() == typeof(Instruction_Attack))
+        if (instructions.Count > 0 && LastAppliedInstruction.GetType() == typeof(Instruction_Attack))
         {
-            Instruction_Attack attackInstruction = (Instruction_Attack)lastAppliedInstruction;
+            Instruction_Attack attackInstruction = (Instruction_Attack)LastAppliedInstruction;
 
             if (attackInstruction.direction == AttackDirection.Up)
                 facePosition = new Vector3(x, transform.position.y, z + 2);
@@ -284,18 +294,18 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             transform.LookAt(facePosition.Value);
     }
 
-    //[Client]
-    //private void OnLastAppliedInstrucion(string newLastAppliedInstruction)
-    //{
-    //    lastAppliedInstruction = newLastAppliedInstruction;
+    [ClientRpc]
+    private void RpcSyncLastAppliedInstruction(string instructionString)
+    {
+        lastAppliedInstruction = InstructionsHelper.Deserialize(instructionString);
 
-    //    /* We never want to change facing or animate preview robot */
-    //    if (isPreviewRobot)
-    //        return;
+        /* We never want to change facing or animate preview robot */
+        if (isPreviewRobot)
+            return;
 
-    //    NonMovementBasedFacingDirection();
-    //    Animate();
-    //}
+        NonMovementBasedFacingDirection();
+        Animate();
+    }
 
     private void OnOwnerChanged(string newValue)
     {
@@ -415,7 +425,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
         currentInstructionIndexIsValid = true;
         currentInstructionIndex = nextInstructionIndex;
-        Instruction instruction = instructions[nextInstructionIndex];
+        Instruction currentInstruction = instructions[nextInstructionIndex];
 
         //Debug.Log("SERVER: Running instruction: " + instruction);
 
@@ -429,7 +439,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             SetFeedbackIfNotPreview("NOT ENOUGH ENERGY");
         else
         {
-            if (ExecuteInstruction(instruction))
+            if (ExecuteInstruction(currentInstruction))
                 InstructionCompleted();
             if (owner != Settings.World_NeutralGameObjectOwner)
                 energy--;
@@ -457,7 +467,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     private bool ExecuteInstruction(Instruction instruction)
     {
-        lastAppliedInstruction = instruction;
+        LastAppliedInstruction = instruction;
 
         if (isPreviewRobot && !instruction.CanBePreviewed())
             return true;
