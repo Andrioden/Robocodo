@@ -4,10 +4,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
-
+using System.Reflection;
 
 public static class InstructionsHelper
 {
+
+    private static List<Type> _cachedInstructionTypes = null;
 
     public static string[] SerializeList(List<Instruction> instructions)
     {
@@ -16,26 +18,30 @@ public static class InstructionsHelper
 
     public static Instruction Deserialize(string instruction)
     {
-        if (instruction == Instruction_Idle.Format)
-            return new Instruction_Idle();
-        else if (Instruction_Move.IsValid(instruction))
-            return Instruction_Move.Deserialize(instruction);
-        else if (Instruction_LoopStart.IsValid(instruction))
-            return Instruction_LoopStart.Deserialize(instruction);
-        else if (instruction == Instruction_LoopEnd.Format)
-            return new Instruction_LoopEnd();
-        else if (instruction == Instruction_Harvest.Format)
-            return new Instruction_Harvest();
-        else if (instruction == Instruction_DropInventory.Format)
-            return new Instruction_DropInventory();
-        else if (Instruction_Attack.IsValid(instruction))
-            return Instruction_Attack.Deserialize(instruction);
-        else if (Instruction_DetectThen.IsValid(instruction))
-            return Instruction_DetectThen.Deserialize(instruction);
-        else if (Instruction_IdleUntilThen.IsValid(instruction))
-            return Instruction_IdleUntilThen.Deserialize(instruction);
-        else
-            return new Instruction_Unknown(instruction);
+        foreach(Type type in GetInstructionTypes())
+        {
+            bool isValid = (bool)TypeUtils.RunPublicStaticMethod(type, "IsValid", instruction);
+            if (isValid)
+                return (Instruction)TypeUtils.RunPublicStaticMethod(type, "Deserialize", instruction);
+        }
+
+        return new Instruction_Unknown(instruction);
+    }
+
+    private static List<Type> GetInstructionTypes()
+    {
+        if (_cachedInstructionTypes == null)
+        {
+            var targetAssembly = Assembly.GetExecutingAssembly(); // or whichever
+            _cachedInstructionTypes = targetAssembly.GetTypes()
+                .Where(t =>
+                    t.IsSubclassOf(typeof(Instruction))
+                    && TypeUtils.HasPublicStaticMethod(t, "Deserialize")
+                    && TypeUtils.HasPublicStaticMethod(t, "IsValid")
+                ).ToList();
+        }
+
+        return _cachedInstructionTypes;
     }
 
     public static List<Instruction> DeserializeList(List<string> instruction)

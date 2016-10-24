@@ -28,6 +28,19 @@ public class Instruction_DropInventory : Instruction
         return Format;
     }
 
+    public static Instruction Deserialize(string instruction)
+    {
+        if (IsValid(instruction))
+            return new Instruction_DropInventory();
+        else
+            throw new Exception(string.Format("Tried to deserialize an {0} instruction that wasnt valid.", Format));
+    }
+
+    public static bool IsValid(string instruction)
+    {
+        return instruction == Format;
+    }
+
     private void DropInventory()
     {
         IHasInventory droppableTarget = FindDroppableTarget((int)robot.x, (int)robot.z);

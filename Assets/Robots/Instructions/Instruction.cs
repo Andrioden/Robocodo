@@ -13,4 +13,6 @@ public abstract class Instruction
     public abstract bool CanBePreviewed();
 
     public abstract string Serialize();
+    // Requires static     Deserialize()
+    // Requires static     IsValid()
 }

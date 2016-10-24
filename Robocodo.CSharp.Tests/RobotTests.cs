@@ -5,7 +5,7 @@ using Robocodo.CSharp;
 namespace Robocodo.CSharp.Tests
 {
     [TestClass]
-    public class InstructionsTests
+    public class InstructionsHelperTests
     {
 
         //[TestMethod]
@@ -63,6 +63,14 @@ namespace Robocodo.CSharp.Tests
         //    Assert.IsFalse(Instructions.IsValidDetectThen("IDLES UNTIL FULL THEN MOVE HOME"));
         //    Assert.IsFalse(Instructions.IsValidDetectThen("IDLEUNTIL FULL THEN MOVE HOME"));
         //}
+
+        [TestMethod]
+        public void DeserializeTest()
+        {
+            Assert.AreEqual(typeof(Instruction_Idle), InstructionsHelper.Deserialize("IDLE").GetType());
+            Assert.AreEqual(typeof(Instruction_Harvest), InstructionsHelper.Deserialize("HARVEST").GetType());
+            Assert.AreEqual(typeof(Instruction_LoopStart), InstructionsHelper.Deserialize("LOOP START 5").GetType());
+        }
 
         [TestMethod]
         public void GetStringAfterSpaceTest()
