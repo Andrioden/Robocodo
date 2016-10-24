@@ -151,6 +151,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             Debug.LogError("Mesh game object reference missing. Will not be able to hide physical robot when in garage etc.");
 
         InitDefaultValues();
+        FindPlayerCityController();
     }
 
     // Update is called once per frame
@@ -164,19 +165,12 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             EnterExitGarageCheck();
         }
         else
-            EnsurePlayerCityControllerForPlayerOwnedRobot();
+            Debug.LogError(string.Format("{0} owned by {1} does not have playerCityController. NetId: {2}",
+                Settings_Name(),
+                string.IsNullOrEmpty(GetOwner()) ? "MISSING OWNER" : GetOwner(),
+                netId));
 
         Move();
-    }
-
-    private void EnsurePlayerCityControllerForPlayerOwnedRobot()
-    {
-        if (GetOwner() != Settings.World_NeutralGameObjectOwner)
-        {
-            FindPlayerCityController();
-            if (playerCityController == null)
-                Debug.LogError(string.Format("{0} owned by {1} does not have playerCityController. NetId: {2}", Settings_Name(), GetOwner(), netId));
-        }
     }
 
     private void EnterExitGarageCheck()
@@ -234,7 +228,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         playerCityController = FindObjectsOfType<PlayerCityController>().FirstOrDefault(x => x.GetOwner() == GetOwner());
         if (playerCityController == null)
-            Debug.LogError(name + " did not find it's own PlayerCityController. NetId: " + netId);
+            Debug.LogError(Settings_Name() + " did not find it's own PlayerCityController. Please ensure that owner is set before spawning object. NetId: " + netId);
     }
 
     public Coordinate GetCoordinate()

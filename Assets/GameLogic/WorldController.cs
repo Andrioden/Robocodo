@@ -97,18 +97,20 @@ public class WorldController : NetworkBehaviour
         var playerPos = worldBuilder.GetNextPlayerPosition();
         GameObject playerCityGameObject = (GameObject)Instantiate(playerCityPrefab, new Vector3(playerPos.x, 0, playerPos.z), Quaternion.identity);
 
-        if (worldParent != null)
-            playerCityGameObject.transform.parent = worldParent;
-
-        if (NetworkServer.active)
-            NetworkServer.AddPlayerForConnection(conn, playerCityGameObject, playerControllerId);
-
         var playerCityController = playerCityGameObject.GetComponent<PlayerCityController>();
         if (playerCityController != null)
         {
             playerCityController.owner = conn.connectionId.ToString();
             playerCityController.SetColor(playerColorManager.GetNextColor());
         }
+
+        if (worldParent != null)
+            playerCityGameObject.transform.parent = worldParent;
+
+        /* NOTE: Always set properties before spawning object, if not there will be a delay before all clients get the values. */
+
+        if (NetworkServer.active)
+            NetworkServer.AddPlayerForConnection(conn, playerCityGameObject, playerControllerId);
 
         ScenarioSetup.Run(NetworkPanel.instance.gameModeDropdown.value, conn, playerCityGameObject);
 
@@ -138,17 +140,21 @@ public class WorldController : NetworkBehaviour
 
         GameObject newGameObject = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
 
+        var ownedObject = newGameObject.GetComponent<IOwned>();
+        if (ownedObject != null)
+            ownedObject.SetOwner(conn.connectionId.ToString());
+
+        var robot = newGameObject.GetComponent<RobotController>();
+        if (robot != null)
+            robot.meshGO.SetActive(false);
+
         if (worldParent != null)
             newGameObject.transform.parent = worldParent;
 
-        if (NetworkServer.active)
-        {
-            NetworkServer.SpawnWithClientAuthority(newGameObject, conn);
+        /* NOTE: Always set properties before spawning object, if not there will be a delay before all clients get the values. */
 
-            var ownedObject = newGameObject.GetComponent<IOwned>();
-            if (ownedObject != null)
-                ownedObject.SetOwner(conn.connectionId.ToString());
-        }
+        if (NetworkServer.active)
+            NetworkServer.SpawnWithClientAuthority(newGameObject, conn);
 
         playerCity.AddOwnedGameObject(newGameObject);
 
@@ -184,15 +190,17 @@ public class WorldController : NetworkBehaviour
 
         GameObject newGameObject = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
 
-        if (worldParent != null)
-            newGameObject.transform.parent = worldParent;
-
-        if (NetworkServer.active)
-            NetworkServer.Spawn(newGameObject);
-
         var ownedObject = newGameObject.GetComponent<IOwned>();
         if (ownedObject != null)
             ownedObject.SetOwner(Settings.World_NeutralGameObjectOwner);
+
+        if (worldParent != null)
+            newGameObject.transform.parent = worldParent;
+
+        /* NOTE: Always set properties before spawning object, if not there will be a delay before all clients get the values. */
+
+        if (NetworkServer.active)
+            NetworkServer.Spawn(newGameObject);
 
         return newGameObject;
     }
