@@ -171,6 +171,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
                 netId));
 
         Move();
+        Animate();
     }
 
     private void EnterExitGarageCheck()
@@ -298,7 +299,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             return;
 
         NonMovementBasedFacingDirection();
-        Animate();
     }
 
     private void OnOwnerChanged(string newValue)

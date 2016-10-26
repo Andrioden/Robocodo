@@ -61,7 +61,7 @@ public class CombatRobotController : RobotController
 
     protected override void Animate()
     {
-        if (ShouldAnimationBePlayed())
+        if (ShouldAnimationBePlayed() && LastAppliedInstruction != null)
         {
             if (LastAppliedInstruction.GetType() == typeof(Instruction_Attack))
             {
@@ -70,9 +70,7 @@ public class CombatRobotController : RobotController
                 rightWeaponAnimator.Play("Shoot");
             }
             else if (LastAppliedInstruction.GetType() == typeof(Instruction_Move))
-            {
                 bodyAnimator.Play("Walk");
-            }
             else
                 bodyAnimator.Play("Idle");
         }
