@@ -19,6 +19,7 @@ public static class ScenarioSetup
         scenarios.Add(new ScenarioEntry("Wild PvE", Scenario.WildPvE, WildPvE));
         scenarios.Add(new ScenarioEntry("Test Attack Neu Enemy", Scenario.Test_AttackNeutralEnemy, Test_AttackNeutralEnemy));
         scenarios.Add(new ScenarioEntry("Test Transporter", Scenario.Test_Harvester, Test_Harvester));
+        scenarios.Add(new ScenarioEntry("Test Stacking Robots", Scenario.Test_Harvester, Test_StackingRobots));
     }
 
     public static void RegisterWorldController(WorldController worldController)
@@ -126,6 +127,15 @@ public static class ScenarioSetup
         });
     }
 
+    private static void Test_StackingRobots(NetworkConnection conn, GameObject playerGO)
+    {
+        PlayerCityController newPlayerCity = playerGO.GetComponent<PlayerCityController>();
+
+        wc.SpawnCombatRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
+        wc.SpawnHarvesterRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
+        wc.SpawnTransporterRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
+    }
+
 }
 
 public class ScenarioEntry
@@ -148,5 +158,7 @@ public enum Scenario
     WildPvE = 1,
 
     Test_AttackNeutralEnemy = 100,
-    Test_Harvester = 101
+    Test_Harvester = 101,
+    Test_StackingRobots = 102
+
 }

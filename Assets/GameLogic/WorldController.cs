@@ -144,10 +144,6 @@ public class WorldController : NetworkBehaviour
         if (ownedObject != null)
             ownedObject.SetOwner(conn.connectionId.ToString());
 
-        var robot = newGameObject.GetComponent<RobotController>();
-        if (robot != null)
-            robot.meshGO.SetActive(false);
-
         if (worldParent != null)
             newGameObject.transform.parent = worldParent;
 
