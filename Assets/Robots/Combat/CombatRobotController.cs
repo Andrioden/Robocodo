@@ -61,7 +61,7 @@ public class CombatRobotController : RobotController
 
     protected override void Animate()
     {
-        if (ShouldAnimationBePlayed() && LastAppliedInstruction != null)
+        if (ShouldAnimationBePlayed())
         {
             if (LastAppliedInstruction.GetType() == typeof(Instruction_Attack))
             {

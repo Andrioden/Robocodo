@@ -165,10 +165,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             EnterExitGarageCheck();
         }
         else
-            Debug.LogError(string.Format("{0} owned by {1} does not have playerCityController. NetId: {2}",
-                Settings_Name(),
-                string.IsNullOrEmpty(GetOwner()) ? "MISSING OWNER" : GetOwner(),
-                netId));
+            Debug.LogError(string.Format("{0} owned by {1} does not have playerCityController. NetId: {2}", Settings_Name(), string.IsNullOrEmpty(GetOwner()) ? "MISSING OWNER" : GetOwner(), netId));
 
         Move();
         Animate();
@@ -316,7 +313,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [Client]
     protected bool ShouldAnimationBePlayed()
     {
-        return energy > 0 && IsStarted && CurrentInstructionIndexIsValid && !isReprogrammingRobot;
+        return (energy > 0) && IsStarted && CurrentInstructionIndexIsValid && !isReprogrammingRobot && LastAppliedInstruction != null;
     }
 
     [Client]
