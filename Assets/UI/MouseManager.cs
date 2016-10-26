@@ -40,7 +40,7 @@ public class MouseManager : MonoBehaviour
 
     }
 
-    private static void ClickGameObject(GameObject gameObject)
+    public static void ClickGameObject(GameObject gameObject)
     {
         IClickable clickableObject = gameObject.GetComponent<IClickable>();
         if (clickableObject != null)
@@ -55,10 +55,5 @@ public class MouseManager : MonoBehaviour
         }
         else
             currentlySelected = null;
-    }
-
-    public static void SimulateClick(GameObject clickableGameObject)
-    {
-        ClickGameObject(clickableGameObject);
     }
 }

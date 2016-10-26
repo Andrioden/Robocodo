@@ -30,6 +30,6 @@ public class GarageRobot : MonoBehaviour
 
     private void SelectRobot()
     {
-        MouseManager.SimulateClick(robot.transform.root.gameObject);
+        MouseManager.ClickGameObject(robot.transform.root.gameObject);
     }
 }
