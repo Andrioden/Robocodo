@@ -165,7 +165,6 @@ public class RobotPanel : MonoBehaviour
     {
         KeyboardManager.KeyboardLockOff();
         UnloadCurrentRobot();
-        CleanUpPreviewer();
         moduleMenuController.gameObject.SetActive(false);
         animator.Play("RobotMenuSlideOut");
     }
@@ -199,6 +198,7 @@ public class RobotPanel : MonoBehaviour
 
             robot = null;
         }
+        CleanUpPreviewer();
     }
 
     private void RunCode()
