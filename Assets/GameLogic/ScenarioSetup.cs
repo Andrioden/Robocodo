@@ -76,6 +76,7 @@ public static class ScenarioSetup
                 new Instruction_Move(MoveDirection.Random),
                 new Instruction_Attack(AttackDirection.Random)
             });
+            combatRobot.AddModule(new SolarPanelModule());
 
             combatRobot.CmdStartRobot();
         }

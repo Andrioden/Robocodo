@@ -34,6 +34,6 @@ public class ModuleInstaller : MonoBehaviour {
 
     private void BuyModule()
     {
-        robot.AddModule(module);
+        robot.CmdAddModule(module.Serialize());
     }
 }

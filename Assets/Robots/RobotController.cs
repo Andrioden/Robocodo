@@ -390,9 +390,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         //Debug.Log("Server: Starting robot");
         isStarted = true;
         if (Settings_IPT() == 1)
-            WorldTickController.instance.TickEvent += RunNextTick;
+            WorldTickController.instance.TickEvent += Tick;
         else if (Settings_IPT() == 2)
-            WorldTickController.instance.HalfTickEvent += RunNextTick;
+            WorldTickController.instance.HalfTickEvent += Tick;
         else
             throw new Exception("IPT value not supported: " + Settings_IPT());
     }
@@ -406,15 +406,15 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         isStarted = false;
 
         if (Settings_IPT() == 1)
-            WorldTickController.instance.TickEvent -= RunNextTick;
+            WorldTickController.instance.TickEvent -= Tick;
         else if (Settings_IPT() == 2)
-            WorldTickController.instance.HalfTickEvent -= RunNextTick;
+            WorldTickController.instance.HalfTickEvent -= Tick;
     }
 
     /// <summary>
     /// Is not set to server because it is used by the preview
     /// </summary>
-    public void RunNextTick(object sender)
+    public void Tick(object sender)
     {
         SetFeedbackIfNotPreview("");
 
@@ -442,8 +442,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         {
             if (ExecuteInstruction(currentInstruction))
                 InstructionCompleted();
-            if (owner != Settings.World_NeutralGameObjectOwner)
-                energy--;
+            energy--;
         }
     }
 
@@ -619,14 +618,8 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         OnInventoryChanged(this);
     }
 
-    [Client]
-    public void AddModule(Module module)
-    {
-        CmdAddModule(module.Serialize());
-    }
-
     [Command]
-    private void CmdAddModule(string serializedModule)
+    public void CmdAddModule(string serializedModule)
     {
         if (NoFreeModuleSlot())
         {
@@ -650,17 +643,22 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
         if (canAfford)
         {
-            modules.Add(module);
-            module.Install(this);
             playerCityController.RemoveResources(module.Settings_CopperCost(), module.Settings_IronCost());
-
-            RpcSyncModules(Module.SerializeList(modules));
+            AddModule(module);
         }
         else
         {
             SetFeedbackIfNotPreview("NOT ENOUGH RESOURCES FOR MODULE", true);
             return;
         }
+    }
+
+    [Server]
+    public void AddModule(Module module)
+    {
+        modules.Add(module);
+        module.Install(this);
+        RpcSyncModules(Module.SerializeList(modules));
     }
 
     private bool NoFreeModuleSlot()
