@@ -89,6 +89,16 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         }
     }
 
+    public ClickablePriority ClickPriority()
+    {
+        return ClickablePriority.High;
+    }
+
+    public GameObject GetGameObject()
+    {
+        return gameObject;
+    }
+
     public int GetCopperCount()
     {
         return inventory.Count(i => i.GetType() == typeof(CopperItem));

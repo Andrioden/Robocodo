@@ -171,6 +171,46 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         Animate();
     }
 
+    private void OnDestroy()
+    {
+        if (Application.isPlaying)
+        {
+            StopRobot();
+            if (isServer)
+                modules.ForEach(module => module.Uninstall());
+        }
+    }
+
+    public void Click()
+    {
+        if (hasAuthority)
+            RobotPanel.instance.Show(this);
+    }
+
+    public ClickablePriority ClickPriority()
+    {
+        return ClickablePriority.Medium;
+    }
+
+    public GameObject GetGameObject()
+    {
+        return gameObject;
+    }
+
+    public void InitDefaultValues()
+    {
+        CacheAllowedInstructions();
+
+        x = transform.position.x;
+        z = transform.position.z;
+
+        energy = Settings_MaxEnergy();
+        health = Settings_StartHealth();
+
+        if (instructions.Count == 0)
+            SetInstructions(GetSuggestedInstructionSet());
+    }
+
     private void EnterExitGarageCheck()
     {
         if (IsHomeByTransform() && !isAlreadyHome)
@@ -189,36 +229,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             meshGO.SetActive(true);
         else if (IsHomeByTransform() && isAlreadyHome && MouseManager.currentlySelected != this && !isStarted)
             meshGO.SetActive(false);
-    }
-
-    private void OnDestroy()
-    {
-        if (Application.isPlaying)
-        {
-            StopRobot();
-            if (isServer)
-                modules.ForEach(module => module.Uninstall());
-        }
-    }
-
-    public void Click()
-    {
-        if (hasAuthority)
-            RobotPanel.instance.Show(this);
-    }
-
-    public void InitDefaultValues()
-    {
-        CacheAllowedInstructions();
-
-        x = transform.position.x;
-        z = transform.position.z;
-
-        energy = Settings_MaxEnergy();
-        health = Settings_StartHealth();
-
-        if (instructions.Count == 0)
-            SetInstructions(GetSuggestedInstructionSet());
     }
 
     [Client]

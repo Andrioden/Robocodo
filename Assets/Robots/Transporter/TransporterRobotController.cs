@@ -35,6 +35,7 @@ public class TransporterRobotController : RobotController
         return new List<Instruction>()
         {
             new Instruction_Idle(),
+            new Instruction_Move(MoveDirection.Up),
         };
     }
 

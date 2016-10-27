@@ -35,6 +35,16 @@ public class ResourceController : NetworkBehaviour, IClickable
         Debug.LogFormat("This node of resouce type {0} has {1} remaining items", resourceType, remainingItems);
     }
 
+    public ClickablePriority ClickPriority()
+    {
+        return ClickablePriority.Low;
+    }
+
+    public GameObject GetGameObject()
+    {
+        return gameObject;
+    }
+
     [Server]
     public void HarvestOneResourceItem()
     {
@@ -61,5 +71,4 @@ public class ResourceController : NetworkBehaviour, IClickable
 
         physicalTransform.localScale = new Vector3(originalTransformScale.x * sideScaleFactor, originalTransformScale.y * sideScaleFactor, originalTransformScale.z * sideScaleFactor);
     }
-
 }
