@@ -90,7 +90,7 @@ public class Instruction_Attack : Instruction
 
             if (attackable != null && potentialGO.transform.position.x == x && potentialGO.transform.position.z == z)
             {
-                if (attackable.GetOwner() != robot.GetOwner())
+                if (attackable.GetOwnerCity() != robot.GetOwnerCity())
                     return attackable;
             }
         }

@@ -77,18 +77,18 @@ public class Instruction_Move : Instruction
 
     private bool MoveHome()
     {
-        if (robot.PlayerCityController == null)
+        if (robot.OwnerCity == null)
             throw new Exception("Robot has no playerCityController.");
 
         SanityCheckIfPositionNumbersAreWhole();
 
-        float difX = Math.Abs(robot.x - robot.PlayerCityController.X);
-        float difZ = Math.Abs(robot.z - robot.PlayerCityController.Z);
+        float difX = Math.Abs(robot.x - robot.OwnerCity.X);
+        float difZ = Math.Abs(robot.z - robot.OwnerCity.Z);
 
         if (difX >= difZ && !robot.IsAtPlayerCity())
-            robot.x += GetIncremementOrDecrementToGetCloser(robot.x, robot.PlayerCityController.X);
+            robot.x += GetIncremementOrDecrementToGetCloser(robot.x, robot.OwnerCity.X);
         else if (difX < difZ)
-            robot.z += GetIncremementOrDecrementToGetCloser(robot.z, robot.PlayerCityController.Z);
+            robot.z += GetIncremementOrDecrementToGetCloser(robot.z, robot.OwnerCity.Z);
 
         if (!robot.IsAtPlayerCity())
             return false;
@@ -121,8 +121,8 @@ public class Instruction_Move : Instruction
     {
         SanityCheckIsWholeNumber("position X", robot.x);
         SanityCheckIsWholeNumber("position Z", robot.z);
-        SanityCheckIsWholeNumber("home X", robot.PlayerCityController.X);
-        SanityCheckIsWholeNumber("home Z", robot.PlayerCityController.Z);
+        SanityCheckIsWholeNumber("home X", robot.OwnerCity.X);
+        SanityCheckIsWholeNumber("home Z", robot.OwnerCity.Z);
     }
 
     private void SanityCheckIsWholeNumber(string friendlyName, float number)

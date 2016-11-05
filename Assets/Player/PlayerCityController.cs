@@ -6,13 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory, IEnergySource, IOwned
+public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory, IEnergySource
 {
     public MeshRenderer bodyMeshRenderer;
     public GameObject playerCityRubblePrefab;
 
     [SyncVar]
-    public string owner = "";
+    public string ownerConnectionId = "";
 
     [SyncVar]
     private string nick;
@@ -107,16 +107,6 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
     public int GetIronCount()
     {
         return inventory.Count(i => i.GetType() == typeof(IronItem));
-    }
-
-    public string GetOwner()
-    {
-        return owner;
-    }
-
-    public void SetOwner(string owner)
-    {
-        this.owner = owner;
     }
 
     public void AddOwnedGameObject(GameObject go)

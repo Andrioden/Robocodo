@@ -83,7 +83,7 @@ public class Instruction_DetectThen : Instruction
             int toZ = (int)potentialGO.transform.position.z;
             if (MathUtils.Distance(x, z, toX, toZ) <= maxDistance)
             {
-                if (attackable.GetOwner() != robot.GetOwner())
+                if (attackable.GetOwnerCity() != robot.GetOwnerCity())
                     return attackable;
             }
         }

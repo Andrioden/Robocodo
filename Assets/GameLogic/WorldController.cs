@@ -100,7 +100,7 @@ public class WorldController : NetworkBehaviour
         var playerCityController = playerCityGameObject.GetComponent<PlayerCityController>();
         if (playerCityController != null)
         {
-            playerCityController.owner = conn.connectionId.ToString();
+            playerCityController.ownerConnectionId = conn.connectionId.ToString();
             playerCityController.SetColor(playerColorManager.GetNextColor());
         }
 
@@ -140,10 +140,6 @@ public class WorldController : NetworkBehaviour
 
         GameObject newGameObject = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
 
-        var ownedObject = newGameObject.GetComponent<IOwned>();
-        if (ownedObject != null)
-            ownedObject.SetOwner(conn.connectionId.ToString());
-
         if (worldParent != null)
             newGameObject.transform.parent = worldParent;
 
@@ -151,6 +147,10 @@ public class WorldController : NetworkBehaviour
 
         if (NetworkServer.active)
             NetworkServer.SpawnWithClientAuthority(newGameObject, conn);
+
+        var ownedObject = newGameObject.GetComponent<IOwned>();
+        if (ownedObject != null)
+            ownedObject.SetAndSyncOwnerCity(conn.connectionId.ToString()); // I wonder if there is some race condition where this method runs to fast, before clients have the actualy objects. Ending up with not syncing the owner.
 
         playerCity.AddOwnedGameObject(newGameObject);
 
@@ -185,10 +185,6 @@ public class WorldController : NetworkBehaviour
             return null;
 
         GameObject newGameObject = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
-
-        var ownedObject = newGameObject.GetComponent<IOwned>();
-        if (ownedObject != null)
-            ownedObject.SetOwner(Settings.World_NeutralGameObjectOwner);
 
         if (worldParent != null)
             newGameObject.transform.parent = worldParent;
@@ -241,6 +237,14 @@ public class WorldController : NetworkBehaviour
         groundGameObject.transform.position = new Vector3(xPosition, -0.001f, zPosition);
 
         groundGameObject.GetComponent<TextureTilingController>().RescaleTileTexture();
+    }
+
+    public PlayerCityController FindPlayerCityController(string connectionID)
+    {
+        // I belive finding by tag is a quick unity action
+        return GameObject.FindGameObjectsWithTag("PlayerCity")
+            .Select(go => go.GetComponent<PlayerCityController>())
+            .Where(p => p != null && p.ownerConnectionId == connectionID).FirstOrDefault();
     }
 
     private bool IsServerOrDemo()
