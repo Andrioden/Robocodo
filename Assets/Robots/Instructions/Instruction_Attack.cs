@@ -79,7 +79,7 @@ public class Instruction_Attack : Instruction
         if (attackable != null)
             attackable.TakeDamage(robot.Settings_Damage());
         else
-            robot.SetFeedbackIfNotPreview("NO TARGET TO ATTACK");
+            robot.SetFeedbackIfNotPreview("NO TARGET TO ATTACK", false, true);
     }
 
     private IAttackable FindAttackableEnemy(int x, int z)

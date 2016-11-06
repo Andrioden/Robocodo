@@ -229,10 +229,12 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         RTSCamera.instance.PositionRelativeTo(transform);
     }
 
-    [Server]
-    public void ShowPopupForOwner(string text, Vector3 position, Color color)
+    public void ShowPopupForOwner(string text, Vector3 position, TextPopup.ColorType colorType)
     {
-        TargetShowPopup(connectionToClient, text, position, color);
+        if (isServer)
+            TargetShowPopup(connectionToClient, text, position, colorType.Color());
+        else
+            TextPopupManager.instance.ShowPopupGeneric(text, position, colorType.Color());
     }
 
     [Server]

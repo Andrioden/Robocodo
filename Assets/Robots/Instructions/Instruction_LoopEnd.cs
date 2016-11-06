@@ -65,6 +65,6 @@ public class Instruction_LoopEnd : Instruction
             }
         }
 
-        robot.SetFeedbackIfNotPreview("COULD NOT FIND MATCHING LOOP START");
+        robot.SetFeedbackIfNotPreview("COULD NOT FIND MATCHING LOOP START", false, false);
     }
 }

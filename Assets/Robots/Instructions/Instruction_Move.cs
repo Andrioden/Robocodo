@@ -99,7 +99,7 @@ public class Instruction_Move : Instruction
     private void ChangePosition(float newPosX, float newPosZ)
     {
         if (newPosX >= WorldController.instance.Width || newPosX < 0 || newPosZ >= WorldController.instance.Height || newPosZ < 0)
-            robot.SetFeedbackIfNotPreview("CAN NOT MOVE THERE");
+            robot.SetFeedbackIfNotPreview("CAN NOT MOVE THERE", true, false);
         else
         {
             robot.x = newPosX;

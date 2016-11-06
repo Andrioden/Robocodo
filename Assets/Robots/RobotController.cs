@@ -301,7 +301,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     [Client]
     protected bool ShouldAnimationBePlayed()
     {
-        return (energy > 0) && IsStarted && CurrentInstructionIndexIsValid && !isReprogrammingRobot && LastAppliedInstruction != null;
+        return (energy > 0) && IsStarted && currentInstructionIndexIsValid && !isReprogrammingRobot && LastAppliedInstruction != null;
     }
 
     [Client]
@@ -311,7 +311,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         {
             if (newInstructions.Count > Settings_Memory())
             {
-                CmdSetFeedback("NOT ENOUGH MEMORY");
+                SetFeedbackIfNotPreview("NOT ENOUGH MEMORY", true, true);
                 return;
             }
 
@@ -319,7 +319,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
             if (instructions.Count <= 0)
             {
-                CmdSetFeedback("NO INSTRUCTIONS DETECTED");
+                SetFeedbackIfNotPreview("NO INSTRUCTIONS DETECTED", true, true);
                 return;
             }
 
@@ -394,11 +394,11 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     /// </summary>
     public void Tick(object sender)
     {
-        SetFeedbackIfNotPreview("");
+        SetFeedbackIfNotPreview("", false, true);
 
         if (instructions.Count == 0)
         {
-            SetFeedbackIfNotPreview("NO INSTRUCTIONS");
+            SetFeedbackIfNotPreview("NO INSTRUCTIONS", true, true);
             return;
         }
 
@@ -415,7 +415,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             return;
 
         if (energy <= 0)
-            SetFeedbackIfNotPreview("NOT ENOUGH ENERGY");
+            SetFeedbackIfNotPreview("NOT ENOUGH ENERGY", true, true);
         else
         {
             if (ExecuteInstruction(currentInstruction))
@@ -451,24 +451,24 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             return true;
         else if (instruction.GetType() == typeof(Instruction_Unknown))
         {
-            SetFeedbackIfNotPreview(string.Format("UNKNOWN INSTRUCTION: '{0}'", instruction.Serialize()));
+            SetFeedbackIfNotPreview(string.Format("UNKNOWN INSTRUCTION: '{0}'", instruction.Serialize()), false, false);
             return true;
         }
         else if (!_allowedInstructions.Any(a => a.GetType() == instruction.GetType()))
         {
-            SetFeedbackIfNotPreview(string.Format("INSTRUCTION NOT ALLOWED: '{0}'", instruction.Serialize()));
+            SetFeedbackIfNotPreview(string.Format("INSTRUCTION NOT ALLOWED: '{0}'", instruction.Serialize()), false, false);
             return true;
         }
         else
             return instruction.Execute(this);
     }
 
-    public void SetFeedbackIfNotPreview(string message, bool setIsCurrentInstructionIndexValid = false)
+    public void SetFeedbackIfNotPreview(string message, bool showPopupInWorld, bool whatToSetIsCurrentInstructionValidTo)
     {
         if (isPreviewRobot)
             return;
 
-        _SetFeedback(message, setIsCurrentInstructionIndexValid);
+        _SetFeedback(message, whatToSetIsCurrentInstructionValidTo);
 
         /* If the feedback has not changed after 1 second we will clear it using a coroutine. */
         if (feedbackClearCoroutine != null)
@@ -476,22 +476,15 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
         feedbackClearCoroutine = ClearFeedbackAfterSecondsIfNotChanged(message, 1f);
         StartCoroutine(feedbackClearCoroutine);
+
+        if (showPopupInWorld)
+            ownerCity.ShowPopupForOwner(message, transform.position, TextPopup.ColorType.NEGATIVE);
     }
 
-    /// <summary>
-    /// Never run this method directly, always use SetFeedbackIfNotPreview
-    /// </summary>
-    [Server]
     private void _SetFeedback(string message, bool setIsCurrentInstructionIndexValid)
     {
         feedback = message;
         currentInstructionIndexIsValid = setIsCurrentInstructionIndexValid;
-    }
-
-    [Command]
-    private void CmdSetFeedback(string message)
-    {
-        SetFeedbackIfNotPreview(message);
     }
 
     private IEnumerator ClearFeedbackAfterSecondsIfNotChanged(string lastFeedback, float secondsDelay)
@@ -604,7 +597,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     {
         if (NoFreeModuleSlot())
         {
-            SetFeedbackIfNotPreview("NO FREE MODULE SLOT", true);
+            SetFeedbackIfNotPreview("NO FREE MODULE SLOT", true, true);
             return;
         }
 
@@ -617,7 +610,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         }
         else
         {
-            SetFeedbackIfNotPreview("NOT ENOUGH RESOURCES FOR MODULE", true);
+            SetFeedbackIfNotPreview("NOT ENOUGH RESOURCES FOR MODULE", true, true);
             return;
         }
     }
@@ -709,7 +702,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         if (health <= 0)
         {
             if (ownerCity != null)
-                ownerCity.ShowPopupForOwner("DESTROYED!", transform.position, Utils.HexToColor(TextPopup.ColorTypes.NEGATIVE));
+                ownerCity.ShowPopupForOwner("DESTROYED!", transform.position, TextPopup.ColorType.NEGATIVE);
             NetworkServer.Destroy(gameObject);
         }
     }
@@ -732,7 +725,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
         playerCity.TransferToInventory(salvagedResources);
 
-        ownerCity.ShowPopupForOwner("SALVAGED!", transform.position, Utils.HexToColor(TextPopup.ColorTypes.DEFAULT));
+        ownerCity.ShowPopupForOwner("SALVAGED!", transform.position, TextPopup.ColorType.DEFAULT);
 
         NetworkServer.Destroy(gameObject);
     }
@@ -753,7 +746,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         isReprogrammingRobot = true;
         currentInstructionBeingCleared = 1;
 
-        ownerCity.ShowPopupForOwner("REPROGRAMMNIG!", transform.position, Utils.HexToColor(TextPopup.ColorTypes.DEFAULT));
+        ownerCity.ShowPopupForOwner("REPROGRAMMNIG!", transform.position, TextPopup.ColorType.DEFAULT);
     }
 
     [Server]
@@ -780,16 +773,16 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             currentInstructionIndex = 0;
             currentInstructionIndexIsValid = true;
             mainLoopIterationCount = 0;
-            SetFeedbackIfNotPreview("", true);
+            SetFeedbackIfNotPreview("", false, true);
 
             modules.ForEach(module => module.Uninstall(false));
             modules.Clear();
             CacheAllowedInstructions();
 
-            ownerCity.ShowPopupForOwner("MEMORY CLEARED!", transform.position, Utils.HexToColor(TextPopup.ColorTypes.DEFAULT));
+            ownerCity.ShowPopupForOwner("MEMORY CLEARED!", transform.position, TextPopup.ColorType.DEFAULT);
         }
         else
-            SetFeedbackIfNotPreview(feedback, true);
+            SetFeedbackIfNotPreview(feedback, false, true);
     }
 
     public PlayerCityController GetOwnerCity()

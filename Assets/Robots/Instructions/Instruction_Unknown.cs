@@ -15,8 +15,7 @@ public class Instruction_Unknown : Instruction
 
     public override bool Execute(RobotController robot)
     {
-        robot.SetFeedbackIfNotPreview(string.Format("UNKNOWN INSTRUCTION: '{0}'", instruction));
-        return true;
+        throw new Exception("ATTEMPTED TO RUN UNKNOWN INSTRUCTION: '{0}'. Please check for unknown instruction before running it.");
     }
 
     public override bool CanBePreviewed()

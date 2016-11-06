@@ -52,10 +52,22 @@ public class TextPopup : MonoBehaviour
             textComponent.color = color.Value;
     }
 
-    public static class ColorTypes
+    public class ColorType
     {
-        public static readonly string DEFAULT = "12FFFFFF";
-        public static readonly string POSITIVE = "F9862DFF";
-        public static readonly string NEGATIVE = "FF1414FF";
+        public static ColorType DEFAULT { get { return new ColorType("12FFFFFF"); } }
+        public static ColorType POSITIVE { get { return new ColorType("F9862DFF"); } }
+        public static ColorType NEGATIVE { get { return new ColorType("FF1414FF"); } }
+
+        private string hexColor;
+
+        public ColorType(string hexColor)
+        {
+            this.hexColor = hexColor;
+        }
+
+        public Color Color()
+        {
+            return Utils.HexToColor(hexColor);
+        }
     }
 }
