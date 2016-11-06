@@ -20,7 +20,8 @@ public class ModuleInstaller : MonoBehaviour {
         this.robot = robot;
         this.module = module;
 
-        nameLabel.text = module.Settings_Name();
+        Cost cost = module.Settings_Cost();
+        nameLabel.text = string.Format("{0} ({1}c {2}i)", module.Settings_Name(), cost.Copper, cost.Iron);
         descriptionField.text = module.Settings_Description();
         installButton.onClick.RemoveAllListeners();
         installButton.onClick.AddListener(BuyModule);
