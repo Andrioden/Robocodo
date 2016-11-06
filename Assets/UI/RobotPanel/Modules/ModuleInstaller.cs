@@ -24,17 +24,14 @@ public class ModuleInstaller : MonoBehaviour {
         descriptionField.text = module.Settings_Description();
         installButton.onClick.RemoveAllListeners();
         installButton.onClick.AddListener(BuyModule);
-        installButton.onClick.AddListener(RefreshModuleMenu);
-    }
-
-    private void RefreshModuleMenu()
-    {
-        moduleMenuController.Setup(robot);
     }
 
     private void BuyModule()
     {
         if (robot.OwnerCity.CanAffordFlashIfNot(module.Settings_Cost()))
+        {
             robot.CmdAddModule(module.Serialize());
+            moduleMenuController.Setup(robot, module);
+        }
     }
 }

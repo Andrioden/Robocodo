@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Assets.GameLogic.ClassExtensions;
 using UnityEngine.UI;
+using System.Linq;
 
 // Ikke helt sikker på om jeg er enig i at ModuleInstaller og ModuleMenuController er 2 forskjellige klasser. Må switche mellom 2 klasser som uansett er ganske couplet slash avhengig av hverandre. TODO DISCUSSION
 public class ModuleMenuController : MonoBehaviour {
@@ -11,12 +12,15 @@ public class ModuleMenuController : MonoBehaviour {
 
     private RobotController robot;
 
-    public void Setup(RobotController robot)
+    public void Setup(RobotController robot, Module filterAwayModuleType = null)
     {
         this.robot = robot;
         transform.DestroyChildren();
 
         var modules = GetAvailableModules();
+
+        if (filterAwayModuleType != null)
+            modules = modules.Where(m => m.GetType() != filterAwayModuleType.GetType()).ToList();
 
         if (modules.Count > 0)
             modules.ForEach(module => AddModuleInstaller(this.robot, module));
