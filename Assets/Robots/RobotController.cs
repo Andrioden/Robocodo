@@ -803,6 +803,12 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         ownerCity = WorldController.instance.FindPlayerCityController(connectionId);
     }
 
+    [TargetRpc]
+    public void TargetSetOwnerCity(NetworkConnection target, string connectionId)
+    {
+        ownerCity = WorldController.instance.FindPlayerCityController(connectionId);
+    }
+
     [Client]
     public void SetOwnerCity(PlayerCityController ownerCity)
     {

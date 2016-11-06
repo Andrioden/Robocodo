@@ -17,16 +17,25 @@ public class CustomNetworkManager : NetworkManager
 
     public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
     {
-        if (numPlayers == 0)
+        if (numPlayers == 0) // Host
         {
             GameObject worldControllerGameObject = (GameObject)Instantiate(worldControllerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             NetworkServer.Spawn(worldControllerGameObject);
 
-            WorldController.instance.BuildWorld(30, 30, 10); //TODO: MatchSize; How can we get the correct number of players for the game?
+            WorldController.instance.BuildWorld(30, 30, 20);
 
             WorldTickController.instance.StartGame();
         }
 
         WorldController.instance.SpawnPlayer(conn, playerControllerId);
+
+        if (numPlayers > 0) // Client joined
+            SyncGameStateToClient(conn);
+    }
+
+    private void SyncGameStateToClient(NetworkConnection conn)
+    {
+        foreach (RobotController robot in FindObjectsOfType<RobotController>())
+            robot.TargetSetOwnerCity(conn, robot.GetOwnerCity().ownerConnectionId);
     }
 }
