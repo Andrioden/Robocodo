@@ -40,14 +40,14 @@ public class ResourcePanel : MonoBehaviour
         labelsRegisteredForFlashingFeedbackSupportDict.Add(ironLabel, false);
     }
 
-    public void FlashMissingResource(ResourceTypes resourceType)
+    public void FlashMissingResource(string resourceType)
     {
-        if (resourceType == ResourceTypes.Copper)
+        if (resourceType == CopperItem.SerializedType)
         {
             if (labelsRegisteredForFlashingFeedbackSupportDict[copperLabel] == false)
                 StartCoroutine(AddFlashEffectToTextField(copperLabel, 4));
         }
-        else if (resourceType == ResourceTypes.Iron)
+        else if (resourceType == IronItem.SerializedType)
         {
             if (labelsRegisteredForFlashingFeedbackSupportDict[ironLabel] == false)
                 StartCoroutine(AddFlashEffectToTextField(ironLabel, 4));
@@ -76,16 +76,9 @@ public class ResourcePanel : MonoBehaviour
         if (localPlayerCity != null)
         {
             nickLabel.text = localPlayerCity.Nick;
-            copperLabel.text = ResourceTypes.Copper + ": " + localPlayerCity.GetCopperCount();
-            ironLabel.text = ResourceTypes.Iron + ": " + localPlayerCity.GetIronCount();
+            copperLabel.text = "Copper: " + localPlayerCity.GetCopperCount();
+            ironLabel.text = "Iron: " + localPlayerCity.GetIronCount();
             garageLabel.text = "Garage: " + localPlayerCity.Garage.Count();
-        }
-        else
-        {
-            nickLabel.text = "";
-            copperLabel.text = ResourceTypes.Copper + ": " + 0;
-            ironLabel.text = ResourceTypes.Iron + ": " + 0;
-            garageLabel.text = "Garage: " + 0;
         }
     }
 
@@ -118,12 +111,5 @@ public class ResourcePanel : MonoBehaviour
         }
 
         labelsRegisteredForFlashingFeedbackSupportDict[textField] = false;
-    }
-
-    //TODO: Considered using CopperItem.SerializedType instead, but it felt a bit weird.
-    public enum ResourceTypes
-    {
-        Copper = 0,
-        Iron = 1
     }
 }

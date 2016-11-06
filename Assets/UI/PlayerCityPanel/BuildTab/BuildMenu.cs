@@ -15,13 +15,13 @@ public class BuildMenu : MonoBehaviour
     Dictionary<string, Coroutine> _itemIDCoroutinePairs = new Dictionary<string, Coroutine>();
     private int _chainedPurchasesCount = 0;
 
-    public void AddBuildableItem(string name, UnityAction buyMethod, int copperCost, int ironCost, Sprite sprite)
+    public void AddBuildableItem(string name, UnityAction buyMethod, Cost cost, Sprite sprite)
     {
         GameObject menuItemGO = Instantiate(buildableItemPrefab);
         menuItemGO.transform.SetParent(GetColumn(), false);
 
         BuildableItem buildableItem = menuItemGO.GetComponent<BuildableItem>();
-        buildableItem.SetupBuildableItem(name, buyMethod, copperCost, ironCost, sprite);
+        buildableItem.SetupBuildableItem(name, buyMethod, cost.Copper, cost.Iron, sprite);
     }
 
     private Transform GetColumn()

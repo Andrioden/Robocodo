@@ -34,6 +34,7 @@ public class ModuleInstaller : MonoBehaviour {
 
     private void BuyModule()
     {
-        robot.CmdAddModule(module.Serialize());
+        if (robot.OwnerCity.CanAffordFlashIfNot(module.Settings_Cost()))
+            robot.CmdAddModule(module.Serialize());
     }
 }

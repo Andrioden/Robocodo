@@ -105,8 +105,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     // ********** SETTINGS **********
 
     public abstract string Settings_Name();
-    public abstract int Settings_CopperCost();
-    public abstract int Settings_IronCost();
+    public abstract Cost Settings_Cost();
     public abstract int Settings_Memory();
     public abstract int Settings_IPT(); // Instructions Per Tick. Cant call it speed because it can be confused with move speed.
     public abstract int Settings_MaxEnergy();
@@ -506,7 +505,10 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     public bool IsAtPlayerCity()
     {
-        return x == ownerCity.X && z == ownerCity.Z;
+        if (ownerCity == null)
+            return false;
+        else
+            return x == ownerCity.X && z == ownerCity.Z;
     }
 
     private bool IsHomeByTransform()
@@ -608,21 +610,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
         Module module = Module.Deserialize(serializedModule);
 
-        bool canAfford = true;
-        if (ownerCity.GetCopperCount() < module.Settings_CopperCost())
+        if (ownerCity.CanAfford(module.Settings_Cost()))
         {
-            ownerCity.FlashMissingResourceForOwner(ResourcePanel.ResourceTypes.Copper);
-            canAfford = false;
-        }
-        if (ownerCity.GetIronCount() < module.Settings_IronCost())
-        {
-            ownerCity.FlashMissingResourceForOwner(ResourcePanel.ResourceTypes.Iron);
-            canAfford = false;
-        }
-
-        if (canAfford)
-        {
-            ownerCity.RemoveResources(module.Settings_CopperCost(), module.Settings_IronCost());
+            ownerCity.RemoveResources(module.Settings_Cost());
             AddModule(module);
         }
         else
@@ -731,11 +721,12 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
         List<InventoryItem> salvagedResources = new List<InventoryItem>();
 
-        int salvagedCopper = MathUtils.RoundMin1IfHasValue(Settings_CopperCost() * Settings.Robot_SalvagePercentage / 100.0);
+        Cost cost = Settings_Cost();
+        int salvagedCopper = MathUtils.RoundMin1IfHasValue(cost.Copper * Settings.Robot_SalvagePercentage / 100.0);
         for (int c = 0; c < salvagedCopper; c++)
             salvagedResources.Add(new CopperItem());
 
-        int salvagedIron = MathUtils.RoundMin1IfHasValue(Settings_IronCost() * Settings.Robot_SalvagePercentage / 100.0);
+        int salvagedIron = MathUtils.RoundMin1IfHasValue(cost.Iron * Settings.Robot_SalvagePercentage / 100.0);
         for (int c = 0; c < salvagedIron; c++)
             salvagedResources.Add(new IronItem());
 

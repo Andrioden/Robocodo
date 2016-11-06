@@ -63,23 +63,26 @@ public class PlayerCityPanel : MonoBehaviour
 
     private void AddBuildableItemsToBuildMenu()
     {
-        buildMenu.AddBuildableItem(HarvesterRobotController.Settings_name, BuyHarvesterRobot, HarvesterRobotController.Settings_copperCost, HarvesterRobotController.Settings_ironCost, harvesterRobotSprite);
-        buildMenu.AddBuildableItem(CombatRobotController.Settings_name, BuyCombatRobot, CombatRobotController.Settings_copperCost, CombatRobotController.Settings_ironCost, combatRobotSprite);
-        buildMenu.AddBuildableItem(TransporterRobotController.Settings_name, BuyTransporterRobot, TransporterRobotController.Settings_copperCost, TransporterRobotController.Settings_ironCost, transporterRobotSprite);
+        buildMenu.AddBuildableItem(HarvesterRobotController.Settings_name, BuyHarvesterRobot, HarvesterRobotController.Settings_cost(), harvesterRobotSprite);
+        buildMenu.AddBuildableItem(CombatRobotController.Settings_name, BuyCombatRobot, CombatRobotController.Settings_cost(), combatRobotSprite);
+        buildMenu.AddBuildableItem(TransporterRobotController.Settings_name, BuyTransporterRobot, TransporterRobotController.Settings_cost(), transporterRobotSprite);
     }
 
     private void BuyHarvesterRobot()
     {
-        instance.playerCityController.CmdBuyHarvesterRobot();
+        if (playerCityController.CanAffordFlashIfNot(HarvesterRobotController.Settings_cost()))
+            playerCityController.CmdBuyHarvesterRobot();
     }
 
     private void BuyCombatRobot()
     {
-        instance.playerCityController.CmdBuyCombatRobot();
+        if (playerCityController.CanAffordFlashIfNot(CombatRobotController.Settings_cost()))
+            playerCityController.CmdBuyCombatRobot();
     }
 
     private void BuyTransporterRobot()
     {
-        instance.playerCityController.CmdBuyTransporterRobot();
+        if (playerCityController.CanAffordFlashIfNot(TransporterRobotController.Settings_cost()))
+            playerCityController.CmdBuyTransporterRobot();
     }
 }

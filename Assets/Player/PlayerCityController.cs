@@ -118,22 +118,10 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
     public void CmdBuyHarvesterRobot()
     {
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
-        bool canAfford = true;
-        if (GetCopperCount() < HarvesterRobotController.Settings_copperCost)
-        {
-            TargetFlashMissingResource(connectionToClient, ResourcePanel.ResourceTypes.Copper);
-            canAfford = false;
-        }
-        if (GetIronCount() < HarvesterRobotController.Settings_ironCost)
-        {
-            TargetFlashMissingResource(connectionToClient, ResourcePanel.ResourceTypes.Iron);
-            canAfford = false;
-        }
-
-        if (canAfford)
+        if (CanAfford(HarvesterRobotController.Settings_cost()))
         {
             WorldController.instance.SpawnHarvesterRobotWithClientAuthority(connectionToClient, X, Z, this);
-            RemoveResources(HarvesterRobotController.Settings_copperCost, HarvesterRobotController.Settings_ironCost);
+            RemoveResources(HarvesterRobotController.Settings_cost());
             TargetIndicateSuccessfulPurchase(connectionToClient, HarvesterRobotController.Settings_name);
         }
     }
@@ -142,22 +130,10 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
     public void CmdBuyCombatRobot()
     {
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
-        bool canAfford = true;
-        if (GetCopperCount() < CombatRobotController.Settings_copperCost)
-        {
-            TargetFlashMissingResource(connectionToClient, ResourcePanel.ResourceTypes.Copper);
-            canAfford = false;
-        }
-        if (GetIronCount() < CombatRobotController.Settings_ironCost)
-        {
-            TargetFlashMissingResource(connectionToClient, ResourcePanel.ResourceTypes.Iron);
-            canAfford = false;
-        }
-
-        if (canAfford)
+        if (CanAfford(CombatRobotController.Settings_cost()))
         {
             WorldController.instance.SpawnCombatRobotWithClientAuthority(connectionToClient, X, Z, this);
-            RemoveResources(CombatRobotController.Settings_copperCost, CombatRobotController.Settings_ironCost);
+            RemoveResources(CombatRobotController.Settings_cost());
             TargetIndicateSuccessfulPurchase(connectionToClient, CombatRobotController.Settings_name);
         }
     }
@@ -166,30 +142,12 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
     public void CmdBuyTransporterRobot()
     {
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
-        bool canAfford = true;
-        if (GetCopperCount() < TransporterRobotController.Settings_copperCost)
-        {
-            TargetFlashMissingResource(connectionToClient, ResourcePanel.ResourceTypes.Copper);
-            canAfford = false;
-        }
-        if (GetIronCount() < TransporterRobotController.Settings_ironCost)
-        {
-            TargetFlashMissingResource(connectionToClient, ResourcePanel.ResourceTypes.Iron);
-            canAfford = false;
-        }
-
-        if (canAfford)
+        if (CanAfford(TransporterRobotController.Settings_cost()))
         {
             WorldController.instance.SpawnTransporterRobotWithClientAuthority(connectionToClient, X, Z, this);
-            RemoveResources(TransporterRobotController.Settings_copperCost, TransporterRobotController.Settings_ironCost);
+            RemoveResources(TransporterRobotController.Settings_cost());
             TargetIndicateSuccessfulPurchase(connectionToClient, TransporterRobotController.Settings_name);
         }
-    }
-
-    [Server]
-    public void SetColor(Color32 teamColor)
-    {
-        hexColor = Utils.ColorToHex(teamColor);
     }
 
     /// <summary>
@@ -201,6 +159,55 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         inventory.AddRange(items);
         RpcSyncInventory(InventoryItem.SerializeList(inventory));
         return new List<InventoryItem>(); // No items was not added
+    }
+
+    [Server]
+    public void RemoveResources(Cost cost)
+    {
+        for (int c = 0; c < cost.Copper; c++)
+            inventory.RemoveAt(inventory.FindIndex(x => x.GetType() == typeof(CopperItem)));
+
+        for (int i = 0; i < cost.Iron; i++)
+            inventory.RemoveAt(inventory.FindIndex(x => x.GetType() == typeof(IronItem)));
+
+        RpcSyncInventory(InventoryItem.SerializeList(inventory));
+    }
+
+    [ClientRpc]
+    private void RpcSyncInventory(string[] itemCounts)
+    {
+        inventory = InventoryItem.DeserializeList(itemCounts);
+    }
+
+    public bool CanAfford(Cost cost)
+    {
+        return CanAffordReturnMissing(cost).Count == 0;
+    }
+
+    /// <summary>
+    /// Returns the serialized string for resource types the player(city) is missing
+    /// </summary>
+    public List<string> CanAffordReturnMissing(Cost cost)
+    {
+        List<string> missing = new List<string>();
+
+        if (cost.Copper > GetCopperCount())
+            missing.Add(CopperItem.SerializedType);
+        if (cost.Iron > GetIronCount())
+            missing.Add(IronItem.SerializedType);
+
+        return missing;
+    }
+
+    [Client]
+    public bool CanAffordFlashIfNot(Cost cost)
+    {
+        List<string> missingResources = CanAffordReturnMissing(cost);
+
+        foreach (string resourceString in missingResources)
+            ResourcePanel.instance.FlashMissingResource(resourceString);
+
+        return missingResources.Count == 0;
     }
 
     public void EnterGarage(RobotController robot)
@@ -215,24 +222,6 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         garage.Remove(robot);
         if (OnRobotAddedToGarage != null)
             OnRobotRemovedFromGarage(robot);
-    }
-
-    [Server]
-    public void RemoveResources(int copper, int iron)
-    {
-        for (int c = 0; c < copper; c++)
-            inventory.RemoveAt(inventory.FindIndex(x => x.GetType() == typeof(CopperItem)));
-
-        for (int i = 0; i < iron; i++)
-            inventory.RemoveAt(inventory.FindIndex(x => x.GetType() == typeof(IronItem)));
-
-        RpcSyncInventory(InventoryItem.SerializeList(inventory));
-    }
-
-    [ClientRpc]
-    private void RpcSyncInventory(string[] itemCounts)
-    {
-        inventory = InventoryItem.DeserializeList(itemCounts);
     }
 
     private void AdjustCameraRelativeToPlayer()
@@ -258,22 +247,16 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         TextPopupManager.instance.ShowPopupGeneric(text, position, color);
     }
 
-    [Server]
-    public void FlashMissingResourceForOwner(ResourcePanel.ResourceTypes resourceType)
-    {
-        TargetFlashMissingResource(connectionToClient, resourceType);
-    }
-
-    [TargetRpc]
-    private void TargetFlashMissingResource(NetworkConnection target, ResourcePanel.ResourceTypes resourceType)
-    {
-        ResourcePanel.instance.FlashMissingResource(resourceType);
-    }
-
     [TargetRpc]
     private void TargetIndicateSuccessfulPurchase(NetworkConnection target, string robotTypeName)
     {
         PlayerCityPanel.instance.buildMenu.IndicateSuccessfulPurchase(robotTypeName);
+    }
+
+    [Server]
+    public void SetColor(Color32 teamColor)
+    {
+        hexColor = Utils.ColorToHex(teamColor);
     }
 
     [Command]

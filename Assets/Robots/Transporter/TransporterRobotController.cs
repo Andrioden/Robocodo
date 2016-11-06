@@ -5,15 +5,16 @@ using System.Collections.Generic;
 public class TransporterRobotController : RobotController
 {
 
-    public static string Settings_name = "TRANSPORTER";
-    public static int Settings_copperCost = 5;
-    public static int Settings_ironCost = 20;
     public Sprite sprite;
     public override Sprite Sprite() { return sprite; }
 
+    // ********** SETTINGS **********
+
+    public static string Settings_name = "TRANSPORTER";
+    public static Cost Settings_cost() { return new Cost() { Copper = 5, Iron = 20 }; }
+
     public override string Settings_Name() { return Settings_name; }
-    public override int Settings_CopperCost() { return Settings_copperCost; }
-    public override int Settings_IronCost() { return Settings_ironCost; }
+    public override Cost Settings_Cost() { return Settings_cost(); }
     public override int Settings_Memory() { return 20; }
     public override int Settings_IPT() { return 2; }
     public override int Settings_MaxEnergy() { return 200; }
@@ -43,7 +44,6 @@ public class TransporterRobotController : RobotController
     {
 
     }
-
 
     public override GameObject SpawnPreviewGameObjectClone()
     {
