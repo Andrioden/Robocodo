@@ -105,6 +105,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     // ********** SETTINGS **********
 
     public abstract string Settings_Name();
+    public abstract Color Settings_Color();
     public abstract Cost Settings_Cost();
     public abstract int Settings_Memory();
     public abstract int Settings_IPT(); // Instructions Per Tick. Cant call it speed because it can be confused with move speed.
@@ -148,6 +149,9 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             Debug.LogError("Mesh game object reference missing. Will not be able to hide physical robot when in garage etc.");
 
         InitDefaultValues();
+
+        if (GameObjectUtils.FindClientsOwnPlayerCity() == ownerCity)
+            StackingRobotsOverhangManager.instance.RefreshStackingRobotsOverheads();
     }
 
     // Update is called once per frame
@@ -292,6 +296,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         NonMovementBasedFacingDirection();
     }
 
+    [Client]
     private void OnIsStartedChanged(bool newValue)
     {
         isStarted = newValue;
@@ -305,7 +310,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     }
 
     [Client]
-    public void RunCode(List<string> newInstructions)
+    public void Run(List<string> newInstructions)
     {
         if (hasAuthority && !isStarted)
         {
@@ -328,6 +333,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
             //For quicker response when changing from setup mode to running mode in GUI. Will be overridden by server when syncvar is synced.
             isStarted = true;
+            StackingRobotsOverhangManager.instance.RefreshStackingRobotsOverheads();
         }
     }
 

@@ -14,6 +14,7 @@ public class TransporterRobotController : RobotController
     public static Cost Settings_cost() { return new Cost() { Copper = 5, Iron = 20 }; }
 
     public override string Settings_Name() { return Settings_name; }
+    public override Color Settings_Color() { return Color.blue; }
     public override Cost Settings_Cost() { return Settings_cost(); }
     public override int Settings_Memory() { return 20; }
     public override int Settings_IPT() { return 2; }

@@ -129,7 +129,13 @@ public static class ScenarioSetup
         PlayerCityController newPlayerCity = playerGO.GetComponent<PlayerCityController>();
 
         wc.SpawnCombatRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
+        wc.SpawnCombatRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
+        wc.SpawnCombatRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
         wc.SpawnHarvesterRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
+        wc.SpawnHarvesterRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
+        wc.SpawnHarvesterRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
+        wc.SpawnTransporterRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
+        wc.SpawnTransporterRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
         wc.SpawnTransporterRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
     }
 

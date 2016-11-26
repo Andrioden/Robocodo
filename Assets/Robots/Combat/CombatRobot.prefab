@@ -4099,7 +4099,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c1fdc973f7bb4c42ba863399d4ad948, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  owner: 
   meshGO: {fileID: 191336}
   colorRenderers:
   - {fileID: 2308666}

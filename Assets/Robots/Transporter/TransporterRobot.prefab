@@ -236,11 +236,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8913d8b53e77e1245a7fe2c50f30a6a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  owner: NEUTRAL
   meshGO: {fileID: 1000013687931282}
   colorRenderers:
   - {fileID: 2394850}
+  x: 0
+  z: 0
   isPreviewRobot: 0
+  nextInstructionIndex: 0
   sprite: {fileID: 21300000, guid: 2fd649c782d45574f8fe39d69a6a75f5, type: 3}
 --- !u!136 &13661514
 CapsuleCollider:

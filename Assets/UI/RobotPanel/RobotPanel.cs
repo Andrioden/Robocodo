@@ -201,10 +201,10 @@ public class RobotPanel : MonoBehaviour
         CleanUpPreviewer();
     }
 
-    private void RunCode()
+    private void RunRobot()
     {
         KeyboardManager.KeyboardLockOff();
-        robot.RunCode(GetCleanedCodeInput());
+        robot.Run(GetCleanedCodeInput());
 
         if (robot.IsStarted)
             EnableRunningModePanel();
@@ -425,7 +425,7 @@ public class RobotPanel : MonoBehaviour
         codeInputField.onEndEdit.AddListener(KeyboardManager.KeyboardLockOff);
 
         runButton.onClick.RemoveAllListeners();
-        runButton.onClick.AddListener(RunCode);
+        runButton.onClick.AddListener(RunRobot);
 
         moduleMenuButton.onClick.RemoveAllListeners();
         moduleMenuButton.onClick.AddListener(ToggleShowModuleMenu);
