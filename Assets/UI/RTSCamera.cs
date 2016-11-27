@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using UnityEngine.EventSystems;
 
 /* Source and credit: C Sharp Accent Tutorials - Unity 3d Quick Tutorial RTS Camera with Automatic Height Adjustment https://youtu.be/QLOcykNgl7M */
 
@@ -39,7 +40,7 @@ public class RTSCamera : MonoBehaviour
         if (!KeyboardManager.KeyboardLock)
             MoveCameraWithKeyboard();
 
-        if(Settings.GUI_EnableEdgeScrolling)
+        if (Settings.GUI_EnableEdgeScrolling)
             MoveCameraWithMouseAndScreenEdge();
         ZoomCameraWithScrollWheel();
     }
@@ -75,6 +76,15 @@ public class RTSCamera : MonoBehaviour
 
     private void ZoomCameraWithScrollWheel()
     {
+        //Don't scroll if outside screen.
+        Rect screenRect = new Rect(0, 0, Screen.width, Screen.height);
+        if (!screenRect.Contains(Input.mousePosition))
+            return;
+
+        //Don't scroll if over UI element.
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
+
         var scollInput = Input.GetAxis("Mouse ScrollWheel");
         transform.Translate(Vector3.down * scollInput * 15f);
     }
