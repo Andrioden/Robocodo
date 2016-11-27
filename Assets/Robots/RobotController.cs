@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectable, IHasInventory
+public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISelectable, IHasInventory
 {
     // ********** COMMON VARIABLES **********
 
@@ -16,11 +16,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
 
     public Renderer[] colorRenderers;
     private bool isColorSet = false;
-
-    [SyncVar]
-    public float x;
-    [SyncVar]
-    public float z;
 
     private bool isAlreadyHome = false;
 
@@ -98,10 +93,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     protected int energy;
     public int Energy { get { return energy; } }
 
-    [SyncVar]
-    protected int health;
-    public int Health { get { return health; } }
-
     // ********** SETTINGS **********
 
     public abstract string Settings_Name();
@@ -113,8 +104,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     public abstract int Settings_InventoryCapacity();
     public abstract int Settings_ModuleCapacity();
     public abstract int Settings_HarvestYield();
-    public abstract int Settings_Damage();
-    public abstract int Settings_StartHealth();
     public abstract Sprite Sprite();
 
     private List<Instruction> commonInstructions = new List<Instruction>()
@@ -225,11 +214,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
             meshGO.SetActive(true);
         else if (IsHomeByTransform() && isAlreadyHome && MouseManager.currentlySelected != this && !isStarted)
             meshGO.SetActive(false);
-    }
-
-    public Coordinate GetCoordinate()
-    {
-        return new Coordinate((int)x, (int)z);
     }
 
     [Command]
@@ -396,7 +380,7 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
     }
 
     /// <summary>
-    /// Is not set to server because it is used by the preview
+    /// Is not set to [Server] because it is used by the preview
     /// </summary>
     public void Tick(object sender)
     {
@@ -677,28 +661,6 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
         energy = Math.Min(Settings_MaxEnergy(), energy + change);
     }
 
-    public T FindOnCurrentPosition<T>()
-    {
-        return FindNearbyCollidingGameObjects<T>()
-            .Where(go => go.transform.position.x == x && go.transform.position.z == z)
-            .Select(go => go.transform.root.GetComponent<T>())
-            .FirstOrDefault();
-    }
-
-    public List<GameObject> FindNearbyCollidingGameObjects<T>(float radius = 7.0f)
-    {
-        return FindNearbyCollidingGameObjects(radius).Where(go => go.transform.root.GetComponent<T>() != null).ToList();
-    }
-
-    public List<GameObject> FindNearbyCollidingGameObjects(float radius = 7.0f)
-    {
-        return Physics.OverlapSphere(transform.position, radius)
-             .Except(new[] { GetComponent<Collider>() })                // Should check if its not the same collider as current collider, not sure if it works
-             .Where(c => c.transform.root.gameObject != gameObject)     // Check that it is not the same object
-             .Select(c => c.gameObject)
-             .ToList();
-    }
-
     [Server]
     public void TakeDamage(int damage)
     {
@@ -711,6 +673,12 @@ public abstract class RobotController : NetworkBehaviour, IAttackable, ISelectab
                 ownerCity.ShowPopupForOwner("DESTROYED!", transform.position, TextPopup.ColorType.NEGATIVE);
             NetworkServer.Destroy(gameObject);
         }
+    }
+
+    [Server]
+    public bool Targetable()
+    {
+        return !IsAtPlayerCity();
     }
 
     [Server]

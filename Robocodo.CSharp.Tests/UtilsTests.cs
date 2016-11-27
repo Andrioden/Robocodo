@@ -25,6 +25,14 @@ namespace Tests
         }
 
         [TestMethod]
+        public void RandomFloatTest()
+        {
+            Assert.AreEqual(-1, Utils.RandomFloat(-1, -1));
+            Assert.AreEqual(0, Utils.RandomFloat(0, 0));
+            Assert.AreEqual(1, Utils.RandomFloat(1, 1));
+        }
+
+        [TestMethod]
         public void PercentageRollTest()
         {
             double percentChance = 0.1 * 2.0;

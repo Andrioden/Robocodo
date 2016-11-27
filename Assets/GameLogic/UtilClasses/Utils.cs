@@ -40,6 +40,11 @@ public static class Utils
         return rnd.NextDouble() * (max - min) + min;
     }
 
+    public static float RandomFloat(float min, float max)
+    {
+        return (float)rnd.NextDouble() * (max - min) + min;
+    }
+
     public static bool PercentageRoll(double percentage)
     {
         return RandomDouble(0.0, 100.0) <= percentage;

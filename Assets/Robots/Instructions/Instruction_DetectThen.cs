@@ -76,15 +76,12 @@ public class Instruction_DetectThen : Instruction
 
     private IAttackable FindNearbyEnemy(int x, int z, double maxDistance)
     {
-        foreach (GameObject potentialGO in robot.FindNearbyCollidingGameObjects<IAttackable>())
+        foreach (IAttackable potentialTarget in robot.FindNearbyAttackableTargets())
         {
-            IAttackable attackable = potentialGO.transform.root.GetComponent<IAttackable>();
-            int toX = (int)potentialGO.transform.position.x;
-            int toZ = (int)potentialGO.transform.position.z;
-            if (MathUtils.Distance(x, z, toX, toZ) <= maxDistance)
+            if (MathUtils.Distance(x, z, potentialTarget.X(), potentialTarget.Z()) <= maxDistance)
             {
-                if (attackable.GetOwnerCity() != robot.GetOwnerCity())
-                    return attackable;
+                if (potentialTarget.GetOwnerCity() != robot.GetOwnerCity())
+                    return potentialTarget;
             }
         }
 

@@ -84,14 +84,12 @@ public class Instruction_Attack : Instruction
 
     private IAttackable FindAttackableEnemy(int x, int z)
     {
-        foreach (GameObject potentialGO in robot.FindNearbyCollidingGameObjects())
+        foreach (IAttackable potentialTarget in robot.FindNearbyAttackableTargets())
         {
-            IAttackable attackable = potentialGO.transform.root.GetComponent<IAttackable>();
-
-            if (attackable != null && potentialGO.transform.position.x == x && potentialGO.transform.position.z == z)
+            if (potentialTarget.X() == x && potentialTarget.Z() == z)
             {
-                if (attackable.GetOwnerCity() != robot.GetOwnerCity())
-                    return attackable;
+                if (potentialTarget.GetOwnerCity() != robot.GetOwnerCity())
+                    return potentialTarget;
             }
         }
 

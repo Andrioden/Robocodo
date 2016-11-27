@@ -11,6 +11,7 @@ GameObject:
   - 114: {fileID: 11494072}
   - 114: {fileID: 11442508}
   - 114: {fileID: 114000012829278218}
+  - 114: {fileID: 114000013151650332}
   m_Layer: 0
   m_Name: WorldController
   m_TagString: Untagged
@@ -105,4 +106,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stackingRobotsOverhangPrefab: {fileID: 1000010476454806, guid: d1ff04a1b7428964ea350aec141a76c3,
+    type: 2}
+--- !u!114 &114000013151650332
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 190096}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 044687ffb76f5fb47a9652952b6f6011, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scavengerGroupPrefab: {fileID: 1000011173860404, guid: 45ca152e2d3f4fd40b8a63a8147ffd43,
     type: 2}

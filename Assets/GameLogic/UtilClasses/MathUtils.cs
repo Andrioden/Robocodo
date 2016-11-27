@@ -8,6 +8,11 @@ public static class MathUtils
         return Math.Sqrt(Math.Pow(Math.Abs(toX - fromX), 2) + Math.Pow(Math.Abs(toZ - fromZ), 2));
     }
 
+    public static double Distance(float fromX, float fromZ, float toX, float toZ)
+    {
+        return Math.Sqrt(Math.Pow(Math.Abs(toX - fromX), 2) + Math.Pow(Math.Abs(toZ - fromZ), 2));
+    }
+
     /// <summary>
     /// Linearly converts an value in int range to the same linearly converted value inanother int range. Consider if you have an potential value range of 0 to 10.
     /// This 0 - 10 range should scale an object size from 0 - 100. So this method converts has to convert these two ranges.
