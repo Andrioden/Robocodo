@@ -9,7 +9,7 @@ public class WorldBuilder
     private int width;
     private int height;
 
-    public bool[,] tiles;
+    private TileType[,] tiles;
 
     List<Coordinate> reservedPlayerCoordinates = new List<Coordinate>(); // Should never be manipulated directly, only through the designated method
     int playerCordIncrement = 0;
@@ -21,7 +21,7 @@ public class WorldBuilder
     {
         this.width = width;
         this.height = height;
-        tiles = new bool[width, height];
+        tiles = new TileType[width, height];
 
         /* Reserve <playerCount> number of spots for playerCities before allocating any other tiles */
         for (int i = 0; i < reservedPlayerSpotCount; i++)
@@ -44,6 +44,18 @@ public class WorldBuilder
         return nextPos;
     }
 
+    public List<Coordinate> GetCityOrReservedCoordinates()
+    {
+        List<Coordinate> cities = new List<Coordinate>();
+
+        for (int x = 0; x < tiles.GetLength(0); x++)
+            for (int z = 0; z < tiles.GetLength(1); z++)
+                if (tiles[x, z] == TileType.City || tiles[x, z] == TileType.CityReservation)
+                    cities.Add(new Coordinate(x, z));
+
+        return cities;
+    }
+
     private void ReservePlayerCoordinate(Coordinate playerCityCoordinate)
     {
         reservedPlayerCoordinates.Add(playerCityCoordinate);
@@ -51,19 +63,19 @@ public class WorldBuilder
         AddCopperNode(GetRandomOpenCoordinateNear(playerCityCoordinate, 1, 3));
         AddIronNode(GetRandomOpenCoordinateNear(playerCityCoordinate, 1, 3));
 
-        tiles[playerCityCoordinate.x, playerCityCoordinate.z] = false;
+        tiles[playerCityCoordinate.x, playerCityCoordinate.z] = TileType.CityReservation;
     }
 
     private void AddCopperNode(Coordinate coord)
     {
         copperNodeCoordinates.Add(coord);
-        tiles[coord.x, coord.z] = false;
+        tiles[coord.x, coord.z] = TileType.Resource;
     }
 
     private void AddIronNode(Coordinate coord)
     {
         ironNodeCoordinates.Add(coord);
-        tiles[coord.x, coord.z] = false;
+        tiles[coord.x, coord.z] = TileType.Resource;
     }
 
     private Coordinate GetRandomOpenCoordinate()
@@ -77,7 +89,7 @@ public class WorldBuilder
 
             int x = Utils.RandomInt(0, width);
             int z = Utils.RandomInt(0, height);
-            if (!tiles[x, z])
+            if (tiles[x, z] == TileType.Empty)
                 return new Coordinate(x, z);
         }
     }
@@ -86,11 +98,11 @@ public class WorldBuilder
     /// Image you have two Squares, one big and one small. This method uses minDistance-1 as a little square and maxDistance as a big square.
     /// It finds availible open spots by withdrawing from the big square coordinates that is in the small square.
     /// </summary>
-    public Coordinate GetRandomOpenCoordinateNear(Coordinate coord, int minDistance, int maxDistance)
+    private Coordinate GetRandomOpenCoordinateNear(Coordinate coord, int minDistance, int maxDistance)
     {
         List<Coordinate> openCoords = new List<Coordinate>();
 
-        List<Coordinate> ignoringCoordinates = GetOpenCoordinatesNear(coord, minDistance-1);
+        List<Coordinate> ignoringCoordinates = GetOpenCoordinatesNear(coord, minDistance - 1);
 
         foreach (Coordinate potentialOpenCoord in GetOpenCoordinatesNear(coord, maxDistance))
             if (!ignoringCoordinates.Exists(c => c.x == potentialOpenCoord.x && c.z == potentialOpenCoord.z))
@@ -107,18 +119,26 @@ public class WorldBuilder
     private List<Coordinate> GetOpenCoordinatesNear(Coordinate coord, int maxDistance)
     {
         int minX = Math.Max(0, coord.x - maxDistance);
-        int maxX = Math.Min(width-1, coord.x + maxDistance);
+        int maxX = Math.Min(width - 1, coord.x + maxDistance);
         int minZ = Math.Max(0, coord.z - maxDistance);
-        int maxZ = Math.Min(height-1, coord.z + maxDistance);
+        int maxZ = Math.Min(height - 1, coord.z + maxDistance);
 
         List<Coordinate> openCoords = new List<Coordinate>();
         for (int x = minX; x <= maxX; x++)
             for (int z = minZ; z <= maxZ; z++)
-                if (!tiles[x, z])
+                if (tiles[x, z] == TileType.Empty)
                     openCoords.Add(new Coordinate(x, z));
 
         return openCoords;
     }
+}
+
+public enum TileType
+{
+    Empty, // Is defaulted to this when initing enum array
+    CityReservation,
+    City,
+    Resource
 }
 
 public class Coordinate

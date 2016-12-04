@@ -14,10 +14,12 @@ public class WorldController : NetworkBehaviour
     public GameObject harvesterRobotPrefab;
     public GameObject combatRobotPrefab;
     public GameObject transporterRobotPrefab;
+    public InfectionController infectionController;
 
     private GameObject groundGameObject;
 
     private WorldBuilder worldBuilder;
+
     private PlayerColorManager playerColorManager = new PlayerColorManager();
 
     [SyncVar]
@@ -77,6 +79,8 @@ public class WorldController : NetworkBehaviour
 
         foreach (Coordinate coord in worldBuilder.ironNodeCoordinates)
             SpawnResourceNode(ironNodePrefab, coord.x, coord.z);
+
+        infectionController.Initialize(width, height, worldBuilder.GetCityOrReservedCoordinates());
     }
 
     public void BuildWorldDemoWorld(int width, int height, Transform demoWorldParent)
