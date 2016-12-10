@@ -3,6 +3,9 @@
     public static float World_IrlSecondsPerTick = 1.0f;
     public static float World_MaxTimeScale = 20;
 
+    public static int World_Infection_SpreadDistance = 1;
+    public static int World_Infection_GrowthPerTickPerTile = 1;
+
     public static float World_ScavengerMaxCount = 10;
     public static float World_ScavengerSpawnInterval = 30; // every x seconds on normal game speed
     public static int World_ScavengerAggressiveness = 1;

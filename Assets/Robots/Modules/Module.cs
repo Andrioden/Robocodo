@@ -12,8 +12,8 @@ public abstract class Module
 
     protected RobotController robot;
 
-    protected abstract void Tick(object sender);
-    protected abstract void HalfTick(object sender);
+    protected abstract void Tick();
+    protected abstract void HalfTick();
     public abstract List<Instruction> GetInstructions();
 
     public void Install(RobotController robot)

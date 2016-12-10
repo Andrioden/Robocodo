@@ -26,6 +26,9 @@ public static class Utils
 
     public static T Random<T>(List<T> list)
     {
+        if (list.Count == 0)
+            throw new Exception("About to get random element of empty list");
+
         int r = rnd.Next(list.Count);
         return list[r];
     }

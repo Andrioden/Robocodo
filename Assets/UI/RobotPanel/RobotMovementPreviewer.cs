@@ -45,7 +45,7 @@ public class RobotMovementPreviewer
         int instructionsRun = 0;
         while (true)
         {
-            robotCloneController.Tick(null);
+            robotCloneController.Tick();
             Coordinate prevCoordinateDir = coords[coords.Count - 1];
             Coordinate nextCoordinate = robotCloneController.GetCoordinate();
             if (nextCoordinate.x != prevCoordinateDir.x || nextCoordinate.z != prevCoordinateDir.z)

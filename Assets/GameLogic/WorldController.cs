@@ -18,7 +18,7 @@ public class WorldController : NetworkBehaviour
 
     private GameObject groundGameObject;
 
-    private WorldBuilder worldBuilder;
+    public WorldBuilder worldBuilder;
 
     private PlayerColorManager playerColorManager = new PlayerColorManager();
 

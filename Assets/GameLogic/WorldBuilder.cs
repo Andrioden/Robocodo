@@ -102,9 +102,9 @@ public class WorldBuilder
     {
         List<Coordinate> openCoords = new List<Coordinate>();
 
-        List<Coordinate> ignoringCoordinates = GetOpenCoordinatesNear(coord, minDistance - 1);
+        List<Coordinate> ignoringCoordinates = GetCoordinatesNear(coord, minDistance - 1, TileType.Empty);
 
-        foreach (Coordinate potentialOpenCoord in GetOpenCoordinatesNear(coord, maxDistance))
+        foreach (Coordinate potentialOpenCoord in GetCoordinatesNear(coord, maxDistance, TileType.Empty))
             if (!ignoringCoordinates.Exists(c => c.x == potentialOpenCoord.x && c.z == potentialOpenCoord.z))
                 openCoords.Add(potentialOpenCoord);
 
@@ -116,17 +116,23 @@ public class WorldBuilder
         return Utils.Random(openCoords);
     }
 
-    private List<Coordinate> GetOpenCoordinatesNear(Coordinate coord, int maxDistance)
+
+    public List<Coordinate> GetCoordinatesNear(Coordinate coord, int maxDistance, TileType? filter = null)
     {
-        int minX = Math.Max(0, coord.x - maxDistance);
-        int maxX = Math.Min(width - 1, coord.x + maxDistance);
-        int minZ = Math.Max(0, coord.z - maxDistance);
-        int maxZ = Math.Min(height - 1, coord.z + maxDistance);
+        return GetCoordinatesNear(coord.x, coord.z, maxDistance, filter);
+    }
+
+    public List<Coordinate> GetCoordinatesNear(int nearX, int nearZ, int maxDistance, TileType? filter = null)
+    {
+        int minX = Math.Max(0, nearX - maxDistance);
+        int maxX = Math.Min(width - 1, nearX + maxDistance);
+        int minZ = Math.Max(0, nearZ - maxDistance);
+        int maxZ = Math.Min(height - 1, nearZ + maxDistance);
 
         List<Coordinate> openCoords = new List<Coordinate>();
         for (int x = minX; x <= maxX; x++)
             for (int z = minZ; z <= maxZ; z++)
-                if (tiles[x, z] == TileType.Empty)
+                if (filter == null || tiles[x, z] == filter)
                     openCoords.Add(new Coordinate(x, z));
 
         return openCoords;

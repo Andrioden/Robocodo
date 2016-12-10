@@ -37,7 +37,7 @@ public class ScavengerGroupController : ActingEntity, IAttackable
         transform.position = Vector3.MoveTowards(transform.position, newPosition, (1.0f / Settings.World_IrlSecondsPerTick) * Time.deltaTime * 2 /* 2 = halftick */);
     }
 
-    private void AI_Ticker(object sender)
+    private void AI_Ticker()
     {
         int searchRadius = Settings.World_ScavengerAggressiveness + Utils.RandomInt(-2, 2);
 

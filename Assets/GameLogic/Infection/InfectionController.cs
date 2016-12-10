@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.Networking;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 public class InfectionController : NetworkBehaviour
 {
@@ -17,7 +18,8 @@ public class InfectionController : NetworkBehaviour
     [SyncVar]
     private int height;
 
-    private SyncListTileInfection tileInfections = new SyncListTileInfection();
+    private SyncListTileInfection tileInfections = new SyncListTileInfection(); // Should never have its elements removed, only set to 0 if cleaned, because of index cache below
+    private List<int> _spreadingTileInfectionIndexes = new List<int>();
 
     /// <summary>
     /// Guaranteed to run after SyncList is synced (https://docs.unity3d.com/ScriptReference/Networking.NetworkBehaviour.OnStartClient.html)
@@ -43,6 +45,8 @@ public class InfectionController : NetworkBehaviour
         this.height = height;
         tileInfectionGameObjects = new GameObject[width, height];
         AddBigInfectionAwayFromCities(cityOrReservedCoordinates);
+
+        WorldTickController.instance.TickEvent += Tick;
     }
 
     [Server]
@@ -57,7 +61,7 @@ public class InfectionController : NetworkBehaviour
             {
                 if (!IsNearCityOrReserved(x, z, cityOrReservedCoordinates))
                 {
-                    SetOrUpdateInfection(x, z, 44);
+                    IncrementOrAddTileInfection(x, z);
                     return;
                 }
             }
@@ -65,16 +69,69 @@ public class InfectionController : NetworkBehaviour
     }
 
     [Server]
-    private void SetOrUpdateInfection(int x, int z, int infection)
+    private void Tick()
     {
-        TileInfection? ti = tileInfections.Where(t => t.x == x && t.z == z).Cast<TileInfection?>().FirstOrDefault();
-        if (ti.HasValue)
+        for (int _indexIndex = 0; _indexIndex < _spreadingTileInfectionIndexes.Count; _indexIndex++)
+            for (int i = 0; i < Settings.World_Infection_GrowthPerTickPerTile; i++)
+                IncrementOrSpreadInfection(tileInfections[_spreadingTileInfectionIndexes[_indexIndex]]);
+    }
+
+    [Server]
+    private void IncrementOrSpreadInfection(TileInfection ti)
+    {
+        if (ti.Infection < 100)
+            IncrementOrAddTileInfection(ti.X, ti.Z);
+        else // Can only spread to adjacent
         {
-            TileInfection tiValue = ti.Value;
-            tiValue.infection = infection;
+            List<Coordinate> coords = WorldController.instance.worldBuilder.GetCoordinatesNear(ti.X, ti.Z, Settings.World_Infection_SpreadDistance);
+            Utils.Shuffle(coords);
+
+            foreach (var coord in coords)
+            {
+                if (IncrementOrAddTileInfection(coord.x, coord.z))
+                    return;
+            }
+
+            // Did not managed to spread, ignore this tile in the future
+            _spreadingTileInfectionIndexes.Remove(IndexOfTileInfection(ti.X, ti.Z));
+        }
+    }
+
+    /// <summary>
+    /// Returns true if it managed to spread
+    /// </summary>
+    [Server]
+    private bool IncrementOrAddTileInfection(int x, int z)
+    {
+        int index = IndexOfTileInfection(x, z);
+        if (index != -1)
+        {
+            if (tileInfections[index].Infection < 100)
+                tileInfections[index] = new TileInfection(x, z, tileInfections[index].Infection + 1);
+            else
+                return false;
         }
         else
-            tileInfections.Add(new TileInfection(x, z, infection));
+        {
+            tileInfections.Add(new TileInfection(x, z, 1));
+            _spreadingTileInfectionIndexes.Add(tileInfections.Count - 1);
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// We have to write our own method, because the SyncListStruct messes up normal IndexOf().
+    /// </summary>
+    [Server]
+    private int IndexOfTileInfection(int x, int z)
+    {
+        for (int i = 0; i < tileInfections.Count; i++)
+        {
+            if (tileInfections[i].X == x && tileInfections[i].Z == z)
+                return i;
+        }
+        return -1;
     }
 
     [Server]
@@ -93,28 +150,27 @@ public class InfectionController : NetworkBehaviour
     [Client]
     private void SpawnOrUpdateTileInfectionLOL(SyncListTileInfection.Operation op, int index)
     {
-        Debug.Log("LOL JOIN " + index);
         SpawnOrUpdateTileInfection(tileInfections[index]);
     }
 
     [Client]
     private void SpawnOrUpdateTileInfection(TileInfection ti)
     {
-        if (tileInfectionGameObjects[ti.x, ti.z] == null)
+        if (tileInfectionGameObjects[ti.X, ti.Z] == null)
         {
             GameObject tileInfectionGO = (GameObject)Instantiate(tileInfectionPrefab, tileInfectionsParent.transform);
-            tileInfectionGO.transform.position = new Vector3(ti.x, tileInfectionGO.transform.position.y, ti.z);
-            tileInfectionGameObjects[ti.x, ti.z] = tileInfectionGO;
+            tileInfectionGO.transform.position = new Vector3(ti.X, tileInfectionGO.transform.position.y, ti.Z);
+            tileInfectionGameObjects[ti.X, ti.Z] = tileInfectionGO;
         }
 
-        UpdateTileInfectionTransparency(tileInfectionGameObjects[ti.x, ti.z], ti);
+        UpdateTileInfectionTransparency(tileInfectionGameObjects[ti.X, ti.Z], ti);
     }
 
     [Client]
     private void UpdateTileInfectionTransparency(GameObject go, TileInfection ti)
     {
         Material goMaterial = go.GetComponent<Renderer>().material;
-        goMaterial.color = new Color(goMaterial.color.r, goMaterial.color.g, goMaterial.color.b, ti.infection / 100.0f);
+        goMaterial.color = new Color(goMaterial.color.r, goMaterial.color.g, goMaterial.color.b, ti.Infection / 100.0f);
     }
 
     // Has to be inside the class using it, also cant directly use SyncListStruct<TileInfection>. gg!
@@ -123,14 +179,19 @@ public class InfectionController : NetworkBehaviour
 
 public struct TileInfection
 {
-    public int x;
-    public int z;
-    public int infection; // 0 - 100, where 100 is max
+    public int X;
+    public int Z;
+    public int Infection;
 
     public TileInfection(int x, int z, int infection)
     {
-        this.x = x;
-        this.z = z;
-        this.infection = infection;
+        X = x;
+        Z = z;
+        Infection = infection;
+    }
+
+    public override string ToString()
+    {
+        return string.Format("TI ({0},{1}).{2}", X, Z, Infection);
     }
 }

@@ -20,12 +20,12 @@ public class SolarPanelModule : Module
     public override string Settings_Description() { return string.Format("Generates {0} energy per tick.", energyPerTick); }
     public override Cost Settings_Cost() { return Settings_cost(); }
 
-    protected override void Tick(object sender)
+    protected override void Tick()
     {
         robot.AddEnergy(energyPerTick);
     }
 
-    protected override void HalfTick(object sender)
+    protected override void HalfTick()
     {
 
     }

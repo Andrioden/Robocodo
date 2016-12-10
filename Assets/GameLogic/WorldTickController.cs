@@ -9,11 +9,11 @@ public class WorldTickController : MonoBehaviour
     private float startTime;
 
     private int Tick = 0;
-    public delegate void NewTickEventHandle(object sender);
+    public delegate void NewTickEventHandle();
     public event NewTickEventHandle TickEvent = delegate { }; // add empty delegate so the TickEvent can be called without any observers. Source: http://stackoverflow.com/questions/340610/create-empty-c-sharp-event-handlers-automatically/340618#340618
 
     private int HalfTick = 0;
-    public delegate void NewHalfTickEventHandle(object sender);
+    public delegate void NewHalfTickEventHandle();
     public event NewHalfTickEventHandle HalfTickEvent = delegate { };
 
     public static WorldTickController instance;
@@ -48,14 +48,14 @@ public class WorldTickController : MonoBehaviour
             if (newTick > Tick)
             {
                 Tick = newTick;
-                TickEvent(this);
+                TickEvent();
             }
 
             int newHalfTick = Convert.ToInt32(ellapsedTimeSinceGameStart * 2.0f / Settings.World_IrlSecondsPerTick);
             if (newHalfTick > HalfTick)
             {
                 HalfTick = newHalfTick;
-                HalfTickEvent(this);
+                HalfTickEvent();
             }
 
         }

@@ -382,7 +382,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
     /// <summary>
     /// Is not set to [Server] because it is used by the preview
     /// </summary>
-    public void Tick(object sender)
+    public void Tick()
     {
         SetFeedbackIfNotPreview("", false, true);
 
