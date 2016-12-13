@@ -5,14 +5,14 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 4: {fileID: 475758}
-  - 114: {fileID: 11494072}
-  - 114: {fileID: 11442508}
-  - 114: {fileID: 114000012829278218}
-  - 114: {fileID: 114000013151650332}
-  - 114: {fileID: 114000010834226174}
+  - component: {fileID: 475758}
+  - component: {fileID: 11494072}
+  - component: {fileID: 11442508}
+  - component: {fileID: 114000012829278218}
+  - component: {fileID: 114000013151650332}
+  - component: {fileID: 114000010834226174}
   m_Layer: 0
   m_Name: WorldController
   m_TagString: Untagged
@@ -29,10 +29,10 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &11442508
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -108,6 +108,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tileInfectionPrefab: {fileID: 1000011255184660, guid: 9cf12890ff40e5b4299f806f559f98cb,
+    type: 2}
+  fullInfectionMaterial: {fileID: 2100000, guid: d506b0dacf913e84b99c8eec0fc9c56c,
     type: 2}
 --- !u!114 &114000012829278218
 MonoBehaviour:

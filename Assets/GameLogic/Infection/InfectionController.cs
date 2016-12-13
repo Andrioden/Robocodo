@@ -9,6 +9,7 @@ public class InfectionController : NetworkBehaviour
 {
 
     public GameObject tileInfectionPrefab;
+    public Material fullInfectionMaterial;
 
     private GameObject tileInfectionsParent;
     private GameObject[,] tileInfectionGameObjects;
@@ -169,12 +170,17 @@ public class InfectionController : NetworkBehaviour
     [Client]
     private void UpdateTileInfectionTransparency(GameObject go, TileInfection ti)
     {
-        Material goMaterial = go.GetComponent<Renderer>().material;
-        goMaterial.color = new Color(goMaterial.color.r, goMaterial.color.g, goMaterial.color.b, ti.Infection / 100.0f);
+        Renderer renderer = go.GetComponent<Renderer>();
+        float cutoff = (100 - ti.Infection) / 100.0f;
+
+        if (cutoff == 0)
+            renderer.material = fullInfectionMaterial; //When full infection, use shared material that never changes to increase performance.
+        else
+            renderer.material.SetFloat("_Cutoff", cutoff);
     }
 
     // Has to be inside the class using it, also cant directly use SyncListStruct<TileInfection>. gg!
-    public class SyncListTileInfection : SyncListStruct<TileInfection>{ }
+    public class SyncListTileInfection : SyncListStruct<TileInfection> { }
 }
 
 public struct TileInfection
