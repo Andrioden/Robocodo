@@ -11,7 +11,7 @@ public class InfectionController : NetworkBehaviour
     public GameObject tileInfectionPrefab;
     public Material fullInfectionMaterial;
 
-    private GameObject tileInfectionsParent;
+    private GameObject parent;
     private GameObject[,] tileInfectionGameObjects;
 
     [SyncVar]
@@ -32,7 +32,9 @@ public class InfectionController : NetworkBehaviour
         if (isClient)
             tileInfectionGameObjects = new GameObject[width, height];
 
-        tileInfectionsParent = new GameObject("TileInfections");
+        parent = new GameObject("TileInfections");
+        parent.transform.SetParentToGO("ClientGameObjects");
+
         tileInfections.Callback = SpawnOrUpdateTileInfectionLOL;
 
         if (isClient)
@@ -159,7 +161,7 @@ public class InfectionController : NetworkBehaviour
     {
         if (tileInfectionGameObjects[ti.X, ti.Z] == null)
         {
-            GameObject tileInfectionGO = (GameObject)Instantiate(tileInfectionPrefab, tileInfectionsParent.transform);
+            GameObject tileInfectionGO = (GameObject)Instantiate(tileInfectionPrefab, parent.transform);
             tileInfectionGO.transform.position = new Vector3(ti.X, tileInfectionGO.transform.position.y, ti.Z);
             tileInfectionGameObjects[ti.X, ti.Z] = tileInfectionGO;
         }

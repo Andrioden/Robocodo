@@ -56,9 +56,9 @@
     <Compile Include="UtilsTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Robocodo.CSharp.csproj">
-      <Project>{67ad220e-6c68-01cf-8045-34d53ad58d4b}</Project>
-      <Name>Robocodo.CSharp</Name>
+    <ProjectReference Include="..\Robocodo.csproj">
+      <Project>{ad674380-e921-8bd5-3707-14b1fff38b4f}</Project>
+      <Name>Robocodo</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

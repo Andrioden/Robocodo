@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Assets.GameLogic.ClassExtensions;
 
 public class DemoWorldBuilder : MonoBehaviour
 {

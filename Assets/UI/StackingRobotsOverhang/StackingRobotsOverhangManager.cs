@@ -10,6 +10,7 @@ public class StackingRobotsOverhangManager : MonoBehaviour
 
     private PlayerCityController clientsOwnPlayerCity;
 
+    private GameObject parent;
     private List<GameObject> spawnedGuiObjects = new List<GameObject>();
 
     public static StackingRobotsOverhangManager instance;
@@ -23,6 +24,12 @@ public class StackingRobotsOverhangManager : MonoBehaviour
             Debug.LogError("Tried to created another instance of " + GetType() + ". Destroying.");
             Destroy(gameObject);
         }
+    }
+
+    private void Start()
+    {
+        parent = new GameObject("StackingRobotsOverhangs");
+        parent.transform.SetParentToGO("ClientGameObjects");
     }
 
     public void RefreshStackingRobotsOverheads()
@@ -62,7 +69,7 @@ public class StackingRobotsOverhangManager : MonoBehaviour
 
     private void SpawnStackingRobotsOverhang(List<RobotController> robots)
     {
-        GameObject stackingRobotsOverhangGO = Instantiate(stackingRobotsOverhangPrefab);
+        GameObject stackingRobotsOverhangGO = Instantiate(stackingRobotsOverhangPrefab, parent.transform);
         StackingRobotsOverhangController stackingRobotsOverhangController = stackingRobotsOverhangGO.GetComponent<StackingRobotsOverhangController>();
         stackingRobotsOverhangController.Initiate(robots);
 

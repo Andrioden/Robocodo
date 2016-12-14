@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using Assets.GameLogic.ClassExtensions;
 using UnityEngine.UI;
 using System.Linq;
 

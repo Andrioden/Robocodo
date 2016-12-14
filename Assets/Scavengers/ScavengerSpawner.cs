@@ -30,7 +30,7 @@ public class ScavengerSpawner : MonoBehaviour
     private void Start()
     {
         wc = WorldController.instance;
-        Debug.Log("Starting scavenger spawning");
+
         spawnCoroutine = Spawn();
         StartCoroutine(spawnCoroutine);
     }

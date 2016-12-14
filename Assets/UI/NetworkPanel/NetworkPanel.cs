@@ -4,7 +4,6 @@ using UnityEngine.Networking;
 using UnityEngine.Networking.Match;
 using System.Collections;
 using System.Collections.Generic;
-using Assets.GameLogic.ClassExtensions;
 using System;
 using UnityEngine.Networking.Types;
 
@@ -168,10 +167,12 @@ public class NetworkPanel : MonoBehaviour
     {
         feedbackText.text = "";
 
-        if (NetworkServer.active || networkManager.IsClientConnected())
+        if (NetworkServer.active)
             networkManager.StopHost();
         else
             networkManager.StopClient();
+
+        GameObject.Find("ClientGameObjects").transform.DestroyChildren();
 
         ReadyToHostOrJoin();
     }

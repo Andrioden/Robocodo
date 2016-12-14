@@ -4,7 +4,6 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using Assets.GameLogic.ClassExtensions;
 using UnityEngine.Networking;
 
 public class RobotPanel : MonoBehaviour
