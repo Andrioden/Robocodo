@@ -405,7 +405,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
             return;
 
         if (energy <= 0)
-            SetFeedbackIfNotPreview("NOT ENOUGH ENERGY", true, true);
+            SetFeedbackIfNotPreview("NOT ENOUGH ENERGY", false, true);
         else
         {
             if (ExecuteInstruction(currentInstruction))
@@ -453,7 +453,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
             return instruction.Execute(this);
     }
 
-    public void SetFeedbackIfNotPreview(string message, bool showPopupInWorld, bool whatToSetIsCurrentInstructionValidTo)
+    public void SetFeedbackIfNotPreview(string message, bool popup, bool whatToSetIsCurrentInstructionValidTo)
     {
         if (isPreviewRobot)
             return;
@@ -467,7 +467,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
         feedbackClearCoroutine = ClearFeedbackAfterSecondsIfNotChanged(message, 1f);
         StartCoroutine(feedbackClearCoroutine);
 
-        if (showPopupInWorld)
+        if (popup)
             ownerCity.ShowPopupForOwner(message, transform.position, TextPopup.ColorType.NEGATIVE);
     }
 

@@ -14,7 +14,7 @@ public class LostPanel : MonoBehaviour
 
         else if (instance != this)
         {
-            Debug.LogError("Tried to created another instance of " + GetType() + ". Destroying.");
+            Debug.LogError("Tried to create another instance of " + GetType() + ". Destroying.");
             Destroy(gameObject);
         }
     }
