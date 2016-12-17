@@ -20,6 +20,7 @@ public static class ScenarioSetup
         scenarios.Add(new ScenarioEntry("Test Attack Neu Enemy", Scenario.Test_AttackNeutralEnemy, Test_AttackNeutralEnemy));
         scenarios.Add(new ScenarioEntry("Test Transporter", Scenario.Test_Harvester, Test_Harvester));
         scenarios.Add(new ScenarioEntry("Test Stacking Robots", Scenario.Test_Harvester, Test_StackingRobots));
+        scenarios.Add(new ScenarioEntry("Test Infection Purging", Scenario.Test_InfectionPurge, Test_InfectionPurge));
     }
 
     public static void RegisterWorldController(WorldController worldController)
@@ -139,6 +140,16 @@ public static class ScenarioSetup
         wc.SpawnTransporterRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
     }
 
+    private static void Test_InfectionPurge(NetworkConnection conn, GameObject playerGO)
+    {
+        PlayerCityController newPlayerCity = playerGO.GetComponent<PlayerCityController>();
+
+        wc.SpawnPurgeRobotWithClientAuthority(conn, newPlayerCity.X, newPlayerCity.Z, newPlayerCity);
+
+        foreach(Coordinate coord in wc.worldBuilder.GetCoordinatesNear((int)newPlayerCity.X, (int)newPlayerCity.Z, 2))
+            InfectionManager.instance.IncreaseOrAddTileInfection(coord.x, coord.z, 100);
+    }
+
 }
 
 public class ScenarioEntry
@@ -162,6 +173,6 @@ public enum Scenario
 
     Test_AttackNeutralEnemy = 100,
     Test_Harvester = 101,
-    Test_StackingRobots = 102
-
+    Test_StackingRobots = 102,
+    Test_InfectionPurge = 103,
 }

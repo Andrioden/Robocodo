@@ -28,6 +28,11 @@ public static class InstructionsHelper
         return new Instruction_Unknown(instruction);
     }
 
+    public static List<Instruction> Deserialize(List<string> instruction)
+    {
+        return instruction.Select(i => Deserialize(i)).ToList();
+    }
+
     private static List<Type> GetInstructionTypes()
     {
         if (_cachedInstructionTypes == null)
@@ -44,11 +49,6 @@ public static class InstructionsHelper
         return _cachedInstructionTypes;
     }
 
-    public static List<Instruction> DeserializeList(List<string> instruction)
-    {
-        return instruction.Select(i => Deserialize(i)).ToList();
-    }
-    
     public static bool IsValidConditionaledInstruction(Instruction instruction)
     {
         List<Type> validTypes = new List<Type>()

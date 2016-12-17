@@ -150,6 +150,18 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         }
     }
 
+    [Command]
+    public void CmdBuyPurgeRobot()
+    {
+        // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
+        if (CanAfford(PurgeRobotController.Settings_cost()))
+        {
+            WorldController.instance.SpawnPurgeRobotWithClientAuthority(connectionToClient, X, Z, this);
+            RemoveResources(PurgeRobotController.Settings_cost());
+            TargetIndicateSuccessfulPurchase(connectionToClient, PurgeRobotController.Settings_name);
+        }
+    }
+
     /// <summary>
     /// Returns the items not added to the inventory
     /// </summary>

@@ -324,7 +324,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
     [Command]
     private void CmdSetInstructions(string[] instructionStrings)
     {
-        instructions = InstructionsHelper.DeserializeList(instructionStrings.ToList());
+        instructions = InstructionsHelper.Deserialize(instructionStrings.ToList());
     }
 
     [Client]
@@ -336,7 +336,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
     [Client]
     public void SetInstructions(List<string> instructionsList)
     {
-        instructions = InstructionsHelper.DeserializeList(instructionsList);
+        instructions = InstructionsHelper.Deserialize(instructionsList);
     }
 
     public void CacheAllowedInstructions()
@@ -637,7 +637,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
 
         if (colorRenderers.Length == 0)
         {
-            Debug.LogError(Settings_Name() + " has no team color renderers. Won't be able to indicate team color.");
+            Debug.LogError(Settings_Name() + " has no team color renderers. Won't be able to indicate team color. Set the rendere object to a GO that will be colored.");
             return;
         }
 

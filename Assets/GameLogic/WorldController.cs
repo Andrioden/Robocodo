@@ -14,7 +14,7 @@ public class WorldController : NetworkBehaviour
     public GameObject harvesterRobotPrefab;
     public GameObject combatRobotPrefab;
     public GameObject transporterRobotPrefab;
-    public InfectionController infectionController;
+    public GameObject purgeRobotPrefab;
 
     private GameObject groundGameObject;
 
@@ -80,7 +80,7 @@ public class WorldController : NetworkBehaviour
         foreach (Coordinate coord in worldBuilder.ironNodeCoordinates)
             SpawnResourceNode(ironNodePrefab, coord.x, coord.z);
 
-        infectionController.Initialize(width, height, worldBuilder.GetCityOrReservedCoordinates());
+        InfectionManager.instance.Initialize(width, height, worldBuilder.GetCityOrReservedCoordinates());
     }
 
     public void BuildWorldDemoWorld(int width, int height, Transform demoWorldParent)
@@ -134,6 +134,11 @@ public class WorldController : NetworkBehaviour
     public GameObject SpawnTransporterRobotWithClientAuthority(NetworkConnection conn, int x, int z, PlayerCityController playerCity)
     {
         return SpawnObjectWithClientAuthority(conn, transporterRobotPrefab, x, z, playerCity);
+    }
+
+    public GameObject SpawnPurgeRobotWithClientAuthority(NetworkConnection conn, int x, int z, PlayerCityController playerCity)
+    {
+        return SpawnObjectWithClientAuthority(conn, purgeRobotPrefab, x, z, playerCity);
     }
 
     // [Server] enforced with inline code check

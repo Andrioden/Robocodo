@@ -21,5 +21,7 @@
     public static int Robot_SalvagePercentage = 25;
     public static int Robot_ReprogramClearEachInstructionTicks = 5;
 
+    public static int Robot_Purge_InfectionReducedPerTick = 10;
+
     public static bool GUI_EnableEdgeScrolling = false;
 }

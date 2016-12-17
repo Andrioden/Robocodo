@@ -52,7 +52,8 @@ MonoBehaviour:
   combatRobotPrefab: {fileID: 129906, guid: dfdfcce3a5ca6a34fb3a302fe7ce37ac, type: 2}
   transporterRobotPrefab: {fileID: 186182, guid: 8e0799e9d2c9566408c37891d63f2b6b,
     type: 2}
-  infectionController: {fileID: 114000010834226174}
+  purgeRobotPrefab: {fileID: 1094565523732136, guid: 0bee50b6f02442848b20937c1e4b2276,
+    type: 2}
 --- !u!114 &11494072
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -110,6 +111,8 @@ MonoBehaviour:
   tileInfectionPrefab: {fileID: 1000011255184660, guid: 9cf12890ff40e5b4299f806f559f98cb,
     type: 2}
   fullInfectionMaterial: {fileID: 2100000, guid: d506b0dacf913e84b99c8eec0fc9c56c,
+    type: 2}
+  partialInfectionMaterial: {fileID: 2100000, guid: c2ac334950e76f94092ac872c2e96c11,
     type: 2}
 --- !u!114 &114000012829278218
 MonoBehaviour:

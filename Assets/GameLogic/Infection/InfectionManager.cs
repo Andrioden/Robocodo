@@ -5,11 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
-public class InfectionController : NetworkBehaviour
+public class InfectionManager : NetworkBehaviour
 {
 
     public GameObject tileInfectionPrefab;
     public Material fullInfectionMaterial;
+    public Material partialInfectionMaterial;
 
     private GameObject parent;
     private GameObject[,] tileInfectionGameObjects;
@@ -21,6 +22,19 @@ public class InfectionController : NetworkBehaviour
 
     private SyncListTileInfection tileInfections = new SyncListTileInfection(); // Should never have its elements removed, only set to 0 if cleaned, because of index cache below
     private List<int> _spreadingTileInfectionIndexes = new List<int>();
+
+    public static InfectionManager instance;
+    private void Awake()
+    {
+        if (instance == null)
+            instance = this;
+
+        else if (instance != this)
+        {
+            Debug.LogError("Tried to create another instance of " + GetType() + ". Destroying.");
+            Destroy(gameObject);
+        }
+    }
 
     /// <summary>
     /// Guaranteed to run after SyncList is synced (https://docs.unity3d.com/ScriptReference/Networking.NetworkBehaviour.OnStartClient.html)
@@ -35,7 +49,7 @@ public class InfectionController : NetworkBehaviour
         parent = new GameObject("TileInfections");
         parent.transform.SetParentToGO("ClientGameObjects");
 
-        tileInfections.Callback = SpawnOrUpdateTileInfectionLOL;
+        tileInfections.Callback = SpawnOrUpdateTileInfection;
 
         if (isClient)
             SpawnOrUpdateTileInfections();
@@ -64,7 +78,7 @@ public class InfectionController : NetworkBehaviour
             {
                 if (!IsNearCityOrReserved(x, z, cityOrReservedCoordinates))
                 {
-                    IncrementOrAddTileInfection(x, z);
+                    IncreaseOrAddTileInfection(x, z, 1);
                     return;
                 }
             }
@@ -75,15 +89,16 @@ public class InfectionController : NetworkBehaviour
     private void Tick()
     {
         for (int _indexIndex = 0; _indexIndex < _spreadingTileInfectionIndexes.Count; _indexIndex++)
-            for (int i = 0; i < Settings.World_Infection_GrowthPerTickPerTile; i++)
-                IncrementOrSpreadInfection(tileInfections[_spreadingTileInfectionIndexes[_indexIndex]]);
+            IncreaseOrSpreadInfection(tileInfections[_spreadingTileInfectionIndexes[_indexIndex]], Settings.World_Infection_GrowthPerTickPerTile);
     }
 
     [Server]
-    private void IncrementOrSpreadInfection(TileInfection ti)
+    private void IncreaseOrSpreadInfection(TileInfection ti, int increasion)
     {
-        if (ti.Infection < 100)
-            IncrementOrAddTileInfection(ti.X, ti.Z);
+        if (ti.Infection <= 0)
+            return;
+        else if (ti.Infection < 100)
+            IncreaseOrAddTileInfection(ti.X, ti.Z, increasion);
         else // Can only spread to adjacent
         {
             List<Coordinate> coords = WorldController.instance.worldBuilder.GetCoordinatesNear(ti.X, ti.Z, Settings.World_Infection_SpreadDistance);
@@ -91,7 +106,7 @@ public class InfectionController : NetworkBehaviour
 
             foreach (var coord in coords)
             {
-                if (IncrementOrAddTileInfection(coord.x, coord.z))
+                if (IncreaseOrAddTileInfection(coord.x, coord.z, increasion))
                     return;
             }
 
@@ -104,23 +119,58 @@ public class InfectionController : NetworkBehaviour
     /// Returns true if it managed to spread
     /// </summary>
     [Server]
-    private bool IncrementOrAddTileInfection(int x, int z)
+    public bool IncreaseOrAddTileInfection(int x, int z, int increasion)
     {
         int index = IndexOfTileInfection(x, z);
         if (index != -1)
         {
             if (tileInfections[index].Infection < 100)
-                tileInfections[index] = new TileInfection(x, z, tileInfections[index].Infection + 1);
+                tileInfections[index] = new TileInfection(x, z, tileInfections[index].Infection + increasion);
             else
                 return false;
         }
         else
         {
-            tileInfections.Add(new TileInfection(x, z, 1));
+            tileInfections.Add(new TileInfection(x, z, increasion));
             _spreadingTileInfectionIndexes.Add(tileInfections.Count - 1);
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Returns true if tile after this reduction has no infection left
+    /// </summary>
+    [Server]
+    public bool DecreaseTileInfection(int x, int z, int reduction)
+    {
+        int index = IndexOfTileInfection(x, z);
+        if (index != -1)
+        {
+            int newTileInfectionValue = Math.Max(0, tileInfections[index].Infection - reduction);
+            tileInfections[index] = new TileInfection(x, z, newTileInfectionValue);
+
+            _AllowAdjacentTilesToSpreadAgain(x, z);
+
+            return newTileInfectionValue <= 0;
+        }
+        else // Not found
+            return true;
+    }
+
+    [Server]
+    private void _AllowAdjacentTilesToSpreadAgain(int x, int z)
+    {
+        List<Coordinate> coords = WorldController.instance.worldBuilder.GetCoordinatesNear(x, z, Settings.World_Infection_SpreadDistance);
+        foreach(Coordinate cord in coords)
+        {
+            int index = IndexOfTileInfection(cord.x, cord.z);
+            if (index == -1)
+                continue;
+
+            if (!_spreadingTileInfectionIndexes.Exists(i => i == index))
+                _spreadingTileInfectionIndexes.Add(index);
+        }
     }
 
     /// <summary>
@@ -151,7 +201,7 @@ public class InfectionController : NetworkBehaviour
     }
 
     [Client]
-    private void SpawnOrUpdateTileInfectionLOL(SyncListTileInfection.Operation op, int index)
+    private void SpawnOrUpdateTileInfection(SyncListTileInfection.Operation op, int index)
     {
         SpawnOrUpdateTileInfection(tileInfections[index]);
     }
@@ -159,6 +209,7 @@ public class InfectionController : NetworkBehaviour
     [Client]
     private void SpawnOrUpdateTileInfection(TileInfection ti)
     {
+        //Debug.Log("Changed infection at " + ti);
         if (tileInfectionGameObjects[ti.X, ti.Z] == null)
         {
             GameObject tileInfectionGO = (GameObject)Instantiate(tileInfectionPrefab, parent.transform);
@@ -166,7 +217,10 @@ public class InfectionController : NetworkBehaviour
             tileInfectionGameObjects[ti.X, ti.Z] = tileInfectionGO;
         }
 
-        UpdateTileInfectionTransparency(tileInfectionGameObjects[ti.X, ti.Z], ti);
+        if (ti.Infection <= 0)
+            Destroy(tileInfectionGameObjects[ti.X, ti.Z]);
+        else
+            UpdateTileInfectionTransparency(tileInfectionGameObjects[ti.X, ti.Z], ti);
     }
 
     [Client]
@@ -178,7 +232,10 @@ public class InfectionController : NetworkBehaviour
         if (cutoff == 0)
             renderer.material = fullInfectionMaterial; //When full infection, use shared material that never changes to increase performance.
         else
+        {
+            renderer.material = partialInfectionMaterial;
             renderer.material.SetFloat("_Cutoff", cutoff);
+        }
     }
 
     // Has to be inside the class using it, also cant directly use SyncListStruct<TileInfection>. gg!

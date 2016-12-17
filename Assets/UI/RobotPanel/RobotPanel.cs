@@ -256,7 +256,7 @@ public class RobotPanel : MonoBehaviour
 
         if (previewer != null)
         {
-            previewer.UpdateInstructions(InstructionsHelper.DeserializeList(instructions));
+            previewer.UpdateInstructions(InstructionsHelper.Deserialize(instructions));
             DrawPreviewArrowsIfNoNewInput();
         }
 
