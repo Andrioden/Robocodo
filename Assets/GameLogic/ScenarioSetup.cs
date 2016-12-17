@@ -145,8 +145,10 @@ public static class ScenarioSetup
         PlayerCityController newPlayerCity = playerGO.GetComponent<PlayerCityController>();
 
         wc.SpawnPurgeRobotWithClientAuthority(conn, newPlayerCity.X, newPlayerCity.Z, newPlayerCity);
+        wc.SpawnPurgeRobotWithClientAuthority(conn, newPlayerCity.X, newPlayerCity.Z, newPlayerCity);
+        wc.SpawnPurgeRobotWithClientAuthority(conn, newPlayerCity.X, newPlayerCity.Z, newPlayerCity);
 
-        foreach(Coordinate coord in wc.worldBuilder.GetCoordinatesNear((int)newPlayerCity.X, (int)newPlayerCity.Z, 2))
+        foreach (Coordinate coord in wc.worldBuilder.GetCoordinatesNear((int)newPlayerCity.X, (int)newPlayerCity.Z, 2))
             InfectionManager.instance.IncreaseOrAddTileInfection(coord.x, coord.z, 100);
     }
 
