@@ -41,6 +41,7 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
 
     public static int Settings_StartHealth = 10;
 
+
     // Use this for initialization
     private void Start()
     {
@@ -267,6 +268,17 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         PlayerCityPanel.instance.buildMenu.IndicateSuccessfulPurchase(robotTypeName);
     }
 
+    [Client]
+    public double GetRelativeInfection()
+    {
+        double distanceAdjustedInfection = 0.0;
+
+        foreach (TileInfection ti in InfectionManager.instance.TileInfections)
+            distanceAdjustedInfection += Math.Min(Settings.World_Infection_MaxInfectionLossImpactPerTile, ti.Infection / Math.Pow(MathUtils.Distance(ti.X, ti.Z, (int)X, (int)Z), 3));
+
+        return Math.Round(distanceAdjustedInfection, 1);
+    }
+
     [Server]
     public void SetColor(Color32 teamColor)
     {
@@ -289,6 +301,7 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         else
             this.nick = nick + (currentNicks.Count(n => n.Contains(nick)) + 1);
     }
+
 }
 
 //[Server]

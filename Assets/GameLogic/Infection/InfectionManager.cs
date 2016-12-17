@@ -21,6 +21,7 @@ public class InfectionManager : NetworkBehaviour
     private int height;
 
     private SyncListTileInfection tileInfections = new SyncListTileInfection(); // Should never have its elements removed, only set to 0 if cleaned, because of index cache below
+    public SyncListTileInfection TileInfections { get { return tileInfections; } }
     private List<int> _spreadingTileInfectionIndexes = new List<int>();
 
     public static InfectionManager instance;

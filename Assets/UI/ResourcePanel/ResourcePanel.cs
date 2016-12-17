@@ -10,6 +10,7 @@ public class ResourcePanel : MonoBehaviour
     public Text copperLabel;
     public Text ironLabel;
     public Text garageLabel;
+    public Text infectionLabel;
 
     private Dictionary<Text, bool> labelsRegisteredForFlashingFeedbackSupportDict = new Dictionary<Text, bool>();
     private PlayerCityController localPlayerCity;
@@ -79,6 +80,7 @@ public class ResourcePanel : MonoBehaviour
             copperLabel.text = "Copper: " + localPlayerCity.GetCopperCount();
             ironLabel.text = "Iron: " + localPlayerCity.GetIronCount();
             garageLabel.text = "Garage: " + localPlayerCity.Garage.Count();
+            infectionLabel.text = string.Format("Infection: {0:0.0}%", localPlayerCity.GetRelativeInfection());
         }
     }
 
