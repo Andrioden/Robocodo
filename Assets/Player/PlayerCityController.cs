@@ -38,6 +38,9 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
     public event GarageEventHandler OnRobotAddedToGarage;
     public event GarageEventHandler OnRobotRemovedFromGarage;
 
+    private PopulationManager populationManager;
+    public PopulationManager PopulationManager { get { return populationManager; } }
+
     [SyncVar]
     private int health;
     public int Health { get { return health; } }
@@ -55,6 +58,10 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
             ResourcePanel.instance.RegisterLocalPlayerCity(this);
             CmdRegisterPlayerNick(NetworkPanel.instance.nickInput.text);
         }
+
+        populationManager = gameObject.GetComponent<PopulationManager>();
+        if (isServer)
+            populationManager.Initialize(this);
 
         if (hasLost)
             bodyMeshRenderer.enabled = false;
@@ -174,9 +181,10 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
     {
         for (int c = 0; c < cost.Copper; c++)
             inventory.RemoveAt(inventory.FindIndex(x => x.GetType() == typeof(CopperItem)));
-
         for (int i = 0; i < cost.Iron; i++)
             inventory.RemoveAt(inventory.FindIndex(x => x.GetType() == typeof(IronItem)));
+        for (int i = 0; i < cost.Food; i++)
+            inventory.RemoveAt(inventory.FindIndex(x => x.GetType() == typeof(FoodItem)));
 
         RpcSyncInventory(InventoryItem.Serialize(inventory));
     }
@@ -203,6 +211,8 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
             missing.Add(CopperItem.SerializedType);
         if (cost.Iron > GetItemCount<IronItem>())
             missing.Add(IronItem.SerializedType);
+        if (cost.Food > GetItemCount<FoodItem>())
+            missing.Add(FoodItem.SerializedType);
 
         return missing;
     }

@@ -7,5 +7,6 @@ public class Cost
 {
     public int Copper;
     public int Iron;
+    public int Food;
 }
 

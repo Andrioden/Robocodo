@@ -11,6 +11,8 @@
     public static float World_ScavengerSpawnInterval = 30; // every x seconds on normal game speed
     public static int World_ScavengerAggressiveness = 1;
 
+    public static double City_Population_FoodConsumedPerTick = 0.01;
+
     public static int Resource_MinItemsPerNode = 100;
     public static int Resource_MaxItemsPerNode = 200;
 

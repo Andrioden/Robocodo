@@ -31,6 +31,8 @@ public class WinLoseChecker : NetworkBehaviour
             lossType = LossType.Infection;
         else if (playerCity.Health <= 0)
             lossType = LossType.CityDestroyed;
+        else if (playerCity.PopulationManager.Population <= 0)
+            lossType = LossType.StarvedToDeath;
 
         if (lossType != LossType.None)
         {
@@ -48,6 +50,8 @@ public class WinLoseChecker : NetworkBehaviour
                 LostPanel.instance.Show("The infection got to high near your city, your people got infected and everyone died, good job...");
             else if (lossTypeInt == (int)LossType.CityDestroyed)
                 LostPanel.instance.Show("You lost! City destroyed!");
+            else if (lossTypeInt == (int)LossType.StarvedToDeath)
+                LostPanel.instance.Show("You lost! Everyone died of starvation.");
         }
     }
 }
@@ -56,5 +60,6 @@ public enum LossType
 {
     None = 0,
     Infection = 1,
-    CityDestroyed = 2
+    CityDestroyed = 2,
+    StarvedToDeath
 }

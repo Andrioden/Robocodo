@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System;
 using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 public class ResourcePanel : MonoBehaviour
 {
     public Text nickLabel;
+    public Text popLabel;
     public Text copperLabel;
     public Text foodLabel;
     public Text ironLabel;
@@ -81,6 +83,7 @@ public class ResourcePanel : MonoBehaviour
         if (localPlayerCity != null)
         {
             nickLabel.text = localPlayerCity.Nick;
+            popLabel.text = string.Format("Pop: {0} ({1:0}%)", localPlayerCity.PopulationManager.Population, Math.Round(localPlayerCity.PopulationManager.GrowthProgress * 100, 0));
             copperLabel.text = "Copper: " + localPlayerCity.GetItemCount<CopperItem>();
             ironLabel.text = "Iron: " + localPlayerCity.GetItemCount<IronItem>();
             foodLabel.text = "Food: " + localPlayerCity.GetItemCount<FoodItem>();
