@@ -8,6 +8,7 @@ public class ResourcePanel : MonoBehaviour
 {
     public Text nickLabel;
     public Text copperLabel;
+    public Text foodLabel;
     public Text ironLabel;
     public Text garageLabel;
     public Text infectionLabel;
@@ -39,22 +40,25 @@ public class ResourcePanel : MonoBehaviour
     {
         labelsRegisteredForFlashingFeedbackSupportDict.Add(copperLabel, false);
         labelsRegisteredForFlashingFeedbackSupportDict.Add(ironLabel, false);
+        labelsRegisteredForFlashingFeedbackSupportDict.Add(foodLabel, false);
     }
 
-    public void FlashMissingResource(string resourceType)
+    public void FlashMissingResource(string type)
     {
-        if (resourceType == CopperItem.SerializedType)
-        {
-            if (labelsRegisteredForFlashingFeedbackSupportDict[copperLabel] == false)
-                StartCoroutine(AddFlashEffectToTextField(copperLabel, 4));
-        }
-        else if (resourceType == IronItem.SerializedType)
-        {
-            if (labelsRegisteredForFlashingFeedbackSupportDict[ironLabel] == false)
-                StartCoroutine(AddFlashEffectToTextField(ironLabel, 4));
-        }
+        if (type == CopperItem.SerializedType)
+            FlashMissingResource(copperLabel);
+        else if (type == IronItem.SerializedType)
+            FlashMissingResource(ironLabel);
+        else if (type == FoodItem.SerializedType)
+            FlashMissingResource(foodLabel);
         else
-            Debug.LogError(string.Format("ResourceType {0} not registered for flashing feedback support.", resourceType));
+            Debug.LogError(string.Format("ResourceType {0} not registered for flashing feedback support.", type));
+    }
+
+    private void FlashMissingResource(Text label)
+    {
+        if (labelsRegisteredForFlashingFeedbackSupportDict[label] == false)
+            StartCoroutine(AddFlashEffectToTextField(label, 4));
     }
 
     public void Show()
@@ -77,8 +81,9 @@ public class ResourcePanel : MonoBehaviour
         if (localPlayerCity != null)
         {
             nickLabel.text = localPlayerCity.Nick;
-            copperLabel.text = "Copper: " + localPlayerCity.GetCopperCount();
-            ironLabel.text = "Iron: " + localPlayerCity.GetIronCount();
+            copperLabel.text = "Copper: " + localPlayerCity.GetItemCount<CopperItem>();
+            ironLabel.text = "Iron: " + localPlayerCity.GetItemCount<IronItem>();
+            foodLabel.text = "Food: " + localPlayerCity.GetItemCount<FoodItem>();
             garageLabel.text = "Garage: " + localPlayerCity.Garage.Count();
             infectionLabel.text = string.Format("Infection: {0:0.0}%", localPlayerCity.GetRelativeInfection());
         }

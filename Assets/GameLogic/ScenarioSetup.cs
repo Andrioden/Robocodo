@@ -56,6 +56,8 @@ public static class ScenarioSetup
             startingResources.Add(new CopperItem());
         for (int i = 0; i < Settings.Scenario_Normal_AmountOfStartingIron; i++)
             startingResources.Add(new IronItem());
+        for (int i = 0; i < Settings.Scenario_Normal_AmountOfStartingFood; i++)
+            startingResources.Add(new FoodItem());
         newPlayerCity.TransferToInventory(startingResources);
     }
 
@@ -103,7 +105,7 @@ public static class ScenarioSetup
     {
         PlayerCityController newPlayerCity = playerGO.GetComponent<PlayerCityController>();
 
-        wc.SpawnResourceNode(wc.copperNodePrefab, newPlayerCity.X + 2, newPlayerCity.Z);
+        wc.SpawnResourceNode(new CopperItem(), newPlayerCity.X + 2, newPlayerCity.Z);
 
         GameObject harvesterGO = wc.SpawnHarvesterRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
         HarvesterRobotController harvester = harvesterGO.GetComponent<HarvesterRobotController>();

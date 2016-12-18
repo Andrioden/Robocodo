@@ -7,7 +7,7 @@ public class ResourceController : NetworkBehaviour, IClickable
 {
 
     [SyncVar(hook = "OnRemainingItemsUpdated")]
-    private int remainingItems;
+    protected int remainingItems;
     [SyncVar]
     public string resourceType;
 
@@ -16,18 +16,12 @@ public class ResourceController : NetworkBehaviour, IClickable
     private Vector3 originalTransformScale;
 
     // Use this for initialization
-    private void Start()
+    protected virtual void Start()
     {
         originalTransformScale = new Vector3(physicalTransform.localScale.x, physicalTransform.localScale.y, physicalTransform.localScale.z);
 
         remainingItems = Utils.RandomInt(Settings.Resource_MinItemsPerNode, Settings.Resource_MaxItemsPerNode);
-        UpdateTransformHeight();
-    }
-
-    // Update is called once per frame
-    private void Update()
-    {
-
+        UpdateTransformSize();
     }
 
     public void Click()
@@ -49,7 +43,7 @@ public class ResourceController : NetworkBehaviour, IClickable
     public void HarvestOneResourceItem()
     {
         remainingItems--;
-        UpdateTransformHeight();
+        UpdateTransformSize();
     }
 
     public int GetRemainingResourceItems()
@@ -60,10 +54,10 @@ public class ResourceController : NetworkBehaviour, IClickable
     private void OnRemainingItemsUpdated(int newRemainingItems)
     {
         remainingItems = newRemainingItems; // TODO FInd out why we have to set it, doesnt it update as part of SyncVar? Does hook stop that?
-        UpdateTransformHeight();
+        UpdateTransformSize();
     }
 
-    private void UpdateTransformHeight()
+    protected void UpdateTransformSize()
     {
         double scalePercentage = MathUtils.LinearConversionDouble(0, Settings.Resource_MaxItemsPerNode, 0, 100, remainingItems);
         double volumeScaleFactor = scalePercentage / 100.0;

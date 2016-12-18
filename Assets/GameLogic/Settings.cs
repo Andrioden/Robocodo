@@ -18,6 +18,7 @@
     public static int Scenario_Normal_AmountOfStartingCombatRobots = 1;
     public static int Scenario_Normal_AmountOfStartingCopper = 50;
     public static int Scenario_Normal_AmountOfStartingIron = 50;
+    public static int Scenario_Normal_AmountOfStartingFood = 50;
 
     public static int Robot_SalvagePercentage = 25;
     public static int Robot_ReprogramClearEachInstructionTicks = 5;

@@ -10,14 +10,12 @@ public class WorldBuilder
     private int height;
 
     private TileType[,] tiles;
+    public TileType[,] Tiles { get { return tiles; } }
 
     List<Coordinate> reservedPlayerCoordinates = new List<Coordinate>(); // Should never be manipulated directly, only through the designated method
     int playerCordIncrement = 0;
 
-    public List<Coordinate> copperNodeCoordinates = new List<Coordinate>(); // Should never be manipulated directly, only through the designated method
-    public List<Coordinate> ironNodeCoordinates = new List<Coordinate>(); // Should never be manipulated directly, only through the designated method
-
-    public WorldBuilder(int width, int height, int reservedPlayerSpotCount, int extraCopperNodeCount, int extraIronNodeCount)
+    public WorldBuilder(int width, int height, int reservedPlayerSpotCount, int extraCopperNodeCount, int extraIronNodeCount, int extraFoodNodeCount)
     {
         this.width = width;
         this.height = height;
@@ -28,10 +26,11 @@ public class WorldBuilder
             ReservePlayerCoordinate(GetRandomOpenCoordinate());
 
         for (int i = 0; i < extraCopperNodeCount; i++)
-            AddCopperNode(GetRandomOpenCoordinate());
-
+            SetTile(GetRandomOpenCoordinate(), TileType.CopperNode);
         for (int i = 0; i < extraIronNodeCount; i++)
-            AddIronNode(GetRandomOpenCoordinate());
+            SetTile(GetRandomOpenCoordinate(), TileType.IronNode);
+        for (int i = 0; i < extraFoodNodeCount; i++)
+            SetTile(GetRandomOpenCoordinate(), TileType.FoodNode);
     }
 
     public Coordinate GetNextPlayerPosition()
@@ -60,22 +59,16 @@ public class WorldBuilder
     {
         reservedPlayerCoordinates.Add(playerCityCoordinate);
 
-        AddCopperNode(GetRandomOpenCoordinateNear(playerCityCoordinate, 1, 3));
-        AddIronNode(GetRandomOpenCoordinateNear(playerCityCoordinate, 1, 3));
+        SetTile(GetRandomOpenCoordinateNear(playerCityCoordinate, 1, 3), TileType.CopperNode);
+        SetTile(GetRandomOpenCoordinateNear(playerCityCoordinate, 1, 3), TileType.IronNode);
+        SetTile(GetRandomOpenCoordinateNear(playerCityCoordinate, 1, 3), TileType.FoodNode);
 
         tiles[playerCityCoordinate.x, playerCityCoordinate.z] = TileType.CityReservation;
     }
 
-    private void AddCopperNode(Coordinate coord)
+    private void SetTile(Coordinate coord, TileType type)
     {
-        copperNodeCoordinates.Add(coord);
-        tiles[coord.x, coord.z] = TileType.Resource;
-    }
-
-    private void AddIronNode(Coordinate coord)
-    {
-        ironNodeCoordinates.Add(coord);
-        tiles[coord.x, coord.z] = TileType.Resource;
+        tiles[coord.x, coord.z] = type;
     }
 
     private Coordinate GetRandomOpenCoordinate()
@@ -144,7 +137,9 @@ public enum TileType
     Empty, // Is defaulted to this when initing enum array
     CityReservation,
     City,
-    Resource
+    CopperNode,
+    IronNode,
+    FoodNode
 }
 
 public class Coordinate

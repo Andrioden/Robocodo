@@ -49,6 +49,7 @@ public class RobotPanel : MonoBehaviour
     public GameObject inventoryContainer;
     public GameObject ironPrefab;
     public GameObject copperPrefab;
+    public GameObject foodPrefab;
 
     public Text installedModulesLabel;
     public GameObject installedModulesPanel;
@@ -381,6 +382,8 @@ public class RobotPanel : MonoBehaviour
             prefab = ironPrefab;
         else if (item is CopperItem)
             prefab = copperPrefab;
+        else if (item is FoodItem)
+            prefab = foodPrefab;
 
         var inventoryImage = Instantiate(prefab) as GameObject;
         inventoryImage.transform.SetParent(inventoryContainer.transform, false);

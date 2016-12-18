@@ -55,16 +55,17 @@ MonoBehaviour:
   m_OfflineScene: MainScene
   m_OnlineScene: MainScene
   m_SpawnPrefabs:
+  - {fileID: 190096, guid: a52a093a005a4704ca0b0b49c72156c5, type: 2}
+  - {fileID: 107340, guid: b7f3d2acfc9ba2c47a89b75545e00eeb, type: 2}
+  - {fileID: 134104, guid: ee1cbd9e258bd9145a338baccd5ca91b, type: 2}
   - {fileID: 157114, guid: 1cc4c27114911bc449b6fa845ebbd524, type: 2}
   - {fileID: 162768, guid: 30884e0b2f8c9014e8fba6f006b16d3e, type: 2}
+  - {fileID: 1072484268349490, guid: e0e52d1672f3af84a9d871a1a096dbd8, type: 2}
   - {fileID: 162562, guid: 3f0a199a0b1d5764693c9117987a91cc, type: 2}
-  - {fileID: 107340, guid: b7f3d2acfc9ba2c47a89b75545e00eeb, type: 2}
-  - {fileID: 190096, guid: a52a093a005a4704ca0b0b49c72156c5, type: 2}
   - {fileID: 129906, guid: dfdfcce3a5ca6a34fb3a302fe7ce37ac, type: 2}
   - {fileID: 186182, guid: 8e0799e9d2c9566408c37891d63f2b6b, type: 2}
-  - {fileID: 1000011173860404, guid: 45ca152e2d3f4fd40b8a63a8147ffd43, type: 2}
   - {fileID: 1094565523732136, guid: 0bee50b6f02442848b20937c1e4b2276, type: 2}
-  - {fileID: 134104, guid: ee1cbd9e258bd9145a338baccd5ca91b, type: 2}
+  - {fileID: 1000011173860404, guid: 45ca152e2d3f4fd40b8a63a8147ffd43, type: 2}
   m_CustomConfig: 0
   m_MaxConnections: 4
   m_ConnectionConfig:

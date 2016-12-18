@@ -556,7 +556,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
 
         OnInventoryChanged(this);
 
-        RpcSyncInventory(InventoryItem.SerializeList(inventory));
+        RpcSyncInventory(InventoryItem.Serialize(inventory));
 
         return notAdded;
     }
@@ -567,7 +567,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
         inventory = items;
         OnInventoryChanged(this);
 
-        RpcSyncInventory(InventoryItem.SerializeList(inventory));
+        RpcSyncInventory(InventoryItem.Serialize(inventory));
     }
 
     public bool IsInventoryFull()
@@ -578,7 +578,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
     [ClientRpc]
     private void RpcSyncInventory(string[] serializedItemCounts)
     {
-        inventory = InventoryItem.DeserializeList(serializedItemCounts);
+        inventory = InventoryItem.Deserialize(serializedItemCounts);
         OnInventoryChanged(this);
     }
 

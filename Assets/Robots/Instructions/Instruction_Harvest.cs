@@ -48,10 +48,11 @@ public class Instruction_Harvest : Instruction
                 robot.SetFeedbackIfNotPreview("NO INVENTORY CAPACITY", true, true);
             else if (robot.IsInventoryFull())
                 robot.SetFeedbackIfNotPreview("INVENTORY FULL", true, true);
-            else if (WorldController.instance.HarvestFromNode(CopperItem.SerializedType, robot.x, robot.z))
-                robot.TransferToInventory(new CopperItem());
-            else if (WorldController.instance.HarvestFromNode(IronItem.SerializedType, robot.x, robot.z))
-                robot.TransferToInventory(new IronItem());
+
+            string resourceType = WorldController.instance.HarvestFromNode(robot.x, robot.z);
+
+            if (resourceType != null)
+                robot.TransferToInventory(InventoryItem.DeserializeType(resourceType));
             else
                 robot.SetFeedbackIfNotPreview("NOTHING TO HARVEST", true, true);
         }

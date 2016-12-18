@@ -11,6 +11,7 @@ public class WorldController : NetworkBehaviour
     public GameObject playerCityPrefab;
     public GameObject copperNodePrefab;
     public GameObject ironNodePrefab;
+    public GameObject foodNodePrefab;
     public GameObject harvesterRobotPrefab;
     public GameObject combatRobotPrefab;
     public GameObject transporterRobotPrefab;
@@ -29,7 +30,7 @@ public class WorldController : NetworkBehaviour
     private int height;
     public int Height { get { return height; } }
 
-    private List<ResourceController> resourceControllers = new List<ResourceController>();
+    private List<ResourceController> _resourceControllers = new List<ResourceController>();
 
     private Transform worldParent;
     private bool classIsUsedAsDemo = false;
@@ -56,12 +57,6 @@ public class WorldController : NetworkBehaviour
         SpawnAndAdjustGround();
     }
 
-    // Update is called once per frame
-    private void Update()
-    {
-
-    }
-
     private void OnDestroy()
     {
         Destroy(groundGameObject);
@@ -72,15 +67,31 @@ public class WorldController : NetworkBehaviour
         this.width = width;
         this.height = height;
 
-        worldBuilder = new WorldBuilder(width, height, matchSize, 10, 10);
+        worldBuilder = new WorldBuilder(width, height, matchSize, 10, 10, 10);
 
-        foreach (Coordinate coord in worldBuilder.copperNodeCoordinates)
-            SpawnResourceNode(copperNodePrefab, coord.x, coord.z);
-
-        foreach (Coordinate coord in worldBuilder.ironNodeCoordinates)
-            SpawnResourceNode(ironNodePrefab, coord.x, coord.z);
+        for (int x = 0; x < width; x++)
+        {
+            for (int z = 0; z < height; z++)
+            {
+                InventoryItem itemFromTileType = InventoryItem(worldBuilder.Tiles[x, z]);
+                if (itemFromTileType != null)
+                    SpawnResourceNode(itemFromTileType, x, z);
+            }
+        }
 
         InfectionManager.instance.Initialize(width, height, worldBuilder.GetCityOrReservedCoordinates());
+    }
+
+    private InventoryItem InventoryItem(TileType tileType)
+    {
+        if (tileType == TileType.CopperNode)
+            return new CopperItem();
+        else if (tileType == TileType.IronNode)
+            return new IronItem();
+        else if (tileType == TileType.FoodNode)
+            return new FoodItem();
+        else
+            return null;
     }
 
     public void BuildWorldDemoWorld(int width, int height, Transform demoWorldParent)
@@ -167,24 +178,30 @@ public class WorldController : NetworkBehaviour
     }
 
     // [Server] enforced with inline code check
-    public GameObject SpawnResourceNode(GameObject prefab, int x, int z)
+    public GameObject SpawnResourceNode(InventoryItem item, int x, int z)
     {
         if (!IsServerOrDemo())
             return null;
 
-        GameObject resurceGameObject = SpawnObject(prefab, x, z);
+        GameObject resurceGameObject = SpawnObject(InventoryPrefab(item), x, z);
         ResourceController resourceController = resurceGameObject.GetComponent<ResourceController>();
+        resourceController.resourceType = item.Serialize();
 
-        if (prefab == ironNodePrefab)
-            resourceController.resourceType = IronItem.SerializedType;
-        else if (prefab == copperNodePrefab)
-            resourceController.resourceType = CopperItem.SerializedType;
-        else
-            throw new Exception("Not added support for given resource prefab. Get coding!");
-
-        resourceControllers.Add(resourceController);
+        _resourceControllers.Add(resourceController);
 
         return resurceGameObject;
+    }
+
+    private GameObject InventoryPrefab(InventoryItem item)
+    {
+        if (item is IronItem)
+            return ironNodePrefab;
+        else if (item is CopperItem)
+            return copperNodePrefab;
+        else if (item is FoodItem)
+            return foodNodePrefab;
+        else
+            throw new Exception("Not prefab found for inventory item " + item);
     }
 
     // [Server] enforced with inline code check
@@ -210,21 +227,21 @@ public class WorldController : NetworkBehaviour
     /// Returns false if no node was found
     /// </summary>
     [Server]
-    public bool HarvestFromNode(string resourceType, float x, float z)
+    public string HarvestFromNode(float x, float z)
     {
-        ResourceController resourceController = resourceControllers.Find(r => r.resourceType == resourceType && r.transform.position.x == x && r.transform.position.z == z);
+        ResourceController resourceController = _resourceControllers.Find(r => r.transform.position.x == x && r.transform.position.z == z);
         if (resourceController != null)
         {
             resourceController.HarvestOneResourceItem();
             if (resourceController.GetRemainingResourceItems() <= 0)
             {
-                resourceControllers.Remove(resourceController);
+                _resourceControllers.Remove(resourceController);
                 Destroy(resourceController.gameObject);
             }
-            return true;
+            return resourceController.resourceType;
         }
         else
-            return false;
+            return null;
     }
 
     public void SpawnAndAdjustGround()

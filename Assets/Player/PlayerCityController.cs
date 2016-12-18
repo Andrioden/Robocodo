@@ -100,14 +100,9 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         return gameObject;
     }
 
-    public int GetCopperCount()
+    public int GetItemCount<T>()
     {
-        return inventory.Count(i => i.GetType() == typeof(CopperItem));
-    }
-
-    public int GetIronCount()
-    {
-        return inventory.Count(i => i.GetType() == typeof(IronItem));
+        return inventory.Count(i => i.GetType() == typeof(T));
     }
 
     public void AddOwnedGameObject(GameObject go)
@@ -170,7 +165,7 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
     public List<InventoryItem> TransferToInventory(List<InventoryItem> items)
     {
         inventory.AddRange(items);
-        RpcSyncInventory(InventoryItem.SerializeList(inventory));
+        RpcSyncInventory(InventoryItem.Serialize(inventory));
         return new List<InventoryItem>(); // No items was not added
     }
 
@@ -183,13 +178,13 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         for (int i = 0; i < cost.Iron; i++)
             inventory.RemoveAt(inventory.FindIndex(x => x.GetType() == typeof(IronItem)));
 
-        RpcSyncInventory(InventoryItem.SerializeList(inventory));
+        RpcSyncInventory(InventoryItem.Serialize(inventory));
     }
 
     [ClientRpc]
     private void RpcSyncInventory(string[] itemCounts)
     {
-        inventory = InventoryItem.DeserializeList(itemCounts);
+        inventory = InventoryItem.Deserialize(itemCounts);
     }
 
     public bool CanAfford(Cost cost)
@@ -204,9 +199,9 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
     {
         List<string> missing = new List<string>();
 
-        if (cost.Copper > GetCopperCount())
+        if (cost.Copper > GetItemCount<CopperItem>())
             missing.Add(CopperItem.SerializedType);
-        if (cost.Iron > GetIronCount())
+        if (cost.Iron > GetItemCount<IronItem>())
             missing.Add(IronItem.SerializedType);
 
         return missing;
