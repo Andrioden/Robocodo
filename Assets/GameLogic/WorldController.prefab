@@ -10,9 +10,10 @@ GameObject:
   - component: {fileID: 475758}
   - component: {fileID: 11494072}
   - component: {fileID: 11442508}
-  - component: {fileID: 114000012829278218}
-  - component: {fileID: 114000013151650332}
   - component: {fileID: 114000010834226174}
+  - component: {fileID: 114621773990477836}
+  - component: {fileID: 114000013151650332}
+  - component: {fileID: 114186496318461494}
   m_Layer: 0
   m_Name: WorldController
   m_TagString: Untagged
@@ -114,19 +115,6 @@ MonoBehaviour:
     type: 2}
   partialInfectionMaterial: {fileID: 2100000, guid: c2ac334950e76f94092ac872c2e96c11,
     type: 2}
---- !u!114 &114000012829278218
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 190096}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb7506ee07263464ea67ddb5a8359785, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stackingRobotsOverhangPrefab: {fileID: 1000010476454806, guid: d1ff04a1b7428964ea350aec141a76c3,
-    type: 2}
 --- !u!114 &114000013151650332
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -140,3 +128,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scavengerGroupPrefab: {fileID: 1000011173860404, guid: 45ca152e2d3f4fd40b8a63a8147ffd43,
     type: 2}
+--- !u!114 &114186496318461494
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 190096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb7506ee07263464ea67ddb5a8359785, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stackingRobotsOverhangPrefab: {fileID: 1000010476454806, guid: d1ff04a1b7428964ea350aec141a76c3,
+    type: 2}
+--- !u!114 &114621773990477836
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 190096}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f00b755b9896ea4c96ac85b2457c294, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

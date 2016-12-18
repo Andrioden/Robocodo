@@ -32,7 +32,12 @@ public class StackingRobotsOverhangManager : MonoBehaviour
         parent.transform.SetParentToGO("ClientGameObjects");
     }
 
-    public void RefreshStackingRobotsOverheads()
+    public void DestroyAll()
+    {
+        spawnedGuiObjects.ForEach(go => Destroy(go));
+    }
+
+    public void Refresh()
     {
         if (!AttemptToFindPlayersOwnCity())
         {
@@ -40,7 +45,7 @@ public class StackingRobotsOverhangManager : MonoBehaviour
             return;
         }
 
-        spawnedGuiObjects.ForEach(go => Destroy(go));
+        DestroyAll();
 
         List<RobotController> currentStackCheck = new List<RobotController>();
         foreach (RobotController robot in FindObjectsOfType<RobotController>().Where(r => r.OwnerCity == clientsOwnPlayerCity && !r.IsStarted))
@@ -50,13 +55,13 @@ public class StackingRobotsOverhangManager : MonoBehaviour
             else
             {
                 if (currentStackCheck.Count > 1 || currentStackCheck[0].IsAtPlayerCity()) // Conditions that the current stack should show
-                    SpawnStackingRobotsOverhang(currentStackCheck);
+                    SpawnOverhang(currentStackCheck);
                 currentStackCheck.Clear();
             }
         }
 
         if (currentStackCheck.Count > 1 || (currentStackCheck.Count > 0 && currentStackCheck[0].IsAtPlayerCity())) // Conditions that the current stack should show
-            SpawnStackingRobotsOverhang(currentStackCheck);
+            SpawnOverhang(currentStackCheck);
     }
 
     private bool AttemptToFindPlayersOwnCity()
@@ -67,7 +72,7 @@ public class StackingRobotsOverhangManager : MonoBehaviour
         return clientsOwnPlayerCity != null;
     }
 
-    private void SpawnStackingRobotsOverhang(List<RobotController> robots)
+    private void SpawnOverhang(List<RobotController> robots)
     {
         GameObject stackingRobotsOverhangGO = Instantiate(stackingRobotsOverhangPrefab, parent.transform);
         StackingRobotsOverhangController stackingRobotsOverhangController = stackingRobotsOverhangGO.GetComponent<StackingRobotsOverhangController>();

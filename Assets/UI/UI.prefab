@@ -2152,6 +2152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   panel: {fileID: 1000012092257684}
+  textLabel: {fileID: 114000011555549030}
 --- !u!114 &114000010536702358
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3252,9 +3253,10 @@ MonoBehaviour:
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
+    m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: YOU LOST GG
+  m_Text: The infection got to high near your city, your people got infected and everyone
+    died, good job...
 --- !u!114 &114000011586054900
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7624,10 +7626,10 @@ RectTransform:
   m_Father: {fileID: 224000014131058710}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 160, y: 30}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224000013488781066
 RectTransform:

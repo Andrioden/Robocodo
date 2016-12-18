@@ -15,6 +15,9 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
     public string ownerConnectionId = "";
 
     [SyncVar]
+    public bool hasLost = false;
+
+    [SyncVar]
     private string nick;
     public string Nick { get { return nick; } }
 
@@ -52,6 +55,9 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
             ResourcePanel.instance.RegisterLocalPlayerCity(this);
             CmdRegisterPlayerNick(NetworkPanel.instance.nickInput.text);
         }
+
+        if (hasLost)
+            bodyMeshRenderer.enabled = false;
     }
 
     // Update is called once per frame
@@ -68,12 +74,6 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
 
         bodyMeshRenderer.material.color = Utils.HexToColor(hexColor);
         isColorSet = true;
-    }
-
-    private void OnDestroy()
-    {
-        if (hasAuthority && health == 0) // Health check to avoid that you get an error in the editor
-            LostPanel.instance.Show();
     }
 
     public override void OnStartAuthority()
@@ -302,19 +302,24 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
             this.nick = nick + (currentNicks.Count(n => n.Contains(nick)) + 1);
     }
 
+    [Server]
+    public void Lost()
+    {
+        hasLost = true;
+        bodyMeshRenderer.enabled = false;
+        foreach (GameObject go in ownedGameObjects)
+            Destroy(go);
+        RpcLost();
+
+        WorldController.instance.SpawnObject(playerCityRubblePrefab, (int)transform.position.x, (int)transform.position.z);
+    }
+
+    [ClientRpc]
+    private void RpcLost()
+    {
+        bodyMeshRenderer.enabled = false;
+
+        StackingRobotsOverhangManager.instance.DestroyAll();
+    }
+
 }
-
-//[Server]
-//public void TakeDamage(int damage)
-//{
-//    health -= damage;
-//    Debug.LogFormat("Robot {0} took {1} damage and now has {2} health", name, damage, health);
-
-//    if (health <= 0)
-//    {
-//        foreach (GameObject go in ownedGameObjects)
-//            Destroy(go);
-//        Destroy(gameObject);
-//        WorldController.instance.SpawnObject(playerCityRubblePrefab, (int)transform.position.x, (int)transform.position.z);
-//    }
-//}

@@ -140,7 +140,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
         InitDefaultValues();
 
         if (GameObjectUtils.FindClientsOwnPlayerCity() == ownerCity)
-            StackingRobotsOverhangManager.instance.RefreshStackingRobotsOverheads();
+            StackingRobotsOverhangManager.instance.Refresh();
     }
 
     // Update is called once per frame
@@ -317,7 +317,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
 
             //For quicker response when changing from setup mode to running mode in GUI. Will be overridden by server when syncvar is synced.
             isStarted = true;
-            StackingRobotsOverhangManager.instance.RefreshStackingRobotsOverheads();
+            StackingRobotsOverhangManager.instance.Refresh();
         }
     }
 
@@ -358,9 +358,9 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
         //Debug.Log("Server: Starting robot");
         isStarted = true;
         if (Settings_IPT() == 1)
-            WorldTickController.instance.TickEvent += Tick;
+            WorldTickController.instance.OnTick += Tick;
         else if (Settings_IPT() == 2)
-            WorldTickController.instance.HalfTickEvent += Tick;
+            WorldTickController.instance.OnHalfTick += Tick;
         else
             throw new Exception("IPT value not supported: " + Settings_IPT());
     }
@@ -374,9 +374,9 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
         isStarted = false;
 
         if (Settings_IPT() == 1)
-            WorldTickController.instance.TickEvent -= Tick;
+            WorldTickController.instance.OnTick -= Tick;
         else if (Settings_IPT() == 2)
-            WorldTickController.instance.HalfTickEvent -= Tick;
+            WorldTickController.instance.OnHalfTick -= Tick;
     }
 
     /// <summary>

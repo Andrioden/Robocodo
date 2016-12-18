@@ -64,7 +64,7 @@ public class InfectionManager : NetworkBehaviour
         tileInfectionGameObjects = new GameObject[width, height];
         AddBigInfectionAwayFromCities(cityOrReservedCoordinates);
 
-        WorldTickController.instance.TickEvent += Tick;
+        WorldTickController.instance.OnTick += Tick;
     }
 
     [Server]

@@ -25,6 +25,7 @@ public class CustomNetworkManager : NetworkManager
             WorldController.instance.BuildWorld(30, 30, 20);
 
             WorldController.instance.GetComponent<ScavengerSpawner>().enabled = true;
+            WorldController.instance.GetComponent<WinLoseChecker>().enabled = true;
 
             WorldTickController.instance.StartGame();
         }

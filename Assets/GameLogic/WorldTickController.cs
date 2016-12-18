@@ -10,11 +10,13 @@ public class WorldTickController : MonoBehaviour
 
     private int Tick = 0;
     public delegate void NewTickEventHandle();
-    public event NewTickEventHandle TickEvent = delegate { }; // add empty delegate so the TickEvent can be called without any observers. Source: http://stackoverflow.com/questions/340610/create-empty-c-sharp-event-handlers-automatically/340618#340618
+    public event NewTickEventHandle OnTick = delegate { }; // add empty delegate so the TickEvent can be called without any observers. Source: http://stackoverflow.com/questions/340610/create-empty-c-sharp-event-handlers-automatically/340618#340618
+    public delegate void NewAfterTickEventHandle();
+    public event NewAfterTickEventHandle OnAfterTick = delegate { };
 
     private int HalfTick = 0;
     public delegate void NewHalfTickEventHandle();
-    public event NewHalfTickEventHandle HalfTickEvent = delegate { };
+    public event NewHalfTickEventHandle OnHalfTick = delegate { };
 
     public static WorldTickController instance;
     private void Awake()
@@ -48,14 +50,15 @@ public class WorldTickController : MonoBehaviour
             if (newTick > Tick)
             {
                 Tick = newTick;
-                TickEvent();
+                OnTick();
+                OnAfterTick();
             }
 
             int newHalfTick = Convert.ToInt32(ellapsedTimeSinceGameStart * 2.0f / Settings.World_IrlSecondsPerTick);
             if (newHalfTick > HalfTick)
             {
                 HalfTick = newHalfTick;
-                HalfTickEvent();
+                OnHalfTick();
             }
 
         }

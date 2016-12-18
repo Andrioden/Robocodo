@@ -26,7 +26,7 @@ public class ScavengerGroupController : ActingEntity, IAttackable
     private void OnDestroy()
     {
         if (Application.isPlaying)
-            WorldTickController.instance.HalfTickEvent -= AI_Ticker; // Avoids exception when quitting game
+            WorldTickController.instance.OnHalfTick -= AI_Ticker; // Avoids exception when quitting game
     }
 
     [Client]
@@ -71,7 +71,7 @@ public class ScavengerGroupController : ActingEntity, IAttackable
 
         if (health <= 0)
         {
-            WorldTickController.instance.HalfTickEvent -= AI_Ticker;
+            WorldTickController.instance.OnHalfTick -= AI_Ticker;
             RpcSyncState(false, x, z);
         }
     }
@@ -89,7 +89,7 @@ public class ScavengerGroupController : ActingEntity, IAttackable
 
         health = Settings_StartHealth();
 
-        WorldTickController.instance.HalfTickEvent += AI_Ticker;
+        WorldTickController.instance.OnHalfTick += AI_Ticker;
 
         SetPosition(posX, posZ);
         RpcSyncState(gameObject.activeSelf, x, z);

@@ -19,8 +19,8 @@ public abstract class Module
     public void Install(RobotController robot)
     {
         this.robot = robot;
-        WorldTickController.instance.TickEvent += Tick;
-        WorldTickController.instance.HalfTickEvent += HalfTick;
+        WorldTickController.instance.OnTick += Tick;
+        WorldTickController.instance.OnHalfTick += HalfTick;
         robot.CacheAllowedInstructions();
     }
 
@@ -29,8 +29,8 @@ public abstract class Module
         if (robot == null)
             Debug.LogError("Tried to uninstall a module without a robot, most likely on a client, should only be uninstalled on server.");
 
-        WorldTickController.instance.TickEvent -= Tick;
-        WorldTickController.instance.HalfTickEvent -= HalfTick;
+        WorldTickController.instance.OnTick -= Tick;
+        WorldTickController.instance.OnHalfTick -= HalfTick;
         if (cacheInstructions)
             robot.CacheAllowedInstructions();
         robot = null;
