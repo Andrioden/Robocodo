@@ -38,10 +38,10 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
     public void NotifyInstructionsChanged() { OnInstructionsChanged(this); }
 
     [SyncVar]
-    public int nextInstructionIndex = 0;
+    public int nextInstructionIndex;
 
     [SyncVar]
-    protected int currentInstructionIndex = 0;
+    protected int currentInstructionIndex;
     public int CurrentInstructionIndex { get { return currentInstructionIndex; } }
 
     [SyncVar]
@@ -65,7 +65,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
     private List<Instruction> _allowedInstructions = new List<Instruction>();
 
     [SyncVar]
-    private int mainLoopIterationCount = 0;
+    private int mainLoopIterationCount;
     public int MainLoopIterationCount { get { return mainLoopIterationCount; } }
 
     private List<InventoryItem> inventory = new List<InventoryItem>();
@@ -137,7 +137,14 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
         if (!meshGO)
             Debug.LogError("Mesh game object reference missing. Will not be able to hide physical robot when in garage etc.");
 
-        InitDefaultValues();
+        x = transform.position.x;
+        z = transform.position.z;
+
+        if (instructions.Count == 0)
+            SetInstructions(GetSuggestedInstructionSet());
+
+        if (isServer)
+            InitDefaultValues();
 
         if (GameObjectUtils.FindClientsOwnPlayerCity() == ownerCity)
             StackingRobotsOverhangManager.instance.Refresh();
@@ -184,16 +191,14 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
 
     public void InitDefaultValues()
     {
-        CacheAllowedInstructions();
-
-        x = transform.position.x;
-        z = transform.position.z;
-
         energy = 0;
         health = Settings_StartHealth();
+        currentInstructionIndex = 0;
+        nextInstructionIndex = 0;
+        mainLoopIterationCount = 0;
 
-        if (instructions.Count == 0)
-            SetInstructions(GetSuggestedInstructionSet());
+        if (_allowedInstructions.Count == 0)
+            CacheAllowedInstructions();
     }
 
     private void EnterExitGarageCheck()
@@ -355,8 +360,8 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
     [Command]
     public void CmdStartRobot()
     {
-        //Debug.Log("Server: Starting robot");
         isStarted = true;
+
         if (Settings_IPT() == 1)
             WorldTickController.instance.OnTick += Tick;
         else if (Settings_IPT() == 2)
@@ -367,7 +372,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
 
     /// <summary>
     /// Has to be run without server check because the server variable is not set after network destroy.
-    /// It is ok that it runs on the client. Trying to desubscribe a method that isnt subscribed is ok.
+    /// It is ok that it runs on the client because trying to desubscribe a method that isnt subscribed is ok.
     /// </summary>
     private void StopRobot()
     {
@@ -395,8 +400,6 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
         currentInstructionIndexIsValid = true;
         currentInstructionIndex = nextInstructionIndex;
         Instruction currentInstruction = instructions[nextInstructionIndex];
-
-        //Debug.Log("SERVER: Running instruction: " + instruction);
 
         IEnergySource energySource = FindEnergySourceOnPosition();
         if (energySource != null)
@@ -797,14 +800,10 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
         this.ownerCity = ownerCity;
     }
 
-    public void PreviewResetRobot()
+    public void PreviewReset()
     {
+        InitDefaultValues();
         x = transform.position.x;
         z = transform.position.z;
-        transform.position = new Vector3(x, 1, z);
-        energy = Settings_MaxEnergy();
-        currentInstructionIndex = 0;
-        nextInstructionIndex = 0;
-        mainLoopIterationCount = 0;
     }
 }

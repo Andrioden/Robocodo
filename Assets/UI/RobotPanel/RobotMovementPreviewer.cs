@@ -31,7 +31,7 @@ public class RobotMovementPreviewer
     public void UpdateInstructions(List<Instruction> instructions)
     {
         robotCloneController.SetInstructions(instructions);
-        robotCloneController.PreviewResetRobot();
+        robotCloneController.PreviewReset();
     }
 
     public List<CoordinateDirection> GetPreviewCoordinateDirections()
