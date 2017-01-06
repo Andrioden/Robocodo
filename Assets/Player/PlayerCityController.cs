@@ -45,7 +45,12 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
     private int health;
     public int Health { get { return health; } }
 
+    [SyncVar]
+    private int energy;
+    public int Energy { get { return energy; } }
+
     public static int Settings_StartHealth = 10;
+    public static int Settings_MaxEnergyStorage = 200;
 
 
     // Use this for initialization
@@ -61,7 +66,10 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
 
         populationManager = gameObject.GetComponent<PopulationManager>();
         if (isServer)
+        {
             populationManager.Initialize(this);
+            WorldTickController.instance.OnTick += Tick;
+        }
 
         if (hasLost)
             bodyMeshRenderer.enabled = false;
@@ -87,6 +95,18 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
     {
         base.OnStartAuthority();
         AdjustCameraRelativeToPlayer();
+    }
+
+    private void Tick()
+    {
+        energy = Math.Min(Settings_MaxEnergyStorage, energy + Settings.City_Energy_RechargedPerTick);
+    }
+
+    public int DrainEnergy(int maxDrain)
+    {
+        int drained = Math.Min(energy, maxDrain);
+        energy -= drained;
+        return drained;
     }
 
     public void Click()

@@ -189,7 +189,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
         x = transform.position.x;
         z = transform.position.z;
 
-        energy = Settings_MaxEnergy();
+        energy = 0;
         health = Settings_StartHealth();
 
         if (instructions.Count == 0)
@@ -398,14 +398,22 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
 
         //Debug.Log("SERVER: Running instruction: " + instruction);
 
-        if (IsOnEnergySource())
-            AddEnergy(Settings_MaxEnergy());
+        IEnergySource energySource = FindEnergySourceOnPosition();
+        if (energySource != null)
+        {
+            if (isPreviewRobot)
+                AddEnergy(Settings_MaxEnergy());
+            else
+                AddEnergy(energySource.DrainEnergy(Settings_MaxEnergy() - energy));
+        }
 
         if (SalvageOrReprogramCheck())
             return;
 
         if (energy <= 0)
             SetFeedbackIfNotPreview("NOT ENOUGH ENERGY", false, true);
+        else if (currentInstructionIndex == 0 && energy != Settings_MaxEnergy())
+            SetFeedbackIfNotPreview("RECHARGING ENERGY", false, true);
         else
         {
             if (ExecuteInstruction(currentInstruction))
@@ -648,9 +656,9 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
         isColorSet = true;
     }
 
-    private bool IsOnEnergySource()
+    private IEnergySource FindEnergySourceOnPosition()
     {
-        return FindOnCurrentPosition<IEnergySource>() != null;
+        return FindOnCurrentPosition<IEnergySource>();
     }
 
     public void AddEnergy(int change)
