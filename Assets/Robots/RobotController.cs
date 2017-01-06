@@ -146,8 +146,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
         if (isServer)
             InitDefaultValues();
 
-        if (GameObjectUtils.FindClientsOwnPlayerCity() == ownerCity)
-            StackingRobotsOverhangManager.instance.Refresh();
+        StackingRobotsOverhangManager.instance.RefreshIfOwner(ownerCity);
     }
 
     // Update is called once per frame
@@ -167,7 +166,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
     {
         if (Application.isPlaying)
         {
-            StopRobot();
+            StopTicking();
             if (isServer)
                 modules.ForEach(module => module.Uninstall());
         }
@@ -290,6 +289,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
     {
         isStarted = newValue;
         RobotPanel.instance.Refresh(this);
+        StackingRobotsOverhangManager.instance.RefreshIfOwner(ownerCity);
     }
 
     [Client]
@@ -370,14 +370,18 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
             throw new Exception("IPT value not supported: " + Settings_IPT());
     }
 
-    /// <summary>
-    /// Has to be run without server check because the server variable is not set after network destroy.
-    /// It is ok that it runs on the client because trying to desubscribe a method that isnt subscribed is ok.
-    /// </summary>
+    [Server]
     private void StopRobot()
     {
         isStarted = false;
+        StopTicking();
+    }
 
+    /// <summary>
+    /// Might be run by client, thats ok. Desubscribing a method that was never subcribed is OK.
+    /// </summary>
+    private void StopTicking()
+    {
         if (Settings_IPT() == 1)
             WorldTickController.instance.OnTick -= Tick;
         else if (Settings_IPT() == 2)
@@ -385,7 +389,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
     }
 
     /// <summary>
-    /// Is not set to [Server] because it is used by the preview
+    /// Is not set to [Server] because it is used by the movement previewer
     /// </summary>
     public void Tick()
     {
@@ -410,7 +414,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
                 AddEnergy(energySource.DrainEnergy(Settings_MaxEnergy() - energy));
         }
 
-        if (SalvageOrReprogramCheck())
+        if (!isPreviewRobot && SalvageOrReprogramCheck())
             return;
 
         if (energy <= 0)
@@ -425,6 +429,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
         }
     }
 
+    [Server]
     private bool SalvageOrReprogramCheck()
     {
         if (IsAtPlayerCity())
@@ -789,9 +794,9 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
     }
 
     [TargetRpc]
-    public void TargetSetOwnerCity(NetworkConnection target, string connectionId)
+    public void TargetSetOwnerCity(NetworkConnection target, string ownerConnectionId)
     {
-        ownerCity = WorldController.instance.FindPlayerCityController(connectionId);
+        ownerCity = WorldController.instance.FindPlayerCityController(ownerConnectionId);
     }
 
     [Client]

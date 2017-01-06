@@ -37,6 +37,14 @@ public class StackingRobotsOverhangManager : MonoBehaviour
         spawnedGuiObjects.ForEach(go => Destroy(go));
     }
 
+    public void RefreshIfOwner(PlayerCityController owner)
+    {
+        AttemptToFindPlayersOwnCity();
+
+        if (clientsOwnPlayerCity == owner)
+            Refresh();
+    }
+
     public void Refresh()
     {
         if (!AttemptToFindPlayersOwnCity())
