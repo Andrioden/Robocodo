@@ -419,7 +419,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
 
         if (energy <= 0)
             SetFeedbackIfNotPreview("NOT ENOUGH ENERGY", false, true);
-        else if (currentInstructionIndex == 0 && energy != Settings_MaxEnergy())
+        else if (energySource != null && currentInstructionIndex == 0 && energy != Settings_MaxEnergy())
             SetFeedbackIfNotPreview("RECHARGING ENERGY", false, true);
         else
         {
