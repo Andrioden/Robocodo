@@ -11,12 +11,17 @@ public class CustomNetworkManager : NetworkManager
     public override void OnClientConnect(NetworkConnection conn)
     {
         ClientScene.Ready(conn);
-        ClientScene.AddPlayer((short)numPlayers);
+        ClientScene.AddPlayer(0); // The ID input here is not used for anything
         NetworkPanel.instance.feedbackText.text = "";
     }
 
+    /// <summary>
+    /// No idea what happens with the playerControllerId, its swallowed and not used. Instead the connectionId will always be unique.
+    /// </summary>
     public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
     {
+        Debug.Log("Joined a player with connectionId: " + conn.connectionId.ToString());
+
         if (numPlayers == 0) // Host
         {
             GameObject worldControllerGameObject = (GameObject)Instantiate(worldControllerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
@@ -30,7 +35,7 @@ public class CustomNetworkManager : NetworkManager
             WorldTickController.instance.StartGame();
         }
 
-        WorldController.instance.SpawnPlayer(conn, playerControllerId);
+        WorldController.instance.SpawnPlayer(conn);
 
         if (numPlayers > 0) // Client joined
             SyncGameStateToClient(conn);
