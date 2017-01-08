@@ -49,7 +49,10 @@ public class PopulationManager : NetworkBehaviour
                 population++;
             }
             else
+            {
+                growthProgress = 0;
                 population--;
+            }
         }
     }
 
