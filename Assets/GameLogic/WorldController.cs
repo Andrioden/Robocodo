@@ -116,7 +116,6 @@ public class WorldController : NetworkBehaviour
         if (playerCityController != null)
         {
             playerCityController.ownerConnectionId = conn.connectionId.ToString();
-            Debug.Log(conn.connectionId.ToString());
             playerCityController.SetColor(playerColorManager.GetNextColor());
         }
 
@@ -124,7 +123,6 @@ public class WorldController : NetworkBehaviour
             playerCityGameObject.transform.parent = worldParent;
 
         /* NOTE: Always set properties before spawning object, if not there will be a delay before all clients get the values. */
-
         if (NetworkServer.active)
             NetworkServer.AddPlayerForConnection(conn, playerCityGameObject, 0);
 

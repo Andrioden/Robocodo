@@ -60,21 +60,17 @@ public class HarvesterRobotController : RobotController
         if (ShouldAnimationBePlayed())
         {
             if (LastAppliedInstruction.GetType() == typeof(Instruction_Harvest))
-            {
-                bodyAnimator.Play("Idle");
                 PlayHarvestParticleSystem();
-            }
-            else
-                bodyAnimator.Play("Idle");
         }
-        else
-            bodyAnimator.Play("Idle");
     }
 
     private void PlayHarvestParticleSystem()
     {
-        leftToolParticleSystem.Play();
-        rightToolParticleSystem.Play();
+        if (!leftToolParticleSystem.isPlaying || !rightToolParticleSystem.isPlaying)
+        {
+            leftToolParticleSystem.Play();
+            rightToolParticleSystem.Play();
+        }
     }
 
     public override GameObject SpawnPreviewGameObjectClone()
