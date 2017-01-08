@@ -146,7 +146,10 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
         if (isServer)
             InitDefaultValues();
 
-        StackingRobotsOverhangManager.instance.RefreshIfOwner(ownerCity);
+        if (StackingRobotsOverhangManager.instance == null)
+            throw new Exception("This Start() method should not run before the StackingRobotsOverhangManager instance is instanciated. Is there a loose robot game object in the scene which was not added through WorldController?");
+        else
+            StackingRobotsOverhangManager.instance.RefreshIfOwner(ownerCity);
     }
 
     // Update is called once per frame

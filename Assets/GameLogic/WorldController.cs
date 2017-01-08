@@ -124,7 +124,7 @@ public class WorldController : NetworkBehaviour
 
         /* NOTE: Always set properties before spawning object, if not there will be a delay before all clients get the values. */
         if (NetworkServer.active)
-            NetworkServer.AddPlayerForConnection(conn, playerCityGameObject, 0);
+            NetworkServer.AddPlayerForConnection(conn, playerCityGameObject, 0); // playerControllerId hardcoded to 0 because we dont know what it is used for
 
         ScenarioSetup.Run(NetworkPanel.instance.gameModeDropdown.value, conn, playerCityGameObject);
 
