@@ -7,7 +7,7 @@ using UnityEngine.Networking;
 public class PopulationManager : NetworkBehaviour
 {
 
-    private PlayerCityController city;
+    private CityController city;
 
     [SyncVar]
     private int population;
@@ -18,7 +18,7 @@ public class PopulationManager : NetworkBehaviour
     public double GrowthProgress { get { return growthProgress; } }
 
     [Server]
-    public void Initialize(PlayerCityController city)
+    public void Initialize(CityController city)
     {
         this.city = city;
         population = 1;

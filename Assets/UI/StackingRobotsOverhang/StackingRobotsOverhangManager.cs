@@ -8,7 +8,7 @@ public class StackingRobotsOverhangManager : MonoBehaviour
 {
     public GameObject stackingRobotsOverhangPrefab;
 
-    private PlayerCityController clientsOwnPlayerCity;
+    private PlayerController clientsOwnPlayer;
 
     private GameObject parent;
     private List<GameObject> spawnedGuiObjects = new List<GameObject>();
@@ -37,17 +37,17 @@ public class StackingRobotsOverhangManager : MonoBehaviour
         spawnedGuiObjects.ForEach(go => Destroy(go));
     }
 
-    public void RefreshIfOwner(PlayerCityController owner)
+    public void RefreshIfOwner(PlayerController owner)
     {
-        AttemptToFindPlayersOwnCity();
+        AttemptToFindPlayer();
 
-        if (clientsOwnPlayerCity == owner)
+        if (clientsOwnPlayer == owner)
             Refresh();
     }
 
     public void Refresh()
     {
-        if (!AttemptToFindPlayersOwnCity())
+        if (!AttemptToFindPlayer())
         {
             Debug.Log("Could not find player city, stacking robot GUI will not refresh");
             return;
@@ -56,7 +56,7 @@ public class StackingRobotsOverhangManager : MonoBehaviour
         DestroyAll();
 
         List<RobotController> currentStackCheck = new List<RobotController>();
-        foreach (RobotController robot in FindObjectsOfType<RobotController>().Where(r => r.OwnerCity == clientsOwnPlayerCity && !r.IsStarted))
+        foreach (RobotController robot in FindObjectsOfType<RobotController>().Where(r => r.Owner == clientsOwnPlayer && !r.IsStarted))
         {
             if (currentStackCheck.Count == 0 || robot.x == currentStackCheck[0].x && robot.z == currentStackCheck[0].z)
                 currentStackCheck.Add(robot);
@@ -72,12 +72,12 @@ public class StackingRobotsOverhangManager : MonoBehaviour
             SpawnOverhang(currentStackCheck);
     }
 
-    private bool AttemptToFindPlayersOwnCity()
+    private bool AttemptToFindPlayer()
     {
-        if (clientsOwnPlayerCity == null)
-            clientsOwnPlayerCity = GameObjectUtils.FindClientsOwnPlayerCity();
+        if (clientsOwnPlayer == null)
+            clientsOwnPlayer = GameObjectUtils.FindClientsOwnPlayer();
 
-        return clientsOwnPlayerCity != null;
+        return clientsOwnPlayer != null;
     }
 
     private void SpawnOverhang(List<RobotController> robots)

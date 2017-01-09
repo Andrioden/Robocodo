@@ -17,7 +17,7 @@ public class RobotMovementPreviewer
         robotClone.SetActive(false);
         robotCloneController = robotClone.GetComponent<RobotController>();
         robotCloneController.isPreviewRobot = true;
-        robotCloneController.SetOwnerCity(selectedRobot.GetOwnerCity());
+        robotCloneController.SetOwner(selectedRobot.GetOwner());
         robotCloneController.InitDefaultValues();
         UpdateInstructions(instructions);
     }

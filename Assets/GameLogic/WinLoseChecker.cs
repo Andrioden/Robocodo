@@ -16,35 +16,35 @@ public class WinLoseChecker : NetworkBehaviour
     [Server]
     public void WinLoseCheck()
     {
-        foreach(PlayerCityController player in FindObjectsOfType<PlayerCityController>().Where(p => !p.hasLost))
+        foreach(PlayerController player in FindObjectsOfType<PlayerController>().Where(p => !p.hasLost && p.City != null))
         {
             LossCheck(player);
         }
     }
 
     [Server]
-    private void LossCheck(PlayerCityController playerCity)
+    private void LossCheck(PlayerController player)
     {
         LossType lossType = LossType.None;
 
-        if (playerCity.GetRelativeInfection() >= 22)
+        if (player.City.GetRelativeInfection() >= 22)
             lossType = LossType.Infection;
-        else if (playerCity.Health <= 0)
+        else if (player.City.Health <= 0)
             lossType = LossType.CityDestroyed;
-        else if (playerCity.PopulationManager.Population <= 0)
+        else if (player.City.PopulationManager.Population <= 0)
             lossType = LossType.StarvedToDeath;
 
         if (lossType != LossType.None)
         {
-            RpcNotifyLoser(playerCity.ownerConnectionId, (int)lossType);
-            playerCity.Lost();
+            RpcNotifyLoser(player.connectionId, (int)lossType);
+            player.Lost();
         }
     }
 
     [ClientRpc]
     public void RpcNotifyLoser(string lostPlayerConnectionId, int lossTypeInt)
     {
-        if (GameObjectUtils.FindClientsOwnPlayerCity().ownerConnectionId == lostPlayerConnectionId)
+        if (GameObjectUtils.FindClientsOwnPlayer().connectionId == lostPlayerConnectionId)
         {
             if (lossTypeInt == (int)LossType.Infection)
                 LostPanel.instance.Show("The infection got to high near your city, your people got infected and everyone died, good job...");

@@ -88,7 +88,7 @@ public class Instruction_Attack : Instruction
         {
             if (potentialTarget.X() == x && potentialTarget.Z() == z)
             {
-                if (potentialTarget.GetOwnerCity() != robot.GetOwnerCity())
+                if (potentialTarget.GetOwner() != robot.GetOwner())
                     return potentialTarget;
             }
         }

@@ -56,6 +56,7 @@ MonoBehaviour:
   m_OnlineScene: MainScene
   m_SpawnPrefabs:
   - {fileID: 190096, guid: a52a093a005a4704ca0b0b49c72156c5, type: 2}
+  - {fileID: 1469754915254386, guid: 32d26e5ab78055a4c884e3b3139ac22d, type: 2}
   - {fileID: 107340, guid: b7f3d2acfc9ba2c47a89b75545e00eeb, type: 2}
   - {fileID: 134104, guid: ee1cbd9e258bd9145a338baccd5ca91b, type: 2}
   - {fileID: 157114, guid: 1cc4c27114911bc449b6fa845ebbd524, type: 2}

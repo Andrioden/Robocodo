@@ -1,12 +1,10 @@
 fileFormatVersion: 2
-guid: ac94cad5efa5e1740b2e46ebdf928282
-timeCreated: 1467931261
+guid: 4b2096e04dc4f0e468e4c2f3eee2ef94
+timeCreated: 1483916844
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences:
-  - bodyMeshRenderer: {instanceID: 0}
-  - lostPanel: {instanceID: 0}
+  defaultReferences: []
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

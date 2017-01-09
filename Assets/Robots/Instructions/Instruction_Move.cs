@@ -62,11 +62,11 @@ public class Instruction_Move : Instruction
 
     private bool MoveHome()
     {
-        if (robot.OwnerCity == null)
-            throw new Exception("Robot has no playerCityController.");
+        if (robot.Owner == null)
+            throw new Exception("Robot has no owner.");
         else if (!robot.IsAtPlayerCity())
         {
-            robot.MoveTowards(robot.OwnerCity.X, robot.OwnerCity.Z);
+            robot.MoveTowards(robot.Owner.City.X, robot.Owner.City.Z);
             return false;
         }
         else

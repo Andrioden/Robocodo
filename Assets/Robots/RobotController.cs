@@ -5,12 +5,31 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISelectable, IHasInventory
+public abstract class RobotController : ActingEntity, IOwned, IAttackable, ISelectable, IHasInventory
 {
     // ********** COMMON VARIABLES **********
 
-    private PlayerCityController ownerCity;
-    public PlayerCityController OwnerCity { get { return ownerCity; } }
+    // *** OFFICIAL OWNER PATTERN - START *** //
+    [SyncVar]
+    private string ownerConnectionID;
+    private PlayerController __owner; // Dont use this variable directly if you dont know what you are doing
+    public PlayerController Owner
+    {
+        // We will have to reattempy to get the owner from FindPlayer because of timing issues with getting server data.
+        get
+        {
+            if (__owner == null)
+                __owner = WorldController.instance.FindPlayerController(ownerConnectionID);
+            return __owner;
+        }
+    }
+    public PlayerController GetOwner() { return Owner; }
+    public void SetOwner(PlayerController player)
+    {
+        __owner = player;
+        ownerConnectionID = player.connectionId;
+    }
+    // *** OFFICIAL OWNER PATTERN - END *** //
 
     public GameObject meshGO;
 
@@ -149,16 +168,16 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
         if (StackingRobotsOverhangManager.instance == null)
             throw new Exception("This Start() method should not run before the StackingRobotsOverhangManager instance is instanciated. Is there a loose robot game object in the scene which was not added through WorldController?");
         else
-            StackingRobotsOverhangManager.instance.RefreshIfOwner(ownerCity);
+            StackingRobotsOverhangManager.instance.RefreshIfOwner(Owner);
     }
 
     // Update is called once per frame
     private void Update()
     {
         if (!isColorSet)
-            SetColor();
+            SetMaterialColor();
 
-        if (ownerCity != null)
+        if (Owner != null && Owner.City != null)
             EnterExitGarageCheck();
 
         Move();
@@ -209,13 +228,13 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
         {
             isAlreadyHome = true;
             meshGO.SetActive(false);
-            ownerCity.EnterGarage(this);
+            Owner.City.EnterGarage(this);
         }
         else if (!IsHomeByTransform() && isAlreadyHome)
         {
             isAlreadyHome = false;
             meshGO.SetActive(true);
-            ownerCity.ExitGarage(this);
+            Owner.City.ExitGarage(this);
         }
         else if (IsHomeByTransform() && isAlreadyHome && MouseManager.currentlySelected == gameObject && !isStarted)
             meshGO.SetActive(true);
@@ -292,7 +311,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
     {
         isStarted = newValue;
         RobotPanel.instance.Refresh(this);
-        StackingRobotsOverhangManager.instance.RefreshIfOwner(ownerCity);
+        StackingRobotsOverhangManager.instance.RefreshIfOwner(Owner);
     }
 
     [Client]
@@ -487,7 +506,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
         StartCoroutine(feedbackClearCoroutine);
 
         if (popup)
-            ownerCity.ShowPopupForOwner(message, transform.position, TextPopup.ColorType.NEGATIVE);
+            Owner.ShowPopupForOwner(message, transform.position, TextPopup.ColorType.NEGATIVE);
     }
 
     private void _SetFeedback(string message, bool setIsCurrentInstructionIndexValid)
@@ -507,15 +526,15 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
 
     public bool IsAtPlayerCity()
     {
-        if (ownerCity == null)
+        if (Owner == null || Owner.City == null)
             return false;
         else
-            return x == ownerCity.X && z == ownerCity.Z;
+            return x == Owner.City.X && z == Owner.City.Z;
     }
 
     private bool IsHomeByTransform()
     {
-        return transform.position.x == ownerCity.X && transform.position.z == ownerCity.Z;
+        return transform.position.x == Owner.City.X && transform.position.z == Owner.City.Z;
     }
 
     private void InstructionCompleted()
@@ -612,9 +631,9 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
 
         Module module = Module.Deserialize(serializedModule);
 
-        if (ownerCity.CanAfford(module.Settings_Cost()))
+        if (Owner.City.CanAfford(module.Settings_Cost()))
         {
-            ownerCity.RemoveResources(module.Settings_Cost());
+            Owner.City.RemoveResources(module.Settings_Cost());
             AddModule(module);
         }
         else
@@ -646,12 +665,12 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
             OnModulesChanged(this);
     }
 
-    private void SetColor()
+    private void SetMaterialColor()
     {
-        if (ownerCity == null) //Neutral
+        if (Owner == null) //Neutral
             return;
 
-        if (string.IsNullOrEmpty(ownerCity.hexColor))
+        if (string.IsNullOrEmpty(Owner.hexColor))
             return;
 
         if (colorRenderers.Length == 0)
@@ -660,7 +679,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
             return;
         }
 
-        var color = Utils.HexToColor(ownerCity.hexColor);
+        var color = Utils.HexToColor(Owner.hexColor);
         foreach (Renderer renderer in colorRenderers)
             renderer.material.color = color;
 
@@ -688,8 +707,8 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
 
         if (health <= 0)
         {
-            if (ownerCity != null)
-                ownerCity.ShowPopupForOwner("DESTROYED!", transform.position, TextPopup.ColorType.NEGATIVE);
+            if (Owner != null)
+                Owner.ShowPopupForOwner("DESTROYED!", transform.position, TextPopup.ColorType.NEGATIVE);
             NetworkServer.Destroy(gameObject);
         }
     }
@@ -703,7 +722,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
     [Server]
     private void SalvageRobot()
     {
-        PlayerCityController playerCity = FindOnCurrentPosition<PlayerCityController>(); //TODO: Safe to replace with playerCityController reference?
+        CityController playerCity = FindOnCurrentPosition<CityController>(); //TODO: Safe to replace with playerCityController reference?
 
         List<InventoryItem> salvagedResources = new List<InventoryItem>();
 
@@ -718,7 +737,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
 
         playerCity.TransferToInventory(salvagedResources);
 
-        ownerCity.ShowPopupForOwner("SALVAGED!", transform.position, TextPopup.ColorType.DEFAULT);
+        Owner.ShowPopupForOwner("SALVAGED!", transform.position, TextPopup.ColorType.DEFAULT);
 
         NetworkServer.Destroy(gameObject);
     }
@@ -739,7 +758,7 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
         isReprogrammingRobot = true;
         currentInstructionBeingCleared = 1;
 
-        ownerCity.ShowPopupForOwner("REPROGRAMMNIG!", transform.position, TextPopup.ColorType.DEFAULT);
+        Owner.ShowPopupForOwner("REPROGRAMMNIG!", transform.position, TextPopup.ColorType.DEFAULT);
     }
 
     [Server]
@@ -772,40 +791,10 @@ public abstract class RobotController : ActingEntity, IAttackable, IOwned, ISele
             modules.Clear();
             CacheAllowedInstructions();
 
-            ownerCity.ShowPopupForOwner("MEMORY CLEARED!", transform.position, TextPopup.ColorType.DEFAULT);
+            Owner.ShowPopupForOwner("MEMORY CLEARED!", transform.position, TextPopup.ColorType.DEFAULT);
         }
         else
             SetFeedbackIfNotPreview(feedback, false, true);
-    }
-
-    public PlayerCityController GetOwnerCity()
-    {
-        return ownerCity;
-    }
-
-    [Server]
-    public void SetAndSyncOwnerCity(string connectionId)
-    {
-        ownerCity = WorldController.instance.FindPlayerCityController(connectionId);
-        RpcSetOwnerCity(connectionId);
-    }
-
-    [ClientRpc]
-    private void RpcSetOwnerCity(string connectionId)
-    {
-        ownerCity = WorldController.instance.FindPlayerCityController(connectionId);
-    }
-
-    [TargetRpc]
-    public void TargetSetOwnerCity(NetworkConnection target, string ownerConnectionId)
-    {
-        ownerCity = WorldController.instance.FindPlayerCityController(ownerConnectionId);
-    }
-
-    [Client]
-    public void SetOwnerCity(PlayerCityController ownerCity)
-    {
-        this.ownerCity = ownerCity;
     }
 
     public void PreviewReset()

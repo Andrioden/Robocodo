@@ -58,7 +58,7 @@ public class ScavengerGroupController : ActingEntity, IAttackable
     }
 
     [Server]
-    public PlayerCityController GetOwnerCity()
+    public PlayerController GetOwner()
     {
         return null;
     }

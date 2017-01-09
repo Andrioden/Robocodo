@@ -22,9 +22,9 @@ public class CustomNetworkManager : NetworkManager
     {
         Debug.Log("Joined a player with connectionId: " + conn.connectionId.ToString());
 
-        if (numPlayers == 0) // Host
+        if (numPlayers == 0) // First player == HOSTING
         {
-            GameObject worldControllerGameObject = (GameObject)Instantiate(worldControllerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            GameObject worldControllerGameObject = Instantiate(worldControllerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             NetworkServer.Spawn(worldControllerGameObject);
 
             WorldController.instance.BuildWorld(30, 40, 20);
@@ -36,14 +36,5 @@ public class CustomNetworkManager : NetworkManager
         }
 
         WorldController.instance.SpawnPlayer(conn);
-
-        if (numPlayers > 0) // Client joined
-            SyncGameStateToClient(conn);
-    }
-
-    private void SyncGameStateToClient(NetworkConnection conn)
-    {
-        foreach (RobotController robot in FindObjectsOfType<RobotController>())
-            robot.TargetSetOwnerCity(conn, robot.GetOwnerCity().ownerConnectionId);
     }
 }

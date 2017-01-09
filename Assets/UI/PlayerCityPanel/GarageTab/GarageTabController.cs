@@ -7,9 +7,9 @@ public class GarageTabController : MonoBehaviour
     public GameObject leftColumn;
     public GameObject rightColumn;
 
-    private PlayerCityController playerCityController;
+    private CityController playerCityController;
 
-    public void Show(PlayerCityController playerCityController)
+    public void Show(CityController playerCityController)
     {
         this.playerCityController = playerCityController;
         this.playerCityController.Garage.ForEach(robot => AddRobotToGaragePanel(robot));

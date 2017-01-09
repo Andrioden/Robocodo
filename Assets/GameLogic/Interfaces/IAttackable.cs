@@ -1,6 +1,6 @@
 ﻿public interface IAttackable
 {
-    PlayerCityController GetOwnerCity();
+    PlayerController GetOwner();
     void TakeDamage(int damage);
     bool Targetable();
     int X();

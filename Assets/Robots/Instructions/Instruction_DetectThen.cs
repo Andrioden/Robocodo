@@ -80,7 +80,7 @@ public class Instruction_DetectThen : Instruction
         {
             if (MathUtils.Distance(x, z, potentialTarget.X(), potentialTarget.Z()) <= maxDistance)
             {
-                if (potentialTarget.GetOwnerCity() != robot.GetOwnerCity())
+                if (potentialTarget.GetOwner() != robot.GetOwner())
                     return potentialTarget;
             }
         }

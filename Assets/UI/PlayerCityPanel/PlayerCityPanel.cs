@@ -13,7 +13,7 @@ public class PlayerCityPanel : MonoBehaviour
     public Sprite purgeRobotSprite;
 
     private Animator animator;
-    private PlayerCityController playerCityController;
+    private CityController playerCityController;
 
     public static PlayerCityPanel instance;
     private void Awake()
@@ -46,7 +46,7 @@ public class PlayerCityPanel : MonoBehaviour
         }
     }
 
-    public void Show(PlayerCityController playerCityController)
+    public void Show(CityController playerCityController)
     {
         this.playerCityController = playerCityController;
         KeyboardManager.KeyboardLockOff();

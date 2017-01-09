@@ -44,12 +44,12 @@ public static class ScenarioSetup
 
     private static void Normal(NetworkConnection conn, GameObject playerGO)
     {
-        PlayerCityController newPlayerCity = playerGO.GetComponent<PlayerCityController>();
+        PlayerController newPlayer = playerGO.GetComponent<PlayerController>();
 
         for (int i = 0; i < Settings.Scenario_Normal_AmountOfStartingHarvesterRobots; i++)
-            wc.SpawnHarvesterRobotWithClientAuthority(conn, newPlayerCity.X, newPlayerCity.Z, newPlayerCity);
+            wc.SpawnHarvesterRobotWithClientAuthority(conn, newPlayer.City.X, newPlayer.City.Z, newPlayer);
         for (int i = 0; i < Settings.Scenario_Normal_AmountOfStartingCombatRobots; i++)
-            wc.SpawnCombatRobotWithClientAuthority(conn, newPlayerCity.X, newPlayerCity.Z, newPlayerCity);
+            wc.SpawnCombatRobotWithClientAuthority(conn, newPlayer.City.X, newPlayer.City.Z, newPlayer);
 
         List<InventoryItem> startingResources = new List<InventoryItem>();
         for (int i = 0; i < Settings.Scenario_Normal_AmountOfStartingCopper; i++)
@@ -58,7 +58,7 @@ public static class ScenarioSetup
             startingResources.Add(new IronItem());
         for (int i = 0; i < Settings.Scenario_Normal_AmountOfStartingFood; i++)
             startingResources.Add(new FoodItem());
-        newPlayerCity.TransferToInventory(startingResources);
+        newPlayer.City.TransferToInventory(startingResources);
     }
 
     private static void WildPvE(NetworkConnection conn, GameObject playerGO)
@@ -83,11 +83,11 @@ public static class ScenarioSetup
 
     private static void Test_AttackNeutralEnemy(NetworkConnection conn, GameObject playerGO)
     {
-        PlayerCityController newPlayerCity = playerGO.GetComponent<PlayerCityController>();
+        PlayerController newPlayer = playerGO.GetComponent<PlayerController>();
 
-        wc.SpawnObject(wc.combatRobotPrefab, newPlayerCity.X + 2, newPlayerCity.Z);
+        wc.SpawnObject(wc.combatRobotPrefab, newPlayer.City.X + 2, newPlayer.City.Z);
 
-        GameObject combaRobotGO = wc.SpawnCombatRobotWithClientAuthority(conn, newPlayerCity.X, newPlayerCity.Z, newPlayerCity);
+        GameObject combaRobotGO = wc.SpawnCombatRobotWithClientAuthority(conn, newPlayer.City.X, newPlayer.City.Z, newPlayer);
         CombatRobotController combatRobot = combaRobotGO.GetComponent<CombatRobotController>();
         combatRobot.SetInstructions(new List<Instruction>
         {
@@ -103,11 +103,11 @@ public static class ScenarioSetup
 
     private static void Test_Harvester(NetworkConnection conn, GameObject playerGO)
     {
-        PlayerCityController newPlayerCity = playerGO.GetComponent<PlayerCityController>();
+        PlayerController newPlayer = playerGO.GetComponent<PlayerController>();
 
-        wc.SpawnResourceNode(new CopperItem(), newPlayerCity.X + 2, newPlayerCity.Z);
+        wc.SpawnResourceNode(new CopperItem(), newPlayer.City.X + 2, newPlayer.City.Z);
 
-        GameObject harvesterGO = wc.SpawnHarvesterRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
+        GameObject harvesterGO = wc.SpawnHarvesterRobotWithClientAuthority(conn, newPlayer.City.X + 2, newPlayer.City.Z, newPlayer);
         HarvesterRobotController harvester = harvesterGO.GetComponent<HarvesterRobotController>();
         harvester.SetInstructions(new List<Instruction>
         {
@@ -117,7 +117,7 @@ public static class ScenarioSetup
             new Instruction_Move(MoveDirection.Right)
         });
 
-        GameObject transporterGO = wc.SpawnTransporterRobotWithClientAuthority(conn, newPlayerCity.X + 1, newPlayerCity.Z, newPlayerCity);
+        GameObject transporterGO = wc.SpawnTransporterRobotWithClientAuthority(conn, newPlayer.City.X + 1, newPlayer.City.Z, newPlayer);
         TransporterRobotController transporter = transporterGO.GetComponent<TransporterRobotController>();
         transporter.SetInstructions(new List<Instruction>
         {
@@ -129,28 +129,28 @@ public static class ScenarioSetup
 
     private static void Test_StackingRobots(NetworkConnection conn, GameObject playerGO)
     {
-        PlayerCityController newPlayerCity = playerGO.GetComponent<PlayerCityController>();
+        PlayerController newPlayer = playerGO.GetComponent<PlayerController>();
 
-        wc.SpawnCombatRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
-        wc.SpawnCombatRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
-        wc.SpawnCombatRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
-        wc.SpawnHarvesterRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
-        wc.SpawnHarvesterRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
-        wc.SpawnHarvesterRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
-        wc.SpawnTransporterRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
-        wc.SpawnTransporterRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
-        wc.SpawnTransporterRobotWithClientAuthority(conn, newPlayerCity.X + 2, newPlayerCity.Z, newPlayerCity);
+        wc.SpawnCombatRobotWithClientAuthority(conn, newPlayer.City.X + 2, newPlayer.City.Z, newPlayer);
+        wc.SpawnCombatRobotWithClientAuthority(conn, newPlayer.City.X + 2, newPlayer.City.Z, newPlayer);
+        wc.SpawnCombatRobotWithClientAuthority(conn, newPlayer.City.X + 2, newPlayer.City.Z, newPlayer);
+        wc.SpawnHarvesterRobotWithClientAuthority(conn, newPlayer.City.X + 2, newPlayer.City.Z, newPlayer);
+        wc.SpawnHarvesterRobotWithClientAuthority(conn, newPlayer.City.X + 2, newPlayer.City.Z, newPlayer);
+        wc.SpawnHarvesterRobotWithClientAuthority(conn, newPlayer.City.X + 2, newPlayer.City.Z, newPlayer);
+        wc.SpawnTransporterRobotWithClientAuthority(conn, newPlayer.City.X + 2, newPlayer.City.Z, newPlayer);
+        wc.SpawnTransporterRobotWithClientAuthority(conn, newPlayer.City.X + 2, newPlayer.City.Z, newPlayer);
+        wc.SpawnTransporterRobotWithClientAuthority(conn, newPlayer.City.X + 2, newPlayer.City.Z, newPlayer);
     }
 
     private static void Test_InfectionPurge(NetworkConnection conn, GameObject playerGO)
     {
-        PlayerCityController newPlayerCity = playerGO.GetComponent<PlayerCityController>();
+        PlayerController newPlayer = playerGO.GetComponent<PlayerController>();
 
-        wc.SpawnPurgeRobotWithClientAuthority(conn, newPlayerCity.X, newPlayerCity.Z, newPlayerCity);
-        wc.SpawnPurgeRobotWithClientAuthority(conn, newPlayerCity.X, newPlayerCity.Z, newPlayerCity);
-        wc.SpawnPurgeRobotWithClientAuthority(conn, newPlayerCity.X, newPlayerCity.Z, newPlayerCity);
+        wc.SpawnPurgeRobotWithClientAuthority(conn, newPlayer.City.X, newPlayer.City.Z, newPlayer);
+        wc.SpawnPurgeRobotWithClientAuthority(conn, newPlayer.City.X, newPlayer.City.Z, newPlayer);
+        wc.SpawnPurgeRobotWithClientAuthority(conn, newPlayer.City.X, newPlayer.City.Z, newPlayer);
 
-        foreach (Coordinate coord in wc.worldBuilder.GetCoordinatesNear((int)newPlayerCity.X, (int)newPlayerCity.Z, 2))
+        foreach (Coordinate coord in wc.worldBuilder.GetCoordinatesNear((int)newPlayer.City.X, (int)newPlayer.City.Z, 2))
             InfectionManager.instance.IncreaseOrAddTileInfection(coord.x, coord.z, 100);
     }
 

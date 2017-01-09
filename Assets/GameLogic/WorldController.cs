@@ -8,7 +8,8 @@ using Assets.GameLogic;
 public class WorldController : NetworkBehaviour
 {
     public GameObject groundPrefab;
-    public GameObject playerCityPrefab;
+    public GameObject playerPrefab;
+    public GameObject cityPrefab;
     public GameObject copperNodePrefab;
     public GameObject ironNodePrefab;
     public GameObject foodNodePrefab;
@@ -110,68 +111,71 @@ public class WorldController : NetworkBehaviour
             return null;
 
         var playerPos = worldBuilder.GetNextPlayerPosition();
-        GameObject playerCityGameObject = (GameObject)Instantiate(playerCityPrefab, new Vector3(playerPos.x, 0, playerPos.z), Quaternion.identity);
 
-        var playerCityController = playerCityGameObject.GetComponent<PlayerCityController>();
-        if (playerCityController != null)
-        {
-            playerCityController.ownerConnectionId = conn.connectionId.ToString();
-            playerCityController.SetColor(playerColorManager.GetNextColor());
-        }
+        GameObject playerGameObject = Instantiate(playerPrefab, new Vector3(playerPos.x, 0, playerPos.z), Quaternion.identity);
 
         if (worldParent != null)
-            playerCityGameObject.transform.parent = worldParent;
+            playerGameObject.transform.parent = worldParent;
+
+        PlayerController player = playerGameObject.GetComponent<PlayerController>();
+        player.connectionId = conn.connectionId.ToString();
+        player.SetColor(playerColorManager.GetNextColor());
 
         /* NOTE: Always set properties before spawning object, if not there will be a delay before all clients get the values. */
         if (NetworkServer.active)
-            NetworkServer.AddPlayerForConnection(conn, playerCityGameObject, 0); // playerControllerId hardcoded to 0 because we dont know what it is used for
+            NetworkServer.AddPlayerForConnection(conn, playerGameObject, 0); // playerControllerId hardcoded to 0 because we dont know what it is used for
+        else
+            Debug.LogWarning("NetworkServer not active");
 
-        ScenarioSetup.Run(NetworkPanel.instance.gameModeDropdown.value, conn, playerCityGameObject);
+        SpawnObjectWithClientAuthority(conn, cityPrefab, playerPos.x, playerPos.z, player);
 
-        return playerCityGameObject;
+        ScenarioSetup.Run(NetworkPanel.instance.gameModeDropdown.value, conn, playerGameObject);
+
+        return playerGameObject;
     }
 
-    public GameObject SpawnCombatRobotWithClientAuthority(NetworkConnection conn, int x, int z, PlayerCityController playerCity)
+    public GameObject SpawnCombatRobotWithClientAuthority(NetworkConnection conn, int x, int z, PlayerController player)
     {
-        return SpawnObjectWithClientAuthority(conn, combatRobotPrefab, x, z, playerCity);
+        return SpawnObjectWithClientAuthority(conn, combatRobotPrefab, x, z, player);
     }
 
-    public GameObject SpawnHarvesterRobotWithClientAuthority(NetworkConnection conn, int x, int z, PlayerCityController playerCity)
+    public GameObject SpawnHarvesterRobotWithClientAuthority(NetworkConnection conn, int x, int z, PlayerController player)
     {
-        return SpawnObjectWithClientAuthority(conn, harvesterRobotPrefab, x, z, playerCity);
+        return SpawnObjectWithClientAuthority(conn, harvesterRobotPrefab, x, z, player);
     }
 
-    public GameObject SpawnTransporterRobotWithClientAuthority(NetworkConnection conn, int x, int z, PlayerCityController playerCity)
+    public GameObject SpawnTransporterRobotWithClientAuthority(NetworkConnection conn, int x, int z, PlayerController player)
     {
-        return SpawnObjectWithClientAuthority(conn, transporterRobotPrefab, x, z, playerCity);
+        return SpawnObjectWithClientAuthority(conn, transporterRobotPrefab, x, z, player);
     }
 
-    public GameObject SpawnPurgeRobotWithClientAuthority(NetworkConnection conn, int x, int z, PlayerCityController playerCity)
+    public GameObject SpawnPurgeRobotWithClientAuthority(NetworkConnection conn, int x, int z, PlayerController player)
     {
-        return SpawnObjectWithClientAuthority(conn, purgeRobotPrefab, x, z, playerCity);
+        return SpawnObjectWithClientAuthority(conn, purgeRobotPrefab, x, z, player);
     }
 
     // [Server] enforced with inline code check
-    private GameObject SpawnObjectWithClientAuthority(NetworkConnection conn, GameObject prefab, int x, int z, PlayerCityController playerCity)
+    private GameObject SpawnObjectWithClientAuthority(NetworkConnection conn, GameObject prefab, int x, int z, PlayerController player)
     {
         if (!IsServerOrDemo())
             return null;
 
-        GameObject newGameObject = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
+        GameObject newGameObject = Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
 
         if (worldParent != null)
             newGameObject.transform.parent = worldParent;
 
-        /* NOTE: Always set properties before spawning object, if not there will be a delay before all clients get the values. */
-
-        if (NetworkServer.active)
-            NetworkServer.SpawnWithClientAuthority(newGameObject, conn);
-
         var ownedObject = newGameObject.GetComponent<IOwned>();
         if (ownedObject != null)
-            ownedObject.SetAndSyncOwnerCity(conn.connectionId.ToString()); // I wonder if there is some race condition where this method runs to fast, before clients have the actualy objects. Ending up with not syncing the owner.
+            ownedObject.SetOwner(player);
 
-        playerCity.AddOwnedGameObject(newGameObject);
+        /* NOTE: Always set properties before spawning object, if not there will be a delay before all clients get the values. */
+        if (NetworkServer.active)
+            NetworkServer.SpawnWithClientAuthority(newGameObject, conn);
+        else
+            Debug.LogWarning("NetworkServer not active");
+
+        player.AddOwnedGameObject(newGameObject);
 
         return newGameObject;
     }
@@ -209,7 +213,7 @@ public class WorldController : NetworkBehaviour
         if (!IsServerOrDemo())
             return null;
 
-        GameObject newGameObject = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
+        GameObject newGameObject = Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
 
         if (worldParent != null)
             newGameObject.transform.parent = worldParent;
@@ -260,12 +264,27 @@ public class WorldController : NetworkBehaviour
         groundGameObject.GetComponent<TextureTilingController>().RescaleTileTexture();
     }
 
-    public PlayerCityController FindPlayerCityController(string connectionID)
+    public List<PlayerController> FindPlayerControllers()
+    {
+        return GameObject.FindGameObjectsWithTag("PlayerController")
+            .Where(go => go.GetComponent<PlayerController>() != null)
+            .Select(go => go.GetComponent<PlayerController>()).ToList();
+    }
+
+    public PlayerController FindPlayerController(string connectionID)
+    {
+        // I belive finding by tag is a quick unity action and not neccesary to cache
+        return GameObject.FindGameObjectsWithTag("PlayerController")
+            .Select(go => go.GetComponent<PlayerController>())
+            .Where(p => p != null && p.connectionId == connectionID).FirstOrDefault();
+    }
+
+    public CityController FindCityController(string connectionID)
     {
         // I belive finding by tag is a quick unity action and not neccesary to cache
         return GameObject.FindGameObjectsWithTag("PlayerCity")
-            .Select(go => go.GetComponent<PlayerCityController>())
-            .Where(p => p != null && p.ownerConnectionId == connectionID).FirstOrDefault();
+            .Select(go => go.GetComponent<CityController>())
+            .Where(p => p != null && p.Owner != null && p.Owner.connectionId == connectionID).FirstOrDefault();
     }
 
     private bool IsServerOrDemo()

@@ -7,9 +7,9 @@ using UnityEngine;
 public class GameObjectUtils : ScriptableObject
 {
 
-    public static PlayerCityController FindClientsOwnPlayerCity()
+    public static PlayerController FindClientsOwnPlayer()
     {
-        return FindObjectsOfType<PlayerCityController>().FirstOrDefault(p => p.hasAuthority);
+        return FindObjectsOfType<PlayerController>().FirstOrDefault(p => p.hasAuthority);
     }
 
     public static double Distance(GameObject go1, GameObject go2)

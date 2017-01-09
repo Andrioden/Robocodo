@@ -6,30 +6,36 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory, IEnergySource
+public class CityController : NetworkBehaviour, IOwned, ISelectable, IHasInventory, IEnergySource
 {
     public MeshRenderer bodyMeshRenderer;
-    public GameObject playerCityRubblePrefab;
 
+    // *** OFFICIAL OWNER PATTERN - START *** //
     [SyncVar]
-    public string ownerConnectionId = "";
-
-    [SyncVar]
-    public bool hasLost = false;
-
-    [SyncVar]
-    private string nick;
-    public string Nick { get { return nick; } }
-
-    [SyncVar]
-    public string hexColor;
+    private string ownerConnectionID;
+    private PlayerController __owner; // Dont use this variable directly if you dont know what you are doing
+    public PlayerController Owner
+    {
+        // We reattempt to find the player controller, because we might get synced the ownerConnectionID before the Player Game Object.
+        get
+        {
+            if (__owner == null)
+                __owner = WorldController.instance.FindPlayerController(ownerConnectionID);
+            return __owner;
+        }
+    }
+    public PlayerController GetOwner() { return Owner; }
+    public void SetOwner(PlayerController player) {
+        __owner = player;
+        ownerConnectionID = player.connectionId;
+    }
+    // *** OFFICIAL OWNER PATTERN - END *** //
 
     private bool isColorSet = false;
 
     public int X { get { return (int)gameObject.transform.position.x; } }
     public int Z { get { return (int)gameObject.transform.position.z; } }
 
-    private List<GameObject> ownedGameObjects = new List<GameObject>();
     private List<InventoryItem> inventory = new List<InventoryItem>();
     private List<RobotController> garage = new List<RobotController>();
     public List<RobotController> Garage { get { return garage; } }
@@ -58,43 +64,28 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
     {
         health = Settings_StartHealth;
 
-        if (isLocalPlayer)
-        {
-            ResourcePanel.instance.RegisterLocalPlayerCity(this);
-            CmdRegisterPlayerNick(NetworkPanel.instance.nickInput.text);
-        }
-
         populationManager = gameObject.GetComponent<PopulationManager>();
         if (isServer)
         {
             populationManager.Initialize(this);
             WorldTickController.instance.OnTick += Tick;
         }
-
-        if (hasLost)
-            bodyMeshRenderer.enabled = false;
     }
 
     // Update is called once per frame
     private void Update()
     {
         if (!isColorSet)
-            SetColor();
+            SetMaterialColor();
     }
 
-    private void SetColor()
+    private void SetMaterialColor()
     {
-        if (string.IsNullOrEmpty(hexColor))
+        if (string.IsNullOrEmpty(Owner.hexColor))
             return;
 
-        bodyMeshRenderer.material.color = Utils.HexToColor(hexColor);
+        bodyMeshRenderer.material.color = Utils.HexToColor(Owner.hexColor);
         isColorSet = true;
-    }
-
-    public override void OnStartAuthority()
-    {
-        base.OnStartAuthority();
-        AdjustCameraRelativeToPlayer();
     }
 
     private void Tick()
@@ -112,9 +103,7 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
     public void Click()
     {
         if (hasAuthority)
-        {
             PlayerCityPanel.instance.Show(this);
-        }
     }
 
     public ClickablePriority ClickPriority()
@@ -132,20 +121,15 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         return inventory.Count(i => i.GetType() == typeof(T));
     }
 
-    public void AddOwnedGameObject(GameObject go)
-    {
-        ownedGameObjects.Add(go);
-    }
-
     [Command]
     public void CmdBuyHarvesterRobot()
     {
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
         if (CanAfford(HarvesterRobotController.Settings_cost()))
         {
-            WorldController.instance.SpawnHarvesterRobotWithClientAuthority(connectionToClient, X, Z, this);
+            WorldController.instance.SpawnHarvesterRobotWithClientAuthority(Owner.connectionToClient, X, Z, Owner);
             RemoveResources(HarvesterRobotController.Settings_cost());
-            TargetIndicateSuccessfulPurchase(connectionToClient, HarvesterRobotController.Settings_name);
+            TargetIndicateSuccessfulPurchase(Owner.connectionToClient, HarvesterRobotController.Settings_name);
         }
     }
 
@@ -155,9 +139,9 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
         if (CanAfford(CombatRobotController.Settings_cost()))
         {
-            WorldController.instance.SpawnCombatRobotWithClientAuthority(connectionToClient, X, Z, this);
+            WorldController.instance.SpawnCombatRobotWithClientAuthority(Owner.connectionToClient, X, Z, Owner);
             RemoveResources(CombatRobotController.Settings_cost());
-            TargetIndicateSuccessfulPurchase(connectionToClient, CombatRobotController.Settings_name);
+            TargetIndicateSuccessfulPurchase(Owner.connectionToClient, CombatRobotController.Settings_name);
         }
     }
 
@@ -167,9 +151,9 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
         if (CanAfford(TransporterRobotController.Settings_cost()))
         {
-            WorldController.instance.SpawnTransporterRobotWithClientAuthority(connectionToClient, X, Z, this);
+            WorldController.instance.SpawnTransporterRobotWithClientAuthority(Owner.connectionToClient, X, Z, Owner);
             RemoveResources(TransporterRobotController.Settings_cost());
-            TargetIndicateSuccessfulPurchase(connectionToClient, TransporterRobotController.Settings_name);
+            TargetIndicateSuccessfulPurchase(Owner.connectionToClient, TransporterRobotController.Settings_name);
         }
     }
 
@@ -179,9 +163,9 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
         if (CanAfford(PurgeRobotController.Settings_cost()))
         {
-            WorldController.instance.SpawnPurgeRobotWithClientAuthority(connectionToClient, X, Z, this);
+            WorldController.instance.SpawnPurgeRobotWithClientAuthority(Owner.connectionToClient, X, Z, Owner);
             RemoveResources(PurgeRobotController.Settings_cost());
-            TargetIndicateSuccessfulPurchase(connectionToClient, PurgeRobotController.Settings_name);
+            TargetIndicateSuccessfulPurchase(Owner.connectionToClient, PurgeRobotController.Settings_name);
         }
     }
 
@@ -262,31 +246,6 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
             OnRobotRemovedFromGarage(robot);
     }
 
-    private void AdjustCameraRelativeToPlayer()
-    {
-        RTSCamera.instance.PositionRelativeTo(transform);
-    }
-
-    public void ShowPopupForOwner(string text, Vector3 position, TextPopup.ColorType colorType)
-    {
-        if (isServer)
-            TargetShowPopup(connectionToClient, text, position, colorType.Color());
-        else
-            TextPopupManager.instance.ShowPopupGeneric(text, position, colorType.Color());
-    }
-
-    [Server]
-    public void ShowPopupForAll(string text, Vector3 position, Color color)
-    {
-        TextPopupManager.instance.ShowPopupGeneric(text, position, color);
-    }
-
-    [TargetRpc]
-    private void TargetShowPopup(NetworkConnection target, string text, Vector3 position, Color color)
-    {
-        TextPopupManager.instance.ShowPopupGeneric(text, position, color);
-    }
-
     [TargetRpc]
     private void TargetIndicateSuccessfulPurchase(NetworkConnection target, string robotTypeName)
     {
@@ -303,48 +262,4 @@ public class PlayerCityController : NetworkBehaviour, ISelectable, IHasInventory
 
         return Math.Round(distanceAdjustedInfection, 1);
     }
-
-    [Server]
-    public void SetColor(Color32 teamColor)
-    {
-        hexColor = Utils.ColorToHex(teamColor);
-    }
-
-    [Command]
-    private void CmdRegisterPlayerNick(string nick)
-    {
-        List<string> currentNicks = new List<string>();
-        foreach (GameObject go in GameObject.FindGameObjectsWithTag("PlayerCity"))
-        {
-            PlayerCityController playerCity = go.GetComponent<PlayerCityController>();
-            if (playerCity != null && !string.IsNullOrEmpty(playerCity.Nick))
-                currentNicks.Add(playerCity.Nick);
-        }
-
-        if (!currentNicks.Contains(nick))
-            this.nick = nick;
-        else
-            this.nick = nick + (currentNicks.Count(n => n.Contains(nick)) + 1);
-    }
-
-    [Server]
-    public void Lost()
-    {
-        hasLost = true;
-        bodyMeshRenderer.enabled = false;
-        foreach (GameObject go in ownedGameObjects)
-            Destroy(go);
-        RpcLost();
-
-        WorldController.instance.SpawnObject(playerCityRubblePrefab, (int)transform.position.x, (int)transform.position.z);
-    }
-
-    [ClientRpc]
-    private void RpcLost()
-    {
-        bodyMeshRenderer.enabled = false;
-
-        StackingRobotsOverhangManager.instance.DestroyAll();
-    }
-
 }

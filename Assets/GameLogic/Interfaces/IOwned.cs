@@ -1,5 +1,5 @@
 ﻿public interface IOwned
 {
-    PlayerCityController GetOwnerCity();
-    void SetAndSyncOwnerCity(string connectionId);
+    PlayerController GetOwner();
+    void SetOwner(PlayerController owner);
 }

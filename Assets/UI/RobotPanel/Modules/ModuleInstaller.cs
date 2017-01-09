@@ -29,7 +29,7 @@ public class ModuleInstaller : MonoBehaviour {
 
     private void BuyModule()
     {
-        if (robot.OwnerCity.CanAffordFlashIfNot(module.Settings_Cost()))
+        if (robot.Owner.City.CanAffordFlashIfNot(module.Settings_Cost()))
         {
             robot.CmdAddModule(module.Serialize());
             moduleMenuController.Setup(robot, module);
