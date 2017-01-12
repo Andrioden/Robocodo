@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public abstract class ActingEntity : NetworkBehaviour
+public abstract class Unit : OwnedNetworkBehaviour
 {
 
     [SyncVar]

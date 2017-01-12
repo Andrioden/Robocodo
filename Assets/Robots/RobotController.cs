@@ -5,31 +5,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public abstract class RobotController : ActingEntity, IOwned, IAttackable, ISelectable, IHasInventory
+public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInventory
 {
     // ********** COMMON VARIABLES **********
-
-    // *** OFFICIAL OWNER PATTERN - START *** //
-    [SyncVar]
-    private string ownerConnectionID;
-    private PlayerController __owner; // Dont use this variable directly if you dont know what you are doing
-    public PlayerController Owner
-    {
-        // We will have to reattempy to get the owner from FindPlayer because of timing issues with getting server data.
-        get
-        {
-            if (__owner == null)
-                __owner = WorldController.instance.FindPlayerController(ownerConnectionID);
-            return __owner;
-        }
-    }
-    public PlayerController GetOwner() { return Owner; }
-    public void SetOwner(PlayerController player)
-    {
-        __owner = player;
-        ownerConnectionID = player.connectionId;
-    }
-    // *** OFFICIAL OWNER PATTERN - END *** //
 
     public GameObject meshGO;
 

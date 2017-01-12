@@ -4,7 +4,7 @@ using System;
 using UnityEngine.Networking;
 using System.Linq;
 
-public class ScavengerGroupController : ActingEntity, IAttackable
+public class ScavengerGroupController : Unit, IAttackable
 {
 
     // ********** SETTINGS **********
@@ -55,12 +55,6 @@ public class ScavengerGroupController : ActingEntity, IAttackable
         }
         else
             Move(MoveDirection.Random);
-    }
-
-    [Server]
-    public PlayerController GetOwner()
-    {
-        return null;
     }
 
     [Server]

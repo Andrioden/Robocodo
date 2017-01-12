@@ -165,7 +165,7 @@ public class WorldController : NetworkBehaviour
         if (worldParent != null)
             newGameObject.transform.parent = worldParent;
 
-        var ownedObject = newGameObject.GetComponent<IOwned>();
+        var ownedObject = newGameObject.GetComponent<OwnedNetworkBehaviour>();
         if (ownedObject != null)
             ownedObject.SetOwner(player);
 
