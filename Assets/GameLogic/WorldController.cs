@@ -56,6 +56,8 @@ public class WorldController : NetworkBehaviour
     {
         Time.timeScale = 1;
         SpawnAndAdjustGround();
+
+        NetworkPanel.instance.SetIngameUIActive(true);
     }
 
     private void OnDestroy()

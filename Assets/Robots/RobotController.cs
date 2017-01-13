@@ -30,8 +30,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
     protected List<Instruction> instructions = new List<Instruction>();
     public List<Instruction> Instructions { get { return instructions; } }
-    public delegate void InstructionsChanged(RobotController robot);
-    public static event InstructionsChanged OnInstructionsChanged = delegate { };
+    public static event Action<RobotController> OnInstructionsChanged = delegate { };
     public void NotifyInstructionsChanged() { OnInstructionsChanged(this); }
 
     [SyncVar]
@@ -67,13 +66,11 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
     private List<InventoryItem> inventory = new List<InventoryItem>();
     public List<InventoryItem> Inventory { get { return inventory; } }
-    public delegate void InventoryChanged(RobotController robot);
-    public static event InventoryChanged OnInventoryChanged = delegate { };
+    public static event Action<RobotController> OnInventoryChanged = delegate { };
 
     private List<Module> modules = new List<Module>();
     public List<Module> Modules { get { return modules; } }
-    public delegate void ModulesChanged(RobotController robot);
-    public static event ModulesChanged OnModulesChanged = delegate { };
+    public static event Action<RobotController> OnModulesChanged = delegate { };
 
     [SyncVar]
     private bool willSalvageWhenHome = false;

@@ -30,6 +30,8 @@ public class StackingRobotsOverhangManager : MonoBehaviour
     {
         parent = new GameObject("StackingRobotsOverhangs");
         parent.transform.SetParentToGO("ClientGameObjects");
+
+        WinLoseChecker.instance.OnLost += _ => DestroyAll();
     }
 
     public void DestroyAll()

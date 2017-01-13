@@ -37,6 +37,8 @@ public class ResourcePanel : MonoBehaviour
     {
         RegisterResourceLabelsForFlashingFeedbackSupport();
         InvokeRepeating("UpdateResourceLabels", 0, 0.3f); // Dont update it to often, so we use a slow updater
+
+        WinLoseChecker.instance.OnLost += _ => CancelInvoke("UpdateResourceLabels");
     }
 
     private void RegisterResourceLabelsForFlashingFeedbackSupport()
@@ -85,16 +87,13 @@ public class ResourcePanel : MonoBehaviour
         {
             nickLabel.text = localPlayer.Nick;
 
-            if (localPlayer.City != null)
-            {
-                popLabel.text = string.Format("Pop: {0} ({1:0}%)", localPlayer.City.PopulationManager.Population, Math.Round(localPlayer.City.PopulationManager.GrowthProgress * 100, 0));
-                energyLabel.text = string.Format("Energy: {0}/{1}", localPlayer.City.Energy, CityController.Settings_MaxEnergyStorage);
-                copperLabel.text = "Copper: " + localPlayer.City.GetItemCount<CopperItem>();
-                ironLabel.text = "Iron: " + localPlayer.City.GetItemCount<IronItem>();
-                foodLabel.text = "Food: " + localPlayer.City.GetItemCount<FoodItem>();
-                garageLabel.text = "Garage: " + localPlayer.City.Garage.Count();
-                infectionLabel.text = string.Format("Infection: {0:0.0}%", localPlayer.City.GetRelativeInfection());
-            }
+            popLabel.text = string.Format("Pop: {0} ({1:0}%)", localPlayer.City.PopulationManager.Population, Math.Round(localPlayer.City.PopulationManager.GrowthProgress * 100, 0));
+            energyLabel.text = string.Format("Energy: {0}/{1}", localPlayer.City.Energy, CityController.Settings_MaxEnergyStorage);
+            copperLabel.text = "Copper: " + localPlayer.City.GetItemCount<CopperItem>();
+            ironLabel.text = "Iron: " + localPlayer.City.GetItemCount<IronItem>();
+            foodLabel.text = "Food: " + localPlayer.City.GetItemCount<FoodItem>();
+            garageLabel.text = "Garage: " + localPlayer.City.Garage.Count();
+            infectionLabel.text = string.Format("Infection: {0:0.0}%", localPlayer.City.GetRelativeInfection());
         }
     }
 

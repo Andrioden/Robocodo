@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System;
 
 public class LostPanel : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class LostPanel : MonoBehaviour
     // Use this for initialization
     private void Start()
     {
+        WinLoseChecker.instance.OnLost += Lost;
     }
 
     // Update is called once per frame
@@ -31,6 +33,18 @@ public class LostPanel : MonoBehaviour
     {
         //if (Input.GetKeyDown("escape") && panel.activeSelf)
         //    panel.SetActive(false);
+    }
+
+    private void Lost(LossType type)
+    {
+        if (type == LossType.Infection)
+            Show("The infection got to high near your city, your people got infected and everyone died, good job...");
+        else if (type == LossType.CityDestroyed)
+            Show("You lost! City destroyed!");
+        else if (type == LossType.StarvedToDeath)
+            Show("You lost! Everyone died of starvation.");
+        else
+            throw new Exception("Loss type not supported " + type);
     }
 
     public void Show(string text)

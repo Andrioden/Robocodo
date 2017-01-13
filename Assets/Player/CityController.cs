@@ -19,9 +19,8 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
     private List<RobotController> garage = new List<RobotController>();
     public List<RobotController> Garage { get { return garage; } }
 
-    public delegate void GarageEventHandler(RobotController robot);
-    public event GarageEventHandler OnRobotAddedToGarage;
-    public event GarageEventHandler OnRobotRemovedFromGarage;
+    public event Action<RobotController> OnRobotAddedToGarage;
+    public event Action<RobotController> OnRobotRemovedFromGarage;
 
     private PopulationManager populationManager;
     public PopulationManager PopulationManager { get { return populationManager; } }

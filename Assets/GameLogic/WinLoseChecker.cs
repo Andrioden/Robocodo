@@ -3,9 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Linq;
+using System;
 
 public class WinLoseChecker : NetworkBehaviour
 {
+
+    public event Action<LossType> OnLost = delegate { };
+
+    public static WinLoseChecker instance;
+    private void Awake()
+    {
+        if (instance == null)
+            instance = this;
+
+        else if (instance != this)
+        {
+            Debug.LogError("Tried to create another instance of " + GetType() + ". Destroying.");
+            Destroy(gameObject);
+        }
+    }
 
     // Use this for initialization
     private void Start()
@@ -45,14 +61,7 @@ public class WinLoseChecker : NetworkBehaviour
     public void RpcNotifyLoser(string lostPlayerConnectionId, int lossTypeInt)
     {
         if (GameObjectUtils.FindClientsOwnPlayer().connectionId == lostPlayerConnectionId)
-        {
-            if (lossTypeInt == (int)LossType.Infection)
-                LostPanel.instance.Show("The infection got to high near your city, your people got infected and everyone died, good job...");
-            else if (lossTypeInt == (int)LossType.CityDestroyed)
-                LostPanel.instance.Show("You lost! City destroyed!");
-            else if (lossTypeInt == (int)LossType.StarvedToDeath)
-                LostPanel.instance.Show("You lost! Everyone died of starvation.");
-        }
+            OnLost((LossType)lossTypeInt);
     }
 }
 

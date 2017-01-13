@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine.Networking.Types;
+using System.Linq;
 
 public class NetworkPanel : MonoBehaviour
 {
@@ -23,6 +24,8 @@ public class NetworkPanel : MonoBehaviour
     public GameObject MMGameListContainer;
     public GameObject MMGameListJoinButtonPrefab;
     public Text feedbackText;
+
+    public GameObject[] ingameUiGameObjects;
 
     public static NetworkPanel instance;
     private void Awake()
@@ -71,7 +74,7 @@ public class NetworkPanel : MonoBehaviour
         foreach (var scenario in ScenarioSetup.Scenarios)
             gameModeDropdown.options.Add(new Dropdown.OptionData(scenario.FriendlyName));
 
-        ReadyToHostOrJoin();
+        ActivateNetworkLobby();
     }
 
     private void LAN_OnHostClick()
@@ -83,7 +86,7 @@ public class NetworkPanel : MonoBehaviour
             Debug.LogFormat("Hosting on {0}:{1}", networkManager.networkAddress, networkManager.networkPort);
 
             if (networkManager.isNetworkActive)
-                Ingame();
+                ActivateIngame();
             else
                 feedbackText.text = "Hosting failed";
         }
@@ -97,7 +100,7 @@ public class NetworkPanel : MonoBehaviour
             networkManager.StartClient();
             Debug.LogFormat("Joining {0}:{1}", networkManager.networkAddress, networkManager.networkPort);
             feedbackText.text = "Joining...";
-            Ingame();
+            ActivateIngame();
         }
     }
 
@@ -115,7 +118,7 @@ public class NetworkPanel : MonoBehaviour
             Debug.Log("Hosting matchmaking server " + MMGameNameField.text);
             uint matchSize = (uint)Convert.ToInt32(MMGameSizeField.text);
             networkManager.matchMaker.CreateMatch(MMGameNameField.text, matchSize, true, "", "", "", 0, 0, networkManager.OnMatchCreate);
-            Ingame();
+            ActivateIngame();
         }
     }
 
@@ -160,7 +163,8 @@ public class NetworkPanel : MonoBehaviour
         Debug.Log("Joining matchmaking game with match id: " + networkId);
         networkManager.matchMaker.JoinMatch(networkId, "", "", "", 0, 0, networkManager.OnMatchJoined);
         feedbackText.text = "Joining...";
-        Ingame();
+
+        ActivateIngame();
     }
 
     private void OnQuitCLick()
@@ -174,9 +178,9 @@ public class NetworkPanel : MonoBehaviour
 
         GameObject.Find("ClientGameObjects").transform.DestroyChildren();
 
-        LostPanel.instance.Hide();
+        //LostPanel.instance.Hide();
 
-        ReadyToHostOrJoin();
+        ActivateNetworkLobby();
     }
 
     private bool ValidateMandatoryInput()
@@ -190,35 +194,34 @@ public class NetworkPanel : MonoBehaviour
             return true;
     }
 
-    private void Ingame()
+    private void ActivateIngame()
     {
-        nickInput.gameObject.SetActive(false);
-        gameModeDropdown.gameObject.SetActive(false);
-        hostLanButton.gameObject.SetActive(false);
-        joinLanButton.gameObject.SetActive(false);
-        MMGameNameField.gameObject.SetActive(false);
-        MMGameSizeField.gameObject.SetActive(false);
-        hostMMutton.gameObject.SetActive(false);
-        findMMButton.gameObject.SetActive(false);
-        MMGameListContainer.SetActive(false);
-        quitButton.gameObject.SetActive(true);
-
-        ResourcePanel.instance.Show();
+        SetButtonsActive(false);
     }
 
-    private void ReadyToHostOrJoin()
+    private void ActivateNetworkLobby()
     {
-        nickInput.gameObject.SetActive(true);
-        gameModeDropdown.gameObject.SetActive(true);
-        hostLanButton.gameObject.SetActive(true);
-        joinLanButton.gameObject.SetActive(true);
-        MMGameNameField.gameObject.SetActive(true);
-        MMGameSizeField.gameObject.SetActive(true);
-        hostMMutton.gameObject.SetActive(true);
-        findMMButton.gameObject.SetActive(true);
-        MMGameListContainer.SetActive(true);
-        quitButton.gameObject.SetActive(false);
+        SetButtonsActive(true);
+        SetIngameUIActive(false);
+    }
 
-        ResourcePanel.instance.Hide();
+    private void SetButtonsActive(bool action)
+    {
+        nickInput.gameObject.SetActive(action);
+        gameModeDropdown.gameObject.SetActive(action);
+        hostLanButton.gameObject.SetActive(action);
+        joinLanButton.gameObject.SetActive(action);
+        MMGameNameField.gameObject.SetActive(action);
+        MMGameSizeField.gameObject.SetActive(action);
+        hostMMutton.gameObject.SetActive(action);
+        findMMButton.gameObject.SetActive(action);
+        MMGameListContainer.SetActive(action);
+
+        quitButton.gameObject.SetActive(!action);
+    }
+
+    public void SetIngameUIActive(bool active)
+    {
+        ingameUiGameObjects.ToList().ForEach(go => go.SetActive(active));
     }
 }
