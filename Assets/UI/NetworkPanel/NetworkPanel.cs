@@ -12,6 +12,7 @@ public class NetworkPanel : MonoBehaviour
 {
     private CustomNetworkManager networkManager;
 
+    public GameObject mainMenuContainer;
     public Button quitButton;
     public InputField nickInput;
     public Dropdown gameModeDropdown;
@@ -198,27 +199,18 @@ public class NetworkPanel : MonoBehaviour
 
     private void ActivateIngame()
     {
-        SetButtonsActive(false);
+        SetMainMenuActive(false);
     }
 
     private void ActivateNetworkLobby()
     {
-        SetButtonsActive(true);
+        SetMainMenuActive(true);
         SetIngameUIActive(false);
     }
 
-    private void SetButtonsActive(bool action)
+    private void SetMainMenuActive(bool action)
     {
-        nickInput.gameObject.SetActive(action);
-        gameModeDropdown.gameObject.SetActive(action);
-        hostLanButton.gameObject.SetActive(action);
-        joinLanButton.gameObject.SetActive(action);
-        MMGameNameField.gameObject.SetActive(action);
-        MMGameSizeField.gameObject.SetActive(action);
-        hostMMutton.gameObject.SetActive(action);
-        findMMButton.gameObject.SetActive(action);
-        MMGameListContainer.SetActive(action);
-
+        mainMenuContainer.gameObject.SetActive(action);
         quitButton.gameObject.SetActive(!action);
     }
 
