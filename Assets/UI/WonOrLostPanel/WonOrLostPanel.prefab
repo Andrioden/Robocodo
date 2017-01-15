@@ -55,7 +55,7 @@ GameObject:
   - component: {fileID: 224936247543399114}
   - component: {fileID: 114358514599102598}
   m_Layer: 5
-  m_Name: LostPanel
+  m_Name: WonOrLostPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

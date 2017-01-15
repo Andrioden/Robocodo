@@ -6,11 +6,11 @@ using System.Text;
 public class Instruction_Purge : Instruction
 {
 
-    public static readonly string Format = "PURGES";
+    public static readonly string Format = "PURGE";
 
     public override bool Execute(RobotController robot)
     {
-        return InfectionManager.instance.DecreaseTileInfection((int)robot.x, (int)robot.z, Settings.Robot_Purge_InfectionReducedPerTick);
+        return InfectionManager.instance.DecreaseTileInfection(robot, Settings.Robot_Purge_InfectionReducedPerTick);
     }
 
     public override bool CanBePreviewed()

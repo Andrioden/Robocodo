@@ -77,7 +77,7 @@ public class StackingRobotsOverhangManager : MonoBehaviour
     private bool AttemptToFindPlayer()
     {
         if (clientsOwnPlayer == null)
-            clientsOwnPlayer = GameObjectUtils.FindClientsOwnPlayer();
+            clientsOwnPlayer = WorldController.instance.FindClientsOwnPlayer();
 
         return clientsOwnPlayer != null;
     }

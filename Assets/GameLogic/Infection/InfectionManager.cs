@@ -57,18 +57,17 @@ public class InfectionManager : NetworkBehaviour
     }
 
     [Server]
-    public void Initialize(int width, int height, List<Coordinate> cityOrReservedCoordinates)
+    public void Initialize(int width, int height)
     {
         this.width = width;
         this.height = height;
         tileInfectionGameObjects = new GameObject[width, height];
-        AddBigInfectionAwayFromCities(cityOrReservedCoordinates);
 
         WorldTickController.instance.OnTick += Tick;
     }
 
     [Server]
-    private void AddBigInfectionAwayFromCities(List<Coordinate> cityOrReservedCoordinates)
+    public void AddBigInfectionAwayFromCities(List<Coordinate> cityOrReservedCoordinates)
     {
         int startSearchX = (width / 2) + Utils.RandomInt(width / -10, width / 10);
         int startSearchZ = (height / 2) + Utils.RandomInt(height / -10, height / 10);
@@ -143,15 +142,21 @@ public class InfectionManager : NetworkBehaviour
     /// Returns true if tile after this reduction has no infection left
     /// </summary>
     [Server]
-    public bool DecreaseTileInfection(int x, int z, int reduction)
+    public bool DecreaseTileInfection(RobotController robot, int maxReduction)
     {
+        int x = (int)robot.x;
+        int z = (int)robot.z;
+
         int index = IndexOfTileInfection(x, z);
         if (index != -1)
         {
-            int newTileInfectionValue = Math.Max(0, tileInfections[index].Infection - reduction);
+            int newTileInfectionValue = Math.Max(0, tileInfections[index].Infection - maxReduction);
+            int reduction = tileInfections[index].Infection - newTileInfectionValue;
             tileInfections[index] = new TileInfection(x, z, newTileInfectionValue);
 
             _AllowAdjacentTilesToSpreadAgain(x, z);
+
+            UpdatePlayerContribution(robot.Owner, tileInfections[index], reduction);
 
             return newTileInfectionValue <= 0;
         }
@@ -172,6 +177,14 @@ public class InfectionManager : NetworkBehaviour
             if (!_spreadingTileInfectionIndexes.Exists(i => i == index))
                 _spreadingTileInfectionIndexes.Add(index);
         }
+    }
+
+    [Server]
+    private void UpdatePlayerContribution(PlayerController player, TileInfection ti, int reduction)
+    {
+        double distance = MathUtils.Distance(player.City.X, player.City.Z, ti.X, ti.Z);
+        double contribution = Math.Sqrt(distance) * reduction;
+        player.infectionContribution += contribution;
     }
 
     /// <summary>

@@ -43,6 +43,8 @@ public class NetworkPanel : MonoBehaviour
     // Use this for initialization
     private void Start()
     {
+        Debug.Log("Starting Network Panel");
+
         networkManager = FindObjectOfType<CustomNetworkManager>();
 
         networkManager.SetMatchHost("eu1-mm.unet.unity3d.com", networkManager.matchPort, true); //TODO: Maybe make a user choice in the far future

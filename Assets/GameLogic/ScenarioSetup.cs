@@ -21,6 +21,7 @@ public static class ScenarioSetup
         scenarios.Add(new ScenarioEntry("Test Transporter", Scenario.Test_Harvester, Test_Harvester));
         scenarios.Add(new ScenarioEntry("Test Stacking Robots", Scenario.Test_Harvester, Test_StackingRobots));
         scenarios.Add(new ScenarioEntry("Test Infection Purging", Scenario.Test_InfectionPurge, Test_InfectionPurge));
+        scenarios.Add(new ScenarioEntry("Test Infection Victory", Scenario.Test_InfectionVictory, Test_InfectionVictory));
     }
 
     public static void RegisterWorldController(WorldController worldController)
@@ -59,6 +60,8 @@ public static class ScenarioSetup
         for (int i = 0; i < Settings.Scenario_Normal_AmountOfStartingFood; i++)
             startingResources.Add(new FoodItem());
         newPlayer.City.TransferToInventory(startingResources);
+
+        InfectionManager.instance.AddBigInfectionAwayFromCities(wc.worldBuilder.GetCityOrReservedCoordinates());
     }
 
     private static void WildPvE(NetworkConnection conn, GameObject playerGO)
@@ -70,7 +73,7 @@ public static class ScenarioSetup
             GameObject combaRobotGO = wc.SpawnObject(wc.combatRobotPrefab, x, 0);
             CombatRobotController combatRobot = combaRobotGO.GetComponent<CombatRobotController>();
 
-            combatRobot.SetInstructions(new List<Instruction>
+            combatRobot.SetInstructionsAndSyncToOwner(new List<Instruction>
             {
                 new Instruction_Move(MoveDirection.Random),
                 new Instruction_Attack(AttackDirection.Random)
@@ -89,7 +92,7 @@ public static class ScenarioSetup
 
         GameObject combaRobotGO = wc.SpawnCombatRobotWithClientAuthority(conn, newPlayer.City.X, newPlayer.City.Z, newPlayer);
         CombatRobotController combatRobot = combaRobotGO.GetComponent<CombatRobotController>();
-        combatRobot.SetInstructions(new List<Instruction>
+        combatRobot.SetInstructionsAndSyncToOwner(new List<Instruction>
         {
             new Instruction_Move(MoveDirection.Right),
             new Instruction_Attack(AttackDirection.Right),
@@ -109,7 +112,7 @@ public static class ScenarioSetup
 
         GameObject harvesterGO = wc.SpawnHarvesterRobotWithClientAuthority(conn, newPlayer.City.X + 2, newPlayer.City.Z, newPlayer);
         HarvesterRobotController harvester = harvesterGO.GetComponent<HarvesterRobotController>();
-        harvester.SetInstructions(new List<Instruction>
+        harvester.SetInstructionsAndSyncToOwner(new List<Instruction>
         {
             new Instruction_Harvest(),
             new Instruction_Move(MoveDirection.Left),
@@ -119,7 +122,7 @@ public static class ScenarioSetup
 
         GameObject transporterGO = wc.SpawnTransporterRobotWithClientAuthority(conn, newPlayer.City.X + 1, newPlayer.City.Z, newPlayer);
         TransporterRobotController transporter = transporterGO.GetComponent<TransporterRobotController>();
-        transporter.SetInstructions(new List<Instruction>
+        transporter.SetInstructionsAndSyncToOwner(new List<Instruction>
         {
             new Instruction_IdleUntilThen(UntilWhat.Full, new Instruction_Move(MoveDirection.Home)),
             new Instruction_DropInventory(),
@@ -150,8 +153,21 @@ public static class ScenarioSetup
         wc.SpawnPurgeRobotWithClientAuthority(conn, newPlayer.City.X, newPlayer.City.Z, newPlayer);
         wc.SpawnPurgeRobotWithClientAuthority(conn, newPlayer.City.X, newPlayer.City.Z, newPlayer);
 
-        foreach (Coordinate coord in wc.worldBuilder.GetCoordinatesNear((int)newPlayer.City.X, (int)newPlayer.City.Z, 2))
-            InfectionManager.instance.IncreaseOrAddTileInfection(coord.x, coord.z, 100);
+        foreach (Coordinate coord in wc.worldBuilder.GetCoordinatesNear(newPlayer.City.X, newPlayer.City.Z, 1))
+            InfectionManager.instance.IncreaseOrAddTileInfection(coord.x, coord.z, 20);
+    }
+
+    private static void Test_InfectionVictory(NetworkConnection conn, GameObject playerGO)
+    {
+        PlayerController newPlayer = playerGO.GetComponent<PlayerController>();
+
+        PurgeRobotController purger = wc.SpawnPurgeRobotWithClientAuthority(conn, newPlayer.City.X + 1, newPlayer.City.Z, newPlayer).GetComponent<PurgeRobotController>();
+        purger.SetInstructionsAndSyncToOwner(new List<Instruction>()
+        {
+            new Instruction_Purge()
+        });
+
+        InfectionManager.instance.IncreaseOrAddTileInfection(newPlayer.City.X + 1, newPlayer.City.Z, 20);
     }
 
 }
@@ -179,4 +195,5 @@ public enum Scenario
     Test_Harvester = 101,
     Test_StackingRobots = 102,
     Test_InfectionPurge = 103,
+    Test_InfectionVictory = 104
 }

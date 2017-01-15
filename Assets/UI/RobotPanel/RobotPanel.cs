@@ -418,9 +418,8 @@ public class RobotPanel : MonoBehaviour
         SetupPossibleInstructions();
         ModulesUpdated(robot);
 
-        List<Instruction> exampleInstructions = robot.Instructions.ToList();
         codeInputPanel.SetActive(true);
-        codeInputField.text = string.Join("\n", InstructionsHelper.SerializeList(exampleInstructions));  /* Pre filled example data */
+        codeInputField.text = string.Join("\n", InstructionsHelper.SerializeList(robot.Instructions));  /* Pre filled example data */
         codeInputField.onValueChanged.RemoveAllListeners();
         codeInputField.onValueChanged.AddListener(CodeInputAutoIndentAndUpperCase);
         codeInputField.onEndEdit.RemoveAllListeners();
@@ -436,7 +435,7 @@ public class RobotPanel : MonoBehaviour
         inventoryPanel.SetActive(false);
         codeRunningPanel.SetActive(false);
 
-        previewer = new RobotMovementPreviewer(robot, exampleInstructions);
+        previewer = new RobotMovementPreviewer(robot, robot.Instructions);
         DrawPreviewArrows();
     }
 

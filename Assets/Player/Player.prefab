@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 114101803835092806}
   m_Layer: 0
   m_Name: Player
-  m_TagString: PlayerController
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -87,4 +87,5 @@ MonoBehaviour:
   cityRubblePrefab: {fileID: 134104, guid: ee1cbd9e258bd9145a338baccd5ca91b, type: 2}
   connectionId: 
   hexColor: 
+  infectionContribution: 0
   hasLost: 0

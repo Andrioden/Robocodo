@@ -82,7 +82,7 @@ public class WorldController : NetworkBehaviour
             }
         }
 
-        InfectionManager.instance.Initialize(width, height, worldBuilder.GetCityOrReservedCoordinates());
+        InfectionManager.instance.Initialize(width, height);
     }
 
     private InventoryItem InventoryItem(TileType tileType)
@@ -266,24 +266,26 @@ public class WorldController : NetworkBehaviour
         groundGameObject.GetComponent<TextureTilingController>().RescaleTileTexture();
     }
 
+    // I belive finding by tag is a quick unity action and not neccesary to cache
     public List<PlayerController> FindPlayerControllers()
     {
-        return GameObject.FindGameObjectsWithTag("PlayerController")
+        return GameObject.FindGameObjectsWithTag("Player")
             .Where(go => go.GetComponent<PlayerController>() != null)
             .Select(go => go.GetComponent<PlayerController>()).ToList();
     }
 
     public PlayerController FindPlayerController(string connectionID)
     {
-        // I belive finding by tag is a quick unity action and not neccesary to cache
-        return GameObject.FindGameObjectsWithTag("PlayerController")
-            .Select(go => go.GetComponent<PlayerController>())
-            .Where(p => p != null && p.connectionId == connectionID).FirstOrDefault();
+        return FindPlayerControllers().Where(p => p.connectionId == connectionID).FirstOrDefault();
+    }
+
+    public PlayerController FindClientsOwnPlayer()
+    {
+        return FindPlayerControllers().Where(p => p.hasAuthority).FirstOrDefault();
     }
 
     public CityController FindCityController(string connectionID)
     {
-        // I belive finding by tag is a quick unity action and not neccesary to cache
         return GameObject.FindGameObjectsWithTag("PlayerCity")
             .Select(go => go.GetComponent<CityController>())
             .Where(p => p != null && p.Owner != null && p.Owner.connectionId == connectionID).FirstOrDefault();

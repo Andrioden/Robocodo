@@ -9,6 +9,7 @@ public class WinLoseChecker : NetworkBehaviour
 {
 
     public event Action<LossType> OnLost = delegate { };
+    public event Action<WinType> OnWon = delegate { };
 
     public static WinLoseChecker instance;
     private void Awake()
@@ -34,6 +35,7 @@ public class WinLoseChecker : NetworkBehaviour
     {
         foreach(PlayerController player in FindObjectsOfType<PlayerController>().Where(p => !p.hasLost && p.City != null))
         {
+            AllInfectionClearedCheck();
             LossCheck(player);
         }
     }
@@ -53,22 +55,52 @@ public class WinLoseChecker : NetworkBehaviour
         if (lossType != LossType.None)
         {
             RpcNotifyLoser(player.connectionId, (int)lossType);
-            player.Lost();
+            player.LostAndDestroy();
         }
+    }
+
+    [Server]
+    private void AllInfectionClearedCheck()
+    {
+        if (InfectionManager.instance.TileInfections.Sum(ti => ti.Infection) == 0)
+            RpcNotifyAllInfectionCleared();
     }
 
     [ClientRpc]
     public void RpcNotifyLoser(string lostPlayerConnectionId, int lossTypeInt)
     {
-        if (GameObjectUtils.FindClientsOwnPlayer().connectionId == lostPlayerConnectionId)
+        if (WorldController.instance.FindClientsOwnPlayer().connectionId == lostPlayerConnectionId)
             OnLost((LossType)lossTypeInt);
+        //TODO: On non-losing clients, maybe notify a player lost?
     }
+
+    [ClientRpc]
+    public void RpcNotifyAllInfectionCleared()
+    {
+        if (WorldController.instance.FindClientsOwnPlayer().infectionContribution == GetMaxInfectionContribution())
+            OnWon(WinType.Infection_TopContributor);
+        else
+            OnLost(LossType.Infection_NotTopContributor);
+    }
+
+    private double GetMaxInfectionContribution()
+    {
+        return WorldController.instance.FindPlayerControllers().Max(p => p.infectionContribution);
+    }
+
 }
 
 public enum LossType
 {
     None = 0,
-    Infection = 1,
-    CityDestroyed = 2,
-    StarvedToDeath
+    Infection = 10,
+    Infection_NotTopContributor = 11,
+    CityDestroyed = 20,
+    StarvedToDeath = 30,
+}
+
+public enum WinType
+{
+    None = 0,
+    Infection_TopContributor = 11
 }

@@ -31,6 +31,8 @@ public class PlayerController : NetworkBehaviour
     public string Nick { get { return nick; } }
 
     [SyncVar]
+    public double infectionContribution = 0;
+    [SyncVar]
     public bool hasLost = false;
 
     private List<GameObject> ownedGameObjects = new List<GameObject>();
@@ -85,7 +87,7 @@ public class PlayerController : NetworkBehaviour
     }
 
     [Server]
-    public void Lost()
+    public void LostAndDestroy()
     {
         hasLost = true;
         ownedGameObjects.ForEach(go => Destroy(go));

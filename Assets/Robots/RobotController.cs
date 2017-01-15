@@ -187,7 +187,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
     public void InitDefaultValues()
     {
-        energy = 0;
+        energy = Settings_MaxEnergy();
         health = Settings_StartHealth();
         currentInstructionIndex = 0;
         nextInstructionIndex = 0;
@@ -323,10 +323,23 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         }
     }
 
-    [Command]
-    private void CmdSetInstructions(string[] instructionStrings)
+    [Server]
+    public void SetInstructionsAndSyncToOwner(List<Instruction> newInstructions)
     {
-        instructions = InstructionsHelper.Deserialize(instructionStrings.ToList());
+        instructions = newInstructions;
+        TargetSetInstructions(Owner.connectionToClient, InstructionsHelper.SerializeList(newInstructions));
+    }
+
+    [TargetRpc]
+    private void TargetSetInstructions(NetworkConnection target, string[] newInstructions)
+    {
+        instructions = InstructionsHelper.Deserialize(newInstructions.ToList());
+    }
+
+    [Command]
+    private void CmdSetInstructions(string[] newInstructions)
+    {
+        instructions = InstructionsHelper.Deserialize(newInstructions.ToList());
     }
 
     [Client]
@@ -336,9 +349,9 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     }
 
     [Client]
-    public void SetInstructions(List<string> instructionsList)
+    public void SetInstructions(List<string> newInstructions)
     {
-        instructions = InstructionsHelper.Deserialize(instructionsList);
+        instructions = InstructionsHelper.Deserialize(newInstructions);
     }
 
     public void CacheAllowedInstructions()
