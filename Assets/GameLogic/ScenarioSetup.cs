@@ -45,6 +45,8 @@ public static class ScenarioSetup
 
     private static void Normal(NetworkConnection conn, GameObject playerGO)
     {
+        InfectionManager.instance.AddBigInfectionAwayFromCities(wc.worldBuilder.GetCityOrReservedCoordinates());
+
         PlayerController newPlayer = playerGO.GetComponent<PlayerController>();
 
         for (int i = 0; i < Settings.Scenario_Normal_AmountOfStartingHarvesterRobots; i++)
@@ -60,8 +62,6 @@ public static class ScenarioSetup
         for (int i = 0; i < Settings.Scenario_Normal_AmountOfStartingFood; i++)
             startingResources.Add(new FoodItem());
         newPlayer.City.TransferToInventory(startingResources);
-
-        InfectionManager.instance.AddBigInfectionAwayFromCities(wc.worldBuilder.GetCityOrReservedCoordinates());
     }
 
     private static void WildPvE(NetworkConnection conn, GameObject playerGO)
@@ -73,8 +73,9 @@ public static class ScenarioSetup
             GameObject combaRobotGO = wc.SpawnObject(wc.combatRobotPrefab, x, 0);
             CombatRobotController combatRobot = combaRobotGO.GetComponent<CombatRobotController>();
 
-            combatRobot.SetInstructionsAndSyncToOwner(new List<Instruction>
+            combatRobot.SetInstructions(new List<Instruction>
             {
+                new Instruction_Move(MoveDirection.Random),
                 new Instruction_Move(MoveDirection.Random),
                 new Instruction_Attack(AttackDirection.Random)
             });
@@ -86,6 +87,8 @@ public static class ScenarioSetup
 
     private static void Test_AttackNeutralEnemy(NetworkConnection conn, GameObject playerGO)
     {
+        InfectionManager.instance.AddBigInfectionAwayFromCities(wc.worldBuilder.GetCityOrReservedCoordinates());
+
         PlayerController newPlayer = playerGO.GetComponent<PlayerController>();
 
         wc.SpawnObject(wc.combatRobotPrefab, newPlayer.City.X + 2, newPlayer.City.Z);
@@ -106,6 +109,8 @@ public static class ScenarioSetup
 
     private static void Test_Harvester(NetworkConnection conn, GameObject playerGO)
     {
+        InfectionManager.instance.AddBigInfectionAwayFromCities(wc.worldBuilder.GetCityOrReservedCoordinates());
+
         PlayerController newPlayer = playerGO.GetComponent<PlayerController>();
 
         wc.SpawnResourceNode(new CopperItem(), newPlayer.City.X + 2, newPlayer.City.Z);
@@ -132,6 +137,8 @@ public static class ScenarioSetup
 
     private static void Test_StackingRobots(NetworkConnection conn, GameObject playerGO)
     {
+        InfectionManager.instance.AddBigInfectionAwayFromCities(wc.worldBuilder.GetCityOrReservedCoordinates());
+
         PlayerController newPlayer = playerGO.GetComponent<PlayerController>();
 
         wc.SpawnCombatRobotWithClientAuthority(conn, newPlayer.City.X + 2, newPlayer.City.Z, newPlayer);

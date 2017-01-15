@@ -285,8 +285,12 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     private void OnIsStartedChanged(bool newValue)
     {
         isStarted = newValue;
-        RobotPanel.instance.Refresh(this);
-        StackingRobotsOverhangManager.instance.RefreshIfOwner(Owner);
+
+        if (Owner != null)
+        {
+            RobotPanel.instance.Refresh(this);
+            StackingRobotsOverhangManager.instance.RefreshIfOwner(Owner);
+        }
     }
 
     [Client]
@@ -481,7 +485,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
     public void SetFeedbackIfNotPreview(string message, bool popup, bool whatToSetIsCurrentInstructionValidTo)
     {
-        if (isPreviewRobot)
+        if (isPreviewRobot || Owner == null)
             return;
 
         _SetFeedback(message, whatToSetIsCurrentInstructionValidTo);

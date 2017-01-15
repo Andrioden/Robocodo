@@ -29,7 +29,7 @@ public class WorldTickController : MonoBehaviour
     }
 
     // Update is called once per frame
-    private void Update ()
+    private void Update()
     {
         // TODO MIGHT WANT TO LIMIT HOW OFTEN THIS RUN
         //InvokeRepeating("UpdateTimeData", 0, 0.1f);
