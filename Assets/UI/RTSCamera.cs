@@ -12,6 +12,8 @@ public class RTSCamera : MonoBehaviour
     public float horizontalSpeed = 40;
     public float verticalSpeed = 40;
     public int edgeScrollBoundrary = 15;
+    public float minZoomDistance = 3.5f;
+    public float maxZoomDistance = 30f;
 
     private int screenHeight, screenWidth;
 
@@ -86,6 +88,16 @@ public class RTSCamera : MonoBehaviour
             return;
 
         var scollInput = Input.GetAxis("Mouse ScrollWheel");
+
+        if (scollInput == 0)
+            return;
+
         transform.Translate(Vector3.down * scollInput * 15f);
+
+        //Restrict zoom levels
+        if (transform.localPosition.y < minZoomDistance)
+            transform.localPosition = new Vector3(transform.localPosition.x, minZoomDistance, transform.localPosition.z);
+        else if (transform.localPosition.y > maxZoomDistance)
+            transform.localPosition = new Vector3(transform.localPosition.x, maxZoomDistance, transform.localPosition.z);
     }
 }
