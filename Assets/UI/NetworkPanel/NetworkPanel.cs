@@ -181,8 +181,6 @@ public class NetworkPanel : MonoBehaviour
 
         GameObject.Find("ClientGameObjects").transform.DestroyChildren();
 
-        //LostPanel.instance.Hide();
-
         ActivateNetworkLobby();
     }
 
