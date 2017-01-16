@@ -7,13 +7,13 @@ using UnityEngine.EventSystems;
 
 public class RTSCamera : MonoBehaviour
 {
-    public float cameraHeight = 10;
-    public float cameraDistance; // Set by the camera
-    public float horizontalSpeed = 40;
-    public float verticalSpeed = 40;
-    public int edgeScrollBoundrary = 15;
-    public float minZoomDistance = 3.5f;
-    public float maxZoomDistance = 30f;
+    public float cameraHeight;
+    public float cameraDistance;
+    public float horizontalSpeed;
+    public float verticalSpeed;
+    public int edgeScrollBoundrary;
+    public float minZoomDistance;
+    public float maxZoomDistance;
 
     private int screenHeight, screenWidth;
 
