@@ -117,7 +117,7 @@ Light:
   serializedVersion: 7
   m_Type: 1
   m_Color: {r: 0.99264705, g: 0.99264705, b: 0.99264705, a: 1}
-  m_Intensity: 1
+  m_Intensity: 1.2
   m_Range: 10
   m_SpotAngle: 30
   m_CookieSize: 10
@@ -250,6 +250,61 @@ Prefab:
         type: 2}
       propertyPath: m_Pivot.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224000012020646224, guid: 56068514285f2564e96f1f9ebfd8354e,
+        type: 2}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224000014003173026, guid: 56068514285f2564e96f1f9ebfd8354e,
+        type: 2}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224806007782007370, guid: 56068514285f2564e96f1f9ebfd8354e,
+        type: 2}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 224000012020646224, guid: 56068514285f2564e96f1f9ebfd8354e,
+        type: 2}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224000012020646224, guid: 56068514285f2564e96f1f9ebfd8354e,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -45
+      objectReference: {fileID: 0}
+    - target: {fileID: 224000012020646224, guid: 56068514285f2564e96f1f9ebfd8354e,
+        type: 2}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224000012020646224, guid: 56068514285f2564e96f1f9ebfd8354e,
+        type: 2}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224000012020646224, guid: 56068514285f2564e96f1f9ebfd8354e,
+        type: 2}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224000012020646224, guid: 56068514285f2564e96f1f9ebfd8354e,
+        type: 2}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224000012020646224, guid: 56068514285f2564e96f1f9ebfd8354e,
+        type: 2}
+      propertyPath: m_Pivot.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224000012020646224, guid: 56068514285f2564e96f1f9ebfd8354e,
+        type: 2}
+      propertyPath: m_Pivot.y
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 56068514285f2564e96f1f9ebfd8354e, type: 2}
