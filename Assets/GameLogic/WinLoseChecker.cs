@@ -45,7 +45,7 @@ public class WinLoseChecker : NetworkBehaviour
     {
         LossType lossType = LossType.None;
 
-        if (player.City.GetRelativeInfection() >= 22)
+        if (player.City.GetInfectionImpactLossPercentage() >= 100)
             lossType = LossType.Infection;
         else if (player.City.Health <= 0)
             lossType = LossType.CityDestroyed;

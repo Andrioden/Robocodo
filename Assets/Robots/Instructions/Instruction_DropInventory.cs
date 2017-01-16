@@ -46,7 +46,7 @@ public class Instruction_DropInventory : Instruction
         IHasInventory droppableTarget = FindDroppableTarget((int)robot.x, (int)robot.z);
         if (droppableTarget != null)
         {
-            List<InventoryItem> itemsNotAdded = droppableTarget.TransferToInventory(robot.Inventory);
+            List<InventoryItem> itemsNotAdded = droppableTarget.AddToInventory(robot.Inventory);
             robot.SetInventory(itemsNotAdded);
             if (itemsNotAdded.Count > 0)
                 robot.SetFeedbackIfNotPreview("NOT ALL ITEMS DROPPED, TARGET FULL", true, true);

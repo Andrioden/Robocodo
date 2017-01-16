@@ -5,7 +5,8 @@
 
     public static int World_Infection_SpreadDistance = 1;
     public static int World_Infection_GrowthPerTickPerTile = 1;
-    public static double World_Infection_MaxInfectionLossImpactPerTile = 1.3;
+    public static double World_Infection_MaxInfectionImpactPerTile = 1.3;
+    public static int World_Infection_InfectionImpactLoss = 100;
 
     public static float World_ScavengerMaxCount = 10;
     public static float World_ScavengerSpawnInterval = 30; // every x seconds on normal game speed

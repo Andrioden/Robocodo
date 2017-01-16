@@ -568,12 +568,12 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     [Server]
     public bool TransferToInventory(InventoryItem item)
     {
-        List<InventoryItem> notAddedItems = TransferToInventory(new List<InventoryItem> { item });
+        List<InventoryItem> notAddedItems = AddToInventory(new List<InventoryItem> { item });
         return notAddedItems.Count == 0;
     }
 
     [Server]
-    public List<InventoryItem> TransferToInventory(List<InventoryItem> items)
+    public List<InventoryItem> AddToInventory(List<InventoryItem> items)
     {
         List<InventoryItem> notAdded = new List<InventoryItem>();
         foreach (InventoryItem item in items)
@@ -727,7 +727,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         for (int c = 0; c < salvagedIron; c++)
             salvagedResources.Add(new IronItem());
 
-        playerCity.TransferToInventory(salvagedResources);
+        playerCity.AddToInventory(salvagedResources);
 
         Owner.ShowPopupForOwner("SALVAGED!", transform.position, TextPopup.ColorType.DEFAULT);
 

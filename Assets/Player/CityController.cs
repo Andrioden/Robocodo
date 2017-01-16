@@ -151,11 +151,11 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
     /// Returns the items not added to the inventory
     /// </summary>
     [Server]
-    public List<InventoryItem> TransferToInventory(List<InventoryItem> items)
+    public List<InventoryItem> AddToInventory(List<InventoryItem> items)
     {
         inventory.AddRange(items);
         RpcSyncInventory(InventoryItem.Serialize(inventory));
-        return new List<InventoryItem>(); // No items was not added
+        return new List<InventoryItem>(); // No items was not added since city has no max capacity
     }
 
     [Server]
@@ -231,13 +231,16 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
     }
 
     [Client]
-    public double GetRelativeInfection()
+    public double GetInfectionImpactLossPercentage()
     {
-        double distanceAdjustedInfection = 0.0;
+        double distanceAdjustedInfectionImpact = 0.0;
 
         foreach (TileInfection ti in InfectionManager.instance.TileInfections)
-            distanceAdjustedInfection += Math.Min(Settings.World_Infection_MaxInfectionLossImpactPerTile, ti.Infection / Math.Pow(MathUtils.Distance(ti.X, ti.Z, (int)X, (int)Z), 3));
+        {
+            double distance = MathUtils.Distance(ti.X, ti.Z, X, Z);
+            distanceAdjustedInfectionImpact += Math.Min(Settings.World_Infection_MaxInfectionImpactPerTile, ti.Infection / Math.Pow(distance, 3));
+        }
 
-        return Math.Round(distanceAdjustedInfection, 1);
+        return Math.Round(distanceAdjustedInfectionImpact * 100 / Settings.World_Infection_InfectionImpactLoss, 1);
     }
 }

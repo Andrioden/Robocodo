@@ -48,20 +48,14 @@ public static class ScenarioSetup
         InfectionManager.instance.AddBigInfectionAwayFromCities(wc.worldBuilder.GetCityOrReservedCoordinates());
 
         PlayerController newPlayer = playerGO.GetComponent<PlayerController>();
+        AddCopper(newPlayer.City, Settings.Scenario_Normal_AmountOfStartingCopper);
+        AddIron(newPlayer.City, Settings.Scenario_Normal_AmountOfStartingIron);
+        AddFood(newPlayer.City, Settings.Scenario_Normal_AmountOfStartingFood);
 
         for (int i = 0; i < Settings.Scenario_Normal_AmountOfStartingHarvesterRobots; i++)
             wc.SpawnHarvesterRobotWithClientAuthority(conn, newPlayer.City.X, newPlayer.City.Z, newPlayer);
         for (int i = 0; i < Settings.Scenario_Normal_AmountOfStartingCombatRobots; i++)
             wc.SpawnCombatRobotWithClientAuthority(conn, newPlayer.City.X, newPlayer.City.Z, newPlayer);
-
-        List<InventoryItem> startingResources = new List<InventoryItem>();
-        for (int i = 0; i < Settings.Scenario_Normal_AmountOfStartingCopper; i++)
-            startingResources.Add(new CopperItem());
-        for (int i = 0; i < Settings.Scenario_Normal_AmountOfStartingIron; i++)
-            startingResources.Add(new IronItem());
-        for (int i = 0; i < Settings.Scenario_Normal_AmountOfStartingFood; i++)
-            startingResources.Add(new FoodItem());
-        newPlayer.City.TransferToInventory(startingResources);
     }
 
     private static void WildPvE(NetworkConnection conn, GameObject playerGO)
@@ -90,6 +84,7 @@ public static class ScenarioSetup
         InfectionManager.instance.AddBigInfectionAwayFromCities(wc.worldBuilder.GetCityOrReservedCoordinates());
 
         PlayerController newPlayer = playerGO.GetComponent<PlayerController>();
+        AddFood(newPlayer.City, 20);
 
         wc.SpawnObject(wc.combatRobotPrefab, newPlayer.City.X + 2, newPlayer.City.Z);
 
@@ -112,6 +107,7 @@ public static class ScenarioSetup
         InfectionManager.instance.AddBigInfectionAwayFromCities(wc.worldBuilder.GetCityOrReservedCoordinates());
 
         PlayerController newPlayer = playerGO.GetComponent<PlayerController>();
+        AddFood(newPlayer.City, 20);
 
         wc.SpawnResourceNode(new CopperItem(), newPlayer.City.X + 2, newPlayer.City.Z);
 
@@ -140,6 +136,7 @@ public static class ScenarioSetup
         InfectionManager.instance.AddBigInfectionAwayFromCities(wc.worldBuilder.GetCityOrReservedCoordinates());
 
         PlayerController newPlayer = playerGO.GetComponent<PlayerController>();
+        AddFood(newPlayer.City, 20);
 
         wc.SpawnCombatRobotWithClientAuthority(conn, newPlayer.City.X + 2, newPlayer.City.Z, newPlayer);
         wc.SpawnCombatRobotWithClientAuthority(conn, newPlayer.City.X + 2, newPlayer.City.Z, newPlayer);
@@ -155,6 +152,7 @@ public static class ScenarioSetup
     private static void Test_InfectionPurge(NetworkConnection conn, GameObject playerGO)
     {
         PlayerController newPlayer = playerGO.GetComponent<PlayerController>();
+        AddFood(newPlayer.City, 20);
 
         wc.SpawnPurgeRobotWithClientAuthority(conn, newPlayer.City.X, newPlayer.City.Z, newPlayer);
         wc.SpawnPurgeRobotWithClientAuthority(conn, newPlayer.City.X, newPlayer.City.Z, newPlayer);
@@ -167,6 +165,7 @@ public static class ScenarioSetup
     private static void Test_InfectionVictory(NetworkConnection conn, GameObject playerGO)
     {
         PlayerController newPlayer = playerGO.GetComponent<PlayerController>();
+        AddFood(newPlayer.City, 20);
 
         PurgeRobotController purger = wc.SpawnPurgeRobotWithClientAuthority(conn, newPlayer.City.X + 1, newPlayer.City.Z, newPlayer).GetComponent<PurgeRobotController>();
         purger.SetInstructionsAndSyncToOwner(new List<Instruction>()
@@ -175,6 +174,30 @@ public static class ScenarioSetup
         });
 
         InfectionManager.instance.IncreaseOrAddTileInfection(newPlayer.City.X + 1, newPlayer.City.Z, 20);
+    }
+
+    private static void AddCopper(CityController city, int amount)
+    {
+        List<InventoryItem> startingResources = new List<InventoryItem>();
+        for (int i = 0; i < amount; i++)
+            startingResources.Add(new CopperItem());
+        city.AddToInventory(startingResources);
+    }
+
+    private static void AddIron(CityController city, int amount)
+    {
+        List<InventoryItem> startingResources = new List<InventoryItem>();
+        for (int i = 0; i < amount; i++)
+            startingResources.Add(new IronItem());
+        city.AddToInventory(startingResources);
+    }
+
+    private static void AddFood(CityController city, int amount)
+    {
+        List<InventoryItem> startingResources = new List<InventoryItem>();
+        for (int i = 0; i < amount; i++)
+            startingResources.Add(new FoodItem());
+        city.AddToInventory(startingResources);
     }
 
 }
