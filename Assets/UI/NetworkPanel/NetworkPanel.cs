@@ -25,6 +25,7 @@ public class NetworkPanel : MonoBehaviour
     public GameObject MMGameListContainer;
     public GameObject MMGameListJoinButtonPrefab;
     public Text feedbackText;
+    public Button exitGameButton;
 
     public GameObject[] ingameUiGameObjects;
 
@@ -73,6 +74,9 @@ public class NetworkPanel : MonoBehaviour
 
         findMMButton.onClick.RemoveAllListeners();
         findMMButton.onClick.AddListener(MM_OnFindGamesClick);
+
+        exitGameButton.onClick.RemoveAllListeners();
+        exitGameButton.onClick.AddListener(OnExitGame);
 
         foreach (var scenario in ScenarioSetup.Scenarios)
             gameModeDropdown.options.Add(new Dropdown.OptionData(scenario.FriendlyName));
@@ -183,6 +187,16 @@ public class NetworkPanel : MonoBehaviour
 
         ActivateNetworkLobby();
     }
+
+    private void OnExitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+ Application.Quit();
+#endif
+    }
+
 
     private bool ValidateMandatoryInput()
     {
