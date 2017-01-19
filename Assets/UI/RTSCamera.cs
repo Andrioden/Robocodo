@@ -54,8 +54,8 @@ public class RTSCamera : MonoBehaviour
 
     private void MoveCameraWithKeyboard()
     {
-        float horizontal = Input.GetAxis("Horizontal") * horizontalSpeed * Time.deltaTime / Time.timeScale;
-        float vertical = Input.GetAxis("Vertical") * verticalSpeed * Time.deltaTime / Time.timeScale;
+        float horizontal = Input.GetAxis("Horizontal") * horizontalSpeed * Time.deltaTime / Math.Max(1, Time.timeScale);
+        float vertical = Input.GetAxis("Vertical") * verticalSpeed * Time.deltaTime / Math.Max(1, Time.timeScale);
 
         transform.Translate(Vector3.forward * vertical);
         transform.Translate(Vector3.right * horizontal);

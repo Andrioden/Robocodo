@@ -45,6 +45,8 @@ public class NetworkPanel : MonoBehaviour
     // Is also run everytime the player leaves a game because leaving restarts the Scene, which reinitiates the scene Game Objects.
     private void Start()
     {
+        Time.timeScale = 1;
+
         foreach (var scenario in ScenarioSetup.Scenarios)
             gameModeDropdown.options.Add(new Dropdown.OptionData(scenario.FriendlyName));
 

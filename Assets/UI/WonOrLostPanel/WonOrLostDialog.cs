@@ -4,13 +4,13 @@ using System.Collections;
 using System;
 using System.Linq;
 
-public class WonOrLostPanel : MonoBehaviour
+public class WonOrLostDialog : MonoBehaviour
 {
 
     public GameObject panel;
     public Text textLabel;
 
-    public static WonOrLostPanel instance;
+    public static WonOrLostDialog instance;
     private void Awake()
     {
         if (instance == null)

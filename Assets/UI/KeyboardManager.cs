@@ -6,6 +6,8 @@ public class KeyboardManager : NetworkBehaviour
 {
     public static bool KeyboardLock = false;
 
+    private float timeScaleBeforePause = 0;
+
     private void Update()
     {
         if (isServer)
@@ -14,10 +16,24 @@ public class KeyboardManager : NetworkBehaviour
                 RpcAdjustTimeScale(Time.timeScale - 1);
             else if (Input.GetKeyDown(KeyCode.KeypadPlus) && Time.timeScale < Settings.World_MaxTimeScale)
                 RpcAdjustTimeScale(Time.timeScale + 1);
+            else if (Input.GetKeyDown(KeyCode.Pause) || Input.GetKeyDown(KeyCode.P))
+                PauseOrUnPause();
         }
 
         if (Input.GetKeyDown("escape"))
             MouseManager.currentlySelected = null;
+    }
+
+    [Server]
+    private void PauseOrUnPause()
+    {
+        if (Time.timeScale == 0) // Is paused
+            RpcAdjustTimeScale(timeScaleBeforePause);
+        else
+        {
+            timeScaleBeforePause = Time.timeScale;
+            RpcAdjustTimeScale(0);
+        }
     }
 
     [ClientRpc]
