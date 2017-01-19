@@ -19,7 +19,7 @@ public static class ScenarioSetup
         scenarios.Add(new ScenarioEntry("Wild PvE", Scenario.WildPvE, WildPvE));
         scenarios.Add(new ScenarioEntry("Test Attack Neu Enemy", Scenario.Test_AttackNeutralEnemy, Test_AttackNeutralEnemy));
         scenarios.Add(new ScenarioEntry("Test Transporter", Scenario.Test_Harvester, Test_Harvester));
-        scenarios.Add(new ScenarioEntry("Test Stacking Robots", Scenario.Test_Harvester, Test_StackingRobots));
+        scenarios.Add(new ScenarioEntry("Test Stacking Robots", Scenario.Test_StackingRobots, Test_StackingRobots));
         scenarios.Add(new ScenarioEntry("Test Infection Purging", Scenario.Test_InfectionPurge, Test_InfectionPurge));
         scenarios.Add(new ScenarioEntry("Test Infection Victory", Scenario.Test_InfectionVictory, Test_InfectionVictory));
     }
@@ -29,16 +29,16 @@ public static class ScenarioSetup
         wc = worldController;
     }
 
-    public static void Run(int scenarioIndex, NetworkConnection conn, GameObject playerGO)
-    {
-        scenarios[scenarioIndex].Run(conn, playerGO);
-    }
+    //public static void Run(int scenarioIndex, NetworkConnection conn, GameObject playerGO)
+    //{
+    //    scenarios[scenarioIndex].Run(conn, playerGO);
+    //}
 
     public static void Run(Scenario scenario, NetworkConnection conn, GameObject playerGO)
     {
         ScenarioEntry scenarioEntry = scenarios.Where(s => s.ScenarioEnumRef == scenario).FirstOrDefault();
         if (scenarioEntry == null)
-            throw new Exception("Not added support for this scenario enum entry.");
+            throw new Exception("Not added support for the Scenario enum: " + scenario);
         else
             scenarioEntry.Run(conn, playerGO);
     }
@@ -216,14 +216,14 @@ public class ScenarioEntry
     }
 }
 
+// The scenarios has to be ordered from 0 and without number holes because they are also used as index in an GUI array
 public enum Scenario
 {
     Normal = 0,
     WildPvE = 1,
-
-    Test_AttackNeutralEnemy = 100,
-    Test_Harvester = 101,
-    Test_StackingRobots = 102,
-    Test_InfectionPurge = 103,
-    Test_InfectionVictory = 104
+    Test_AttackNeutralEnemy = 2,
+    Test_Harvester = 3,
+    Test_StackingRobots = 4,
+    Test_InfectionPurge = 5,
+    Test_InfectionVictory = 6
 }

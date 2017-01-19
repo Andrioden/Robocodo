@@ -1395,7 +1395,7 @@ GameObject:
   - component: {fileID: 114000012047292462}
   - component: {fileID: 114000014147032552}
   m_Layer: 5
-  m_Name: QuitButton
+  m_Name: LeaveButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2489,7 +2489,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Quit
+  m_Text: Leave
 --- !u!114 &114000010740756390
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2895,7 +2895,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainMenuContainer: {fileID: 1499969889940452}
-  quitButton: {fileID: 114000014147032552}
+  leaveButton: {fileID: 114000014147032552}
   nickInput: {fileID: 114000012418465228}
   gameModeDropdown: {fileID: 114000010918011304}
   hostLanButton: {fileID: 114000010131985786}
@@ -2908,7 +2908,7 @@ MonoBehaviour:
   MMGameListJoinButtonPrefab: {fileID: 146050, guid: 2ed2d3990d3f6c0429dd08fb89850599,
     type: 2}
   feedbackText: {fileID: 114000013326632296}
-  exitGameButton: {fileID: 114000011197755950}
+  exitAppButton: {fileID: 114000011197755950}
   ingameUiGameObjects:
   - {fileID: 1000010570717168}
   - {fileID: 1000011640658716}
@@ -5440,7 +5440,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Exit Game
+  m_Text: Exit
 --- !u!114 &114000014147032552
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7366,7 +7366,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: -45}
-  m_SizeDelta: {x: 80, y: 45}
+  m_SizeDelta: {x: 100, y: 45}
   m_Pivot: {x: 0, y: 1}
 --- !u!224 &224000012034868554
 RectTransform:

@@ -131,7 +131,7 @@ public class WorldController : NetworkBehaviour
 
         SpawnObjectWithClientAuthority(conn, cityPrefab, playerPos.x, playerPos.z, player);
 
-        ScenarioSetup.Run(NetworkPanel.instance.gameModeDropdown.value, conn, playerGameObject);
+        ScenarioSetup.Run(NetworkPanel.instance.GetSelectedScenarioChoice(), conn, playerGameObject);
 
         return playerGameObject;
     }

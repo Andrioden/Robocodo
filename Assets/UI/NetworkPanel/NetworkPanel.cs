@@ -13,7 +13,7 @@ public class NetworkPanel : MonoBehaviour
     private CustomNetworkManager networkManager;
 
     public GameObject mainMenuContainer;
-    public Button quitButton;
+    public Button leaveButton;
     public InputField nickInput;
     public Dropdown gameModeDropdown;
     public Button hostLanButton;
@@ -25,7 +25,7 @@ public class NetworkPanel : MonoBehaviour
     public GameObject MMGameListContainer;
     public GameObject MMGameListJoinButtonPrefab;
     public Text feedbackText;
-    public Button exitGameButton;
+    public Button exitAppButton;
 
     public GameObject[] ingameUiGameObjects;
 
@@ -42,23 +42,20 @@ public class NetworkPanel : MonoBehaviour
         }
     }
 
-    // Use this for initialization
+    // Is also run everytime the player leaves a game because leaving restarts the Scene, which reinitiates the scene Game Objects.
     private void Start()
     {
-        Debug.Log("Starting Network Panel");
+        foreach (var scenario in ScenarioSetup.Scenarios)
+            gameModeDropdown.options.Add(new Dropdown.OptionData(scenario.FriendlyName));
 
         networkManager = FindObjectOfType<CustomNetworkManager>();
-
-        networkManager.SetMatchHost("eu1-mm.unet.unity3d.com", networkManager.matchPort, true); //TODO: Maybe make a user choice in the far future
-
+        networkManager.SetMatchHost(PlayerSettings.MM_Server, networkManager.matchPort, true); //TODO: Maybe make a user choice in the far future
         if (networkManager.matchMaker == null)
             networkManager.StartMatchMaker();
 
-        if (nickInput.text.Length == 0)
-            nickInput.text = "Andriod";
-
-        if (MMGameSizeField.text.Length == 0)
-            MMGameSizeField.text = "2";
+        nickInput.text = PlayerSettings.Game_Nick;
+        gameModeDropdown.value = (int)PlayerSettings.Game_ScenarioChoice;
+        MMGameSizeField.text = PlayerSettings.Game_Players.ToString();
 
         hostLanButton.onClick.RemoveAllListeners();
         hostLanButton.onClick.AddListener(LAN_OnHostClick);
@@ -66,8 +63,8 @@ public class NetworkPanel : MonoBehaviour
         joinLanButton.onClick.RemoveAllListeners();
         joinLanButton.onClick.AddListener(LAN_OnJoinClick);
 
-        quitButton.onClick.RemoveAllListeners();
-        quitButton.onClick.AddListener(OnQuitCLick);
+        leaveButton.onClick.RemoveAllListeners();
+        leaveButton.onClick.AddListener(OnQuitNetworkGameCLick);
 
         hostMMutton.onClick.RemoveAllListeners();
         hostMMutton.onClick.AddListener(MM_OnHostClick);
@@ -75,13 +72,15 @@ public class NetworkPanel : MonoBehaviour
         findMMButton.onClick.RemoveAllListeners();
         findMMButton.onClick.AddListener(MM_OnFindGamesClick);
 
-        exitGameButton.onClick.RemoveAllListeners();
-        exitGameButton.onClick.AddListener(OnExitGame);
-
-        foreach (var scenario in ScenarioSetup.Scenarios)
-            gameModeDropdown.options.Add(new Dropdown.OptionData(scenario.FriendlyName));
+        exitAppButton.onClick.RemoveAllListeners();
+        exitAppButton.onClick.AddListener(OnExitAppClick);
 
         ActivateNetworkLobby();
+    }
+
+    public Scenario GetSelectedScenarioChoice()
+    {
+        return (Scenario)gameModeDropdown.value;
     }
 
     private void LAN_OnHostClick()
@@ -174,7 +173,7 @@ public class NetworkPanel : MonoBehaviour
         ActivateIngame();
     }
 
-    private void OnQuitCLick()
+    private void OnQuitNetworkGameCLick()
     {
         feedbackText.text = "";
 
@@ -188,7 +187,7 @@ public class NetworkPanel : MonoBehaviour
         ActivateNetworkLobby();
     }
 
-    private void OnExitGame()
+    private void OnExitAppClick()
     {
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
@@ -212,6 +211,8 @@ public class NetworkPanel : MonoBehaviour
     private void ActivateIngame()
     {
         SetMainMenuActive(false);
+
+        SavePlayerSettings();
     }
 
     private void ActivateNetworkLobby()
@@ -223,11 +224,18 @@ public class NetworkPanel : MonoBehaviour
     private void SetMainMenuActive(bool action)
     {
         mainMenuContainer.gameObject.SetActive(action);
-        quitButton.gameObject.SetActive(!action);
+        leaveButton.gameObject.SetActive(!action);
     }
 
     public void SetIngameUIActive(bool active)
     {
         ingameUiGameObjects.ToList().ForEach(go => go.SetActive(active));
+    }
+
+    private void SavePlayerSettings()
+    {
+        PlayerSettings.Game_Nick = nickInput.text;
+        PlayerSettings.Game_ScenarioChoice = GetSelectedScenarioChoice();
+        //PlayerSettings.Save(); // Not implemented
     }
 }
