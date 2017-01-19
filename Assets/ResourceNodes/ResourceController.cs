@@ -46,17 +46,20 @@ public class ResourceController : NetworkBehaviour, IClickable
         UpdateTransformSize();
     }
 
+    [Server]
     public int GetRemainingResourceItems()
     {
         return remainingItems;
     }
 
+    [Client]
     private void OnRemainingItemsUpdated(int newRemainingItems)
     {
-        remainingItems = newRemainingItems; // TODO FInd out why we have to set it, doesnt it update as part of SyncVar? Does hook stop that?
+        remainingItems = newRemainingItems;
         UpdateTransformSize();
     }
 
+    [Client]
     protected void UpdateTransformSize()
     {
         double scalePercentage = MathUtils.LinearConversionDouble(0, Settings.Resource_MaxItemsPerNode, 0, 100, remainingItems);

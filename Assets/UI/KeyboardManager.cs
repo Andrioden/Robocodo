@@ -6,16 +6,24 @@ public class KeyboardManager : NetworkBehaviour
 {
     public static bool KeyboardLock = false;
 
+    [SyncVar(hook = "OnTimeScaleUpdated")]
+    private float timeScale;
+
     private float timeScaleBeforePause = 0;
+
+    public override void OnStartClient()
+    {
+        Time.timeScale = timeScale;
+    }
 
     private void Update()
     {
         if (isServer)
         {
             if (Input.GetKeyDown(KeyCode.KeypadMinus) && Time.timeScale > 1)
-                RpcAdjustTimeScale(Time.timeScale - 1);
+                timeScale = Time.timeScale - 1;
             else if (Input.GetKeyDown(KeyCode.KeypadPlus) && Time.timeScale < Settings.World_MaxTimeScale)
-                RpcAdjustTimeScale(Time.timeScale + 1);
+                timeScale = Time.timeScale + 1;
             else if (Input.GetKeyDown(KeyCode.Pause) || Input.GetKeyDown(KeyCode.P))
                 PauseOrUnPause();
         }
@@ -28,25 +36,28 @@ public class KeyboardManager : NetworkBehaviour
     private void PauseOrUnPause()
     {
         if (Time.timeScale == 0) // Is paused
-            RpcAdjustTimeScale(timeScaleBeforePause);
+            timeScale = timeScaleBeforePause;
         else
         {
             timeScaleBeforePause = Time.timeScale;
-            RpcAdjustTimeScale(0);
+            timeScale = 0;
         }
     }
 
-    [ClientRpc]
-    private void RpcAdjustTimeScale(float newTimeScale)
+    [Client]
+    private void OnTimeScaleUpdated(float newTimeScale)
     {
-        Time.timeScale = newTimeScale;
+        timeScale = newTimeScale;
+        Time.timeScale = timeScale;
     }
 
+    [Client]
     public static void KeyboardLockOn(string arg0 = "")
     {
         KeyboardLock = true;
     }
 
+    [Client]
     public static void KeyboardLockOff(string arg0 = "")
     {
         KeyboardLock = false;

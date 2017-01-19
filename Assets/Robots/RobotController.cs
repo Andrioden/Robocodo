@@ -22,7 +22,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
     private IEnumerator feedbackClearCoroutine;
 
-    [SyncVar(hook = "OnIsStartedChanged")]
+    [SyncVar(hook = "OnIsStartedUpdated")]
     private bool isStarted = false;
     public bool IsStarted { get { return isStarted; } }
 
@@ -282,7 +282,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     }
 
     [Client]
-    private void OnIsStartedChanged(bool newValue)
+    private void OnIsStartedUpdated(bool newValue)
     {
         isStarted = newValue;
 
