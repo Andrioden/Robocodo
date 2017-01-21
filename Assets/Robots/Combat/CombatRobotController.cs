@@ -79,6 +79,6 @@ public class CombatRobotController : RobotController
 
     public override GameObject SpawnPreviewGameObjectClone()
     {
-        return (GameObject)Instantiate(WorldController.instance.combatRobotPrefab, new Vector3(x, 1, z), Quaternion.identity);
+        return Instantiate(WorldController.instance.combatRobotPrefab, new Vector3(x, 1, z), Quaternion.identity);
     }
 }

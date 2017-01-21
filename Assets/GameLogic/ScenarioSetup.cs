@@ -62,15 +62,15 @@ public static class ScenarioSetup
     {
         Normal(conn, playerGO);
 
-        for (int x = 0; x < wc.Width; x++)
+        for (int x = 0; x < 1; x++)
         {
             GameObject combaRobotGO = wc.SpawnObject(wc.combatRobotPrefab, x, 0);
             CombatRobotController combatRobot = combaRobotGO.GetComponent<CombatRobotController>();
 
             combatRobot.SetInstructions(new List<Instruction>
             {
-                new Instruction_Move(MoveDirection.Random),
-                new Instruction_Move(MoveDirection.Random),
+                new Instruction_Move(MoveDirection.Down),
+                new Instruction_Move(MoveDirection.Down),
                 new Instruction_Attack(AttackDirection.Random)
             });
             combatRobot.AddModule(new SolarPanelModule());

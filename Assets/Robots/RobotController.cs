@@ -296,7 +296,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     [Client]
     protected bool ShouldAnimationBePlayed()
     {
-        return (energy > 0) && IsStarted && currentInstructionIndexIsValid && !isReprogrammingRobot && LastAppliedInstruction != null;
+        return (energy > 0) && IsStarted && currentInstructionIndexIsValid && !isReprogrammingRobot && (LastAppliedInstruction != null);
     }
 
     [Client]
@@ -485,10 +485,11 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
     public void SetFeedbackIfNotPreview(string message, bool popup, bool whatToSetIsCurrentInstructionValidTo)
     {
+        feedback = message;
+        currentInstructionIndexIsValid = whatToSetIsCurrentInstructionValidTo;
+
         if (isPreviewRobot || Owner == null)
             return;
-
-        _SetFeedback(message, whatToSetIsCurrentInstructionValidTo);
 
         /* If the feedback has not changed after 1 second we will clear it using a coroutine. */
         if (feedbackClearCoroutine != null)
@@ -499,12 +500,6 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
         if (popup)
             Owner.ShowPopupForOwner(message, transform.position, TextPopup.ColorType.NEGATIVE);
-    }
-
-    private void _SetFeedback(string message, bool setIsCurrentInstructionIndexValid)
-    {
-        feedback = message;
-        currentInstructionIndexIsValid = setIsCurrentInstructionIndexValid;
     }
 
     private IEnumerator ClearFeedbackAfterSecondsIfNotChanged(string lastFeedback, float secondsDelay)
