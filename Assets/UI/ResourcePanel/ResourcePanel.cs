@@ -39,31 +39,6 @@ public class ResourcePanel : MonoBehaviour
         InvokeRepeating("UpdateResourceLabels", 0, 0.3f); // Dont update it to often, so we use a slow updater
     }
 
-    private void RegisterResourceLabelsForFlashingFeedbackSupport()
-    {
-        labelsRegisteredForFlashingFeedbackSupportDict.Add(copperLabel, false);
-        labelsRegisteredForFlashingFeedbackSupportDict.Add(ironLabel, false);
-        labelsRegisteredForFlashingFeedbackSupportDict.Add(foodLabel, false);
-    }
-
-    public void FlashMissingResource(string type)
-    {
-        if (type == CopperItem.SerializedType)
-            FlashMissingResource(copperLabel);
-        else if (type == IronItem.SerializedType)
-            FlashMissingResource(ironLabel);
-        else if (type == FoodItem.SerializedType)
-            FlashMissingResource(foodLabel);
-        else
-            Debug.LogError(string.Format("ResourceType {0} not registered for flashing feedback support.", type));
-    }
-
-    private void FlashMissingResource(Text label)
-    {
-        if (labelsRegisteredForFlashingFeedbackSupportDict[label] == false)
-            StartCoroutine(AddFlashEffectToTextField(label, 4));
-    }
-
     public void Show()
     {
         gameObject.SetActive(true);
@@ -96,6 +71,31 @@ public class ResourcePanel : MonoBehaviour
                 infectionLabel.text = string.Format("Infection: {0:0.0}%", localPlayer.City.GetInfectionImpactLossPercentage());
             }
         }
+    }
+
+    private void RegisterResourceLabelsForFlashingFeedbackSupport()
+    {
+        labelsRegisteredForFlashingFeedbackSupportDict.Add(copperLabel, false);
+        labelsRegisteredForFlashingFeedbackSupportDict.Add(ironLabel, false);
+        labelsRegisteredForFlashingFeedbackSupportDict.Add(foodLabel, false);
+    }
+
+    public void FlashMissingResource(string type)
+    {
+        if (type == CopperItem.SerializedType)
+            FlashMissingResource(copperLabel);
+        else if (type == IronItem.SerializedType)
+            FlashMissingResource(ironLabel);
+        else if (type == FoodItem.SerializedType)
+            FlashMissingResource(foodLabel);
+        else
+            Debug.LogError(string.Format("ResourceType {0} not registered for flashing feedback support.", type));
+    }
+
+    private void FlashMissingResource(Text label)
+    {
+        if (labelsRegisteredForFlashingFeedbackSupportDict[label] == false)
+            StartCoroutine(AddFlashEffectToTextField(label, 4));
     }
 
     /// <summary>

@@ -37,6 +37,7 @@ public class PlayerController : NetworkBehaviour
 
     private List<GameObject> ownedGameObjects = new List<GameObject>();
 
+    public TechnologyTree TechTree;
 
     // Use this for initialization
     private void Start()
@@ -44,9 +45,13 @@ public class PlayerController : NetworkBehaviour
         if (isLocalPlayer)
         {
             ResourcePanel.instance.RegisterLocalPlayer(this);
+            TechTreeDialog.instance.RegisterLocalPlayer(this);
             CmdRegisterPlayerNick(NetworkPanel.instance.nickInput.text);
             PositionCameraRelativeTo();
         }
+
+        if (isServer)
+            TechTree = new TechnologyTree();
     }
 
     [Server]

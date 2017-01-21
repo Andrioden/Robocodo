@@ -13,7 +13,7 @@ public class PlayerCityPanel : MonoBehaviour
     public Sprite purgeRobotSprite;
 
     private Animator animator;
-    private CityController playerCityController;
+    private CityController city;
 
     public static PlayerCityPanel instance;
     private void Awake()
@@ -31,14 +31,13 @@ public class PlayerCityPanel : MonoBehaviour
     void Start()
     {
         animator = GetComponent<Animator>();
-        AddBuildableItemsToBuildMenu();  
     }
 
     void Update()
     {
-        if (playerCityController != null)
+        if (city != null)
         {
-            if (MouseManager.currentlySelected == null || MouseManager.currentlySelected != playerCityController.gameObject)
+            if (MouseManager.currentlySelected == null || MouseManager.currentlySelected != city.gameObject)
             {
                 Close();
                 return;
@@ -46,51 +45,61 @@ public class PlayerCityPanel : MonoBehaviour
         }
     }
 
-    public void Show(CityController playerCityController)
+    public void Show(CityController city)
     {
-        this.playerCityController = playerCityController;
+        this.city = city;
         KeyboardManager.KeyboardLockOff();
+        SetBuildableItemsToBuildMenu();
         tabController.SetFirstTabActive();
-        garage.Show(playerCityController);
+        garage.Show(city);
         animator.Play("RobotMenuSlideIn");
     }
 
     private void Close()
     {
         garage.Close();
-        playerCityController = null;
+        city = null;
         animator.Play("RobotMenuSlideOut");
     }
 
-    private void AddBuildableItemsToBuildMenu()
+    private void SetBuildableItemsToBuildMenu()
     {
-        buildMenu.AddBuildableItem(HarvesterRobotController.Settings_name, BuyHarvesterRobot, HarvesterRobotController.Settings_cost(), harvesterRobotSprite);
-        buildMenu.AddBuildableItem(CombatRobotController.Settings_name, BuyCombatRobot, CombatRobotController.Settings_cost(), combatRobotSprite);
-        buildMenu.AddBuildableItem(TransporterRobotController.Settings_name, BuyTransporterRobot, TransporterRobotController.Settings_cost(), transporterRobotSprite);
-        buildMenu.AddBuildableItem(PurgeRobotController.Settings_name, BuyPurgeRobot, PurgeRobotController.Settings_cost(), purgeRobotSprite);
+        buildMenu.ClearBuildables();
+
+        if (city.Owner.TechTree.IsRobotUnlocked(HarvesterRobotController.Settings_name))
+            buildMenu.AddBuildableItem(HarvesterRobotController.Settings_name, BuyHarvesterRobot, HarvesterRobotController.Settings_cost(), harvesterRobotSprite);
+
+        if (city.Owner.TechTree.IsRobotUnlocked(CombatRobotController.Settings_name))
+            buildMenu.AddBuildableItem(CombatRobotController.Settings_name, BuyCombatRobot, CombatRobotController.Settings_cost(), combatRobotSprite);
+
+        if (city.Owner.TechTree.IsRobotUnlocked(TransporterRobotController.Settings_name))
+            buildMenu.AddBuildableItem(TransporterRobotController.Settings_name, BuyTransporterRobot, TransporterRobotController.Settings_cost(), transporterRobotSprite);
+
+        if (city.Owner.TechTree.IsRobotUnlocked(PurgeRobotController.Settings_name))
+            buildMenu.AddBuildableItem(PurgeRobotController.Settings_name, BuyPurgeRobot, PurgeRobotController.Settings_cost(), purgeRobotSprite);
     }
 
     private void BuyHarvesterRobot()
     {
-        if (playerCityController.CanAffordFlashIfNot(HarvesterRobotController.Settings_cost()))
-            playerCityController.CmdBuyHarvesterRobot();
+        if (city.CanAffordFlashIfNot(HarvesterRobotController.Settings_cost()))
+            city.CmdBuyHarvesterRobot();
     }
 
     private void BuyCombatRobot()
     {
-        if (playerCityController.CanAffordFlashIfNot(CombatRobotController.Settings_cost()))
-            playerCityController.CmdBuyCombatRobot();
+        if (city.CanAffordFlashIfNot(CombatRobotController.Settings_cost()))
+            city.CmdBuyCombatRobot();
     }
 
     private void BuyTransporterRobot()
     {
-        if (playerCityController.CanAffordFlashIfNot(TransporterRobotController.Settings_cost()))
-            playerCityController.CmdBuyTransporterRobot();
+        if (city.CanAffordFlashIfNot(TransporterRobotController.Settings_cost()))
+            city.CmdBuyTransporterRobot();
     }
 
     private void BuyPurgeRobot()
     {
-        if (playerCityController.CanAffordFlashIfNot(PurgeRobotController.Settings_cost()))
-            playerCityController.CmdBuyPurgeRobot();
+        if (city.CanAffordFlashIfNot(PurgeRobotController.Settings_cost()))
+            city.CmdBuyPurgeRobot();
     }
 }
