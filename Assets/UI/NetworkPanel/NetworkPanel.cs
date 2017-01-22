@@ -198,7 +198,6 @@ public class NetworkPanel : MonoBehaviour
 #endif
     }
 
-
     private bool ValidateMandatoryInput()
     {
         if (nickInput.text.Length <= 0)

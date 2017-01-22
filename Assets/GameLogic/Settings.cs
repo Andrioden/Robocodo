@@ -14,6 +14,7 @@
 
     public static double City_Population_FoodConsumedPerTick = 0.01;
     public static int City_Energy_RechargedPerTick = 500;
+    public static double City_Science_PerPopulationPerTick = 1.0;
 
     public static int Resource_MinItemsPerNode = 100;
     public static int Resource_MaxItemsPerNode = 200;

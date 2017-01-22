@@ -42,7 +42,7 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
     {
         health = Settings_StartHealth;
 
-        populationManager = gameObject.GetComponent<PopulationManager>();
+        populationManager = GetComponent<PopulationManager>();
         if (isServer)
         {
             populationManager.Initialize(this);

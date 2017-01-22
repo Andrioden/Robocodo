@@ -8,7 +8,7 @@ public class PauseDialog : MonoBehaviour
     public GameObject panel;
 
     // Update is called once per frame
-    private void Update()
+    private void Start()
     {
         InvokeRepeating("ShowOrHidePauseDialog", 0, 0.2f); // Dont update it to often, so we use a slow updater
     }

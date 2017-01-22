@@ -516,7 +516,7 @@ public class RobotPanel : MonoBehaviour
 
         foreach (string instruction in combinedList)
         {
-            var possibleInstructionGO = Instantiate(possibleInstructionsPrefab) as GameObject;
+            GameObject possibleInstructionGO = Instantiate(possibleInstructionsPrefab);
             possibleInstructionGO.transform.SetParent(possibleInstructionsContainer.transform, false);
 
             if (instruction != string.Empty)

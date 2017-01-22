@@ -37,7 +37,9 @@ public class PlayerController : NetworkBehaviour
 
     private List<GameObject> ownedGameObjects = new List<GameObject>();
 
-    public TechnologyTree TechTree;
+    private TechnologyTree techTree;
+    public TechnologyTree TechTree { get { return techTree; } }
+
 
     // Use this for initialization
     private void Start()
@@ -45,13 +47,12 @@ public class PlayerController : NetworkBehaviour
         if (isLocalPlayer)
         {
             ResourcePanel.instance.RegisterLocalPlayer(this);
-            TechTreeDialog.instance.RegisterLocalPlayer(this);
             CmdRegisterPlayerNick(NetworkPanel.instance.nickInput.text);
             PositionCameraRelativeTo();
         }
 
-        if (isServer)
-            TechTree = new TechnologyTree();
+        techTree = GetComponent<TechnologyTree>();
+        techTree.Initialize(this);
     }
 
     [Server]
@@ -78,7 +79,6 @@ public class PlayerController : NetworkBehaviour
     {
         TextPopupManager.instance.ShowPopupGeneric(text, position, color);
     }
-
 
     [Command]
     private void CmdRegisterPlayerNick(string nick)

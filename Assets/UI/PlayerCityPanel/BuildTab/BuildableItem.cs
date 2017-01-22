@@ -12,7 +12,7 @@ public class BuildableItem : MonoBehaviour
     public Text copperCostLabel;
     public Text ironCostLabel;
 
-    public void SetupBuildableItem(string name, UnityAction buyAction, int copperCost, int ironCost, Sprite sprite)
+    public void Setup(string name, UnityAction buyAction, int copperCost, int ironCost, Sprite sprite)
     {
         ID = name.ToUpper();
         button.onClick.RemoveAllListeners();

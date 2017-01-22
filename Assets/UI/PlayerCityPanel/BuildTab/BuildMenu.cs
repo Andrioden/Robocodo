@@ -27,7 +27,7 @@ public class BuildMenu : MonoBehaviour
         menuItemGO.transform.SetParent(GetColumn(), false);
 
         BuildableItem buildableItem = menuItemGO.GetComponent<BuildableItem>();
-        buildableItem.SetupBuildableItem(name, buyMethod, cost.Copper, cost.Iron, sprite);
+        buildableItem.Setup(name, buyMethod, cost.Copper, cost.Iron, sprite);
     }
 
     private Transform GetColumn()

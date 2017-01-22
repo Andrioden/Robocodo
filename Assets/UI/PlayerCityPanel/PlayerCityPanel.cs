@@ -66,16 +66,16 @@ public class PlayerCityPanel : MonoBehaviour
     {
         buildMenu.ClearBuildables();
 
-        if (city.Owner.TechTree.IsRobotUnlocked(HarvesterRobotController.Settings_name))
+        if (city.Owner.TechTree.robotsThatCanBeBuilt.Contains((HarvesterRobotController.Settings_name)))
             buildMenu.AddBuildableItem(HarvesterRobotController.Settings_name, BuyHarvesterRobot, HarvesterRobotController.Settings_cost(), harvesterRobotSprite);
 
-        if (city.Owner.TechTree.IsRobotUnlocked(CombatRobotController.Settings_name))
+        if (city.Owner.TechTree.robotsThatCanBeBuilt.Contains((CombatRobotController.Settings_name)))
             buildMenu.AddBuildableItem(CombatRobotController.Settings_name, BuyCombatRobot, CombatRobotController.Settings_cost(), combatRobotSprite);
 
-        if (city.Owner.TechTree.IsRobotUnlocked(TransporterRobotController.Settings_name))
+        if (city.Owner.TechTree.robotsThatCanBeBuilt.Contains((TransporterRobotController.Settings_name)))
             buildMenu.AddBuildableItem(TransporterRobotController.Settings_name, BuyTransporterRobot, TransporterRobotController.Settings_cost(), transporterRobotSprite);
 
-        if (city.Owner.TechTree.IsRobotUnlocked(PurgeRobotController.Settings_name))
+        if (city.Owner.TechTree.robotsThatCanBeBuilt.Contains((PurgeRobotController.Settings_name)))
             buildMenu.AddBuildableItem(PurgeRobotController.Settings_name, BuyPurgeRobot, PurgeRobotController.Settings_cost(), purgeRobotSprite);
     }
 

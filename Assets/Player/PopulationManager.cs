@@ -31,6 +31,7 @@ public class PopulationManager : NetworkBehaviour
         WorldTickController.instance.OnTick -= Grow;
     }
 
+    [Server]
     private void Grow()
     {
         if (population <= 0)
@@ -57,4 +58,3 @@ public class PopulationManager : NetworkBehaviour
     }
 
 }
-
