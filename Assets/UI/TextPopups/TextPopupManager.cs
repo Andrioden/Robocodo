@@ -24,7 +24,7 @@ public class TextPopupManager : MonoBehaviour {
 	
     public void ShowPopupGeneric(string text, Vector3 worldPosition, Color? color)
     {
-        TextPopup popup = Instantiate(textPopupPrefab, transform, false);        
-        popup.Configure(text, worldPosition, color);
+        TextPopup popup = Instantiate(textPopupPrefab, transform, false);
+        popup.Initialize(text, worldPosition, color);
     }    
 }

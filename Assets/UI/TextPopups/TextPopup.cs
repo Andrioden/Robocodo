@@ -29,18 +29,19 @@ public class TextPopup : MonoBehaviour
         MaintainWorldPosition();
     }
 
+    public void Initialize(string text, Vector3 worldPosition, Color? color = null)
+    {
+        this.worldPosition = worldPosition;
+        MaintainWorldPosition();
+        SetText(text, color);
+        textComponent.enabled = true;
+    }
+
     private void MaintainWorldPosition()
     {
         /* Doing this so that the text stays where it was spawned in world space and doesn't move when the screen moves. */
         screenPosition = Camera.main.WorldToScreenPoint(worldPosition);
         transform.position = screenPosition;
-    }
-
-    public void Configure(string text, Vector3 worldPosition, Color? color = null)
-    {
-        this.worldPosition = worldPosition;
-        SetText(text, color);
-        textComponent.enabled = true;
     }
 
     private void SetText(string text, Color? color = null)
