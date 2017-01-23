@@ -89,30 +89,40 @@ public class InfectionManager : NetworkBehaviour
     private void Tick()
     {
         for (int _indexIndex = 0; _indexIndex < _spreadingTileInfectionIndexes.Count; _indexIndex++)
-            IncreaseOrSpreadInfection(tileInfections[_spreadingTileInfectionIndexes[_indexIndex]], Settings.World_Infection_GrowthPerTickPerTile);
+            IncreaseOrSpreadInfection(tileInfections[_spreadingTileInfectionIndexes[_indexIndex]], Settings.World_Infection_GrowthPerTickPerTilePer100Infection);
     }
 
     [Server]
-    private void IncreaseOrSpreadInfection(TileInfection ti, double increased)
+    private void IncreaseOrSpreadInfection(TileInfection ti, double increasedPer100Infection)
     {
         if (ti.Infection <= 0)
             return;
-        else if (ti.Infection < 100)
-            IncreaseOrAddTileInfection(ti.X, ti.Z, increased);
-        else // Can only spread to adjacent
+        //else if (ti.Infection < 100 && ti.Infection < Settings.World_Infection_SpreadTreshold && Utils.PercentageRoll(Settings.World_Infection_SpreadTreshold)
+        //else if (ti.Infection + Utils.RandomDouble(0, 100 - Settings.World_Infection_SpreadThreshold) < 100)
+        else if (
+            ti.Infection >= 100
+            || (ti.Infection >= Settings.World_Infection_SpreadThreshold && Utils.PercentageRoll(70)))
         {
-            List<Coordinate> coords = WorldController.instance.worldBuilder.GetCoordinatesNear(ti.X, ti.Z, Settings.World_Infection_SpreadDistance);
-            Utils.Shuffle(coords);
-
-            foreach (var coord in coords)
-            {
-                if (IncreaseOrAddTileInfection(coord.x, coord.z, increased))
-                    return;
-            }
-
-            // Did not managed to spread, ignore this tile in the future
-            _spreadingTileInfectionIndexes.Remove(IndexOfTileInfection(ti.X, ti.Z));
+            SpreadInfection(ti, increasedPer100Infection * ti.Infection);
         }
+        else
+            IncreaseOrAddTileInfection(ti.X, ti.Z, increasedPer100Infection * ti.Infection);
+    }
+
+    [Server]
+    private void SpreadInfection(TileInfection fromTile, double increased)
+    {
+        List<Coordinate> coords = WorldController.instance.worldBuilder.GetCoordinatesNear(fromTile.X, fromTile.Z, Settings.World_Infection_SpreadDistance);
+        Utils.Shuffle(coords);
+
+        foreach (var coord in coords)
+        {
+            if (IncreaseOrAddTileInfection(coord.x, coord.z, increased))
+                return;
+        }
+
+        // Did not managed to spread, ignore this tile in the future
+        _spreadingTileInfectionIndexes.Remove(IndexOfTileInfection(fromTile.X, fromTile.Z));
     }
 
     /// <summary>
@@ -133,12 +143,15 @@ public class InfectionManager : NetworkBehaviour
                 return false;
         }
         else
-        {
-            tileInfections.Add(new TileInfection(x, z, increasion));
-            _spreadingTileInfectionIndexes.Add(tileInfections.Count - 1);
-        }
+            AddNewTileInfection(x, z, increasion);
 
         return true;
+    }
+
+    private void AddNewTileInfection(int x, int z, double increasion)
+    {
+        tileInfections.Add(new TileInfection(x, z, increasion));
+        _spreadingTileInfectionIndexes.Add(tileInfections.Count - 1);
     }
 
     /// <summary>

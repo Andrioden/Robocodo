@@ -3,8 +3,9 @@
     public static float World_IrlSecondsPerTick = 1.0f;
     public static float World_MaxTimeScale = 20;
 
-    public static int World_Infection_SpreadDistance = 1;
-    public static double World_Infection_GrowthPerTickPerTile = 0.5;
+    public static int World_Infection_SpreadThreshold = 5;
+    public static int World_Infection_SpreadDistance = 2;
+    public static double World_Infection_GrowthPerTickPerTilePer100Infection = 0.03;
     public static double World_Infection_MaxInfectionImpactPerTile = 1.3;
     public static int World_Infection_InfectionImpactLoss = 100;
 
