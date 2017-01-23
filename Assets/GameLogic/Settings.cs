@@ -4,12 +4,12 @@
     public static float World_MaxTimeScale = 20;
 
     public static int World_Infection_SpreadDistance = 1;
-    public static int World_Infection_GrowthPerTickPerTile = 1;
+    public static double World_Infection_GrowthPerTickPerTile = 0.5;
     public static double World_Infection_MaxInfectionImpactPerTile = 1.3;
     public static int World_Infection_InfectionImpactLoss = 100;
 
     public static float World_ScavengerMaxCount = 10;
-    public static float World_ScavengerSpawnInterval = 30; // every x seconds on normal game speed
+    public static float World_ScavengerSpawnInterval = 300; // every x seconds on normal game speed
     public static int World_ScavengerAggressiveness = 1;
 
     public static double City_Population_FoodConsumedPerTick = 0.01;

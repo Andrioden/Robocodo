@@ -93,12 +93,12 @@ public class InfectionManager : NetworkBehaviour
     }
 
     [Server]
-    private void IncreaseOrSpreadInfection(TileInfection ti, int increasion)
+    private void IncreaseOrSpreadInfection(TileInfection ti, double increased)
     {
         if (ti.Infection <= 0)
             return;
         else if (ti.Infection < 100)
-            IncreaseOrAddTileInfection(ti.X, ti.Z, increasion);
+            IncreaseOrAddTileInfection(ti.X, ti.Z, increased);
         else // Can only spread to adjacent
         {
             List<Coordinate> coords = WorldController.instance.worldBuilder.GetCoordinatesNear(ti.X, ti.Z, Settings.World_Infection_SpreadDistance);
@@ -106,7 +106,7 @@ public class InfectionManager : NetworkBehaviour
 
             foreach (var coord in coords)
             {
-                if (IncreaseOrAddTileInfection(coord.x, coord.z, increasion))
+                if (IncreaseOrAddTileInfection(coord.x, coord.z, increased))
                     return;
             }
 
@@ -119,13 +119,16 @@ public class InfectionManager : NetworkBehaviour
     /// Returns true if it managed to spread
     /// </summary>
     [Server]
-    public bool IncreaseOrAddTileInfection(int x, int z, int increasion)
+    public bool IncreaseOrAddTileInfection(int x, int z, double increasion)
     {
         int index = IndexOfTileInfection(x, z);
         if (index != -1)
         {
             if (tileInfections[index].Infection < 100)
-                tileInfections[index] = new TileInfection(x, z, tileInfections[index].Infection + increasion);
+            {
+                double newInfection = Math.Min(100, tileInfections[index].Infection + increasion);
+                tileInfections[index] = new TileInfection(x, z, newInfection);
+            }
             else
                 return false;
         }
@@ -150,8 +153,8 @@ public class InfectionManager : NetworkBehaviour
         int index = IndexOfTileInfection(x, z);
         if (index != -1)
         {
-            int newTileInfectionValue = Math.Max(0, tileInfections[index].Infection - maxReduction);
-            int reduction = tileInfections[index].Infection - newTileInfectionValue;
+            double newTileInfectionValue = Math.Max(0, tileInfections[index].Infection - maxReduction);
+            double reduction = tileInfections[index].Infection - newTileInfectionValue;
             tileInfections[index] = new TileInfection(x, z, newTileInfectionValue);
 
             _AllowAdjacentTilesToSpreadAgain(x, z);
@@ -180,7 +183,7 @@ public class InfectionManager : NetworkBehaviour
     }
 
     [Server]
-    private void UpdatePlayerContribution(PlayerController player, TileInfection ti, int reduction)
+    private void UpdatePlayerContribution(PlayerController player, TileInfection ti, double reduction)
     {
         double distance = MathUtils.Distance(player.City.X, player.City.Z, ti.X, ti.Z);
         double contribution = Math.Sqrt(distance) * reduction;
@@ -241,14 +244,14 @@ public class InfectionManager : NetworkBehaviour
     private void UpdateTileInfectionTransparency(GameObject go, TileInfection ti)
     {
         Renderer renderer = go.GetComponent<Renderer>();
-        float cutoff = (100 - ti.Infection) / 100.0f;
+        double cutoff = (100 - ti.Infection) / 100;
 
-        if (cutoff == 0)
+        if (cutoff <= 0)
             renderer.material = fullInfectionMaterial; //When full infection, use shared material that never changes to increase performance.
         else
         {
             renderer.material = partialInfectionMaterial;
-            renderer.material.SetFloat("_Cutoff", cutoff);
+            renderer.material.SetFloat("_Cutoff", (float)cutoff);
         }
     }
 
@@ -260,9 +263,9 @@ public struct TileInfection
 {
     public int X;
     public int Z;
-    public int Infection;
+    public double Infection;
 
-    public TileInfection(int x, int z, int infection)
+    public TileInfection(int x, int z, double infection)
     {
         X = x;
         Z = z;
