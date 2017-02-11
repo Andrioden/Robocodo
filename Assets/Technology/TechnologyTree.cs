@@ -23,6 +23,7 @@ public class TechnologyTree : NetworkBehaviour
         technologies.Add(new Technology_Robot(this, techIdIterator++, "Predator", 100, CombatRobotController.Settings_name));
         technologies.Add(new Technology_Robot(this, techIdIterator++, "Transporter", 100, TransporterRobotController.Settings_name));
         technologies.Add(new Technology_Robot(this, techIdIterator++, "Purger", 100, PurgeRobotController.Settings_name));
+        technologies.Add(new Technology_Victory(this, techIdIterator++, "DX Vaccine", 100));
 
         technologies[0].AddProgress(technologies[0].cost);
         technologies[1].AddProgress(technologies[1].cost);
@@ -86,6 +87,11 @@ public class TechnologyTree : NetworkBehaviour
             throw new Exception("Could not find tech with id " + techId);
         else
             return tech;
+    }
+
+    public Technology GetFinishedVictoryTech()
+    {
+        return technologies.FirstOrDefault(t => t.IsResearched() && t is Technology_Victory);
     }
 
 }

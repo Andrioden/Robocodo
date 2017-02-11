@@ -52,6 +52,8 @@ public class WonOrLostDialog : MonoBehaviour
     {
         if (type == WinType.Infection_TopContributor)
             ShowInfectionWinLoss("All infection was cleared from the world, life may now slowly return to normal. The people of the world recognize you as the top contributor. Grats! You are the winner!");
+        else if (type == WinType.Technology)
+            Show("You won! THE CURE IS REAL; THE PEOPLE CHERISH YOUR ACCOMPLISHMENTS ON RESEARCHING " + WorldController.instance.FindClientsOwnPlayer().TechTree.GetFinishedVictoryTech().name);
         else
             throw new Exception("Win type not supported " + type);
     }
@@ -66,6 +68,8 @@ public class WonOrLostDialog : MonoBehaviour
             Show("You lost! City destroyed!");
         else if (type == LossType.StarvedToDeath)
             Show("You lost! Everyone died of starvation.");
+        else if (type == LossType.Technology)
+            Show("You lost! Someone else in this world found the cure, and when you die, as you will, you will not be remebered, at all.");
         else
             throw new Exception("Loss type not supported " + type);
     }

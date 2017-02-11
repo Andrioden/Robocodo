@@ -36,6 +36,7 @@ public class WinLoseChecker : NetworkBehaviour
         foreach(PlayerController player in FindObjectsOfType<PlayerController>().Where(p => !p.hasLost && p.City != null))
         {
             AllInfectionClearedCheck();
+            WinCheck(player);
             LossCheck(player);
         }
     }
@@ -60,18 +61,25 @@ public class WinLoseChecker : NetworkBehaviour
     }
 
     [Server]
+    private void WinCheck(PlayerController player)
+    {
+        WinType winType = WinType.None;
+
+        if (player.TechTree.GetFinishedVictoryTech() != null)
+            winType = WinType.Technology;
+
+        if (winType != WinType.None)
+        {
+            RpcNotifyWinner(player.connectionId, (int)winType);
+            Time.timeScale = 0;
+        }
+    }
+
+    [Server]
     private void AllInfectionClearedCheck()
     {
         if (InfectionManager.instance.TileInfections.Sum(ti => ti.Infection) == 0)
             RpcNotifyAllInfectionCleared();
-    }
-
-    [ClientRpc]
-    public void RpcNotifyLoser(string lostPlayerConnectionId, int lossTypeInt)
-    {
-        if (WorldController.instance.FindClientsOwnPlayer().connectionId == lostPlayerConnectionId)
-            OnLost((LossType)lossTypeInt);
-        //TODO: On non-losing clients, maybe notify a player lost?
     }
 
     [ClientRpc]
@@ -81,6 +89,23 @@ public class WinLoseChecker : NetworkBehaviour
             OnWon(WinType.Infection_TopContributor);
         else
             OnLost(LossType.Infection_NotTopContributor);
+    }
+
+    [ClientRpc]
+    public void RpcNotifyWinner(string wonPlayerConnectionId, int wonTypeInt)
+    {
+        if (WorldController.instance.FindClientsOwnPlayer().connectionId == wonPlayerConnectionId)
+            OnWon((WinType)wonTypeInt);
+        else
+            OnLost((LossType)wonTypeInt);
+    }
+
+    [ClientRpc]
+    public void RpcNotifyLoser(string lostPlayerConnectionId, int lossTypeInt)
+    {
+        if (WorldController.instance.FindClientsOwnPlayer().connectionId == lostPlayerConnectionId)
+            OnLost((LossType)lossTypeInt);
+        //TODO: On non-losing clients, maybe notify a player lost?
     }
 
     private double GetMaxInfectionContribution()
@@ -97,10 +122,12 @@ public enum LossType
     Infection_NotTopContributor = 11,
     CityDestroyed = 20,
     StarvedToDeath = 30,
+    Technology = 40,
 }
 
 public enum WinType
 {
     None = 0,
-    Infection_TopContributor = 11
+    Infection_TopContributor = 11,
+    Technology = 40,
 }
