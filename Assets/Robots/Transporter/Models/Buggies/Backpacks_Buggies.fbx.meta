@@ -1,0 +1,141 @@
+fileFormatVersion: 2
+guid: cc832b631768ecc4baff3508abc9323f
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Backpack_Buggy_Heaviest
+    100002: Backpack_Buggy_Heaviest_Geom
+    100004: Backpack_Buggy_Hvy
+    100006: Backpack_Buggy_Hvy_Geom
+    100008: Backpack_Buggy_HvyMed
+    100010: Backpack_Buggy_HvyMed_Geom
+    100012: Backpack_Frame_Med
+    100014: Backpack_Frame_Med_Geom
+    100016: Backpack_Motor_Lt
+    100018: Backpack_Motor_Lt_Geom
+    100020: Backpack_Safari_Med
+    100022: Backpack_Safari_Med_Buggy
+    100024: Backpack_Safari_Med_Buggy_Geom
+    100026: Backpack_Safari_Med_Geom
+    100028: //RootNode
+    100030: Mount_Antenna
+    100032: Mount_Antenna 1
+    100034: Mount_Antenna 2
+    100036: Mount_Antenna 3
+    100038: Mount_Antenna 4
+    100040: Mount_Antenna 5
+    100042: Mount_Wheel_Top
+    100044: Mount_Wheel_Top 1
+    400000: Backpack_Buggy_Heaviest
+    400002: Backpack_Buggy_Heaviest_Geom
+    400004: Backpack_Buggy_Hvy
+    400006: Backpack_Buggy_Hvy_Geom
+    400008: Backpack_Buggy_HvyMed
+    400010: Backpack_Buggy_HvyMed_Geom
+    400012: Backpack_Frame_Med
+    400014: Backpack_Frame_Med_Geom
+    400016: Backpack_Motor_Lt
+    400018: Backpack_Motor_Lt_Geom
+    400020: Backpack_Safari_Med
+    400022: Backpack_Safari_Med_Buggy
+    400024: Backpack_Safari_Med_Buggy_Geom
+    400026: Backpack_Safari_Med_Geom
+    400028: //RootNode
+    400030: Mount_Antenna
+    400032: Mount_Antenna 1
+    400034: Mount_Antenna 2
+    400036: Mount_Antenna 3
+    400038: Mount_Antenna 4
+    400040: Mount_Antenna 5
+    400042: Mount_Wheel_Top
+    400044: Mount_Wheel_Top 1
+    2300000: Backpack_Buggy_Heaviest_Geom
+    2300002: Backpack_Buggy_Hvy_Geom
+    2300004: Backpack_Buggy_HvyMed_Geom
+    2300006: Backpack_Frame_Med_Geom
+    2300008: Backpack_Motor_Lt_Geom
+    2300010: Backpack_Safari_Med_Buggy_Geom
+    2300012: Backpack_Safari_Med_Geom
+    3300000: Backpack_Buggy_Heaviest_Geom
+    3300002: Backpack_Buggy_Hvy_Geom
+    3300004: Backpack_Buggy_HvyMed_Geom
+    3300006: Backpack_Frame_Med_Geom
+    3300008: Backpack_Motor_Lt_Geom
+    3300010: Backpack_Safari_Med_Buggy_Geom
+    3300012: Backpack_Safari_Med_Geom
+    4300000: Backpack_Buggy_Hvy_Geom
+    4300002: Backpack_Buggy_HvyMed_Geom
+    4300004: Backpack_Buggy_Heaviest_Geom
+    4300006: Backpack_Frame_Med_Geom
+    4300008: Backpack_Safari_Med_Geom
+    4300010: Backpack_Safari_Med_Buggy_Geom
+    4300012: Backpack_Motor_Lt_Geom
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.01
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

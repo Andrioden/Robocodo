@@ -1,0 +1,122 @@
+fileFormatVersion: 2
+guid: 8ee1a5cee637771428db584ed346b3b6
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Body
+    100002: //RootNode
+    100004: Buggy_chassis_Lvl3_Geom
+    100006: FL_Wheel_Geom
+    100008: FL_Wheel_Geom 1
+    100010: Mount_Cockpit
+    100012: Mount_Wheel_FL
+    100014: Mount_Wheel_FR
+    100016: Mount_Wheel_RL
+    100018: Mount_Wheel_RR
+    100020: RL_Wheel_Geom
+    100022: RL_Wheel_Geom 1
+    100024: ROOT
+    100026: Wheel_FL
+    100028: Wheel_FR
+    100030: Wheel_RL
+    100032: Wheel_RR
+    400000: Body
+    400002: //RootNode
+    400004: Buggy_chassis_Lvl3_Geom
+    400006: FL_Wheel_Geom
+    400008: FL_Wheel_Geom 1
+    400010: Mount_Cockpit
+    400012: Mount_Wheel_FL
+    400014: Mount_Wheel_FR
+    400016: Mount_Wheel_RL
+    400018: Mount_Wheel_RR
+    400020: RL_Wheel_Geom
+    400022: RL_Wheel_Geom 1
+    400024: ROOT
+    400026: Wheel_FL
+    400028: Wheel_FR
+    400030: Wheel_RL
+    400032: Wheel_RR
+    2300000: FL_Wheel_Geom
+    2300002: FL_Wheel_Geom 1
+    2300004: RL_Wheel_Geom
+    2300006: RL_Wheel_Geom 1
+    3300000: FL_Wheel_Geom
+    3300002: FL_Wheel_Geom 1
+    3300004: RL_Wheel_Geom
+    3300006: RL_Wheel_Geom 1
+    4300000: RL_Wheel_Geom
+    4300002: RL_Wheel_Geom
+    4300004: FL_Wheel_Geom
+    4300006: FL_Wheel_Geom
+    4300008: Buggy_chassis_Lvl3_Geom
+    9500000: //RootNode
+    13700000: Buggy_chassis_Lvl3_Geom
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.01
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
