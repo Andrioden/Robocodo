@@ -20,12 +20,15 @@ public class KeyboardManager : NetworkBehaviour
     {
         if (isServer)
         {
-            if (Input.GetKeyDown(KeyCode.KeypadMinus) && Time.timeScale > 1)
-                timeScale = Time.timeScale - 1;
-            else if (Input.GetKeyDown(KeyCode.KeypadPlus) && Time.timeScale < Settings.World_MaxTimeScale)
-                timeScale = Time.timeScale + 1;
-            else if (Input.GetKeyDown(KeyCode.Pause) || Input.GetKeyDown(KeyCode.P))
-                PauseOrUnPause();
+            if (!KeyboardLock) //KeyboardLock is true when editing robot code. Don't want the game to pause/unpause everytime the host types 'p' in code.
+            {
+                if (Input.GetKeyDown(KeyCode.KeypadMinus) && Time.timeScale > 1)
+                    timeScale = Time.timeScale - 1;
+                else if (Input.GetKeyDown(KeyCode.KeypadPlus) && Time.timeScale < Settings.World_MaxTimeScale)
+                    timeScale = Time.timeScale + 1;
+                else if (Input.GetKeyDown(KeyCode.Pause) || Input.GetKeyDown(KeyCode.P))
+                    PauseOrUnPause();
+            }
         }
 
         if (Input.GetKeyDown("escape"))
