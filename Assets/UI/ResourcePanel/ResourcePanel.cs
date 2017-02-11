@@ -7,13 +7,11 @@ using System.Collections.Generic;
 
 public class ResourcePanel : MonoBehaviour
 {
-    public Text nickLabel;
     public Text popLabel;
     public Text energyLabel;
     public Text copperLabel;
     public Text foodLabel;
     public Text ironLabel;
-    public Text garageLabel;
     public Text infectionLabel;
 
     public Button techTreeButton;
@@ -63,8 +61,6 @@ public class ResourcePanel : MonoBehaviour
     {
         if (localPlayer != null)
         {
-            nickLabel.text = localPlayer.Nick;
-
             if (localPlayer.City != null)
             {
                 popLabel.text = string.Format("Pop: {0} ({1:0}%)", localPlayer.City.PopulationManager.Population, Math.Round(localPlayer.City.PopulationManager.GrowthProgress * 100, 0));
@@ -72,7 +68,6 @@ public class ResourcePanel : MonoBehaviour
                 copperLabel.text = "Copper: " + localPlayer.City.GetItemCount<CopperItem>();
                 ironLabel.text = "Iron: " + localPlayer.City.GetItemCount<IronItem>();
                 foodLabel.text = "Food: " + localPlayer.City.GetItemCount<FoodItem>();
-                garageLabel.text = "Garage: " + localPlayer.City.Garage.Count();
                 infectionLabel.text = string.Format("Infection: {0:0.0}%", localPlayer.City.GetInfectionImpactLossPercentage());
             }
         }
