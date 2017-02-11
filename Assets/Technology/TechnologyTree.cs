@@ -27,6 +27,7 @@ public class TechnologyTree : NetworkBehaviour
 
         technologies[0].AddProgress(technologies[0].cost);
         technologies[1].AddProgress(technologies[1].cost);
+        technologies[2].AddProgress(technologies[1].cost); //for dev
 
         if (isServer)
             WorldTickController.instance.OnTick += Tick;
