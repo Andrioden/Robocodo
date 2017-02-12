@@ -1396,7 +1396,7 @@ MonoBehaviour:
   bodyAnimator: {fileID: 9599532}
   leftToolParticleSystem: {fileID: 19870032}
   rightToolParticleSystem: {fileID: 19858164}
-  sprite: {fileID: 21300000, guid: 2f50f9a46a7e68e4988f223f8cad3cf4, type: 3}
+  sprite: {fileID: 21300000, guid: 27cb0ee3427bb244ebe0df5d712e5ee9, type: 3}
 --- !u!114 &11491300
 MonoBehaviour:
   m_ObjectHideFlags: 1

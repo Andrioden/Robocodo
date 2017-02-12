@@ -43,12 +43,20 @@ public class TransporterRobotController : RobotController
 
     protected override void Animate()
     {
-
+        if (energy <= 0)
+            StartCoroutine(PlayDeactivateAnimation(1f));
     }
 
     public override GameObject SpawnPreviewGameObjectClone()
     {
         return (GameObject)Instantiate(WorldController.instance.harvesterRobotPrefab, new Vector3(x, 1, z), Quaternion.identity);
+    }
+
+    IEnumerator PlayDeactivateAnimation(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        foreach (var light in GetComponentsInChildren<Light>())
+            light.enabled = false;
     }
 
 }

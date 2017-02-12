@@ -14,8 +14,6 @@ public class ResourcePanel : MonoBehaviour
     public Text ironLabel;
     public Text infectionLabel;
 
-    public Button techTreeButton;
-
     private Dictionary<Text, bool> labelsRegisteredForFlashingFeedbackSupportDict = new Dictionary<Text, bool>();
     private PlayerController localPlayer;
 
@@ -37,9 +35,6 @@ public class ResourcePanel : MonoBehaviour
     {
         RegisterResourceLabelsForFlashingFeedbackSupport();
         InvokeRepeating("UpdateResourceLabels", 0, 0.3f); // Dont update it to often, so we use a slow updater
-
-        techTreeButton.onClick.RemoveAllListeners();
-        techTreeButton.onClick.AddListener(delegate { TechTreeDialog.instance.Show(localPlayer); });
     }
 
     public void Show()

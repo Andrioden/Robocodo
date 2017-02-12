@@ -16,11 +16,11 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 224: {fileID: 224000012425510458}
-  - 222: {fileID: 222000010599894220}
-  - 114: {fileID: 114000013491279026}
+  - component: {fileID: 224000012425510458}
+  - component: {fileID: 222000010599894220}
+  - component: {fileID: 114000013491279026}
   m_Layer: 5
   m_Name: Name
   m_TagString: Untagged
@@ -33,11 +33,11 @@ GameObject:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 224: {fileID: 224000011917319554}
-  - 222: {fileID: 222000010021860676}
-  - 114: {fileID: 114000011504621496}
+  - component: {fileID: 224000011917319554}
+  - component: {fileID: 222000010021860676}
+  - component: {fileID: 114000011504621496}
   m_Layer: 5
   m_Name: Icon
   m_TagString: Untagged
@@ -50,14 +50,14 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 224: {fileID: 224000011546675742}
-  - 222: {fileID: 222000010782072730}
-  - 114: {fileID: 114000011834799450}
-  - 114: {fileID: 114000014033943984}
-  - 114: {fileID: 114000014105859324}
-  - 114: {fileID: 114000010235987774}
+  - component: {fileID: 224000011546675742}
+  - component: {fileID: 222000010782072730}
+  - component: {fileID: 114000011834799450}
+  - component: {fileID: 114000014033943984}
+  - component: {fileID: 114000014105859324}
+  - component: {fileID: 114000010235987774}
   m_Layer: 5
   m_Name: GarageRobot
   m_TagString: Untagged
@@ -70,11 +70,11 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 224: {fileID: 224000013367762686}
-  - 222: {fileID: 222000013304213658}
-  - 114: {fileID: 114000010962205884}
+  - component: {fileID: 224000013367762686}
+  - component: {fileID: 222000013304213658}
+  - component: {fileID: 114000010962205884}
   m_Layer: 5
   m_Name: Status
   m_TagString: Untagged
@@ -87,11 +87,11 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 224: {fileID: 224000011056790420}
-  - 222: {fileID: 222000014217803318}
-  - 114: {fileID: 114000011986480550}
+  - component: {fileID: 224000011056790420}
+  - component: {fileID: 222000014217803318}
+  - component: {fileID: 114000011986480550}
   m_Layer: 5
   m_Name: IconHolder
   m_TagString: Untagged
@@ -136,7 +136,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 25
+    m_FontSize: 20
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 2
@@ -147,7 +147,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: Example status
 --- !u!114 &114000011504621496
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -187,7 +187,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.50735295, g: 0.50735295, b: 0.50735295, a: 0.392}
+  m_Color: {r: 0.21176471, g: 0.39607844, b: 0.40392157, a: 0.39215687}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -261,7 +261,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: ROBOT NAME
 --- !u!114 &114000014033943984
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -360,16 +360,16 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 224000011917319554}
   m_Father: {fileID: 224000011546675742}
   m_RootOrder: 1
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0.00012207031, y: 0}
-  m_SizeDelta: {x: 147, y: 120}
-  m_Pivot: {x: 0, y: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: -20, y: 0}
+  m_SizeDelta: {x: 200, y: 150}
+  m_Pivot: {x: 1, y: 0}
 --- !u!224 &224000011546675742
 RectTransform:
   m_ObjectHideFlags: 1
@@ -379,13 +379,13 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 224000012425510458}
   - {fileID: 224000011056790420}
   - {fileID: 224000013367762686}
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
@@ -400,14 +400,14 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 224000011056790420}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0.000030517578}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 145, y: 145}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224000012425510458
 RectTransform:
@@ -418,14 +418,14 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 224000011546675742}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 10, y: -5}
-  m_SizeDelta: {x: 160, y: 30}
+  m_SizeDelta: {x: 215, y: 30}
   m_Pivot: {x: 0, y: 1}
 --- !u!224 &224000013367762686
 RectTransform:
@@ -436,12 +436,12 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 224000011546675742}
   m_RootOrder: 2
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 210.1, y: 120}
-  m_Pivot: {x: 1, y: 0}
+  m_SizeDelta: {x: 180.4, y: 120}
+  m_Pivot: {x: 0, y: 0}

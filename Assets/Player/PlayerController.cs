@@ -47,6 +47,7 @@ public class PlayerController : NetworkBehaviour
         if (isLocalPlayer)
         {
             ResourcePanel.instance.RegisterLocalPlayer(this);
+            ActionsPanel.instance.RegisterLocalPlayer(this);
             CmdRegisterPlayerNick(NetworkPanel.instance.nickInput.text);
             PositionCameraRelativeTo();
         }

@@ -4135,7 +4135,7 @@ MonoBehaviour:
   bodyAnimator: {fileID: 9535814}
   leftWeaponAnimator: {fileID: 9581024}
   rightWeaponAnimator: {fileID: 9508792}
-  sprite: {fileID: 21300000, guid: c7b8229ed1acf53419b0ec9d6594ad5a, type: 3}
+  sprite: {fileID: 21300000, guid: c0a5b4f6a90d3dc43a1dd8c6770fe65f, type: 3}
 --- !u!114 &11445986
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -1,6 +1,6 @@
 ﻿#pragma strict
 
-var wheelDiameter :float = 1;
+var wheelDiameter :float = 0.14f;
 private var wheelLength:float;
 private var oldPosition:Vector3;
 private var newPosition:Vector3;

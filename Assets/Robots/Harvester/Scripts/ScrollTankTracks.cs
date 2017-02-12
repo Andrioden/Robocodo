@@ -4,7 +4,7 @@ using System.Collections;
 public class ScrollTankTracks : MonoBehaviour
 {
     private Renderer tankTracksRenderer;
-    private float scrollSpeed = 300f;
+    private float scrollSpeed = 400f;
     private float offset;
     private Vector2 oldPosition;
     private Vector2 newPosition;

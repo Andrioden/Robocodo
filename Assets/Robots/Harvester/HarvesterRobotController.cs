@@ -62,6 +62,8 @@ public class HarvesterRobotController : RobotController
             if (LastAppliedInstruction.GetType() == typeof(Instruction_Harvest))
                 PlayHarvestParticleSystem();
         }
+        else if(energy <= 0)
+            StartCoroutine(PlayDeactivateAnimation(1f));
     }
 
     private void PlayHarvestParticleSystem()
@@ -76,6 +78,14 @@ public class HarvesterRobotController : RobotController
     public override GameObject SpawnPreviewGameObjectClone()
     {
         return (GameObject)Instantiate(WorldController.instance.harvesterRobotPrefab, new Vector3(x, 1, z), Quaternion.identity);
+    }
+
+    IEnumerator PlayDeactivateAnimation(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        bodyAnimator.Play("Death");
+        foreach (var light in GetComponentsInChildren<Light>())
+            light.enabled = false;
     }
 
 }

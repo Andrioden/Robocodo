@@ -73,6 +73,8 @@ public class CombatRobotController : RobotController
             else
                 bodyAnimator.Play("Idle");
         }
+        else if (energy <= 0)        
+            StartCoroutine(PlayDeactivateAnimation(1f)); //If we add a way to restart a robot that ran out of energy then we should animate Activate as well.        
         else
             bodyAnimator.Play("Idle");
     }
@@ -80,5 +82,13 @@ public class CombatRobotController : RobotController
     public override GameObject SpawnPreviewGameObjectClone()
     {
         return Instantiate(WorldController.instance.combatRobotPrefab, new Vector3(x, 1, z), Quaternion.identity);
+    }
+
+    IEnumerator PlayDeactivateAnimation(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        bodyAnimator.Play("Deactivate");
+        foreach (var light in GetComponentsInChildren<Light>())
+            light.enabled = false;
     }
 }

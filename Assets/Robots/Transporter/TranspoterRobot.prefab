@@ -1208,7 +1208,7 @@ MonoBehaviour:
   - {fileID: 23699158625073676}
   isPreviewRobot: 0
   nextInstructionIndex: 0
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 3ab32c9294b306a4e8df1b08efde3767, type: 3}
 --- !u!114 &114765216402302396
 MonoBehaviour:
   m_ObjectHideFlags: 1
