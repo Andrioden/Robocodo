@@ -10,6 +10,8 @@ public class CombatRobotController : RobotController
     public Animator bodyAnimator;
     public Animator leftWeaponAnimator;
     public Animator rightWeaponAnimator;
+    public ParticleSystem leftWeaponParticleSystem;
+    public ParticleSystem rightWeaponParticleSystem;
     public Sprite sprite;
     public override Sprite Sprite() { return sprite; }
 
@@ -65,8 +67,7 @@ public class CombatRobotController : RobotController
             if (LastAppliedInstruction.GetType() == typeof(Instruction_Attack))
             {
                 bodyAnimator.Play("Idle");
-                leftWeaponAnimator.Play("Shoot");
-                rightWeaponAnimator.Play("Shoot");
+                PlayShootingAnimation();
             }
             else if (LastAppliedInstruction.GetType() == typeof(Instruction_Move))
                 bodyAnimator.Play("Walk");
@@ -82,6 +83,18 @@ public class CombatRobotController : RobotController
     public override GameObject SpawnPreviewGameObjectClone()
     {
         return Instantiate(WorldController.instance.combatRobotPrefab, new Vector3(x, 1, z), Quaternion.identity);
+    }
+
+    private void PlayShootingAnimation()
+    {
+        if (!leftWeaponParticleSystem.isPlaying || !rightWeaponParticleSystem.isPlaying)
+        {
+            leftWeaponParticleSystem.Play();
+            rightWeaponParticleSystem.Play();
+        }
+
+        leftWeaponAnimator.Play("Shoot");
+        rightWeaponAnimator.Play("Shoot");
     }
 
     IEnumerator PlayDeactivateAnimation(float delay)
