@@ -58,6 +58,13 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         }
     }
 
+    [SyncVar]
+    public bool lastAttackedTargetWasAnHit;
+    [SyncVar]
+    public int lastAttackedTargetX;
+    [SyncVar]
+    public int lastAttackedTargetZ;
+
     private List<Instruction> _allowedInstructions = new List<Instruction>();
 
     [SyncVar]
@@ -249,24 +256,11 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     [Client]
     public void NonMovementBasedFacingDirection()
     {
-        Vector3? facePosition = null;
-
         if (instructions.Count > 0 && LastAppliedInstruction.GetType() == typeof(Instruction_Attack))
         {
-            Instruction_Attack attackInstruction = (Instruction_Attack)LastAppliedInstruction;
-
-            if (attackInstruction.direction == AttackDirection.Up)
-                facePosition = new Vector3(x, transform.position.y, z + 2);
-            else if (attackInstruction.direction == AttackDirection.Down)
-                facePosition = new Vector3(x, transform.position.y, z - 2);
-            else if (attackInstruction.direction == AttackDirection.Left)
-                facePosition = new Vector3(x - 2, transform.position.y, z);
-            else if (attackInstruction.direction == AttackDirection.Right)
-                facePosition = new Vector3(x + 2, transform.position.y, z);
+            if (lastAttackedTargetWasAnHit)
+                transform.LookAt(new Vector3(lastAttackedTargetX, transform.position.y, lastAttackedTargetZ));
         }
-
-        if (facePosition.HasValue)
-            transform.LookAt(facePosition.Value);
     }
 
     [ClientRpc]

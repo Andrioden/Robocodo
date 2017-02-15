@@ -71,7 +71,7 @@ public static class ScenarioSetup
             {
                 new Instruction_Move(MoveDirection.Down),
                 new Instruction_Move(MoveDirection.Down),
-                new Instruction_Attack(AttackDirection.Random)
+                new Instruction_Attack(AttackType.Nearby3)
             });
             combatRobot.AddModule(new SolarPanelModule());
 
@@ -92,13 +92,26 @@ public static class ScenarioSetup
         CombatRobotController combatRobot = combaRobotGO.GetComponent<CombatRobotController>();
         combatRobot.SetInstructionsAndSyncToOwner(new List<Instruction>
         {
+            new Instruction_Move(MoveDirection.Up),
+            new Instruction_Attack(AttackType.Nearby3),
+
+            new Instruction_Move(MoveDirection.Up),
+            new Instruction_Attack(AttackType.Nearby3),
+
+            new Instruction_Move(MoveDirection.Up),
+            new Instruction_Attack(AttackType.Nearby3),
+
+            new Instruction_Move(MoveDirection.Up),
+            new Instruction_Attack(AttackType.Nearby3),
+
             new Instruction_Move(MoveDirection.Right),
-            new Instruction_Attack(AttackDirection.Right),
+            new Instruction_Attack(AttackType.Nearby3),
+
             new Instruction_Move(MoveDirection.Right),
-            new Instruction_Attack(AttackDirection.Melee),
-            new Instruction_Attack(AttackDirection.Melee),
-            new Instruction_Attack(AttackDirection.Melee),
-            new Instruction_Attack(AttackDirection.Melee)
+            new Instruction_Attack(AttackType.Nearby3),
+
+            new Instruction_Move(MoveDirection.Down),
+            new Instruction_Attack(AttackType.Nearby3),
         });
     }
 

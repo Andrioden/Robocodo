@@ -34,13 +34,7 @@ public class CombatRobotController : RobotController
 
     private List<Instruction> spezializedInstructions = new List<Instruction>()
     {
-        new Instruction_Attack(AttackDirection.Melee),
-        new Instruction_Attack(AttackDirection.Up),
-        new Instruction_Attack(AttackDirection.Down),
-        new Instruction_Attack(AttackDirection.Left),
-        new Instruction_Attack(AttackDirection.Right),
-        new Instruction_Attack(AttackDirection.Random),
-
+        new Instruction_Attack(AttackType.Nearby3)
     };
     public override List<Instruction> GetSpecializedInstructions() { return spezializedInstructions; }
 

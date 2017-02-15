@@ -10,9 +10,9 @@ public class Instruction_Attack : Instruction
     public static readonly string Format = "ATTACK [DIRECTION]";
 
     private RobotController robot;
-    public AttackDirection direction;
+    public AttackType direction;
 
-    public Instruction_Attack(AttackDirection direction)
+    public Instruction_Attack(AttackType direction)
     {
         this.direction = direction;
     }
@@ -37,74 +37,85 @@ public class Instruction_Attack : Instruction
     public static Instruction Deserialize(string instruction)
     {
         string directionString = instruction.Replace("ATTACK ", "");
-        AttackDirection direction = Utils.ParseEnum<AttackDirection>(directionString);
+        AttackType direction = Utils.ParseEnum<AttackType>(directionString);
         return new Instruction_Attack(direction);
     }
 
     public static bool IsValid(string instruction)
     {
         string direction = instruction.Replace("ATTACK ", "");
-        return Utils.IsStringValueInEnum<AttackDirection>(direction);
+        return Utils.IsStringValueInEnum<AttackType>(direction);
     }
 
-    private void AttackInDirection(AttackDirection direction)
+    private void AttackInDirection(AttackType type)
     {
-        if (direction == AttackDirection.Melee)
-            AttackPosition(robot.x, robot.z);
-        else if (direction == AttackDirection.Up)
-            AttackPosition(robot.x, robot.z + 1);
-        else if (direction == AttackDirection.Down)
-            AttackPosition(robot.x, robot.z - 1);
-        else if (direction == AttackDirection.Right)
-            AttackPosition(robot.x + 1, robot.z);
-        else if (direction == AttackDirection.Left)
-            AttackPosition(robot.x - 1, robot.z);
-        else if (direction == AttackDirection.Random)
+        if (type == AttackType.Nearby3)
+            AttackNearby(3);
+        else
+            throw new Exception("AttackType not supported " + type);
+    }
+
+    //private void AttackPosition(float x, float z)
+    //{
+    //    IAttackable attackable = FindAttackableEnemy((int)x, (int)z);
+    //    if (attackable != null)
+    //        attackable.TakeDamage(robot.Settings_Damage());
+    //    else
+    //        robot.SetFeedbackIfNotPreview("NO TARGET TO ATTACK", false, true);
+    //}
+
+    private void AttackNearby(int maxDistance)
+    {
+        IAttackable attackable = FindNearbyAttackableEnemy(maxDistance);
+        if (attackable != null)
         {
-            AttackDirection randomDirection = Utils.Random(new List<AttackDirection>
-            {
-                AttackDirection.Melee,
-                AttackDirection.Up,
-                AttackDirection.Down,
-                AttackDirection.Right,
-                AttackDirection.Left
-            });
-            AttackInDirection(randomDirection);
+            robot.lastAttackedTargetWasAnHit = true;
+            robot.lastAttackedTargetX = attackable.X();
+            robot.lastAttackedTargetZ = attackable.Z();
+            attackable.TakeDamage(robot.Settings_Damage());
+        }
+        else
+        {
+            robot.lastAttackedTargetWasAnHit = false;
+            robot.lastAttackedTargetX = -9999;
+            robot.lastAttackedTargetZ = -9999;
+            robot.SetFeedbackIfNotPreview("NO TARGET TO ATTACK", false, true);
         }
     }
 
-    private void AttackPosition(float x, float z)
-    {
-        IAttackable attackable = FindAttackableEnemy((int)x, (int)z);
-        if (attackable != null)
-            attackable.TakeDamage(robot.Settings_Damage());
-        else
-            robot.SetFeedbackIfNotPreview("NO TARGET TO ATTACK", false, true);
-    }
+    //private IAttackable FindAttackableEnemy(int x, int z)
+    //{
+    //    foreach (IAttackable potentialTarget in robot.FindNearbyAttackableTargets())
+    //    {
+    //        if (potentialTarget.X() == x && potentialTarget.Z() == z)
+    //        {
+    //            if (potentialTarget.GetOwner() != robot.GetOwner())
+    //                return potentialTarget;
+    //        }
+    //    }
 
-    private IAttackable FindAttackableEnemy(int x, int z)
+    //    //Debug.Log("Did not find attackable");
+    //    return null;
+    //}
+
+    private IAttackable FindNearbyAttackableEnemy(int maxDistance)
     {
         foreach (IAttackable potentialTarget in robot.FindNearbyAttackableTargets())
         {
-            if (potentialTarget.X() == x && potentialTarget.Z() == z)
+            if (MathUtils.Distance(robot.x, robot.z, potentialTarget.X(), potentialTarget.Z()) <= maxDistance)
             {
                 if (potentialTarget.GetOwner() != robot.GetOwner())
                     return potentialTarget;
             }
         }
 
-        //Debug.Log("Did not find attackable");
+        Debug.Log("Did not find attackable");
         return null;
     }
 
 }
 
-public enum AttackDirection
+public enum AttackType
 {
-    Melee,
-    Up,
-    Down,
-    Left,
-    Right,
-    Random
+    Nearby3
 }
