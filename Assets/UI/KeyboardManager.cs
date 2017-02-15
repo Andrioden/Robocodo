@@ -16,6 +16,11 @@ public class KeyboardManager : NetworkBehaviour
         Time.timeScale = timeScale;
     }
 
+    private void Start()
+    {
+        timeScale = Time.timeScale;
+    }
+
     private void Update()
     {
         if (isServer)

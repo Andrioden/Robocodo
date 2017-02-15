@@ -163,6 +163,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             EnterExitGarageCheck();
 
         Move();
+        Face();
         Animate();
     }
 
@@ -242,37 +243,30 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     private void Move()
     {
         var newPosition = new Vector3(x, transform.position.y, z);
-        MovementBasedFacingDirection(newPosition);
         transform.position = Vector3.MoveTowards(transform.position, newPosition, (1.0f / Settings.World_IrlSecondsPerTick) * Time.deltaTime * Settings_IPT());
     }
 
     [Client]
-    private void MovementBasedFacingDirection(Vector3 newPosition)
+    private void Face()
     {
-        if (LastAppliedInstruction != null && (LastAppliedInstruction.GetType() == typeof(Instruction_Move)))
-            transform.LookAt(newPosition);
-    }
+        if (LastAppliedInstruction == null)
+            return;
 
-    [Client]
-    public void NonMovementBasedFacingDirection()
-    {
-        if (instructions.Count > 0 && LastAppliedInstruction.GetType() == typeof(Instruction_Attack))
-        {
-            if (lastAttackedTargetWasAnHit)
-                transform.LookAt(new Vector3(lastAttackedTargetX, transform.position.y, lastAttackedTargetZ));
-        }
+        Vector3? faceVector = null;
+
+        if (LastAppliedInstruction.GetType() == typeof(Instruction_Move))
+            faceVector = new Vector3(x, transform.position.y, z);
+        else if (LastAppliedInstruction.GetType() == typeof(Instruction_Attack) && lastAttackedTargetWasAnHit)
+            faceVector = new Vector3(lastAttackedTargetX, transform.position.y, lastAttackedTargetZ);
+
+        if (faceVector.HasValue)
+            transform.LookAt(faceVector.Value);
     }
 
     [ClientRpc]
     private void RpcSyncLastAppliedInstruction(string instructionString)
     {
         lastAppliedInstruction = InstructionsHelper.Deserialize(instructionString);
-
-        /* We never want to change facing or animate preview robot */
-        if (isPreviewRobot)
-            return;
-
-        NonMovementBasedFacingDirection();
     }
 
     [Client]
