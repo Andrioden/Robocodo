@@ -471,6 +471,7 @@ GameObject:
   - component: {fileID: 447632}
   - component: {fileID: 9599532}
   - component: {fileID: 6585330}
+  - component: {fileID: 114156132130467520}
   m_Layer: 0
   m_Name: HarvesterMesh
   m_TagString: Untagged
@@ -1393,6 +1394,9 @@ MonoBehaviour:
   - {fileID: 2343666}
   isPreviewRobot: 0
   nextInstructionIndex: 0
+  lastAttackedTargetWasAnHit: 0
+  lastAttackedTargetX: 0
+  lastAttackedTargetZ: 0
   bodyAnimator: {fileID: 9599532}
   leftToolParticleSystem: {fileID: 19870032}
   rightToolParticleSystem: {fileID: 19858164}
@@ -6760,3 +6764,14 @@ Light:
   m_BounceIntensity: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!114 &114156132130467520
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 197684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca36d5c5fcc03f343a87eba28fa10e08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -1702,6 +1702,7 @@ GameObject:
   - component: {fileID: 482910}
   - component: {fileID: 9535814}
   - component: {fileID: 6507910}
+  - component: {fileID: 114963743738870226}
   m_Layer: 0
   m_Name: CombatRobotMesh
   m_TagString: Untagged
@@ -4136,6 +4137,9 @@ MonoBehaviour:
   - {fileID: 2364686}
   isPreviewRobot: 0
   nextInstructionIndex: 0
+  lastAttackedTargetWasAnHit: 0
+  lastAttackedTargetX: 0
+  lastAttackedTargetZ: 0
   bodyAnimator: {fileID: 9535814}
   leftWeaponAnimator: {fileID: 9581024}
   rightWeaponAnimator: {fileID: 9508792}
@@ -4445,6 +4449,17 @@ Light:
   m_BounceIntensity: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!114 &114963743738870226
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 191336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca36d5c5fcc03f343a87eba28fa10e08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!198 &198045272246952374
 ParticleSystem:
   m_ObjectHideFlags: 1

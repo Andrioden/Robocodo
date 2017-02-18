@@ -106,6 +106,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4121793975016374}
   - component: {fileID: 65309033468768540}
+  - component: {fileID: 114955529679410018}
   m_Layer: 0
   m_Name: Mesh
   m_TagString: Untagged
@@ -498,3 +499,14 @@ MonoBehaviour:
   lastAttackedTargetX: 0
   lastAttackedTargetZ: 0
   sprite: {fileID: 21300000, guid: c2d1de397726af54d9b1cbed92b9cb0e, type: 3}
+--- !u!114 &114955529679410018
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1493522665652526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca36d5c5fcc03f343a87eba28fa10e08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -55,6 +55,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4986668004489526}
   - component: {fileID: 65760584569118210}
+  - component: {fileID: 114440937962562616}
   m_Layer: 0
   m_Name: Mesh
   m_TagString: Untagged
@@ -338,6 +339,17 @@ MonoBehaviour:
     i15: 118
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 1
+--- !u!114 &114440937962562616
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1453499040373022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca36d5c5fcc03f343a87eba28fa10e08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114511222989332288
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -357,4 +369,7 @@ MonoBehaviour:
   - {fileID: 23226238080820828}
   isPreviewRobot: 0
   nextInstructionIndex: 0
+  lastAttackedTargetWasAnHit: 0
+  lastAttackedTargetX: 0
+  lastAttackedTargetZ: 0
   sprite: {fileID: 21300000, guid: 743387b053f8344448129d7d6d405d3f, type: 3}
