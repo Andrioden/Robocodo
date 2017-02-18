@@ -6,6 +6,8 @@ using System.Text;
 public class Instruction_Purge : Instruction
 {
 
+    public override int Setting_EnergyCost() { return 1; }
+
     public static readonly string Format = "PURGE";
 
     public override bool Execute(RobotController robot)

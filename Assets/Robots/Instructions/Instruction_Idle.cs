@@ -6,6 +6,8 @@ using System.Text;
 public class Instruction_Idle : Instruction
 {
 
+    public override int Setting_EnergyCost() { return 0; }
+
     public static readonly string Format = "IDLE";
 
     public override bool Execute(RobotController robot)

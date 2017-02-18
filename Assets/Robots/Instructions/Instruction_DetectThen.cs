@@ -8,6 +8,8 @@ using UnityEngine;
 public class Instruction_DetectThen : Instruction
 {
 
+    public override int Setting_EnergyCost() { return 1; }
+
     public static readonly string Format = "DETECT [WHAT] THEN [INSTRUCTION]";
 
     private RobotController robot;

@@ -7,6 +7,8 @@ using System.Text.RegularExpressions;
 public class Instruction_IdleUntilThen : Instruction
 {
 
+    public override int Setting_EnergyCost() { return 1; }
+
     public static readonly string Format = "IDLE UNTIL [WHAT] THEN [INSTRUCTION]";
 
     private UntilWhat untilWhat;

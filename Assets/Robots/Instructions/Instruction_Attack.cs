@@ -7,6 +7,8 @@ using UnityEngine;
 public class Instruction_Attack : Instruction
 {
 
+    public override int Setting_EnergyCost() { return 1; }
+
     public static readonly string Format = "ATTACK [DIRECTION]";
 
     private RobotController robot;

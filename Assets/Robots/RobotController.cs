@@ -419,7 +419,9 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         if (!isPreviewRobot && SalvageOrReprogramCheck())
             return;
 
-        if (energy <= 0)
+        int energyAfterExecuting = energy - currentInstruction.Setting_EnergyCost();
+        
+        if (energyAfterExecuting < 0)
             SetFeedback("NOT ENOUGH ENERGY", false, true);
         else if (energySource != null && currentInstructionIndex == 0 && energy != Settings_MaxEnergy())
             SetFeedback("RECHARGING ENERGY", false, true);
@@ -427,7 +429,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         {
             if (ExecuteInstruction(currentInstruction))
                 InstructionCompleted();
-            energy--;
+            energy = energyAfterExecuting;
         }
     }
 

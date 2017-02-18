@@ -6,6 +6,8 @@ using System.Text;
 public class Instruction_LoopEnd : Instruction
 {
 
+    public override int Setting_EnergyCost() { return 1; }
+
     public static readonly string Format = "LOOP END";
 
     private RobotController robot;

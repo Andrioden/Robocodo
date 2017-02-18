@@ -7,6 +7,8 @@ using UnityEngine;
 public class Instruction_DropInventory : Instruction
 {
 
+    public override int Setting_EnergyCost() { return 1; }
+
     public static readonly string Format = "DROP INVENTORY";
 
     private RobotController robot;

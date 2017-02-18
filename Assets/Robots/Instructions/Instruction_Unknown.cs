@@ -6,6 +6,8 @@ using System.Text;
 public class Instruction_Unknown : Instruction
 {
 
+    public override int Setting_EnergyCost() { return 1; }
+
     private string instruction;
 
     public Instruction_Unknown(string instruction)

@@ -7,6 +7,8 @@ using System.Text.RegularExpressions;
 public class Instruction_LoopStart : Instruction
 {
 
+    public override int Setting_EnergyCost() { return 1; }
+
     public static readonly string Format = "LOOP START";
 
     private RobotController robot;

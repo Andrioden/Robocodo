@@ -5,6 +5,9 @@ using System.Text;
 
 public abstract class Instruction
 {
+
+    public abstract int Setting_EnergyCost();
+
     /// <summary>
     /// Execute instruction for a robot
     /// </summary>
