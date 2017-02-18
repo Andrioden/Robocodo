@@ -23,9 +23,7 @@ public static class MathUtils
     /// </summary>
     public static int LinearConversion(int fromMin, int fromMax, int toMin, int toMax, int fromValue)
     {
-        int fromRange = (fromMax - fromMin);
-        int toRange = (toMax - toMin);
-        double toValue = (((fromValue - fromMin) * toRange) / fromRange) + toMin;
+        double toValue = LinearConversionDouble(fromMin, fromMax, toMin, toMax, fromValue);
         return (int)Math.Round(toValue);
     }
 

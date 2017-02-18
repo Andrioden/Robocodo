@@ -7,15 +7,18 @@ using UnityEngine.EventSystems;
 
 public class RTSCamera : MonoBehaviour
 {
-    public float cameraHeight;
+    public float cameraStartHeight;
     public float cameraDistance;
-    public float horizontalSpeed;
-    public float verticalSpeed;
+    public float minScrollSpeed;
+    public float maxScrollSpeed;
     public int edgeScrollBoundrary;
     public float minZoomDistance;
     public float maxZoomDistance;
 
-    private int screenHeight, screenWidth;
+    private int screenHeight;
+    private int screenWidth;
+
+    private float _scrollSpeed;
 
     public static RTSCamera instance;
     private void Awake()
@@ -34,7 +37,8 @@ public class RTSCamera : MonoBehaviour
     {
         screenHeight = Screen.height;
         screenWidth = Screen.width;
-        transform.position = new Vector3(transform.position.x, cameraHeight, transform.position.z);
+        transform.position = new Vector3(transform.position.x, cameraStartHeight, transform.position.z);
+        CacheScrollSpeedFromZoom();
     }
 
     private void LateUpdate()
@@ -54,8 +58,9 @@ public class RTSCamera : MonoBehaviour
 
     private void MoveCameraWithKeyboard()
     {
-        float horizontal = Input.GetAxis("Horizontal") * horizontalSpeed * Time.deltaTime / Math.Max(1, Time.timeScale);
-        float vertical = Input.GetAxis("Vertical") * verticalSpeed * Time.deltaTime / Math.Max(1, Time.timeScale);
+
+        float horizontal = Input.GetAxis("Horizontal") * _scrollSpeed * Time.deltaTime / Math.Max(1, Time.timeScale);
+        float vertical = Input.GetAxis("Vertical") * _scrollSpeed * Time.deltaTime / Math.Max(1, Time.timeScale);
 
         transform.Translate(Vector3.forward * vertical);
         transform.Translate(Vector3.right * horizontal);
@@ -64,16 +69,16 @@ public class RTSCamera : MonoBehaviour
     private void MoveCameraWithMouseAndScreenEdge()
     {
         if (Input.mousePosition.x > (screenWidth - edgeScrollBoundrary) && Input.mousePosition.x < screenWidth)
-            transform.Translate(Vector3.right * horizontalSpeed * Time.deltaTime);
+            transform.Translate(Vector3.right * minScrollSpeed * Time.deltaTime);
 
         if (Input.mousePosition.x < (0 + edgeScrollBoundrary) && Input.mousePosition.x > 0)
-            transform.Translate(Vector3.left * horizontalSpeed * Time.deltaTime);
+            transform.Translate(Vector3.left * minScrollSpeed * Time.deltaTime);
 
         if (Input.mousePosition.y > (screenHeight - edgeScrollBoundrary) && Input.mousePosition.y < screenHeight)
-            transform.Translate(Vector3.forward * verticalSpeed * Time.deltaTime);
+            transform.Translate(Vector3.forward * _scrollSpeed * Time.deltaTime);
 
         if (Input.mousePosition.y < (0 + edgeScrollBoundrary) && Input.mousePosition.y > 0)
-            transform.Translate(Vector3.back * verticalSpeed * Time.deltaTime);
+            transform.Translate(Vector3.back * _scrollSpeed * Time.deltaTime);
     }
 
     private void ZoomCameraWithScrollWheel()
@@ -99,5 +104,13 @@ public class RTSCamera : MonoBehaviour
             transform.localPosition = new Vector3(transform.localPosition.x, minZoomDistance, transform.localPosition.z);
         else if (transform.localPosition.y > maxZoomDistance)
             transform.localPosition = new Vector3(transform.localPosition.x, maxZoomDistance, transform.localPosition.z);
+
+        CacheScrollSpeedFromZoom();
     }
+
+    private void CacheScrollSpeedFromZoom()
+    {
+        _scrollSpeed = (float)MathUtils.LinearConversionDouble(minZoomDistance, maxZoomDistance, minScrollSpeed, maxScrollSpeed, transform.position.y);
+    }
+
 }

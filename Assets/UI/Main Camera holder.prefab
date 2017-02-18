@@ -204,10 +204,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c74ceec1d251b24e9c938281b985afe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraHeight: 10
+  cameraStartHeight: 10
   cameraDistance: 4
-  horizontalSpeed: 40
-  verticalSpeed: 40
+  minScrollSpeed: 20
+  maxScrollSpeed: 100
   edgeScrollBoundrary: 15
   minZoomDistance: 3.5
   maxZoomDistance: 100
