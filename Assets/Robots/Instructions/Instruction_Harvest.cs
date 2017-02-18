@@ -45,20 +45,20 @@ public class Instruction_Harvest : Instruction
         for (int i = 0; i < robot.Settings_HarvestYield(); i++)
         {
             if (robot.Settings_InventoryCapacity() == 0)
-                robot.SetFeedbackIfNotPreview("NO INVENTORY CAPACITY", true, true);
+                robot.SetFeedback("NO INVENTORY CAPACITY", true, true);
             else if (robot.IsInventoryFull())
-                robot.SetFeedbackIfNotPreview("INVENTORY FULL", true, true);
+                robot.SetFeedback("INVENTORY FULL", true, true);
 
             string resourceType = WorldController.instance.HarvestFromNode(robot.x, robot.z);
 
             if (resourceType != null)
                 robot.TransferToInventory(InventoryItem.DeserializeType(resourceType));
             else
-                robot.SetFeedbackIfNotPreview("NOTHING TO HARVEST", true, true);
+                robot.SetFeedback("NOTHING TO HARVEST", true, true);
         }
 
         if (robot.Settings_HarvestYield() == 0)
-            robot.SetFeedbackIfNotPreview("NO HARVEST YIELD", true, true);
+            robot.SetFeedback("NO HARVEST YIELD", true, true);
     }
 
 }

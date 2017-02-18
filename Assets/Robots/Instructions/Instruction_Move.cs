@@ -55,7 +55,7 @@ public class Instruction_Move : Instruction
         else
         {
             if(!robot.Move(direction))
-                robot.SetFeedbackIfNotPreview("CAN NOT MOVE THERE", true, false);
+                robot.SetFeedback("CAN NOT MOVE THERE", true, false);
             return true;
         }
     }

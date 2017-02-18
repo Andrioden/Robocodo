@@ -22,12 +22,14 @@ public class TechnologyTree : NetworkBehaviour
         technologies.Add(new Technology_Robot(this, techIdIterator++, "Harvester", 100, HarvesterRobotController.Settings_name));
         technologies.Add(new Technology_Robot(this, techIdIterator++, "Predator", 100, CombatRobotController.Settings_name));
         technologies.Add(new Technology_Robot(this, techIdIterator++, "Transporter", 100, TransporterRobotController.Settings_name));
+        technologies.Add(new Technology_Robot(this, techIdIterator++, "Storage", 100, StorageRobotController.Settings_name));
         technologies.Add(new Technology_Robot(this, techIdIterator++, "Purger", 100, PurgeRobotController.Settings_name));
         technologies.Add(new Technology_Victory(this, techIdIterator++, "DX Vaccine", 100));
 
         technologies[0].AddProgress(technologies[0].cost);
         technologies[1].AddProgress(technologies[1].cost);
-        technologies[2].AddProgress(technologies[1].cost); //for dev
+        technologies[2].AddProgress(technologies[2].cost);
+        technologies[3].AddProgress(technologies[3].cost);
 
         if (isServer)
             WorldTickController.instance.OnTick += Tick;

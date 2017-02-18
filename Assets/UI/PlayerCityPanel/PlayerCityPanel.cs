@@ -10,6 +10,7 @@ public class PlayerCityPanel : MonoBehaviour
     public Sprite harvesterRobotSprite;
     public Sprite combatRobotSprite;
     public Sprite transporterRobotSprite;
+    public Sprite storageRobotSprite;
     public Sprite purgeRobotSprite;
 
     private Animator animator;
@@ -75,6 +76,9 @@ public class PlayerCityPanel : MonoBehaviour
         if (city.Owner.TechTree.robotsThatCanBeBuilt.Contains((TransporterRobotController.Settings_name)))
             buildMenu.AddBuildableItem(TransporterRobotController.Settings_name, BuyTransporterRobot, TransporterRobotController.Settings_cost(), transporterRobotSprite);
 
+        if (city.Owner.TechTree.robotsThatCanBeBuilt.Contains((StorageRobotController.Settings_name)))
+            buildMenu.AddBuildableItem(StorageRobotController.Settings_name, BuyStorageRobot, StorageRobotController.Settings_cost(), storageRobotSprite);
+
         if (city.Owner.TechTree.robotsThatCanBeBuilt.Contains((PurgeRobotController.Settings_name)))
             buildMenu.AddBuildableItem(PurgeRobotController.Settings_name, BuyPurgeRobot, PurgeRobotController.Settings_cost(), purgeRobotSprite);
     }
@@ -95,6 +99,12 @@ public class PlayerCityPanel : MonoBehaviour
     {
         if (city.CanAffordFlashIfNot(TransporterRobotController.Settings_cost()))
             city.CmdBuyTransporterRobot();
+    }
+
+    private void BuyStorageRobot()
+    {
+        if (city.CanAffordFlashIfNot(StorageRobotController.Settings_cost()))
+            city.CmdBuyStorageRobot();
     }
 
     private void BuyPurgeRobot()

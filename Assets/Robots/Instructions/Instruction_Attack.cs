@@ -79,7 +79,7 @@ public class Instruction_Attack : Instruction
             robot.lastAttackedTargetWasAnHit = false;
             robot.lastAttackedTargetX = -9999;
             robot.lastAttackedTargetZ = -9999;
-            robot.SetFeedbackIfNotPreview("NO TARGET TO ATTACK", false, true);
+            robot.SetFeedback("NO TARGET TO ATTACK", false, true);
         }
     }
 

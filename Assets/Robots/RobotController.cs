@@ -294,7 +294,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         {
             if (newInstructions.Count > Settings_Memory())
             {
-                SetFeedbackIfNotPreview("NOT ENOUGH MEMORY", true, true);
+                SetFeedback("NOT ENOUGH MEMORY", true, true);
                 return;
             }
 
@@ -302,7 +302,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
             if (instructions.Count <= 0)
             {
-                SetFeedbackIfNotPreview("NO INSTRUCTIONS DETECTED", true, true);
+                SetFeedback("NO INSTRUCTIONS DETECTED", true, true);
                 return;
             }
 
@@ -395,11 +395,11 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     /// </summary>
     public void Tick()
     {
-        SetFeedbackIfNotPreview("", false, true);
+        SetFeedback("", false, true);
 
         if (instructions.Count == 0)
         {
-            SetFeedbackIfNotPreview("NO INSTRUCTIONS", true, true);
+            SetFeedback("NO INSTRUCTIONS", true, true);
             return;
         }
 
@@ -407,7 +407,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         currentInstructionIndex = nextInstructionIndex;
         Instruction currentInstruction = instructions[nextInstructionIndex];
 
-        IEnergySource energySource = FindEnergySourceOnPosition();
+        IEnergySource energySource = FindFirstOnCurrentPosition<IEnergySource>();
         if (energySource != null)
         {
             if (isPreviewRobot)
@@ -420,9 +420,9 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             return;
 
         if (energy <= 0)
-            SetFeedbackIfNotPreview("NOT ENOUGH ENERGY", false, true);
+            SetFeedback("NOT ENOUGH ENERGY", false, true);
         else if (energySource != null && currentInstructionIndex == 0 && energy != Settings_MaxEnergy())
-            SetFeedbackIfNotPreview("RECHARGING ENERGY", false, true);
+            SetFeedback("RECHARGING ENERGY", false, true);
         else
         {
             if (ExecuteInstruction(currentInstruction))
@@ -459,19 +459,19 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             return true;
         else if (instruction.GetType() == typeof(Instruction_Unknown))
         {
-            SetFeedbackIfNotPreview(string.Format("UNKNOWN INSTRUCTION: '{0}'", instruction.Serialize()), false, false);
+            SetFeedback(string.Format("UNKNOWN INSTRUCTION: '{0}'", instruction.Serialize()), false, false);
             return true;
         }
         else if (!_allowedInstructions.Any(a => a.GetType() == instruction.GetType()))
         {
-            SetFeedbackIfNotPreview(string.Format("INSTRUCTION NOT ALLOWED: '{0}'", instruction.Serialize()), false, false);
+            SetFeedback(string.Format("INSTRUCTION NOT ALLOWED: '{0}'", instruction.Serialize()), false, false);
             return true;
         }
         else
             return instruction.Execute(this);
     }
 
-    public void SetFeedbackIfNotPreview(string message, bool popup, bool whatToSetIsCurrentInstructionValidTo)
+    public void SetFeedback(string message, bool popup, bool whatToSetIsCurrentInstructionValidTo)
     {
         feedback = message;
         currentInstructionIndexIsValid = whatToSetIsCurrentInstructionValidTo;
@@ -575,6 +575,12 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     }
 
     [Server]
+    public List<InventoryItem> PickUp(int count)
+    {
+        return inventory.PopLast(count);
+    }
+
+    [Server]
     public void SetInventory(List<InventoryItem> items)
     {
         inventory = items;
@@ -600,7 +606,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     {
         if (NoFreeModuleSlot())
         {
-            SetFeedbackIfNotPreview("NO FREE MODULE SLOT", true, true);
+            SetFeedback("NO FREE MODULE SLOT", true, true);
             return;
         }
 
@@ -613,7 +619,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         }
         else
         {
-            SetFeedbackIfNotPreview("NOT ENOUGH RESOURCES FOR MODULE", true, true);
+            SetFeedback("NOT ENOUGH RESOURCES FOR MODULE", true, true);
             return;
         }
     }
@@ -661,11 +667,6 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         isColorSet = true;
     }
 
-    private IEnergySource FindEnergySourceOnPosition()
-    {
-        return FindOnCurrentPosition<IEnergySource>();
-    }
-
     public void AddEnergy(int change)
     {
         if (change < 0)
@@ -697,7 +698,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     [Server]
     private void SalvageRobot()
     {
-        CityController playerCity = FindOnCurrentPosition<CityController>(); //TODO: Safe to replace with playerCityController reference?
+        CityController playerCity = FindFirstOnCurrentPosition<CityController>(); //TODO: Safe to replace with playerCityController reference?
 
         List<InventoryItem> salvagedResources = new List<InventoryItem>();
 
@@ -760,7 +761,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             currentInstructionIndex = 0;
             currentInstructionIndexIsValid = true;
             mainLoopIterationCount = 0;
-            SetFeedbackIfNotPreview("", false, true);
+            SetFeedback("", false, true);
 
             modules.ForEach(module => module.Uninstall(false));
             modules.Clear();
@@ -769,7 +770,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             Owner.ShowPopupForOwner("MEMORY CLEARED!", transform.position, TextPopup.ColorType.DEFAULT);
         }
         else
-            SetFeedbackIfNotPreview(feedback, false, true);
+            SetFeedback(feedback, false, true);
     }
 
     public void PreviewReset()

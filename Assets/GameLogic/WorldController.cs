@@ -17,6 +17,7 @@ public class WorldController : NetworkBehaviour
     public GameObject combatRobotPrefab;
     public GameObject transporterRobotPrefab;
     public GameObject purgeRobotPrefab;
+    public GameObject storageRobotPrefab;
 
     private GameObject groundGameObject;
 
@@ -149,6 +150,11 @@ public class WorldController : NetworkBehaviour
     public GameObject SpawnTransporterRobotWithClientAuthority(NetworkConnection conn, int x, int z, PlayerController player)
     {
         return SpawnObjectWithClientAuthority(conn, transporterRobotPrefab, x, z, player);
+    }
+
+    public GameObject SpawnStorageRobotWithClientAuthority(NetworkConnection conn, int x, int z, PlayerController player)
+    {
+        return SpawnObjectWithClientAuthority(conn, storageRobotPrefab, x, z, player);
     }
 
     public GameObject SpawnPurgeRobotWithClientAuthority(NetworkConnection conn, int x, int z, PlayerController player)

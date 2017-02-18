@@ -9,4 +9,9 @@ public interface IHasInventory
     /// </summary>
     List<InventoryItem> AddToInventory(List<InventoryItem> items);
 
+    /// <summary>
+    /// Returns by the last in first out princple 
+    /// </summary>
+    List<InventoryItem> PickUp(int count);
+
 }

@@ -98,12 +98,20 @@ public abstract class Unit : OwnedNetworkBehaviour
         return new Coordinate((int)x, (int)z);
     }
 
-    public T FindOnCurrentPosition<T>()
+    public T FindFirstOnCurrentPosition<T>()
     {
         return FindNearbyCollidingGameObjects<T>()
             .Where(go => go.transform.position.x == x && go.transform.position.z == z)
             .Select(go => go.transform.root.GetComponent<T>())
             .FirstOrDefault();
+    }
+
+    public List<T> FindAllOnCurrentPosition<T>()
+    {
+        return FindNearbyCollidingGameObjects<T>()
+            .Where(go => go.transform.position.x == x && go.transform.position.z == z)
+            .Select(go => go.transform.root.GetComponent<T>())
+            .ToList();
     }
 
     public List<IAttackable> FindNearbyAttackableTargets(float searchRadius = 7.0f)

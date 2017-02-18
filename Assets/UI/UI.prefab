@@ -1710,7 +1710,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1398475644107730
 GameObject:
   m_ObjectHideFlags: 1
@@ -2798,77 +2798,7 @@ MonoBehaviour:
   m_ItemImage: {fileID: 0}
   m_Value: 0
   m_Options:
-    m_Options:
-    - m_Text: Normal
-      m_Image: {fileID: 0}
-    - m_Text: Wild PvE
-      m_Image: {fileID: 0}
-    - m_Text: Test Attack Neu Enemy
-      m_Image: {fileID: 0}
-    - m_Text: Test Transporter
-      m_Image: {fileID: 0}
-    - m_Text: Test Stacking Robots
-      m_Image: {fileID: 0}
-    - m_Text: Test Infection Purging
-      m_Image: {fileID: 0}
-    - m_Text: Test Infection Victory
-      m_Image: {fileID: 0}
-    - m_Text: Normal
-      m_Image: {fileID: 0}
-    - m_Text: Wild PvE
-      m_Image: {fileID: 0}
-    - m_Text: Test Attack Neu Enemy
-      m_Image: {fileID: 0}
-    - m_Text: Test Transporter
-      m_Image: {fileID: 0}
-    - m_Text: Test Stacking Robots
-      m_Image: {fileID: 0}
-    - m_Text: Test Infection Purging
-      m_Image: {fileID: 0}
-    - m_Text: Test Infection Victory
-      m_Image: {fileID: 0}
-    - m_Text: Normal
-      m_Image: {fileID: 0}
-    - m_Text: Wild PvE
-      m_Image: {fileID: 0}
-    - m_Text: Test Attack Neu Enemy
-      m_Image: {fileID: 0}
-    - m_Text: Test Transporter
-      m_Image: {fileID: 0}
-    - m_Text: Test Stacking Robots
-      m_Image: {fileID: 0}
-    - m_Text: Test Infection Purging
-      m_Image: {fileID: 0}
-    - m_Text: Test Infection Victory
-      m_Image: {fileID: 0}
-    - m_Text: Normal
-      m_Image: {fileID: 0}
-    - m_Text: Wild PvE
-      m_Image: {fileID: 0}
-    - m_Text: Test Attack Neu Enemy
-      m_Image: {fileID: 0}
-    - m_Text: Test Transporter
-      m_Image: {fileID: 0}
-    - m_Text: Test Stacking Robots
-      m_Image: {fileID: 0}
-    - m_Text: Test Infection Purging
-      m_Image: {fileID: 0}
-    - m_Text: Test Infection Victory
-      m_Image: {fileID: 0}
-    - m_Text: Normal
-      m_Image: {fileID: 0}
-    - m_Text: Wild PvE
-      m_Image: {fileID: 0}
-    - m_Text: Test Attack Neu Enemy
-      m_Image: {fileID: 0}
-    - m_Text: Test Transporter
-      m_Image: {fileID: 0}
-    - m_Text: Test Stacking Robots
-      m_Image: {fileID: 0}
-    - m_Text: Test Infection Purging
-      m_Image: {fileID: 0}
-    - m_Text: Test Infection Victory
-      m_Image: {fileID: 0}
+    m_Options: []
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -3075,6 +3005,7 @@ MonoBehaviour:
   combatRobotSprite: {fileID: 21300000, guid: c0a5b4f6a90d3dc43a1dd8c6770fe65f, type: 3}
   transporterRobotSprite: {fileID: 21300000, guid: 3ab32c9294b306a4e8df1b08efde3767,
     type: 3}
+  storageRobotSprite: {fileID: 21300000, guid: c2d1de397726af54d9b1cbed92b9cb0e, type: 3}
   purgeRobotSprite: {fileID: 21300000, guid: 743387b053f8344448129d7d6d405d3f, type: 3}
 --- !u!114 &114000011135477630
 MonoBehaviour:

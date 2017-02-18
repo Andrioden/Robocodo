@@ -136,6 +136,18 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
     }
 
     [Command]
+    public void CmdBuyStorageRobot()
+    {
+        // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
+        if (CanAfford(StorageRobotController.Settings_cost()))
+        {
+            WorldController.instance.SpawnStorageRobotWithClientAuthority(Owner.connectionToClient, X, Z, Owner);
+            RemoveResources(StorageRobotController.Settings_cost());
+            TargetIndicateSuccessfulPurchase(Owner.connectionToClient, StorageRobotController.Settings_name);
+        }
+    }
+
+    [Command]
     public void CmdBuyPurgeRobot()
     {
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
@@ -156,6 +168,12 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
         inventory.AddRange(items);
         RpcSyncInventory(InventoryItem.Serialize(inventory));
         return new List<InventoryItem>(); // No items was not added since city has no max capacity
+    }
+
+    [Server]
+    public List<InventoryItem> PickUp(int count)
+    {
+        return inventory.PopLast(count);
     }
 
     [Server]
