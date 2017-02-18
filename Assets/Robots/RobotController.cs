@@ -700,8 +700,6 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     [Server]
     private void SalvageRobot()
     {
-        CityController playerCity = FindFirstOnCurrentPosition<CityController>(); //TODO: Safe to replace with playerCityController reference?
-
         List<InventoryItem> salvagedResources = new List<InventoryItem>();
 
         Cost cost = Settings_Cost();
@@ -713,7 +711,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         for (int c = 0; c < salvagedIron; c++)
             salvagedResources.Add(new IronItem());
 
-        playerCity.AddToInventory(salvagedResources);
+        Owner.City.AddToInventory(salvagedResources);
 
         Owner.ShowPopupForOwner("SALVAGED!", transform.position, TextPopup.ColorType.DEFAULT);
 
