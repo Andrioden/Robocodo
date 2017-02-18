@@ -71,7 +71,7 @@ public class WorldController : NetworkBehaviour
         this.width = width;
         this.height = height;
 
-        worldBuilder = new WorldBuilder(width, height, matchSize, 10, 10, 10);
+        worldBuilder = new WorldBuilder(width, height, matchSize);
 
         for (int x = 0; x < width; x++)
         {

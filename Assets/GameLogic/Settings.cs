@@ -3,6 +3,10 @@
     public static float World_IrlSecondsPerTick = 1.0f;
     public static float World_MaxTimeScale = 20;
 
+    public static int World_TilesPerCopperNode = 50;
+    public static int World_TilesPerIronNode = 50;
+    public static int World_TilesPerFoodNode = 50;
+
     public static int World_Infection_SpreadThreshold = 5;
     public static int World_Infection_SpreadDistance = 2;
     public static double World_Infection_GrowthPerTickPerTilePer100Infection = 0.03;

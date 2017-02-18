@@ -15,7 +15,7 @@ public class WorldBuilder
     List<Coordinate> reservedPlayerCoordinates = new List<Coordinate>(); // Should never be manipulated directly, only through the designated method
     int playerCordIncrement = 0;
 
-    public WorldBuilder(int width, int height, int reservedPlayerSpotCount, int extraCopperNodeCount, int extraIronNodeCount, int extraFoodNodeCount)
+    public WorldBuilder(int width, int height, int reservedPlayerSpotCount)
     {
         this.width = width;
         this.height = height;
@@ -23,20 +23,20 @@ public class WorldBuilder
 
         /* Reserve <playerCount> number of spots for playerCities before allocating any other tiles */
         for (int i = 0; i < reservedPlayerSpotCount; i++)
-            ReservePlayerCoordinate(GetRandomOpenCoordinate());
+            ReservePlayerCoordinate(GetRandomEmptyCoordinate());
 
-        for (int i = 0; i < extraCopperNodeCount; i++)
-            SetTile(GetRandomOpenCoordinate(), TileType.CopperNode);
-        for (int i = 0; i < extraIronNodeCount; i++)
-            SetTile(GetRandomOpenCoordinate(), TileType.IronNode);
-        for (int i = 0; i < extraFoodNodeCount; i++)
-            SetTile(GetRandomOpenCoordinate(), TileType.FoodNode);
+        for (int i = 0; i < (width * height / Settings.World_TilesPerCopperNode); i++)
+            SetTile(GetRandomEmptyCoordinate(), TileType.CopperNode);
+        for (int i = 0; i < (width * height / Settings.World_TilesPerIronNode); i++)
+            SetTile(GetRandomEmptyCoordinate(), TileType.IronNode);
+        for (int i = 0; i < (width * height / Settings.World_TilesPerFoodNode); i++)
+            SetTile(GetRandomEmptyCoordinate(), TileType.FoodNode);
     }
 
     public Coordinate GetNextPlayerPosition()
     {
         if (playerCordIncrement >= reservedPlayerCoordinates.Count)
-            return GetRandomOpenCoordinate();
+            return GetRandomEmptyCoordinate();
 
         var nextPos = reservedPlayerCoordinates[playerCordIncrement];
         playerCordIncrement++;
@@ -71,13 +71,13 @@ public class WorldBuilder
         tiles[coord.x, coord.z] = type;
     }
 
-    private Coordinate GetRandomOpenCoordinate()
+    private Coordinate GetRandomEmptyCoordinate()
     {
         int attempts = 0;
         while (true)
         {
             attempts++;
-            if (attempts > 1000)
+            if (attempts > 3000)
                 throw new Exception("Failed to find a random open coordinate, should probably rewrite the algorithm anyway");
 
             int x = Utils.RandomInt(0, width);
