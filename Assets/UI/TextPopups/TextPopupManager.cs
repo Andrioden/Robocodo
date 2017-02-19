@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
-public class TextPopupManager : MonoBehaviour {
+public class TextPopupManager : MonoBehaviour
+{
 
     public TextPopup textPopupPrefab;
 
@@ -17,14 +18,15 @@ public class TextPopupManager : MonoBehaviour {
         }
     }
 
-    private void Start () {
-        if (!textPopupPrefab)   
+    private void Start()
+    {
+        if (!textPopupPrefab)
             Debug.LogError("TextPopup prefab is missing.");
     }
-	
+
     public void ShowPopupGeneric(string text, Vector3 worldPosition, Color? color)
     {
         TextPopup popup = Instantiate(textPopupPrefab, transform, false);
         popup.Initialize(text, worldPosition, color);
-    }    
+    }
 }

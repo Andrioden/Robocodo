@@ -86,7 +86,7 @@ public class StackingRobotsOverhangManager : MonoBehaviour
     {
         GameObject stackingRobotsOverhangGO = Instantiate(stackingRobotsOverhangPrefab, parent.transform);
         StackingRobotsOverhangController stackingRobotsOverhangController = stackingRobotsOverhangGO.GetComponent<StackingRobotsOverhangController>();
-        stackingRobotsOverhangController.Initiate(robots);
+        stackingRobotsOverhangController.Initialize(robots);
 
         spawnedGuiObjects.Add(stackingRobotsOverhangGO);
     }

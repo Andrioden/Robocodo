@@ -13,7 +13,7 @@ public class TextPopup : MonoBehaviour
 
     private void Awake()
     {
-        if(!textComponent)
+        if (!textComponent)
             Debug.LogError("Text component is missing.");
         if (!animator)
             Debug.LogError("Animator is missing.");
@@ -26,22 +26,21 @@ public class TextPopup : MonoBehaviour
 
     private void Update()
     {
-        MaintainWorldPosition();
+        AdjustPositionToCamera();
     }
 
     public void Initialize(string text, Vector3 worldPosition, Color? color = null)
     {
         this.worldPosition = worldPosition;
-        MaintainWorldPosition();
+        AdjustPositionToCamera();
         SetText(text, color);
         textComponent.enabled = true;
     }
 
-    private void MaintainWorldPosition()
+    private void AdjustPositionToCamera()
     {
         /* Doing this so that the text stays where it was spawned in world space and doesn't move when the screen moves. */
-        screenPosition = Camera.main.WorldToScreenPoint(worldPosition);
-        transform.position = screenPosition;
+        transform.position = Camera.main.WorldToScreenPoint(worldPosition);
     }
 
     private void SetText(string text, Color? color = null)
