@@ -55,19 +55,5 @@ namespace Robocodo.Tests
             Assert.AreEqual(2, MathUtils.RoundMin1IfHasValue(2.4));
         }
 
-        [TestMethod]
-        public void GenerateNoiseMapTest()
-        {
-            float[,] noiseMap = MathUtils.GenerateNoiseMap(10, 10);
-
-            for (int x = 0; x < noiseMap.GetLength(0); x++)
-            {
-                for (int y = 0; y < noiseMap.GetLength(1); y++)
-                {
-                    Console.Write(string.Format("{0} ", noiseMap[x, y]));
-                }
-                Console.Write(Environment.NewLine + Environment.NewLine);
-            }
-        }
     }
 }

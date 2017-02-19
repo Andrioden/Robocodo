@@ -15,22 +15,18 @@ public class WorldBuilder
     List<Coordinate> reservedPlayerCoordinates = new List<Coordinate>(); // Should never be manipulated directly, only through the designated method
     int playerCordIncrement = 0;
 
-    public WorldBuilder(int width, int height, int reservedPlayerSpotCount)
+    public WorldBuilder(int width, int height, int reservedPlayerSpotCount, NoiseConfig noiseConfig)
     {
         this.width = width;
         this.height = height;
         tiles = new TileType[width, height];
 
-        /* Reserve <playerCount> number of spots for playerCities before allocating any other tiles */
         for (int i = 0; i < reservedPlayerSpotCount; i++)
             ReservePlayerCoordinate(GetRandomEmptyCoordinate());
 
-        for (int i = 0; i < (width * height / Settings.World_TilesPerCopperNode); i++)
-            SetTile(GetRandomEmptyCoordinate(), TileType.CopperNode);
-        for (int i = 0; i < (width * height / Settings.World_TilesPerIronNode); i++)
-            SetTile(GetRandomEmptyCoordinate(), TileType.IronNode);
-        for (int i = 0; i < (width * height / Settings.World_TilesPerFoodNode); i++)
-            SetTile(GetRandomEmptyCoordinate(), TileType.FoodNode);
+        SpawnResources(TileType.CopperNode, noiseConfig, Settings.World_CopperNoiseThreshold);
+        SpawnResources(TileType.IronNode, noiseConfig, Settings.World_IronNoiseThreshold);
+        SpawnResources(TileType.FoodNode, noiseConfig, Settings.World_FoodNoiseThreshold);
     }
 
     public Coordinate GetNextPlayerPosition()
@@ -64,6 +60,15 @@ public class WorldBuilder
         SetTile(GetRandomOpenCoordinateNear(playerCityCoordinate, 1, 3), TileType.FoodNode);
 
         tiles[playerCityCoordinate.x, playerCityCoordinate.z] = TileType.CityReservation;
+    }
+
+    private void SpawnResources(TileType tileType, NoiseConfig noiseConfig, float treshold)
+    {
+        float[,] copperNoiseMap = NoiseUtils.GenerateNoiseMap(width, height, noiseConfig);
+        for (int x = 0; x < copperNoiseMap.GetLength(0); x++)
+            for (int y = 0; y < copperNoiseMap.GetLength(1); y++)
+                if (tiles[x, y] == TileType.Empty && copperNoiseMap[x, y] > treshold)
+                    tiles[x, y] = tileType;
     }
 
     private void SetTile(Coordinate coord, TileType type)

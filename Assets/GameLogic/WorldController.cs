@@ -66,12 +66,12 @@ public class WorldController : NetworkBehaviour
         Destroy(groundGameObject);
     }
 
-    public void BuildWorld(int width, int height, int matchSize)
+    public void BuildWorld(int width, int height, int matchSize, NoiseConfig noiseConfig)
     {
         this.width = width;
         this.height = height;
 
-        worldBuilder = new WorldBuilder(width, height, matchSize);
+        worldBuilder = new WorldBuilder(width, height, matchSize, noiseConfig);
 
         for (int x = 0; x < width; x++)
         {
@@ -82,8 +82,6 @@ public class WorldController : NetworkBehaviour
                     SpawnResourceNode(itemFromTileType, x, z);
             }
         }
-
-        InfectionManager.instance.Initialize(width, height);
     }
 
     private InventoryItem InventoryItem(TileType tileType)
@@ -98,12 +96,11 @@ public class WorldController : NetworkBehaviour
             return null;
     }
 
-    public void BuildWorldDemoWorld(int width, int height, Transform demoWorldParent)
+    public void BuildWorldDemoWorld(int width, int height, Transform demoWorldParent, NoiseConfig noiseConfig)
     {
         classIsUsedAsDemo = true;
         worldParent = demoWorldParent;
-        BuildWorld(width, height, 10);
-        SpawnPlayer(null);
+        BuildWorld(width, height, 10, noiseConfig);
         SpawnAndAdjustGround();
     }
 

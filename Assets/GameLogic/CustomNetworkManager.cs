@@ -24,10 +24,16 @@ public class CustomNetworkManager : NetworkManager
 
         if (numPlayers == 0) // First player == HOSTING
         {
+            int width = 70;
+            int height = 100;
+
             GameObject worldControllerGameObject = Instantiate(worldControllerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             NetworkServer.Spawn(worldControllerGameObject);
 
-            WorldController.instance.BuildWorld(30, 40, 20);
+            NoiseConfig noiseConfig = new NoiseConfig() { Scale = 0.99f, Octaves = 4, Persistance = 0.37f, Lacunarity = 1.92f };
+            WorldController.instance.BuildWorld(width, height, 20, noiseConfig);
+
+            InfectionManager.instance.Initialize(width, height);
 
             WorldController.instance.GetComponent<ScavengerSpawner>().enabled = true;
             WorldController.instance.GetComponent<WinLoseChecker>().enabled = true;

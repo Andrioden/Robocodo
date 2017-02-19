@@ -3,9 +3,9 @@
     public static float World_IrlSecondsPerTick = 1.0f;
     public static float World_MaxTimeScale = 20;
 
-    public static int World_TilesPerCopperNode = 50;
-    public static int World_TilesPerIronNode = 50;
-    public static int World_TilesPerFoodNode = 50;
+    public static float World_CopperNoiseThreshold = 0.92f;
+    public static float World_IronNoiseThreshold = 0.92f;
+    public static float World_FoodNoiseThreshold = 0.92f;
 
     public static int World_Infection_SpreadThreshold = 5;
     public static int World_Infection_SpreadDistance = 2;
