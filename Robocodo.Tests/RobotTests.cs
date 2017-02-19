@@ -1,8 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Robocodo.CSharp;
+using Robocodo;
 
-namespace Robocodo.CSharp.Tests
+namespace Robocodo.Tests
 {
     [TestClass]
     public class InstructionsHelperTests
