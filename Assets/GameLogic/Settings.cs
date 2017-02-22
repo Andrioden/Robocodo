@@ -3,9 +3,19 @@
     public static float World_IrlSecondsPerTick = 1.0f;
     public static float World_MaxTimeScale = 20;
 
-    public static float World_CopperNoiseThreshold = 0.92f;
-    public static float World_IronNoiseThreshold = 0.92f;
-    public static float World_FoodNoiseThreshold = 0.92f;
+    //public static float World_CopperNoiseThreshold = 0.0f;
+    //public static float World_CopperNoiseThreshold = 0.92f;
+    //public static float World_IronNoiseThreshold = 0.92f;
+    //public static float World_FoodNoiseThreshold = 0.92f;
+
+    public static float World_CopperNoiseRangeFrom = 0.00f;
+    public static float World_CopperNoiseRangeTo = 0.10f;
+
+    public static float World_IronNoiseRangeFrom = 0.30f;
+    public static float World_IronNoiseRangeTo = 0.33f;
+
+    public static float World_FoodNoiseRangeFrom = 0.90f;
+    public static float World_FoodNoiseRangeTo = 1.00f;
 
     public static int World_Infection_SpreadThreshold = 5;
     public static int World_Infection_SpreadDistance = 2;

@@ -30,7 +30,7 @@ public class CustomNetworkManager : NetworkManager
             GameObject worldControllerGameObject = Instantiate(worldControllerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             NetworkServer.Spawn(worldControllerGameObject);
 
-            NoiseConfig noiseConfig = new NoiseConfig() { Scale = 0.99f, Octaves = 4, Persistance = 0.37f, Lacunarity = 1.92f };
+            NoiseConfig noiseConfig = new NoiseConfig() { Scale = 0.99f, Octaves = 4, Persistance = 0.3f, Lacunarity = 0.55f };
             WorldController.instance.BuildWorld(width, height, 20, noiseConfig);
 
             InfectionManager.instance.Initialize(width, height);

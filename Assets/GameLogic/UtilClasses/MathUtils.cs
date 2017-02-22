@@ -52,4 +52,9 @@ public static class MathUtils
             return 0;
     }
 
+    public static bool InRange(float from, float to, float value)
+    {
+        return (value >= from && value <= to);
+    }
+
 }

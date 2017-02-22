@@ -197,6 +197,10 @@ public class WorldController : NetworkBehaviour
 
         _resourceControllers.Add(resourceController);
 
+        // Noise Visualisaztion helper code
+        //resurceGameObject.transform.localScale = new Vector3(resurceGameObject.transform.localScale.x * 2, 1, resurceGameObject.transform.localScale.z * 2);
+        //resurceGameObject.transform.localScale = new Vector3(resurceGameObject.transform.localScale.x * 2, worldBuilder.noiseMap[x, z] * 30, resurceGameObject.transform.localScale.z * 2);
+
         return resurceGameObject;
     }
 

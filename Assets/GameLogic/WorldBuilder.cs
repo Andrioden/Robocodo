@@ -11,6 +11,7 @@ public class WorldBuilder
 
     private TileType[,] tiles;
     public TileType[,] Tiles { get { return tiles; } }
+    public float[,] noiseMap;
 
     List<Coordinate> reservedPlayerCoordinates = new List<Coordinate>(); // Should never be manipulated directly, only through the designated method
     int playerCordIncrement = 0;
@@ -24,9 +25,27 @@ public class WorldBuilder
         for (int i = 0; i < reservedPlayerSpotCount; i++)
             ReservePlayerCoordinate(GetRandomEmptyCoordinate());
 
-        SpawnResources(TileType.CopperNode, noiseConfig, Settings.World_CopperNoiseThreshold);
-        SpawnResources(TileType.IronNode, noiseConfig, Settings.World_IronNoiseThreshold);
-        SpawnResources(TileType.FoodNode, noiseConfig, Settings.World_FoodNoiseThreshold);
+        noiseMap = NoiseUtils.GenerateNoiseMap(width, height, noiseConfig);
+
+        for (int x = 0; x < noiseMap.GetLength(0); x++)
+        {
+            for (int y = 0; y < noiseMap.GetLength(1); y++)
+            {
+                if (MathUtils.InRange(Settings.World_CopperNoiseRangeFrom, Settings.World_CopperNoiseRangeTo, noiseMap[x, y]))
+                    tiles[x, y] = TileType.CopperNode;
+                else if (MathUtils.InRange(Settings.World_IronNoiseRangeFrom, Settings.World_IronNoiseRangeTo, noiseMap[x, y]))
+                    tiles[x, y] = TileType.IronNode;
+                else if (MathUtils.InRange(Settings.World_FoodNoiseRangeFrom, Settings.World_FoodNoiseRangeTo, noiseMap[x, y]))
+                    tiles[x, y] = TileType.FoodNode;
+                //else
+                    //Debug.Log("Wierd noise value: " + noiseMap[x, y]);
+            }
+
+        }
+
+        //SpawnResources(TileType.CopperNode, noiseConfig, Settings.World_CopperNoiseThreshold);
+        //SpawnResources(TileType.IronNode, noiseConfig, Settings.World_IronNoiseThreshold);
+        //SpawnResources(TileType.FoodNode, noiseConfig, Settings.World_FoodNoiseThreshold);
     }
 
     public Coordinate GetNextPlayerPosition()
@@ -62,14 +81,16 @@ public class WorldBuilder
         tiles[playerCityCoordinate.x, playerCityCoordinate.z] = TileType.CityReservation;
     }
 
-    private void SpawnResources(TileType tileType, NoiseConfig noiseConfig, float treshold)
-    {
-        float[,] copperNoiseMap = NoiseUtils.GenerateNoiseMap(width, height, noiseConfig);
-        for (int x = 0; x < copperNoiseMap.GetLength(0); x++)
-            for (int y = 0; y < copperNoiseMap.GetLength(1); y++)
-                if (tiles[x, y] == TileType.Empty && copperNoiseMap[x, y] > treshold)
-                    tiles[x, y] = tileType;
-    }
+    //private void SpawnResources(TileType tileType, NoiseConfig noiseConfig, float treshold)
+    //{
+    //    float[,] copperNoiseMap = NoiseUtils.GenerateNoiseMap(width, height, noiseConfig);
+    //    for (int x = 0; x < copperNoiseMap.GetLength(0); x++)
+    //        for (int y = 0; y < copperNoiseMap.GetLength(1); y++)
+    //            if (tiles[x, y] == TileType.Empty && copperNoiseMap[x, y] > treshold)
+    //                tiles[x, y] = tileType;
+
+    //    noiseMap = copperNoiseMap;
+    //}
 
     private void SetTile(Coordinate coord, TileType type)
     {

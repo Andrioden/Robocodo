@@ -1258,10 +1258,10 @@ MonoBehaviour:
     type: 2}
   width: 100
   height: 100
-  scale: 1.01
+  scale: 0.99
   octaves: 4
-  persistance: 0.37
-  lacunarity: 1.92
+  persistance: 0.3
+  lacunarity: 0.55
 --- !u!4 &2113597375
 Transform:
   m_ObjectHideFlags: 0
