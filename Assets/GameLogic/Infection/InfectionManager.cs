@@ -14,6 +14,7 @@ public class InfectionManager : NetworkBehaviour
 
     private GameObject parent;
     private GameObject[,] tileInfectionGameObjects;
+    private float[,] noiseMap;
 
     [SyncVar]
     private int width;
@@ -62,6 +63,7 @@ public class InfectionManager : NetworkBehaviour
         this.width = width;
         this.height = height;
         tileInfectionGameObjects = new GameObject[width, height];
+        noiseMap = NoiseUtils.GenerateNoiseMap(width, height, 0.12f);
 
         WorldTickController.instance.OnTick += Tick;
     }
@@ -95,12 +97,14 @@ public class InfectionManager : NetworkBehaviour
     [Server]
     private void IncreaseOrSpreadInfection(TileInfection ti, double increasedPer100Infection)
     {
+        float maxInfection = noiseMap[ti.X, ti.Z] * 100;
+
         if (ti.Infection <= 0)
             return;
         //else if (ti.Infection < 100 && ti.Infection < Settings.World_Infection_SpreadTreshold && Utils.PercentageRoll(Settings.World_Infection_SpreadTreshold)
         //else if (ti.Infection + Utils.RandomDouble(0, 100 - Settings.World_Infection_SpreadThreshold) < 100)
         else if (
-            ti.Infection >= 100
+            ti.Infection >= maxInfection
             || (ti.Infection >= Settings.World_Infection_SpreadThreshold && Utils.PercentageRoll(70)))
         {
             SpreadInfection(ti, increasedPer100Infection * ti.Infection);
@@ -116,10 +120,8 @@ public class InfectionManager : NetworkBehaviour
         Utils.Shuffle(coords);
 
         foreach (var coord in coords)
-        {
             if (IncreaseOrAddTileInfection(coord.x, coord.z, increased))
                 return;
-        }
 
         // Did not managed to spread, ignore this tile in the future
         _spreadingTileInfectionIndexes.Remove(IndexOfTileInfection(fromTile.X, fromTile.Z));
@@ -131,12 +133,14 @@ public class InfectionManager : NetworkBehaviour
     [Server]
     public bool IncreaseOrAddTileInfection(int x, int z, double increasion)
     {
+        float maxInfection = noiseMap[x, z] * 100;
+
         int index = IndexOfTileInfection(x, z);
         if (index != -1)
         {
-            if (tileInfections[index].Infection < 100)
+            if (tileInfections[index].Infection < maxInfection)
             {
-                double newInfection = Math.Min(100, tileInfections[index].Infection + increasion);
+                double newInfection = Math.Min(maxInfection, tileInfections[index].Infection + increasion);
                 tileInfections[index] = new TileInfection(x, z, newInfection);
             }
             else

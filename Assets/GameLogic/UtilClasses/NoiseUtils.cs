@@ -26,7 +26,7 @@ public static class NoiseUtils
     /// <param name="octaves">Intesity of the tops and bottoms (i think)</param>
     /// <param name="persistance">Between 0 and 1. A lower number makes it less detailed. Se https://youtu.be/MRNFcywkUSA?t=353 </param>
     /// <param name="lacunarity">Seems to skew the numbers a bit, dunno. Se https://youtu.be/MRNFcywkUSA?t=353 </param>
-    public static float[,] GenerateNoiseMap(int mapWidth, int mapHeight, float scale = 0.91f, int octaves = 4, float persistance = 0.1f, float lacunarity = 2.0f)
+    public static float[,] GenerateNoiseMap(int mapWidth, int mapHeight, float scale = 0.99f, int octaves = 4, float persistance = 0.1f, float lacunarity = 2.0f)
     {
         float[,] noiseMap = new float[mapWidth, mapHeight];
 
