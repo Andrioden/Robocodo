@@ -29,14 +29,14 @@ public class WorldBuilder
 
         for (int x = 0; x < noiseMap.GetLength(0); x++)
         {
-            for (int y = 0; y < noiseMap.GetLength(1); y++)
+            for (int z = 0; z < noiseMap.GetLength(1); z++)
             {
-                if (MathUtils.InRange(Settings.World_CopperNoiseRangeFrom, Settings.World_CopperNoiseRangeTo, noiseMap[x, y]))
-                    tiles[x, y] = TileType.CopperNode;
-                else if (MathUtils.InRange(Settings.World_IronNoiseRangeFrom, Settings.World_IronNoiseRangeTo, noiseMap[x, y]))
-                    tiles[x, y] = TileType.IronNode;
-                else if (MathUtils.InRange(Settings.World_FoodNoiseRangeFrom, Settings.World_FoodNoiseRangeTo, noiseMap[x, y]))
-                    tiles[x, y] = TileType.FoodNode;
+                if (MathUtils.InRange(Settings.World_CopperNoiseRangeFrom, Settings.World_CopperNoiseRangeTo, noiseMap[x, z]))
+                    SetTile(x, z, TileType.CopperNode);
+                else if (MathUtils.InRange(Settings.World_IronNoiseRangeFrom, Settings.World_IronNoiseRangeTo, noiseMap[x, z]))
+                    SetTile(x, z, TileType.IronNode);
+                else if (MathUtils.InRange(Settings.World_FoodNoiseRangeFrom, Settings.World_FoodNoiseRangeTo, noiseMap[x, z]))
+                    SetTile(x, z, TileType.FoodNode);
                 //else
                     //Debug.Log("Wierd noise value: " + noiseMap[x, y]);
             }
@@ -78,7 +78,7 @@ public class WorldBuilder
         SetTile(GetRandomOpenCoordinateNear(playerCityCoordinate, 1, 3), TileType.IronNode);
         SetTile(GetRandomOpenCoordinateNear(playerCityCoordinate, 1, 3), TileType.FoodNode);
 
-        tiles[playerCityCoordinate.x, playerCityCoordinate.z] = TileType.CityReservation;
+        SetTile(playerCityCoordinate.x, playerCityCoordinate.z, TileType.CityReservation);
     }
 
     //private void SpawnResources(TileType tileType, NoiseConfig noiseConfig, float treshold)
@@ -94,7 +94,13 @@ public class WorldBuilder
 
     private void SetTile(Coordinate coord, TileType type)
     {
-        tiles[coord.x, coord.z] = type;
+        SetTile(coord.x, coord.z, type);
+    }
+
+    private void SetTile(int x, int z, TileType type)
+    {
+        if (tiles[x, z] == TileType.Empty)
+            tiles[x, z] = type;
     }
 
     private Coordinate GetRandomEmptyCoordinate()
