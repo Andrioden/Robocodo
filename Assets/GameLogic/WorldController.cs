@@ -127,62 +127,29 @@ public class WorldController : NetworkBehaviour
         else
             Debug.LogWarning("NetworkServer not active");
 
-        SpawnObjectWithClientAuthority(conn, cityPrefab, playerPos.x, playerPos.z, player);
+        SpawnObject(cityPrefab, playerPos.x, playerPos.z, player, conn);
 
-        ScenarioSetup.Run(NetworkPanel.instance.GetSelectedScenarioChoice(), conn, playerGameObject);
+        ScenarioSetup.Run(NetworkPanel.instance.GetSelectedScenarioChoice(), conn, player);
 
         return playerGameObject;
     }
 
-    public GameObject SpawnCombatRobotWithClientAuthority(NetworkConnection conn, int x, int z, PlayerController player)
+    [Server]
+    public GameObject SpawnAI(string name)
     {
-        return SpawnObjectWithClientAuthority(conn, combatRobotPrefab, x, z, player);
-    }
+        var aiPos = worldBuilder.GetNextPlayerPosition();
 
-    public GameObject SpawnHarvesterRobotWithClientAuthority(NetworkConnection conn, int x, int z, PlayerController player)
-    {
-        return SpawnObjectWithClientAuthority(conn, harvesterRobotPrefab, x, z, player);
-    }
+        GameObject aiPlayerGO = SpawnObject(playerPrefab, aiPos.x, aiPos.z);
 
-    public GameObject SpawnTransporterRobotWithClientAuthority(NetworkConnection conn, int x, int z, PlayerController player)
-    {
-        return SpawnObjectWithClientAuthority(conn, transporterRobotPrefab, x, z, player);
-    }
+        PlayerController player = aiPlayerGO.GetComponent<PlayerController>();
+        player.connectionId = name;
+        player.SetColor(playerColorManager.GetNextColor());
 
-    public GameObject SpawnStorageRobotWithClientAuthority(NetworkConnection conn, int x, int z, PlayerController player)
-    {
-        return SpawnObjectWithClientAuthority(conn, storageRobotPrefab, x, z, player);
-    }
+        SpawnObject(cityPrefab, aiPos.x, aiPos.z, player);
 
-    public GameObject SpawnPurgeRobotWithClientAuthority(NetworkConnection conn, int x, int z, PlayerController player)
-    {
-        return SpawnObjectWithClientAuthority(conn, purgeRobotPrefab, x, z, player);
-    }
+        ScenarioSetup.Run(NetworkPanel.instance.GetSelectedScenarioChoice(), null, player); // A bit dirty atm, sending in the hosting players connection for AIs for spawning.
 
-    // [Server] enforced with inline code check
-    private GameObject SpawnObjectWithClientAuthority(NetworkConnection conn, GameObject prefab, int x, int z, PlayerController player)
-    {
-        if (!IsServerOrDemo())
-            return null;
-
-        GameObject newGameObject = Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
-
-        if (worldParent != null)
-            newGameObject.transform.parent = worldParent;
-
-        var ownedObject = newGameObject.GetComponent<OwnedNetworkBehaviour>();
-        if (ownedObject != null)
-            ownedObject.SetOwner(player);
-
-        /* NOTE: Always set properties before spawning object, if not there will be a delay before all clients get the values. */
-        if (NetworkServer.active)
-            NetworkServer.SpawnWithClientAuthority(newGameObject, conn);
-        else
-            Debug.LogWarning("NetworkServer not active");
-
-        player.AddOwnedGameObject(newGameObject);
-
-        return newGameObject;
+        return aiPlayerGO;
     }
 
     // [Server] enforced with inline code check
@@ -216,23 +183,52 @@ public class WorldController : NetworkBehaviour
             throw new Exception("Not prefab found for inventory item " + item);
     }
 
+    public GameObject SpawnObjectWithClientAuthority(GameObject prefab, int x, int z, PlayerController owner)
+    {
+        return SpawnObject(prefab, x, z, owner, owner.connectionToClient);
+    }
+
+    /// <summary>
+    /// All-doing method to spawn objects
+    /// </summary>
+    /// <param name="prefab"></param>
+    /// <param name="x"></param>
+    /// <param name="z"></param>
+    /// <param name="owner">If given the object will be owned by an Player or AI</param>
+    /// <param name="conn">If given this is a human controlled player</param>
+    /// <returns></returns>
     // [Server] enforced with inline code check
-    public GameObject SpawnObject(GameObject prefab, int x, int z)
+    public GameObject SpawnObject(GameObject prefab, int x, int z, PlayerController owner = null, NetworkConnection conn = null)
     {
         if (!IsServerOrDemo())
             return null;
 
-        GameObject newGameObject = Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
+        GameObject newGO = Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
 
         if (worldParent != null)
-            newGameObject.transform.parent = worldParent;
+            newGO.transform.parent = worldParent;
+
+        if (owner != null)
+        {
+            var ownedObject = newGO.GetComponent<OwnedNetworkBehaviour>();
+            if (ownedObject != null)
+            {
+                ownedObject.SetOwner(owner);
+                owner.AddOwnedGameObject(newGO);
+            }
+            else
+                Debug.LogError("player parameter was given, but for a GameObject created from a prefab that is not supposed to be owned.");
+        }
 
         /* NOTE: Always set properties before spawning object, if not there will be a delay before all clients get the values. */
+        if (conn != null)
+            NetworkServer.SpawnWithClientAuthority(newGO, conn);
+        else if (NetworkServer.active)
+            NetworkServer.Spawn(newGO);
+        else
+            Debug.LogWarning("NetworkServer not active");
 
-        if (NetworkServer.active)
-            NetworkServer.Spawn(newGameObject);
-
-        return newGameObject;
+        return newGO;
     }
 
     /// <summary>
