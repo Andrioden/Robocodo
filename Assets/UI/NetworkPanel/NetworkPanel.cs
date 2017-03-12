@@ -15,6 +15,8 @@ public class NetworkPanel : MonoBehaviour
     public GameObject mainMenuContainer;
     public Button leaveButton;
     public InputField nickInput;
+    public Text aiCountLabel;
+    public Slider aiCountSlider;
     public Dropdown gameModeDropdown;
     public Button hostLanButton;
     public Button joinLanButton;
@@ -59,6 +61,10 @@ public class NetworkPanel : MonoBehaviour
         gameModeDropdown.value = (int)PlayerSettings.Game_ScenarioChoice;
         MMGameSizeField.text = PlayerSettings.Game_Players.ToString();
 
+        aiCountSlider.onValueChanged.RemoveAllListeners();
+        aiCountSlider.onValueChanged.AddListener(OnAiCountSliderChange);
+        OnAiCountSliderChange(aiCountSlider.value);
+
         hostLanButton.onClick.RemoveAllListeners();
         hostLanButton.onClick.AddListener(LAN_OnHostClick);
 
@@ -83,6 +89,11 @@ public class NetworkPanel : MonoBehaviour
     public Scenario GetSelectedScenarioChoice()
     {
         return (Scenario)gameModeDropdown.value;
+    }
+
+    private void OnAiCountSliderChange(float newValue)
+    {
+        aiCountLabel.text = "AIs: " + (int)newValue;
     }
 
     private void LAN_OnHostClick()

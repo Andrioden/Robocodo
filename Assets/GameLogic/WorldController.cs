@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine.Networking;
 using Assets.GameLogic;
+using Robocodo.AndreAI;
 
 public class WorldController : NetworkBehaviour
 {
@@ -137,17 +138,21 @@ public class WorldController : NetworkBehaviour
     [Server]
     public GameObject SpawnAI(string name)
     {
+        Debug.Log("Spawning AI: " + name);
+
         var aiPos = worldBuilder.GetNextPlayerPosition();
 
         GameObject aiPlayerGO = SpawnObject(playerPrefab, aiPos.x, aiPos.z);
 
         PlayerController player = aiPlayerGO.GetComponent<PlayerController>();
-        player.connectionId = name;
+        player.connectionId = name.Replace(" ", "_");
         player.SetColor(playerColorManager.GetNextColor());
 
         SpawnObject(cityPrefab, aiPos.x, aiPos.z, player);
 
         ScenarioSetup.Run(NetworkPanel.instance.GetSelectedScenarioChoice(), null, player); // A bit dirty atm, sending in the hosting players connection for AIs for spawning.
+
+        aiPlayerGO.AddComponent<AndreAI>();
 
         return aiPlayerGO;
     }

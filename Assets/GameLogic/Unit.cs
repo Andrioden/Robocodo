@@ -84,7 +84,7 @@ public abstract class Unit : OwnedNetworkBehaviour
         else if (posValue < homeValue)
             return 1;
         else
-            throw new Exception("Should not call this method withot a value difference");
+            throw new Exception("Should not call this method without a value difference");
     }
 
     private void SanityCheckIsWholeNumber(string friendlyName, float number)

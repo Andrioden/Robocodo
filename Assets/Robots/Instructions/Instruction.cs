@@ -18,4 +18,10 @@ public abstract class Instruction
     public abstract string Serialize();
     // Requires static     Deserialize()
     // Requires static     IsValid()
+
+    public override string ToString()
+    {
+        return Serialize();
+    }
+
 }

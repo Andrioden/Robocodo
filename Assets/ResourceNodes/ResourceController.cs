@@ -68,4 +68,10 @@ public class ResourceController : NetworkBehaviour, IClickable
 
         physicalTransform.localScale = new Vector3(originalTransformScale.x * sideScaleFactor, originalTransformScale.y * sideScaleFactor, originalTransformScale.z * sideScaleFactor);
     }
+
+    public override string ToString()
+    {
+        return string.Format("{0},{1}: {2} ", transform.position.x, transform.position.z, GetType());
+    }
+
 }

@@ -36,6 +36,7 @@ public class PlayerController : NetworkBehaviour
     public bool hasLost = false;
 
     private List<GameObject> ownedGameObjects = new List<GameObject>();
+    public List<GameObject> OwnedGameObjects { get { return ownedGameObjects; } }
 
     private TechnologyTree techTree;
     public TechnologyTree TechTree { get { return techTree; } }
@@ -70,7 +71,12 @@ public class PlayerController : NetworkBehaviour
     public void ShowPopupForOwner(string text, Vector3 position, TextPopup.ColorType colorType)
     {
         if (isServer)
-            TargetShowPopup(connectionToClient, text, position, colorType.Color());
+        {
+            if (connectionToClient == null) // TODO: This is a temp solution to get AI feedback on player screen
+                TextPopupManager.instance.ShowPopupGeneric(connectionId + ": " + text, position, colorType.Color());
+            else
+                TargetShowPopup(connectionToClient, text, position, colorType.Color());
+        }
         else
             TextPopupManager.instance.ShowPopupGeneric(text, position, colorType.Color());
     }
