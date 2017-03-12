@@ -256,7 +256,7 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
         foreach (TileInfection ti in InfectionManager.instance.TileInfections)
         {
             double distance = MathUtils.Distance(ti.X, ti.Z, X, Z);
-            distanceAdjustedInfectionImpact += Math.Min(Settings.World_Infection_MaxInfectionImpactPerTile, ti.Infection / Math.Pow(distance, 3));
+            distanceAdjustedInfectionImpact += Math.Min(Settings.World_Infection_MaxCityInfectionImpactPerTile, ti.Infection / Math.Pow(distance, 3));
         }
 
         return Math.Round(distanceAdjustedInfectionImpact * 100 / Settings.World_Infection_InfectionImpactLoss, 1);

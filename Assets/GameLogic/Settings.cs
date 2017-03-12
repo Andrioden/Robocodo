@@ -17,10 +17,9 @@
     public static float World_FoodNoiseRangeFrom = 0.90f;
     public static float World_FoodNoiseRangeTo = 1.00f;
 
-    public static int World_Infection_SpreadThreshold = 5;
-    public static int World_Infection_SpreadDistance = 2;
-    public static double World_Infection_GrowthPerTickPerTilePer100Infection = 0.13;
-    public static double World_Infection_MaxInfectionImpactPerTile = 1.3;
+    public static int World_Infection_SpreadDistance = 1;
+    public static double World_Infection_GrowthPerTickPerTile = 0.12;
+    public static double World_Infection_MaxCityInfectionImpactPerTile = 1.3;
     public static int World_Infection_InfectionImpactLoss = 100;
 
     public static float World_ScavengerMaxCount = 10;

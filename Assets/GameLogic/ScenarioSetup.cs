@@ -184,7 +184,7 @@ public static class ScenarioSetup
         wc.SpawnPurgeRobotWithClientAuthority(conn, newPlayer.City.X, newPlayer.City.Z, newPlayer);
 
         foreach (Coordinate coord in wc.worldBuilder.GetCoordinatesNear(newPlayer.City.X, newPlayer.City.Z, 1))
-            InfectionManager.instance.IncreaseOrAddTileInfection(coord.x, coord.z, 20);
+            InfectionManager.instance.IncreaseTileInfection(coord.x, coord.z, 20);
     }
 
     private static void Test_InfectionVictory(NetworkConnection conn, GameObject playerGO)
@@ -198,7 +198,7 @@ public static class ScenarioSetup
             new Instruction_Purge()
         });
 
-        InfectionManager.instance.IncreaseOrAddTileInfection(newPlayer.City.X + 1, newPlayer.City.Z, 20);
+        InfectionManager.instance.IncreaseTileInfection(newPlayer.City.X + 1, newPlayer.City.Z, 20);
     }
 
     private static void AddCopper(CityController city, int amount)
