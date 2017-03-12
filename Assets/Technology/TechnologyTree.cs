@@ -32,12 +32,12 @@ public class TechnologyTree : NetworkBehaviour
         technologies[3].AddProgress(technologies[3].cost);
 
         if (isServer)
-            WorldTickController.instance.OnTick += Tick;
+            WorldTickController.instance.OnTick += ContinueResearch;
     }
 
     private void OnDestroy()
     {
-        WorldTickController.instance.OnTick -= Tick;
+        WorldTickController.instance.OnTick -= ContinueResearch;
     }
 
     public void Initialize(PlayerController player)
@@ -46,20 +46,20 @@ public class TechnologyTree : NetworkBehaviour
     }
 
     [Server]
-    private void Tick()
+    private void ContinueResearch()
     {
-        if (activeResearch != null)
-        {
-            int scienceEarned = (int)(Settings.City_Science_PerPopulationPerTick * player.City.PopulationManager.Population);
-            AddProgress(activeResearch, scienceEarned);
-        }
+        int scienceEarned = (int)(Settings.City_Science_PerPopulationPerTick * player.City.PopulationManager.Population);
+        AddProgressToActiveResearch(scienceEarned);
     }
 
     [Server]
-    private void AddProgress(Technology tech, int addedProgress)
+    public void AddProgressToActiveResearch(int addedProgress)
     {
-        tech.AddProgress(addedProgress);
-        TargetSetProgress(player.connectionToClient, activeResearch.id, activeResearch.Progress);
+        if (activeResearch != null)
+        {
+            activeResearch.AddProgress(addedProgress);
+            TargetSetProgress(player.connectionToClient, activeResearch.id, activeResearch.Progress);
+        }
     }
 
     [TargetRpc]

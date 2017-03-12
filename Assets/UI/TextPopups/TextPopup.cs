@@ -8,7 +8,6 @@ public class TextPopup : MonoBehaviour
     public Text textComponent;
 
     private string DEFAULT_VALUE = "TEXT MISSING";
-    private Vector3 screenPosition;
     private Vector3 worldPosition;
 
     private void Awake()

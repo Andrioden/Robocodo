@@ -153,14 +153,11 @@ public class InfectionManager : NetworkBehaviour
     }
 
     /// <summary>
-    /// Returns true if tile after this reduction has no infection left
+    /// Returns the remaining tile infection value after decreasing
     /// </summary>
     [Server]
-    public bool DecreaseTileInfection(RobotController robot, int maxReduction)
+    public double DecreaseTileInfection(int x, int z, PlayerController player , int maxReduction)
     {
-        int x = (int)robot.x;
-        int z = (int)robot.z;
-
         int index = IndexOfTileInfection(x, z);
         if (index != -1)
         {
@@ -170,12 +167,12 @@ public class InfectionManager : NetworkBehaviour
 
             _AllowAdjacentTilesToSpreadAgain(x, z);
 
-            UpdatePlayerContribution(robot.Owner, tileInfections[index], reduction);
+            UpdatePlayerContribution(player, tileInfections[index], reduction);
 
-            return newTileInfectionValue <= 0;
+            return newTileInfectionValue;
         }
         else // Not found
-            return true;
+            return 0;
     }
 
     [Server]
@@ -201,8 +198,19 @@ public class InfectionManager : NetworkBehaviour
         player.infectionContribution += contribution;
     }
 
+    [Server]
+    public double GetTileInfection(int x, int z)
+    {
+        int index = IndexOfTileInfection(x, z);
+        if (index != -1)
+            return tileInfections[index].Infection;
+        else
+            return 0;
+    }
+
     /// <summary>
-    /// We have to write our own method, because the SyncListStruct messes up normal IndexOf().
+    /// We have to write our own method, because the SyncListStruct messes up normal IndexOf(). 
+    /// Also keep in mind TileInfection is an struct, so an reference of a struct reference cant normaly be passed around.
     /// </summary>
     [Server]
     private int IndexOfTileInfection(int x, int z)
