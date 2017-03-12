@@ -53,15 +53,15 @@ public abstract class AI : MonoBehaviour
                 for (int i = 0; i < gridPos.x - previousX; i++)
                     instructionPath.Add(new Instruction_Move(MoveDirection.Right));
 
-            else if (gridPos.x < previousX)
+            if (gridPos.x < previousX)
                 for (int i = 0; i < previousX - gridPos.x; i++)
                     instructionPath.Add(new Instruction_Move(MoveDirection.Left));
 
-            else if (gridPos.y > previousZ)
+            if (gridPos.y > previousZ)
                 for (int i = 0; i < gridPos.y - previousZ; i++)
                     instructionPath.Add(new Instruction_Move(MoveDirection.Up));
 
-            else if (gridPos.y < previousZ)
+            if (gridPos.y < previousZ)
                 for (int i = 0; i < previousZ - gridPos.y; i++)
                     instructionPath.Add(new Instruction_Move(MoveDirection.Down));
 
