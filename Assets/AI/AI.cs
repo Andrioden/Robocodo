@@ -27,6 +27,11 @@ public abstract class AI : MonoBehaviour
         StartAI();
     }
 
+    protected List<T> GetOwnedRobot<T>(bool isStarted) where T : RobotController
+    {
+        return GetOwned<T>().Where(r => r.IsStarted == isStarted).ToList();
+    }
+
     protected List<T> GetOwned<T>()
     {
         return player.OwnedGameObjects
@@ -102,7 +107,12 @@ public abstract class AI : MonoBehaviour
 
     protected void Log(string message)
     {
-        Debug.Log(string.Format("{0}: {1}", player.name, message));
+        Debug.Log(string.Format("[AI] {0}: {1}", player.name, message));
+    }
+
+    protected void LogFormat(string message, params object[] args)
+    {
+        Debug.LogFormat(string.Format("[AI] {0}: {1}", player.name, message), args);
     }
 
 }

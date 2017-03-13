@@ -13,4 +13,9 @@ public static class IEnumerableExtensions
         return source.Skip(Math.Max(0, source.Count() - N));
     }
 
+    public static T TakeRandom<T>(this IEnumerable<T> source)
+    {
+        return source.ToList().TakeRandom();
+    }
+
 }

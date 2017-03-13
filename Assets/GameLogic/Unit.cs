@@ -36,13 +36,13 @@ public abstract class Unit : OwnedNetworkBehaviour
             return ChangePosition(x - 1, z);
         else if (direction == MoveDirection.Random)
         {
-            MoveDirection randomDirection = Utils.Random(new List<MoveDirection>
+            MoveDirection randomDirection = new List<MoveDirection>
             {
                 MoveDirection.Up,
                 MoveDirection.Down,
                 MoveDirection.Right,
                 MoveDirection.Left
-            });
+            }.TakeRandom();
             return Move(randomDirection);
         }
         else

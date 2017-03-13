@@ -138,7 +138,7 @@ public class WorldBuilder
         if (openCoords.Count == 0)
             throw new Exception(string.Format("Could not find an open coordinate near {0} with minDistance {1} and maxDistance {2}.", coord, minDistance, maxDistance));
 
-        return Utils.Random(openCoords);
+        return openCoords.TakeRandom();
     }
 
 

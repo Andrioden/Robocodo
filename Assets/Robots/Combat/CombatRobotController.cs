@@ -91,7 +91,7 @@ public class CombatRobotController : RobotController
         rightWeaponAnimator.Play("Shoot");
     }
 
-    IEnumerator PlayDeactivateAnimation(float delay)
+    private IEnumerator PlayDeactivateAnimation(float delay)
     {
         yield return new WaitForSeconds(delay);
         bodyAnimator.Play("Deactivate");

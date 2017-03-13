@@ -8,6 +8,8 @@ public class ResourceController : NetworkBehaviour, IClickable
 
     [SyncVar(hook = "OnRemainingItemsUpdated")]
     protected int remainingItems;
+    public int RemainingItems { get { return remainingItems; } }
+
     [SyncVar]
     public string resourceType;
 
@@ -20,7 +22,7 @@ public class ResourceController : NetworkBehaviour, IClickable
     {
         originalTransformScale = new Vector3(physicalTransform.localScale.x, physicalTransform.localScale.y, physicalTransform.localScale.z);
 
-        remainingItems = Utils.RandomInt(Settings.Resource_MinItemsPerNode, Settings.Resource_MaxItemsPerNode);
+        remainingItems = Utils.RandomInt(Settings.Resource_ItemsPerNode_Min, Settings.Resource_ItemsPerNode_Max);
         UpdateTransformSize();
     }
 
@@ -46,12 +48,6 @@ public class ResourceController : NetworkBehaviour, IClickable
         UpdateTransformSize();
     }
 
-    [Server]
-    public int GetRemainingResourceItems()
-    {
-        return remainingItems;
-    }
-
     [Client]
     private void OnRemainingItemsUpdated(int newRemainingItems)
     {
@@ -62,7 +58,7 @@ public class ResourceController : NetworkBehaviour, IClickable
     [Client]
     protected void UpdateTransformSize()
     {
-        double scalePercentage = MathUtils.LinearConversionDouble(0, Settings.Resource_MaxItemsPerNode, 0, 100, remainingItems);
+        double scalePercentage = MathUtils.LinearConversionDouble(0, Settings.Resource_ItemsPerNode_Max, 0, 100, remainingItems);
         double volumeScaleFactor = scalePercentage / 100.0;
         float sideScaleFactor = (float)MathUtils.CubicRoot(volumeScaleFactor);
 

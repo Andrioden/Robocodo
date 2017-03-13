@@ -757,7 +757,6 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             willReprogramWhenHome = false;
             isReprogrammingRobot = false;
 
-            StopRobot();
             currentInstructionIndex = 0;
             currentInstructionIndexIsValid = true;
             mainLoopIterationCount = 0;
@@ -766,6 +765,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             modules.ForEach(module => module.Uninstall(false));
             modules.Clear();
             CacheAllowedInstructions();
+            StopRobot();
 
             Owner.ShowPopupForOwner("MEMORY CLEARED!", transform.position, TextPopup.ColorType.DEFAULT);
         }

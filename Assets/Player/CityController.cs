@@ -57,6 +57,11 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
             SetMaterialColor();
     }
 
+    private void OnDestroy()
+    {
+        WorldTickController.instance.OnTick -= Tick;
+    }
+
     private void SetMaterialColor()
     {
         if (string.IsNullOrEmpty(Owner.hexColor))

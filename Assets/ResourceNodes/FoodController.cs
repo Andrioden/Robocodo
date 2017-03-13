@@ -5,7 +5,7 @@ using UnityEngine;
 public class FoodController : ResourceController
 {
 
-    private double growthPerTickAverage;
+    private double growthPerTick;
     private double accumulatedGrowth = 0;
 
     // Use this for initialization
@@ -13,7 +13,7 @@ public class FoodController : ResourceController
     {
         base.Start();
 
-        growthPerTickAverage = Utils.RandomDouble(0.1, 2.0);
+        growthPerTick = Utils.RandomDouble(Settings.Resource_Food_GrowthPerTick_Min, Settings.Resource_Food_GrowthPerTick_Max);
 
         WorldTickController.instance.OnTick += Grow;
     }
@@ -25,11 +25,11 @@ public class FoodController : ResourceController
 
     private void Grow()
     {
-        accumulatedGrowth += growthPerTickAverage;
+        accumulatedGrowth += growthPerTick;
         if (accumulatedGrowth >= 1)
         {
             int growth = (int)accumulatedGrowth; //Floors it
-            remainingItems = Mathf.Min(Settings.Resource_MaxItemsPerNode, remainingItems + growth);
+            remainingItems = Mathf.Min(Settings.Resource_ItemsPerNode_Max, remainingItems + growth);
             accumulatedGrowth -= growth;
 
             UpdateTransformSize();

@@ -9,7 +9,7 @@ public static class Utils
 {
     // Reusing a static random to achive uniformity (ref: http://stackoverflow.com/questions/2019417/access-random-item-in-list)
     // The point in my (André) understanding is that we create a random instance and uses the seed to get a series of random numbers, which is more uniform (spread out) than recreating the random class instance
-    private static Random rnd = new Random();
+    public static Random rnd = new Random();
 
     public static void Shuffle<T>(List<T> list)
     {
@@ -22,15 +22,6 @@ public static class Utils
             list[k] = list[n];
             list[n] = value;
         }
-    }
-
-    public static T Random<T>(List<T> list)
-    {
-        if (list.Count == 0)
-            throw new Exception("About to get random element of empty list");
-
-        int r = rnd.Next(list.Count);
-        return list[r];
     }
 
     public static int RandomInt(int min, int max)

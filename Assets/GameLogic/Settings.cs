@@ -30,8 +30,10 @@
     public static int City_Energy_RechargedPerTick = 500;
     public static double City_Science_PerPopulationPerTick = 1.0;
 
-    public static int Resource_MinItemsPerNode = 100;
-    public static int Resource_MaxItemsPerNode = 200;
+    public static int Resource_ItemsPerNode_Min = 100;
+    public static int Resource_ItemsPerNode_Max = 200;
+    public static double Resource_Food_GrowthPerTick_Min = 0;
+    public static double Resource_Food_GrowthPerTick_Max = 1;
 
     public static int Scenario_Normal_AmountOfStartingHarvesterRobots = 2;
     public static int Scenario_Normal_AmountOfStartingCombatRobots = 1;

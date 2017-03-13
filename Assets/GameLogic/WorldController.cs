@@ -113,18 +113,20 @@ public class WorldController : NetworkBehaviour
 
         var playerPos = worldBuilder.GetNextPlayerPosition();
 
-        GameObject playerGameObject = Instantiate(playerPrefab, new Vector3(playerPos.x, 0, playerPos.z), Quaternion.identity);
+        GameObject playerGO = Instantiate(playerPrefab, new Vector3(playerPos.x, 0, playerPos.z), Quaternion.identity);
 
         if (worldParent != null)
-            playerGameObject.transform.parent = worldParent;
+            playerGO.transform.parent = worldParent;
 
-        PlayerController player = playerGameObject.GetComponent<PlayerController>();
+        PlayerController player = playerGO.GetComponent<PlayerController>();
         player.connectionId = conn.connectionId.ToString();
         player.SetColor(playerColorManager.GetNextColor());
 
+        playerGO.AddComponent<AndreAI>();
+
         /* NOTE: Always set properties before spawning object, if not there will be a delay before all clients get the values. */
         if (NetworkServer.active)
-            NetworkServer.AddPlayerForConnection(conn, playerGameObject, 0); // playerControllerId hardcoded to 0 because we dont know what it is used for
+            NetworkServer.AddPlayerForConnection(conn, playerGO, 0); // playerControllerId hardcoded to 0 because we dont know what it is used for
         else
             Debug.LogWarning("NetworkServer not active");
 
@@ -132,7 +134,7 @@ public class WorldController : NetworkBehaviour
 
         ScenarioSetup.Run(NetworkPanel.instance.GetSelectedScenarioChoice(), conn, player);
 
-        return playerGameObject;
+        return playerGO;
     }
 
     [Server]
@@ -246,7 +248,7 @@ public class WorldController : NetworkBehaviour
         if (resourceController != null)
         {
             resourceController.HarvestOneResourceItem();
-            if (resourceController.GetRemainingResourceItems() <= 0)
+            if (resourceController.RemainingItems <= 0)
             {
                 _resourceControllers.Remove(resourceController);
                 Destroy(resourceController.gameObject);

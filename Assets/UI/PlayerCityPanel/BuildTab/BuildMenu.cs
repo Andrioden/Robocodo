@@ -40,12 +40,13 @@ public class BuildMenu : MonoBehaviour
 
     internal void IndicateSuccessfulPurchase(string robotName)
     {
-        BuildableItem buildableItem = GetComponentsInChildren<BuildableItem>().Where(x => x.ID == robotName).FirstOrDefault();
+        Debug.LogWarning("Method disabled");
+        //BuildableItem buildableItem = GetComponentsInChildren<BuildableItem>().Where(x => x.ID == robotName).FirstOrDefault();
 
-        if (_itemIDCoroutinePairs.ContainsKey(buildableItem.ID))
-            StopCoroutine(_itemIDCoroutinePairs[buildableItem.ID]);
+        //if (_itemIDCoroutinePairs.ContainsKey(buildableItem.ID))
+        //    StopCoroutine(_itemIDCoroutinePairs[buildableItem.ID]);
 
-        _itemIDCoroutinePairs[buildableItem.ID] = StartCoroutine(ChangeNameLabelOfBuildableItemTemporary(buildableItem, " BUILT"));
+        //_itemIDCoroutinePairs[buildableItem.ID] = StartCoroutine(ChangeNameLabelOfBuildableItemTemporary(buildableItem, " BUILT"));
     }
 
     private IEnumerator ChangeNameLabelOfBuildableItemTemporary(BuildableItem buildableItem, string textToAppend)
