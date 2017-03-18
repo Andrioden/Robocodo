@@ -13,7 +13,7 @@ public class NetworkPanel : MonoBehaviour
     private CustomNetworkManager networkManager;
 
     public GameObject mainMenuContainer;
-    public Button leaveButton;
+    public Button[] leaveButtons;
     public InputField nickInput;
     public Text aiCountLabel;
     public Slider aiCountSlider;
@@ -71,8 +71,11 @@ public class NetworkPanel : MonoBehaviour
         joinLanButton.onClick.RemoveAllListeners();
         joinLanButton.onClick.AddListener(LAN_OnJoinClick);
 
-        leaveButton.onClick.RemoveAllListeners();
-        leaveButton.onClick.AddListener(OnQuitNetworkGameCLick);
+        foreach (Button leaveButton in leaveButtons)
+        {
+            leaveButton.onClick.RemoveAllListeners();
+            leaveButton.onClick.AddListener(OnQuitNetworkGameCLick);
+        }
 
         hostMMutton.onClick.RemoveAllListeners();
         hostMMutton.onClick.AddListener(MM_OnHostClick);
@@ -83,7 +86,7 @@ public class NetworkPanel : MonoBehaviour
         exitAppButton.onClick.RemoveAllListeners();
         exitAppButton.onClick.AddListener(OnExitAppClick);
 
-        ActivateNetworkLobby();
+        ActivateMainMenu();
     }
 
     public Scenario GetSelectedScenarioChoice()
@@ -197,7 +200,7 @@ public class NetworkPanel : MonoBehaviour
 
         GameObject.Find("ClientGameObjects").transform.DestroyChildren();
 
-        ActivateNetworkLobby();
+        ActivateMainMenu();
     }
 
     private void OnExitAppClick()
@@ -223,11 +226,10 @@ public class NetworkPanel : MonoBehaviour
     private void ActivateIngame()
     {
         SetMainMenuActive(false);
-
         SavePlayerSettings();
     }
 
-    private void ActivateNetworkLobby()
+    private void ActivateMainMenu()
     {
         SetMainMenuActive(true);
         SetIngameUIActive(false);
@@ -236,7 +238,8 @@ public class NetworkPanel : MonoBehaviour
     private void SetMainMenuActive(bool action)
     {
         mainMenuContainer.gameObject.SetActive(action);
-        leaveButton.gameObject.SetActive(!action);
+        foreach (Button leaveButton in leaveButtons)
+            leaveButton.gameObject.SetActive(!action);
     }
 
     public void SetIngameUIActive(bool active)

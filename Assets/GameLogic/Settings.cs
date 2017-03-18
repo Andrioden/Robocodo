@@ -47,4 +47,5 @@
     public static int Robot_Purge_InfectionReducedPerTick = 10;
 
     public static bool GUI_EnableEdgeScrolling = false;
+    public static bool GUI_EnableGameLobby = false;
 }

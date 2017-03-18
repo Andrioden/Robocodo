@@ -5,7 +5,6 @@ using UnityEngine;
 public class PauseDialog : MonoBehaviour
 {
     public GameObject panel;
-
     public static PauseDialog instance;
 
     private void Awake()
