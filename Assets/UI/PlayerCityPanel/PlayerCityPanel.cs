@@ -17,6 +17,7 @@ public class PlayerCityPanel : MonoBehaviour
     private CityController city;
 
     public static PlayerCityPanel instance;
+
     private void Awake()
     {
         if (instance == null)
@@ -86,30 +87,45 @@ public class PlayerCityPanel : MonoBehaviour
     private void BuyHarvesterRobot()
     {
         if (city.CanAffordFlashIfNot(HarvesterRobotController.Settings_cost()))
+        {
             city.CmdBuyHarvesterRobot();
+            instance.buildMenu.IndicateSuccessfulPurchase(HarvesterRobotController.Settings_name);
+        }
     }
 
     private void BuyCombatRobot()
     {
         if (city.CanAffordFlashIfNot(CombatRobotController.Settings_cost()))
+        {
             city.CmdBuyCombatRobot();
+            instance.buildMenu.IndicateSuccessfulPurchase(CombatRobotController.Settings_name);
+        }
     }
 
     private void BuyTransporterRobot()
     {
         if (city.CanAffordFlashIfNot(TransporterRobotController.Settings_cost()))
+        {
             city.CmdBuyTransporterRobot();
+            instance.buildMenu.IndicateSuccessfulPurchase(TransporterRobotController.Settings_name);
+        }
     }
 
     private void BuyStorageRobot()
     {
         if (city.CanAffordFlashIfNot(StorageRobotController.Settings_cost()))
+        {
             city.CmdBuyStorageRobot();
+            instance.buildMenu.IndicateSuccessfulPurchase(StorageRobotController.Settings_name);
+        }
     }
 
     private void BuyPurgeRobot()
     {
         if (city.CanAffordFlashIfNot(PurgeRobotController.Settings_cost()))
+        {
             city.CmdBuyPurgeRobot();
+            instance.buildMenu.IndicateSuccessfulPurchase(PurgeRobotController.Settings_name);
+        }
     }
 }

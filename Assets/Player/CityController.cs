@@ -113,7 +113,6 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
             GameObject prefab = WorldController.instance.harvesterRobotPrefab;
             WorldController.instance.SpawnObjectWithClientAuthority(prefab, X, Z, Owner);
             RemoveResources(HarvesterRobotController.Settings_cost());
-            TargetIndicateSuccessfulPurchase(Owner.connectionToClient, HarvesterRobotController.Settings_name);
         }
     }
 
@@ -126,7 +125,6 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
             GameObject prefab = WorldController.instance.combatRobotPrefab;
             WorldController.instance.SpawnObjectWithClientAuthority(prefab, X, Z, Owner);
             RemoveResources(CombatRobotController.Settings_cost());
-            TargetIndicateSuccessfulPurchase(Owner.connectionToClient, CombatRobotController.Settings_name);
         }
     }
 
@@ -139,7 +137,6 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
             GameObject prefab = WorldController.instance.transporterRobotPrefab;
             WorldController.instance.SpawnObjectWithClientAuthority(prefab, X, Z, Owner);
             RemoveResources(TransporterRobotController.Settings_cost());
-            TargetIndicateSuccessfulPurchase(Owner.connectionToClient, TransporterRobotController.Settings_name);
         }
     }
 
@@ -152,7 +149,6 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
             GameObject prefab = WorldController.instance.storageRobotPrefab;
             WorldController.instance.SpawnObjectWithClientAuthority(prefab, X, Z, Owner);
             RemoveResources(StorageRobotController.Settings_cost());
-            TargetIndicateSuccessfulPurchase(Owner.connectionToClient, StorageRobotController.Settings_name);
         }
     }
 
@@ -165,7 +161,6 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
             GameObject prefab = WorldController.instance.purgeRobotPrefab;
             WorldController.instance.SpawnObjectWithClientAuthority(prefab, X, Z, Owner);
             RemoveResources(PurgeRobotController.Settings_cost());
-            TargetIndicateSuccessfulPurchase(Owner.connectionToClient, PurgeRobotController.Settings_name);
         }
     }
 
@@ -250,12 +245,6 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
         garage.Remove(robot);
         if (OnRobotAddedToGarage != null)
             OnRobotRemovedFromGarage(robot);
-    }
-
-    [TargetRpc]
-    private void TargetIndicateSuccessfulPurchase(NetworkConnection target, string robotTypeName)
-    {
-        PlayerCityPanel.instance.buildMenu.IndicateSuccessfulPurchase(robotTypeName);
     }
 
     [Client]
