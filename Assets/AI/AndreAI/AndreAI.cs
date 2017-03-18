@@ -45,7 +45,7 @@ namespace Robocodo.AndreAI
     /// </summary>
     public partial class AndreAI : AI
     {
-        public static int Setting_DelayedStart_Min = 2;
+        public static int Setting_DelayedStart_Min = 2; // Should not be lower than 2, since the game need to initialize a bit before the AI starts. Typical setting Owner on objects.
         public static int Setting_DelayedStart_Max = 3;
         public static int Setting_ThinkingInterval = 2;
 

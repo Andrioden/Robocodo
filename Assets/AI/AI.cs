@@ -10,7 +10,7 @@ public abstract class AI : MonoBehaviour
 
     protected PlayerController player;
 
-    protected static JumpPointParam staticlyCachedJpParam;
+    protected static JumpPointParam _cachedJpParam;
 
     protected abstract void StartAI();
 
@@ -82,21 +82,21 @@ public abstract class AI : MonoBehaviour
     /// </summary>
     private List<GridPos> FindPath(int fromX, int fromZ, int toX, int toZ)
     {
-        CacheJumpPointParam();
+        JumpPointParam jpParam = GetJumpPointParam();
 
         GridPos from = new GridPos(fromX, fromZ);
         GridPos to = new GridPos(toX, toZ);
-        staticlyCachedJpParam.Reset(from, to);
+        jpParam.Reset(from, to);
 
-        List<GridPos> routeFound = JumpPointFinder.FindPath(staticlyCachedJpParam);
+        List<GridPos> routeFound = JumpPointFinder.FindPath(jpParam);
         //var test = JumpPointFinder.GetFullPath(routeFound);
 
         return routeFound;
     }
 
-    private void CacheJumpPointParam()
+    private JumpPointParam GetJumpPointParam()
     {
-        if (staticlyCachedJpParam == null)
+        if (_cachedJpParam == null)
         {
             BaseGrid searchGrid = new StaticGrid(WorldController.instance.Width, WorldController.instance.Height);
 
@@ -104,8 +104,10 @@ public abstract class AI : MonoBehaviour
                 for (int z = 0; z < WorldController.instance.Height; z++)
                     searchGrid.SetWalkableAt(x, z, true);
 
-            staticlyCachedJpParam = new JumpPointParam(searchGrid, false, false);
+            _cachedJpParam = new JumpPointParam(searchGrid, true, false, false);
         }
+
+        return _cachedJpParam;
     }
 
     protected void Log(string message)
