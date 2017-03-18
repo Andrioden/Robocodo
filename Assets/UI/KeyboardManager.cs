@@ -44,11 +44,15 @@ public class KeyboardManager : NetworkBehaviour
     private void PauseOrUnPause()
     {
         if (Time.timeScale == 0) // Is paused
+        {
             timeScale = timeScaleBeforePause;
+            RpcHidePauseDialog();
+        }
         else
         {
             timeScaleBeforePause = Time.timeScale;
             timeScale = 0;
+            RpcShowPauseDialog();
         }
     }
 
@@ -69,5 +73,17 @@ public class KeyboardManager : NetworkBehaviour
     public static void KeyboardLockOff(string arg0 = "")
     {
         KeyboardLock = false;
+    }
+
+    [ClientRpc]
+    private void RpcShowPauseDialog()
+    {
+        PauseDialog.instance.Show();
+    }
+
+    [ClientRpc]
+    private void RpcHidePauseDialog()
+    {
+        PauseDialog.instance.Hide();
     }
 }
