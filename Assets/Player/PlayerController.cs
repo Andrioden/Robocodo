@@ -73,9 +73,14 @@ public class PlayerController : NetworkBehaviour
         if (isServer)
         {
             if (connectionToClient == null) // TODO: This is a temp solution to get AI feedback on player screen
-                TextPopupManager.instance.ShowPopupGeneric(connectionId + ": " + text, position, colorType.Color());
+            {
+                if (Settings.Debug_EnableAiLogging) // Dont put on same if check as connectionToClient
+                    TextPopupManager.instance.ShowPopupGeneric(connectionId + ": " + text, position, colorType.Color());
+            }
             else
+            {
                 TargetShowPopup(connectionToClient, text, position, colorType.Color());
+            }
         }
         else
             TextPopupManager.instance.ShowPopupGeneric(text, position, colorType.Color());
@@ -111,7 +116,7 @@ public class PlayerController : NetworkBehaviour
     [TargetRpc]
     private void TargetLost(NetworkConnection target)
     {
-        StackingRobotsOverhangManager.instance.DestroyAll();
+        StackingRobotsOverhangOverview.instance.DestroyAll();
     }
 
     private void PositionCameraRelativeTo()

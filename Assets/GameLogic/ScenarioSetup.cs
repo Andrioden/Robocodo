@@ -170,6 +170,24 @@ public static class ScenarioSetup
         AddRobot(WorldController.instance.transporterRobotPrefab, player.City.X + 2, player.City.Z, player, conn);
         AddRobot(WorldController.instance.transporterRobotPrefab, player.City.X + 2, player.City.Z, player, conn);
         AddRobot(WorldController.instance.transporterRobotPrefab, player.City.X + 2, player.City.Z, player, conn);
+
+        AddRobot(WorldController.instance.storageRobotPrefab, player.City.X + 2, player.City.Z, player, conn, new List<Instruction>()
+        {
+            new Instruction_Move(MoveDirection.Up),
+            new Instruction_Move(MoveDirection.Down)
+        });
+
+        AddRobot(WorldController.instance.storageRobotPrefab, player.City.X + 2, player.City.Z, player, conn, new List<Instruction>()
+        {
+            new Instruction_Move(MoveDirection.Left),
+            new Instruction_Move(MoveDirection.Right)
+        });
+
+        AddRobot(WorldController.instance.storageRobotPrefab, player.City.X + 2, player.City.Z, player, conn, new List<Instruction>()
+        {
+            new Instruction_Move(MoveDirection.Down),
+            new Instruction_Move(MoveDirection.Up)
+        });
     }
 
     private static void Test_InfectionPurge(NetworkConnection conn, PlayerController player)
@@ -197,9 +215,17 @@ public static class ScenarioSetup
         InfectionManager.instance.IncreaseTileInfection(player.City.X + 1, player.City.Z, 20);
     }
 
-    private static GameObject AddRobot(GameObject prefab, int x, int z, PlayerController owner, NetworkConnection conn)
+    private static GameObject AddRobot(GameObject prefab, int x, int z, PlayerController owner, NetworkConnection conn, List<Instruction> instructions = null)
     {
-        return WorldController.instance.SpawnObject(prefab, x, z, owner, conn);
+        GameObject robotGO = WorldController.instance.SpawnObject(prefab, x, z, owner, conn);
+
+        if (instructions != null)
+        {
+            RobotController robot = robotGO.GetComponent<RobotController>();
+            robot.SetInstructionsAndSyncToOwner(instructions);
+        }
+
+        return robotGO;
     }
 
     private static void AddCopper(CityController city, int amount)

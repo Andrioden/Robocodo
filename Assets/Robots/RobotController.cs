@@ -146,11 +146,6 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
         if (isServer)
             InitDefaultValues();
-
-        if (StackingRobotsOverhangManager.instance == null)
-            throw new Exception("This Start() method should not run before the StackingRobotsOverhangManager instance is instanciated. Is there a loose robot game object in the scene which was not added through WorldController?");
-        else
-            StackingRobotsOverhangManager.instance.RefreshIfOwner(Owner);
     }
 
     // Update is called once per frame
@@ -277,7 +272,6 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         if (Owner != null)
         {
             RobotPanel.instance.Refresh(this);
-            StackingRobotsOverhangManager.instance.RefreshIfOwner(Owner);
         }
     }
 
@@ -311,7 +305,6 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
             //For quicker response when changing from setup mode to running mode in GUI. Will be overridden by server when syncvar is synced.
             isStarted = true;
-            StackingRobotsOverhangManager.instance.Refresh();
         }
     }
 

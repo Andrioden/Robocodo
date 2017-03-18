@@ -13,6 +13,7 @@ public static class PlayerSettings
     public static string Game_Nick = "Andriod";
     public static Scenario Game_ScenarioChoice = Scenario.Normal;
     public static int Game_Players = 2;
+    public static int Game_AIs = 0;
 
     public static string MM_Server = "eu1-mm.unet.unity3d.com";
 

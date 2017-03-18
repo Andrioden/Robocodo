@@ -111,12 +111,14 @@ public abstract class AI : MonoBehaviour
 
     protected void Log(string message)
     {
-        Debug.Log(string.Format("[AI] {0}: {1}", player.name, message));
+        if (Settings.Debug_EnableAiLogging)
+            Debug.Log(string.Format("[AI] {0}: {1}", player.name, message));
     }
 
     protected void LogFormat(string message, params object[] args)
     {
-        Debug.LogFormat(string.Format("[AI] {0}: {1}", player.name, message), args);
+        if (Settings.Debug_EnableAiLogging)
+            Debug.LogFormat(string.Format("[AI] {0}: {1}", player.name, message), args);
     }
 
 }

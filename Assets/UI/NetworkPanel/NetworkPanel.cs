@@ -63,6 +63,7 @@ public class NetworkPanel : MonoBehaviour
 
         aiCountSlider.onValueChanged.RemoveAllListeners();
         aiCountSlider.onValueChanged.AddListener(OnAiCountSliderChange);
+        aiCountSlider.value = PlayerSettings.Game_AIs;
         OnAiCountSliderChange(aiCountSlider.value);
 
         hostLanButton.onClick.RemoveAllListeners();
@@ -248,6 +249,7 @@ public class NetworkPanel : MonoBehaviour
     {
         PlayerSettings.Game_Nick = nickInput.text;
         PlayerSettings.Game_ScenarioChoice = GetSelectedScenarioChoice();
+        PlayerSettings.Game_AIs = (int)aiCountSlider.value;
         //PlayerSettings.Save(); // Not implemented
     }
 }

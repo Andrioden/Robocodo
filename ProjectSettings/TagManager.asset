@@ -6,6 +6,7 @@ TagManager:
   tags:
   - PlayerCity
   - PlayerController
+  - Robot
   layers:
   - Default
   - TransparentFX

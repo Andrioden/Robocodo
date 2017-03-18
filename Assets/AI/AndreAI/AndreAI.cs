@@ -74,7 +74,8 @@ namespace Robocodo.AndreAI
 
         private void Think()
         {
-            HumanCommunicator.ShowPopupForAllHumans("Thinking... ❤", player.transform.position, TextPopup.ColorType.DEFAULT);
+            if (Settings.Debug_EnableAiLogging)
+                HumanCommunicator.ShowPopupForAllHumans("Thinking... ❤", player.transform.position, TextPopup.ColorType.DEFAULT);
             Seek_ActiveFoodHarvesters(SeekingActiveFoodHarvesters, 30);
             Do_ReprogramCompletedHarvesters();
         }

@@ -341,7 +341,6 @@ GameObject:
   - component: {fileID: 4500412511806802}
   - component: {fileID: 95948037705043250}
   - component: {fileID: 65706743087560594}
-  - component: {fileID: 114053694681951688}
   m_Layer: 0
   m_Name: TransportRobotMesh
   m_TagString: Untagged
@@ -1134,17 +1133,6 @@ Light:
   m_BounceIntensity: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
---- !u!114 &114053694681951688
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1888496093035244}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca36d5c5fcc03f343a87eba28fa10e08, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114063112259640764
 MonoBehaviour:
   m_ObjectHideFlags: 1

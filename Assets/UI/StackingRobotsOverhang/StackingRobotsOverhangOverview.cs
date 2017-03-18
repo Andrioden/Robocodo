@@ -4,16 +4,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
-public class StackingRobotsOverhangManager : MonoBehaviour
+public class StackingRobotsOverhangOverview : MonoBehaviour
 {
     public GameObject stackingRobotsOverhangPrefab;
 
-    private PlayerController clientsOwnPlayer;
+    private PlayerController _clientsOwnPlayer;
 
     private GameObject parent;
     private List<GameObject> spawnedGuiObjects = new List<GameObject>();
 
-    public static StackingRobotsOverhangManager instance;
+    private float refreshInterval = 0.3f;
+
+    public static StackingRobotsOverhangOverview instance;
     private void Awake()
     {
         if (instance == null)
@@ -32,6 +34,8 @@ public class StackingRobotsOverhangManager : MonoBehaviour
         parent.transform.SetParentToGO("ClientGameObjects");
 
         WinLoseChecker.instance.OnLost += _ => DestroyAll();
+
+        StartCoroutine(RefreshCoroutine());
     }
 
     public void DestroyAll()
@@ -39,17 +43,19 @@ public class StackingRobotsOverhangManager : MonoBehaviour
         spawnedGuiObjects.ForEach(go => Destroy(go));
     }
 
-    public void RefreshIfOwner(PlayerController owner)
+    private IEnumerator RefreshCoroutine()
     {
-        AttemptToFindPlayer();
-
-        if (clientsOwnPlayer == owner)
+        while (true)
+        {
             Refresh();
+            yield return new WaitForSeconds(refreshInterval);
+        }
     }
 
     public void Refresh()
     {
-        if (!AttemptToFindPlayer())
+        PlayerController clientPlayer = GetClientPlayer();
+        if (clientPlayer == null)
         {
             Debug.Log("Could not find player city, stacking robot GUI will not refresh");
             return;
@@ -58,32 +64,36 @@ public class StackingRobotsOverhangManager : MonoBehaviour
         DestroyAll();
 
         List<RobotController> currentStackCheck = new List<RobotController>();
-        foreach (RobotController robot in FindObjectsOfType<RobotController>().Where(r => r.Owner == clientsOwnPlayer && !r.IsStarted))
+
+        List<RobotController> ownedRobots = GameObject.FindGameObjectsWithTag("Robot").Select(go => go.GetComponent<RobotController>()).Where(r => r.Owner == clientPlayer).ToList();
+        foreach (RobotController robot in ownedRobots.OrderBy(r => r.x).ThenBy(r => r.z))
         {
             if (currentStackCheck.Count == 0 || robot.x == currentStackCheck[0].x && robot.z == currentStackCheck[0].z)
                 currentStackCheck.Add(robot);
             else
             {
-                if (currentStackCheck.Count > 1 || currentStackCheck[0].IsAtPlayerCity()) // Conditions that the current stack should show
-                    SpawnOverhang(currentStackCheck);
+                SpawnOverhangPossibly(currentStackCheck);
                 currentStackCheck.Clear();
+                currentStackCheck.Add(robot);
             }
         }
 
-        if (currentStackCheck.Count > 1 || (currentStackCheck.Count > 0 && currentStackCheck[0].IsAtPlayerCity())) // Conditions that the current stack should show
-            SpawnOverhang(currentStackCheck);
+        SpawnOverhangPossibly(currentStackCheck);
     }
 
-    private bool AttemptToFindPlayer()
+    private PlayerController GetClientPlayer()
     {
-        if (clientsOwnPlayer == null)
-            clientsOwnPlayer = WorldController.instance.FindClientsOwnPlayer();
+        if (_clientsOwnPlayer == null)
+            _clientsOwnPlayer = WorldController.instance.FindClientsOwnPlayer();
 
-        return clientsOwnPlayer != null;
+        return _clientsOwnPlayer;
     }
 
-    private void SpawnOverhang(List<RobotController> robots)
+    private void SpawnOverhangPossibly(List<RobotController> robots)
     {
+        if (robots.Count <= 1 || robots[0].IsAtPlayerCity())
+            return;
+
         GameObject stackingRobotsOverhangGO = Instantiate(stackingRobotsOverhangPrefab, parent.transform);
         StackingRobotsOverhangController stackingRobotsOverhangController = stackingRobotsOverhangGO.GetComponent<StackingRobotsOverhangController>();
         stackingRobotsOverhangController.Initialize(robots);
