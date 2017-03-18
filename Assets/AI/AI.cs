@@ -89,7 +89,6 @@ public abstract class AI : MonoBehaviour
         jpParam.Reset(from, to);
 
         List<GridPos> routeFound = JumpPointFinder.FindPath(jpParam);
-        //var test = JumpPointFinder.GetFullPath(routeFound);
 
         return routeFound;
     }
@@ -104,7 +103,7 @@ public abstract class AI : MonoBehaviour
                 for (int z = 0; z < WorldController.instance.Height; z++)
                     searchGrid.SetWalkableAt(x, z, true);
 
-            _cachedJpParam = new JumpPointParam(searchGrid, true, false, false);
+            _cachedJpParam = new JumpPointParam(searchGrid); // Cant configure it to not allow diagonally moving, has to be enforced by us
         }
 
         return _cachedJpParam;
