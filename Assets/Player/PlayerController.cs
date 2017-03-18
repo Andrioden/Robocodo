@@ -12,14 +12,14 @@ public class PlayerController : NetworkBehaviour
     [SyncVar]
     public string connectionId = "";
 
-    private CityController __city;
+    private CityController _city;
     public CityController City
     {
         get
         {
-            if (__city == null)
-                __city = WorldController.instance.FindCityController(connectionId);
-            return __city;
+            if (_city == null)
+                _city = WorldController.instance.FindCityController(connectionId);
+            return _city;
         }
     }
 
