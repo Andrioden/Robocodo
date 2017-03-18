@@ -122,7 +122,7 @@ public class WorldController : NetworkBehaviour
         player.connectionId = conn.connectionId.ToString();
         player.SetColor(playerColorManager.GetNextColor());
 
-        playerGO.AddComponent<AndreAI>();
+        //playerGO.AddComponent<AndreAI>();
 
         /* NOTE: Always set properties before spawning object, if not there will be a delay before all clients get the values. */
         if (NetworkServer.active)

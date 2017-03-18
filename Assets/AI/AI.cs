@@ -88,7 +88,10 @@ public abstract class AI : MonoBehaviour
         GridPos to = new GridPos(toX, toZ);
         staticlyCachedJpParam.Reset(from, to);
 
-        return JumpPointFinder.FindPath(staticlyCachedJpParam);
+        List<GridPos> routeFound = JumpPointFinder.FindPath(staticlyCachedJpParam);
+        //var test = JumpPointFinder.GetFullPath(routeFound);
+
+        return routeFound;
     }
 
     private void CacheJumpPointParam()

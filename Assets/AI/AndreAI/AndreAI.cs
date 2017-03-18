@@ -45,8 +45,8 @@ namespace Robocodo.AndreAI
     /// </summary>
     public partial class AndreAI : AI
     {
-        public static int Setting_DelayedStart_Min = 0;
-        public static int Setting_DelayedStart_Max = 2;
+        public static int Setting_DelayedStart_Min = 2;
+        public static int Setting_DelayedStart_Max = 3;
         public static int Setting_ThinkingInterval = 2;
 
         public int SeekingActiveFoodHarvesters = 4;
