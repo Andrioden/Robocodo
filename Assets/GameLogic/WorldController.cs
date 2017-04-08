@@ -190,6 +190,27 @@ public class WorldController : NetworkBehaviour
             throw new Exception("Not prefab found for inventory item " + item);
     }
 
+    /// <summary>
+    /// Returns false if no node was found
+    /// </summary>
+    [Server]
+    public string HarvestFromNode(float x, float z)
+    {
+        ResourceController resourceController = _resourceControllers.Find(r => r.transform.position.x == x && r.transform.position.z == z);
+        if (resourceController != null)
+        {
+            resourceController.HarvestOneResourceItem();
+            if (resourceController.RemainingItems <= 0)
+            {
+                _resourceControllers.Remove(resourceController);
+                Destroy(resourceController.gameObject);
+            }
+            return resourceController.resourceType;
+        }
+        else
+            return null;
+    }
+
     public GameObject SpawnObjectWithClientAuthority(GameObject prefab, int x, int z, PlayerController owner)
     {
         return SpawnObject(prefab, x, z, owner, owner.connectionToClient);
@@ -236,27 +257,6 @@ public class WorldController : NetworkBehaviour
             Debug.LogWarning("NetworkServer not active");
 
         return newGO;
-    }
-
-    /// <summary>
-    /// Returns false if no node was found
-    /// </summary>
-    [Server]
-    public string HarvestFromNode(float x, float z)
-    {
-        ResourceController resourceController = _resourceControllers.Find(r => r.transform.position.x == x && r.transform.position.z == z);
-        if (resourceController != null)
-        {
-            resourceController.HarvestOneResourceItem();
-            if (resourceController.RemainingItems <= 0)
-            {
-                _resourceControllers.Remove(resourceController);
-                Destroy(resourceController.gameObject);
-            }
-            return resourceController.resourceType;
-        }
-        else
-            return null;
     }
 
     public void SpawnAndAdjustGround()

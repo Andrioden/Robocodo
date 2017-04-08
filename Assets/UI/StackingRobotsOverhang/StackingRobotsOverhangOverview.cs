@@ -57,7 +57,7 @@ public class StackingRobotsOverhangOverview : MonoBehaviour
         PlayerController clientPlayer = GetClientPlayer();
         if (clientPlayer == null)
         {
-            Debug.Log("Could not find player city, stacking robot GUI will not refresh");
+            Debug.Log("Could not find player city, stacking robot GUI will not refresh. This debug message is OK if runs at the start. Might be data-sync timing issues.");
             return;
         }
 
