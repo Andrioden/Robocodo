@@ -8,12 +8,15 @@ public class WorldTickController : MonoBehaviour
     private bool GameStarted = false;
     private float startTime;
 
-    private int Tick = 0;
+    private int tick = 0;
+    public int Tick { get { return tick; } }
     public event Action OnTick = delegate { };
     public event Action OnAfterTick = delegate { };
 
-    private int HalfTick = 0;
+    private int halfTick = 0;
+    public int HalfTick { get { return halfTick; } }
     public event Action OnHalfTick = delegate { };
+    public event Action OnAfterHalfTick = delegate { };
 
     public static WorldTickController instance;
     private void Awake()
@@ -38,18 +41,19 @@ public class WorldTickController : MonoBehaviour
             float ellapsedTimeSinceGameStart = Time.time - startTime;
 
             int newTick = Convert.ToInt32(ellapsedTimeSinceGameStart / Settings.World_IrlSecondsPerTick);
-            if (newTick > Tick)
+            if (newTick > tick)
             {
-                Tick = newTick;
+                tick = newTick;
                 OnTick();
                 OnAfterTick();
             }
 
             int newHalfTick = Convert.ToInt32(ellapsedTimeSinceGameStart * 2.0f / Settings.World_IrlSecondsPerTick);
-            if (newHalfTick > HalfTick)
+            if (newHalfTick > halfTick)
             {
-                HalfTick = newHalfTick;
+                halfTick = newHalfTick;
                 OnHalfTick();
+                OnAfterHalfTick();
             }
 
         }

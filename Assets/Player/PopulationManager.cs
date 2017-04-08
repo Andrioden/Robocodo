@@ -17,18 +17,26 @@ public class PopulationManager : NetworkBehaviour
     private double growthProgress = 0;
     public double GrowthProgress { get { return growthProgress; } }
 
+    private ValueTracker foodValueTracker;
+    [SyncVar]
+    private double foodChangePerTick = 0;
+    public double FoodChangePerTick { get { return foodChangePerTick; } }
+
     [Server]
     public void Initialize(CityController city)
     {
         this.city = city;
         population = 1;
+        foodValueTracker = new ValueTracker(0.1, city.GetItemCount<FoodItem>());
 
         WorldTickController.instance.OnTick += Grow;
+        WorldTickController.instance.OnAfterTick += CalculateFoodPerTick;
     }
 
     private void OnDestroy()
     {
         WorldTickController.instance.OnTick -= Grow;
+        WorldTickController.instance.OnAfterTick -= CalculateFoodPerTick;
     }
 
     [Server]
@@ -55,6 +63,13 @@ public class PopulationManager : NetworkBehaviour
                 population--;
             }
         }
+    }
+
+    [Server]
+    private void CalculateFoodPerTick()
+    {
+        foodValueTracker.AddDataPoint(WorldTickController.instance.Tick, city.GetItemCount<FoodItem>());
+        foodChangePerTick = foodValueTracker.ChangePerTick;
     }
 
 }

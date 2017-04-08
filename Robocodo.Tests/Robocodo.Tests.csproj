@@ -56,6 +56,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScenarioSetupTests.cs" />
     <Compile Include="UtilsTests.cs" />
+    <Compile Include="ValueTrackerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Robocodo.csproj">

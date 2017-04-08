@@ -62,7 +62,7 @@ public class ResourcePanel : MonoBehaviour
                 energyLabel.text = string.Format("Energy: {0}/{1}", localPlayer.City.Energy, CityController.Settings_MaxEnergyStorage);
                 copperLabel.text = "Copper: " + localPlayer.City.GetItemCount<CopperItem>();
                 ironLabel.text = "Iron: " + localPlayer.City.GetItemCount<IronItem>();
-                foodLabel.text = "Food: " + localPlayer.City.GetItemCount<FoodItem>();
+                foodLabel.text = string.Format("Food: {0}{1}", localPlayer.City.GetItemCount<FoodItem>(), ChangeStatusIcon(localPlayer.City.PopulationManager.FoodChangePerTick));
                 infectionLabel.text = string.Format("Infection: {0:0.0}%", localPlayer.City.GetInfectionImpactLossPercentage());
             }
         }
@@ -122,5 +122,15 @@ public class ResourcePanel : MonoBehaviour
         }
 
         labelsRegisteredForFlashingFeedbackSupportDict[textField] = false;
+    }
+
+    private string ChangeStatusIcon(double change)
+    {
+        if (change == 0)
+            return "";
+        else if (change > 0)
+            return Icons.ArrowUp;
+        else
+            return Icons.ArrowDown;
     }
 }

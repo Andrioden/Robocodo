@@ -16,11 +16,12 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
     public int Z { get { return (int)gameObject.transform.position.z; } }
 
     private List<InventoryItem> inventory = new List<InventoryItem>();
+
     private List<RobotController> garage = new List<RobotController>();
     public List<RobotController> Garage { get { return garage; } }
 
-    public event Action<RobotController> OnRobotAddedToGarage;
-    public event Action<RobotController> OnRobotRemovedFromGarage;
+    public event Action<RobotController> OnRobotAddedToGarage = delegate { };
+    public event Action<RobotController> OnRobotRemovedFromGarage = delegate { };
 
     private PopulationManager populationManager;
     public PopulationManager PopulationManager { get { return populationManager; } }
