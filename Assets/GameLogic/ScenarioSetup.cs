@@ -34,6 +34,9 @@ public static class ScenarioSetup
     //    scenarios[scenarioIndex].Run(conn, playerGO);
     //}
 
+    /// <summary>
+    /// NetworkConnection is null if AI:
+    /// </summary>
     public static void Run(Scenario scenario, NetworkConnection conn, PlayerController player)
     {
         ScenarioEntry scenarioEntry = scenarios.Where(s => s.ScenarioEnumRef == scenario).FirstOrDefault();
@@ -88,7 +91,7 @@ public static class ScenarioSetup
 
         GameObject combaRobotGO = AddRobot(WorldController.instance.combatRobotPrefab, player.City.X, player.City.Z, player, conn);
         CombatRobotController combatRobot = combaRobotGO.GetComponent<CombatRobotController>();
-        combatRobot.SetInstructionsAndSyncToOwner(new List<Instruction>
+        combatRobot.SetInstructions(new List<Instruction>
         {
             new Instruction_Move(MoveDirection.Up),
             new Instruction_Attack(AttackType.Nearby3),
@@ -123,7 +126,7 @@ public static class ScenarioSetup
 
         GameObject harvesterGO = AddRobot(WorldController.instance.harvesterRobotPrefab, player.City.X + 4, player.City.Z, player, conn);
         HarvesterRobotController harvester = harvesterGO.GetComponent<HarvesterRobotController>();
-        harvester.SetInstructionsAndSyncToOwner(new List<Instruction>
+        harvester.SetInstructions(new List<Instruction>
         {
             new Instruction_Harvest(),
             new Instruction_Move(MoveDirection.Left),
@@ -133,14 +136,14 @@ public static class ScenarioSetup
 
         GameObject storageRobotGO = AddRobot(WorldController.instance.storageRobotPrefab, player.City.X + 3, player.City.Z, player, conn);
         StorageRobotController storageRobot = storageRobotGO.GetComponent<StorageRobotController>();
-        storageRobot.SetInstructionsAndSyncToOwner(new List<Instruction>
+        storageRobot.SetInstructions(new List<Instruction>
         {
             new Instruction_Idle()
         });
 
         GameObject transporterGO = AddRobot(WorldController.instance.transporterRobotPrefab, player.City.X + 3, player.City.Z, player, conn);
         TransporterRobotController transporter = transporterGO.GetComponent<TransporterRobotController>();
-        transporter.SetInstructionsAndSyncToOwner(new List<Instruction>
+        transporter.SetInstructions(new List<Instruction>
         {
             new Instruction_PickUp(),
             new Instruction_Move(MoveDirection.Left),
@@ -207,7 +210,7 @@ public static class ScenarioSetup
         AddFood(player.City, 20);
 
         PurgeRobotController purger = AddRobot(WorldController.instance.purgeRobotPrefab, player.City.X + 1, player.City.Z, player, conn).GetComponent<PurgeRobotController>();
-        purger.SetInstructionsAndSyncToOwner(new List<Instruction>()
+        purger.SetInstructions(new List<Instruction>()
         {
             new Instruction_Purge()
         });
@@ -222,7 +225,7 @@ public static class ScenarioSetup
         if (instructions != null)
         {
             RobotController robot = robotGO.GetComponent<RobotController>();
-            robot.SetInstructionsAndSyncToOwner(instructions);
+            robot.SetInstructions(instructions);
         }
 
         return robotGO;

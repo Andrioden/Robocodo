@@ -308,11 +308,16 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         }
     }
 
-    [Server]
-    public void SetInstructionsAndSyncToOwner(List<Instruction> newInstructions)
+    public void SetInstructions(List<string> newInstructions)
+    {
+        SetInstructions(InstructionsHelper.Deserialize(newInstructions));
+    }
+
+    public void SetInstructions(List<Instruction> newInstructions)
     {
         instructions = newInstructions;
-        TargetSetInstructions(Owner.connectionToClient, InstructionsHelper.SerializeList(newInstructions));
+        if (Network.isServer && Owner.connectionToClient != null)
+            TargetSetInstructions(Owner.connectionToClient, InstructionsHelper.SerializeList(newInstructions));
     }
 
     [TargetRpc]
@@ -325,18 +330,6 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     private void CmdSetInstructions(string[] newInstructions)
     {
         instructions = InstructionsHelper.Deserialize(newInstructions.ToList());
-    }
-
-    [Client]
-    public void SetInstructions(List<Instruction> newInstructions)
-    {
-        instructions = newInstructions;
-    }
-
-    [Client]
-    public void SetInstructions(List<string> newInstructions)
-    {
-        instructions = InstructionsHelper.Deserialize(newInstructions);
     }
 
     public void CacheAllowedInstructions()
