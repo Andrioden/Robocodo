@@ -17,7 +17,7 @@ public class StackingRobotsOverhangController : MonoBehaviour
 
     public void Initialize(List<RobotController> robots)
     {
-        transform.position = new Vector3(robots[0].x, transform.position.y, robots[0].z);
+        transform.localPosition = Vector3.zero;
         RotateToCamera();
 
         foreach (RobotController robot in robots.OrderBy(r => r.name))
@@ -25,8 +25,8 @@ public class StackingRobotsOverhangController : MonoBehaviour
             Button robotsButton = Instantiate(robotsButtonPrefab);
             robotsButton.GetComponent<Image>().color = robot.Settings_Color();
             robotsButton.onClick.RemoveAllListeners();
-            var robotTet = robot;
-            robotsButton.onClick.AddListener(() => { ClickRobot(robotTet); });
+            var robotNotDirectRef = robot; // Cant have direct reference, lul
+            robotsButton.onClick.AddListener(() => { ClickOverhangButton(robotNotDirectRef); });
             robotsButton.transform.SetParent(containerCanvas.transform, false);
         }
 
@@ -38,8 +38,7 @@ public class StackingRobotsOverhangController : MonoBehaviour
         transform.rotation = Quaternion.LookRotation(Camera.main.transform.forward, Camera.main.transform.up);
     }
 
-
-    private void ClickRobot(RobotController robot)
+    private void ClickOverhangButton(RobotController robot)
     {
         MouseManager.ClickAndSelectGameObject(robot.transform.root.gameObject);
     }

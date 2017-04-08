@@ -33,8 +33,6 @@ public class StackingRobotsOverhangOverview : MonoBehaviour
         parent = new GameObject("StackingRobotsOverhangs");
         parent.transform.SetParentToGO("ClientGameObjects");
 
-        WinLoseChecker.instance.OnLost += _ => DestroyAll();
-
         StartCoroutine(RefreshCoroutine());
     }
 
@@ -91,10 +89,10 @@ public class StackingRobotsOverhangOverview : MonoBehaviour
 
     private void SpawnOverhangPossibly(List<RobotController> robots)
     {
-        if (robots.Count <= 1 || robots[0].IsAtPlayerCity())
+        if (robots.Count <= 1)
             return;
 
-        GameObject stackingRobotsOverhangGO = Instantiate(stackingRobotsOverhangPrefab, parent.transform);
+        GameObject stackingRobotsOverhangGO = Instantiate(stackingRobotsOverhangPrefab, robots[0].transform);
         StackingRobotsOverhangController stackingRobotsOverhangController = stackingRobotsOverhangGO.GetComponent<StackingRobotsOverhangController>();
         stackingRobotsOverhangController.Initialize(robots);
 

@@ -5,7 +5,6 @@ using System;
 public class WorldTickController : MonoBehaviour
 {
 
-    private bool GameStarted = false;
     private float startTime;
 
     private int tick = 0;

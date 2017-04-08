@@ -109,15 +109,8 @@ public class PlayerController : NetworkBehaviour
         hasLost = true;
         Destroy(techTree);
         ownedGameObjects.ForEach(go => Destroy(go));
-        TargetLost(connectionToClient);
 
         WorldController.instance.SpawnObject(cityRubblePrefab, (int)transform.position.x, (int)transform.position.z);
-    }
-
-    [TargetRpc]
-    private void TargetLost(NetworkConnection target)
-    {
-        StackingRobotsOverhangOverview.instance.DestroyAll();
     }
 
     private void PositionCameraRelativeTo()
