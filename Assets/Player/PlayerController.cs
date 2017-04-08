@@ -107,6 +107,7 @@ public class PlayerController : NetworkBehaviour
     public void LostAndDestroy()
     {
         hasLost = true;
+        Destroy(techTree);
         ownedGameObjects.ForEach(go => Destroy(go));
         TargetLost(connectionToClient);
 
