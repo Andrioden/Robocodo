@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 114000013151650332}
   - component: {fileID: 114186496318461494}
   - component: {fileID: 114297340602436028}
+  - component: {fileID: 114085405689950794}
   m_Layer: 0
   m_Name: WorldController
   m_TagString: Untagged
@@ -135,6 +136,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scavengerGroupPrefab: {fileID: 1000011173860404, guid: 45ca152e2d3f4fd40b8a63a8147ffd43,
     type: 2}
+--- !u!114 &114085405689950794
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 190096}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ece60613814bb44d9f41982b078f658, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114186496318461494
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -31,37 +31,32 @@ public class WorldTickController : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        startTime = Time.time;
+    }
+
     // Update is called once per frame
     private void Update()
     {
         // TODO MIGHT WANT TO LIMIT HOW OFTEN THIS RUN
         //InvokeRepeating("UpdateTimeData", 0, 0.1f);
-        if (GameStarted)
+        float ellapsedTimeSinceGameStart = Time.time - startTime;
+
+        int newTick = Convert.ToInt32(ellapsedTimeSinceGameStart / Settings.World_IrlSecondsPerTick);
+        if (newTick > tick)
         {
-            float ellapsedTimeSinceGameStart = Time.time - startTime;
-
-            int newTick = Convert.ToInt32(ellapsedTimeSinceGameStart / Settings.World_IrlSecondsPerTick);
-            if (newTick > tick)
-            {
-                tick = newTick;
-                OnTick();
-                OnAfterTick();
-            }
-
-            int newHalfTick = Convert.ToInt32(ellapsedTimeSinceGameStart * 2.0f / Settings.World_IrlSecondsPerTick);
-            if (newHalfTick > halfTick)
-            {
-                halfTick = newHalfTick;
-                OnHalfTick();
-                OnAfterHalfTick();
-            }
-
+            tick = newTick;
+            OnTick();
+            OnAfterTick();
         }
-    }
 
-    public void StartGame()
-    {
-        GameStarted = true;
-        startTime = Time.time;
+        int newHalfTick = Convert.ToInt32(ellapsedTimeSinceGameStart * 2.0f / Settings.World_IrlSecondsPerTick);
+        if (newHalfTick > halfTick)
+        {
+            halfTick = newHalfTick;
+            OnHalfTick();
+            OnAfterHalfTick();
+        }
     }
 }
