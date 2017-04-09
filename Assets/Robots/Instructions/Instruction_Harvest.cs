@@ -51,7 +51,7 @@ public class Instruction_Harvest : Instruction
             else if (robot.IsInventoryFull())
                 robot.SetFeedback("INVENTORY FULL", true, true);
 
-            string resourceType = WorldController.instance.HarvestFromNode(robot.x, robot.z);
+            string resourceType = WorldController.instance.HarvestFromNode(robot.X, robot.Z);
 
             if (resourceType != null)
                 robot.TransferToInventory(InventoryItem.DeserializeType(resourceType));

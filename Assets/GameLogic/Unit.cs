@@ -9,12 +9,14 @@ public abstract class Unit : OwnedNetworkBehaviour
 {
 
     [SyncVar]
-    public float x;
-    public int X() { return (int)x; }
+    protected int x;
+    public int X { get { return x; } }
+    public int GetX() { return x; }
 
     [SyncVar]
-    public float z;
-    public int Z() { return (int)z; }
+    protected int z;
+    public int Z { get { return z; } }
+    public int GetZ() { return z; }
 
     [SyncVar]
     protected int health;
@@ -23,6 +25,15 @@ public abstract class Unit : OwnedNetworkBehaviour
     // ********** SETTINGS **********
     public abstract int Settings_Damage();
     public abstract int Settings_StartHealth();
+
+    protected void SetXzToTransformPosition()
+    {
+        if ((transform.position.x % 1) != 0 || (transform.position.z % 1) != 0)
+            throw new Exception(string.Format("Transform position is not whole numbers, it is: {0},{1} ", transform.position.x, transform.position.z));
+
+        x = (int)transform.position.x;
+        z = (int)transform.position.z;
+    }
 
     public bool Move(MoveDirection direction)
     {
@@ -49,7 +60,7 @@ public abstract class Unit : OwnedNetworkBehaviour
             throw new Exception("This acting entity can not move in direction: " + direction);
     }
 
-    public bool ChangePosition(float newPosX, float newPosZ)
+    public bool ChangePosition(int newPosX, int newPosZ)
     {
         if (newPosX >= WorldController.instance.Width || newPosX < 0 || newPosZ >= WorldController.instance.Height || newPosZ < 0)
             return false;

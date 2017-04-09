@@ -14,8 +14,7 @@ public class ScavengerGroupController : Unit, IAttackable
     // Use this for initialization
     private void Start()
     {
-        x = transform.position.x;
-        z = transform.position.z;
+        SetXzToTransformPosition();
     }
 
     private void Update()
@@ -44,14 +43,14 @@ public class ScavengerGroupController : Unit, IAttackable
         if (searchRadius <= 0)
             return;
 
-        IAttackable target = FindNearbyAttackableTargets(searchRadius).FirstOrDefault(t => MathUtils.Distance(x, z, t.X(), t.Z()) <= searchRadius);
+        IAttackable target = FindNearbyAttackableTargets(searchRadius).FirstOrDefault(t => MathUtils.Distance(x, z, t.GetX(), t.GetZ()) <= searchRadius);
         if (target != null)
         {
             //Debug.Log("Distance: " + MathUtils.Distance(x, z, target.X(), target.Z()));
-            if (MathUtils.Distance(x, z, target.X(), target.Z()) == 0)
+            if (MathUtils.Distance(x, z, target.GetX(), target.GetZ()) == 0)
                 target.TakeDamage(Settings_Damage());
             else
-                MoveTowards(target.X(), target.Z());
+                MoveTowards(target.GetX(), target.GetZ());
         }
         else
             Move(MoveDirection.Random);
@@ -77,7 +76,7 @@ public class ScavengerGroupController : Unit, IAttackable
     }
 
     [Server]
-    public void Initialize(float posX, float posZ)
+    public void Initialize(int posX, int posZ)
     {
         gameObject.SetActive(true);
 
@@ -90,16 +89,17 @@ public class ScavengerGroupController : Unit, IAttackable
     }
 
     [ClientRpc]
-    public void RpcSyncState(bool active, float posX, float posZ)
+    public void RpcSyncState(bool active, int posX, int posZ)
     {
         gameObject.SetActive(active);
         SetPosition(posX, posZ);
     }
 
-    private void SetPosition(float posX, float posZ)
+    private void SetPosition(int posX, int posZ)
     {
         x = posX;
         z = posZ;
         transform.position = new Vector3(posX, transform.position.y, posZ);
     }
+
 }

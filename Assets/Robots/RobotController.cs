@@ -138,8 +138,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         if (!meshGO)
             Debug.LogError("Mesh game object reference missing. Will not be able to hide physical robot when in garage etc.");
 
-        x = transform.position.x;
-        z = transform.position.z;
+        SetXzToTransformPosition();
 
         if (instructions.Count == 0)
             SetInstructions(GetSuggestedInstructionSet());
@@ -762,7 +761,6 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     public void PreviewReset()
     {
         InitDefaultValues();
-        x = transform.position.x;
-        z = transform.position.z;
+        SetXzToTransformPosition();
     }
 }

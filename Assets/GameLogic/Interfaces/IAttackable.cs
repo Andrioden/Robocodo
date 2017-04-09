@@ -3,6 +3,6 @@
     PlayerController GetOwner();
     void TakeDamage(int damage);
     bool Targetable();
-    int X();
-    int Z();
+    int GetX();
+    int GetZ();
 }

@@ -64,9 +64,9 @@ public class StackingRobotsOverhangOverview : MonoBehaviour
         List<RobotController> currentStackCheck = new List<RobotController>();
 
         List<RobotController> ownedRobots = GameObject.FindGameObjectsWithTag("Robot").Select(go => go.GetComponent<RobotController>()).Where(r => r.Owner == clientPlayer).ToList();
-        foreach (RobotController robot in ownedRobots.OrderBy(r => r.x).ThenBy(r => r.z))
+        foreach (RobotController robot in ownedRobots.OrderBy(r => r.X).ThenBy(r => r.Z))
         {
-            if (currentStackCheck.Count == 0 || robot.x == currentStackCheck[0].x && robot.z == currentStackCheck[0].z)
+            if (currentStackCheck.Count == 0 || robot.X == currentStackCheck[0].X && robot.Z == currentStackCheck[0].Z)
                 currentStackCheck.Add(robot);
             else
             {

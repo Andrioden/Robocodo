@@ -26,7 +26,7 @@ public class Instruction_DetectThen : Instruction
     {
         this.robot = robot;
 
-        if (detectSource == DetectSource.Enemy && FindNearbyEnemy((int)robot.x, (int)robot.z, 3.0) == null)
+        if (detectSource == DetectSource.Enemy && FindNearbyEnemy(robot.X, robot.Z, 3.0) == null)
             return true;
         else if (detectSource == DetectSource.Full && !robot.IsInventoryFull())
             return true;
@@ -80,7 +80,7 @@ public class Instruction_DetectThen : Instruction
     {
         foreach (IAttackable potentialTarget in robot.FindNearbyAttackableTargets())
         {
-            if (MathUtils.Distance(x, z, potentialTarget.X(), potentialTarget.Z()) <= maxDistance)
+            if (MathUtils.Distance(x, z, potentialTarget.GetX(), potentialTarget.GetZ()) <= maxDistance)
             {
                 if (potentialTarget.GetOwner() != robot.GetOwner())
                     return potentialTarget;

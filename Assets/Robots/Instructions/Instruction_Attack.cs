@@ -72,8 +72,8 @@ public class Instruction_Attack : Instruction
         if (attackable != null)
         {
             robot.lastAttackedTargetWasAnHit = true;
-            robot.lastAttackedTargetX = attackable.X();
-            robot.lastAttackedTargetZ = attackable.Z();
+            robot.lastAttackedTargetX = attackable.GetX();
+            robot.lastAttackedTargetZ = attackable.GetZ();
             attackable.TakeDamage(robot.Settings_Damage());
         }
         else
@@ -104,7 +104,7 @@ public class Instruction_Attack : Instruction
     {
         foreach (IAttackable potentialTarget in robot.FindNearbyAttackableTargets())
         {
-            if (MathUtils.Distance(robot.x, robot.z, potentialTarget.X(), potentialTarget.Z()) <= maxDistance)
+            if (MathUtils.Distance(robot.GetX(), robot.GetZ(), potentialTarget.GetX(), potentialTarget.GetZ()) <= maxDistance)
             {
                 if (potentialTarget.GetOwner() != robot.GetOwner())
                     return potentialTarget;
