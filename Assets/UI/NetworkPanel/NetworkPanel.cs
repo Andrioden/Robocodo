@@ -12,16 +12,23 @@ public class NetworkPanel : MonoBehaviour
 {
     private CustomNetworkManager networkManager;
 
+    // MAIN MENU
     public GameObject mainMenuContainer;
     public Button[] leaveButtons;
+
     public InputField nickInput;
+    public Dropdown gameModeDropdown;
+
+    public Text maxPlayersLabel;
+    public Slider maxPlayersSlider;
     public Text aiCountLabel;
     public Slider aiCountSlider;
-    public Dropdown gameModeDropdown;
+    public InputField worldWidthField;
+    public InputField worldHeightField;
+
     public Button hostLanButton;
     public Button joinLanButton;
     public InputField MMGameNameField;
-    public InputField MMGameSizeField;
     public Button hostMMutton;
     public Button findMMButton;
     public GameObject MMGameListContainer;
@@ -29,6 +36,11 @@ public class NetworkPanel : MonoBehaviour
     public Text feedbackText;
     public Button exitAppButton;
 
+    // JOIN CONTAINER
+    public GameObject joiningContainer;
+    public Button abortJoinButton;
+
+    // OTHER
     public GameObject[] ingameUiGameObjects;
 
     public static NetworkPanel instance;
@@ -47,6 +59,8 @@ public class NetworkPanel : MonoBehaviour
     // Is also run everytime the player leaves a game because leaving restarts the Scene, which reinitiates the scene Game Objects.
     private void Start()
     {
+        Debug.Log("Starting NetworkPanel");
+
         Time.timeScale = 1;
 
         foreach (var scenario in ScenarioSetup.Scenarios)
@@ -54,16 +68,18 @@ public class NetworkPanel : MonoBehaviour
 
         networkManager = FindObjectOfType<CustomNetworkManager>();
         networkManager.SetMatchHost(PlayerSettings.MM_Server, networkManager.matchPort, true); //TODO: Maybe make a user choice in the far future
-        if (networkManager.matchMaker == null)
-            networkManager.StartMatchMaker();
 
         nickInput.text = PlayerSettings.Game_Nick;
         gameModeDropdown.value = (int)PlayerSettings.Game_ScenarioChoice;
-        MMGameSizeField.text = PlayerSettings.Game_Players.ToString();
+
+        maxPlayersSlider.onValueChanged.RemoveAllListeners();
+        maxPlayersSlider.onValueChanged.AddListener(OnMaxPlayersSliderChange);
+        maxPlayersSlider.value = PlayerSettings.Game_Players;
 
         aiCountSlider.onValueChanged.RemoveAllListeners();
         aiCountSlider.onValueChanged.AddListener(OnAiCountSliderChange);
         aiCountSlider.value = PlayerSettings.Game_AIs;
+
         OnAiCountSliderChange(aiCountSlider.value);
 
         hostLanButton.onClick.RemoveAllListeners();
@@ -87,6 +103,9 @@ public class NetworkPanel : MonoBehaviour
         exitAppButton.onClick.RemoveAllListeners();
         exitAppButton.onClick.AddListener(OnExitAppClick);
 
+        abortJoinButton.onClick.RemoveAllListeners();
+        abortJoinButton.onClick.AddListener(OnAbortJoinClick);
+
         ActivateMainMenu();
     }
 
@@ -95,15 +114,26 @@ public class NetworkPanel : MonoBehaviour
         return (Scenario)gameModeDropdown.value;
     }
 
+    private void OnMaxPlayersSliderChange(float newValue)
+    {
+        maxPlayersLabel.text = "Max players: " + (int)newValue;
+
+        if (aiCountSlider.value > maxPlayersSlider.value)
+            aiCountSlider.value = maxPlayersSlider.value;
+    }
+
     private void OnAiCountSliderChange(float newValue)
     {
         aiCountLabel.text = "AIs: " + (int)newValue;
+
+        if (maxPlayersSlider.value < aiCountSlider.value)
+            maxPlayersSlider.value = aiCountSlider.value;
     }
 
     private void LAN_OnHostClick()
     {
         feedbackText.text = "";
-        if (ValidateMandatoryInput())
+        if (ValidateMandatoryInput() && ValidateHostInput())
         {
             networkManager.StartHost();
             Debug.LogFormat("Hosting on {0}:{1}", networkManager.networkAddress, networkManager.networkPort);
@@ -121,25 +151,23 @@ public class NetworkPanel : MonoBehaviour
         if (ValidateMandatoryInput())
         {
             networkManager.StartClient();
+
             Debug.LogFormat("Joining {0}:{1}", networkManager.networkAddress, networkManager.networkPort);
-            feedbackText.text = "Joining...";
             ActivateIngame();
+            joiningContainer.SetActive(true);
         }
     }
 
     private void MM_OnHostClick()
     {
-        feedbackText.text = "";
-        if (ValidateMandatoryInput())
-        {
-            if (MMGameSizeField.text.Length == 0)
-            {
-                feedbackText.text = "Missing game player size input";
-                return;
-            }
+        if (networkManager.matchMaker == null)
+            networkManager.StartMatchMaker();
 
+        feedbackText.text = "";
+        if (ValidateMandatoryInput() && ValidateHostInput())
+        {
             Debug.Log("Hosting matchmaking server " + MMGameNameField.text);
-            uint matchSize = (uint)Convert.ToInt32(MMGameSizeField.text);
+            uint matchSize = (uint)maxPlayersSlider.value;
             networkManager.matchMaker.CreateMatch(MMGameNameField.text, matchSize, true, "", "", "", 0, 0, networkManager.OnMatchCreate);
             ActivateIngame();
         }
@@ -147,6 +175,9 @@ public class NetworkPanel : MonoBehaviour
 
     private void MM_OnFindGamesClick()
     {
+        if (networkManager.matchMaker == null)
+            networkManager.StartMatchMaker();
+
         feedbackText.text = "";
         if (ValidateMandatoryInput())
         {
@@ -188,6 +219,7 @@ public class NetworkPanel : MonoBehaviour
         feedbackText.text = "Joining...";
 
         ActivateIngame();
+        joiningContainer.SetActive(true);
     }
 
     private void OnQuitNetworkGameCLick()
@@ -213,6 +245,12 @@ public class NetworkPanel : MonoBehaviour
 #endif
     }
 
+    private void OnAbortJoinClick()
+    {
+        networkManager.StopClient();
+        ActivateMainMenu();
+    }
+
     private bool ValidateMandatoryInput()
     {
         if (nickInput.text.Length <= 0)
@@ -224,16 +262,36 @@ public class NetworkPanel : MonoBehaviour
             return true;
     }
 
+    private bool ValidateHostInput()
+    {
+        string validationFailText = "";
+
+        if (Convert.ToInt32(worldWidthField.text) < 1)
+            validationFailText = "Width cant be lower than 1";
+        else if (Convert.ToInt32(worldHeightField.text) < 1)
+            validationFailText = "Height cant be lower than 1";
+
+        if (validationFailText == "")
+            return true;
+        else
+        {
+            feedbackText.text = validationFailText;
+            return false;
+        }
+    }
+
     private void ActivateIngame()
     {
         SetMainMenuActive(false);
         SavePlayerSettings();
     }
 
-    private void ActivateMainMenu()
+    public void ActivateMainMenu()
     {
+        MMGameListContainer.transform.DestroyChildren();
         SetMainMenuActive(true);
         SetIngameUIActive(false);
+        joiningContainer.SetActive(false);
     }
 
     private void SetMainMenuActive(bool action)

@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.Networking;
 using UnityEngine.Networking.Match;
+using System;
 
 public class CustomNetworkManager : NetworkManager
 {
@@ -13,6 +14,12 @@ public class CustomNetworkManager : NetworkManager
         ClientScene.Ready(conn);
         ClientScene.AddPlayer(0); // The ID input here is not used for anything
         NetworkPanel.instance.feedbackText.text = "";
+        NetworkPanel.instance.joiningContainer.SetActive(false);
+    }
+
+    public override void OnClientDisconnect(NetworkConnection conn)
+    {
+        NetworkPanel.instance.ActivateMainMenu();
     }
 
     /// <summary>
@@ -24,8 +31,9 @@ public class CustomNetworkManager : NetworkManager
 
         if (numPlayers == 0) // First player == HOSTING
         {
-            int width = 70;
-            int height = 100;
+            int width = Convert.ToInt32(NetworkPanel.instance.worldWidthField.text);
+            int height = Convert.ToInt32(NetworkPanel.instance.worldHeightField.text);
+            int maxPlayers = (int)NetworkPanel.instance.maxPlayersSlider.value;
 
             GameObject worldControllerGameObject = Instantiate(worldControllerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             NetworkServer.Spawn(worldControllerGameObject);
@@ -45,4 +53,5 @@ public class CustomNetworkManager : NetworkManager
 
         WorldController.instance.SpawnPlayer(conn);
     }
+
 }
