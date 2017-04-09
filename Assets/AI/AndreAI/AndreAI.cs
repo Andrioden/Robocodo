@@ -76,6 +76,7 @@ namespace Robocodo.AndreAI
         {
             if (Settings.Debug_EnableAiLogging)
                 HumanCommunicator.ShowPopupForAllHumans("Thinking... " + Icons.Heart, player.transform.position, TextPopup.ColorType.DEFAULT);
+
             Seek_ActiveFoodHarvesters(SeekingActiveFoodHarvesters, 30);
             Do_ReprogramCompletedHarvesters();
         }
@@ -172,16 +173,16 @@ namespace Robocodo.AndreAI
             {
                 Log("   ... Harvester found!");
 
-                Log("   Looking for nearby food...");
-                T nearByFood = harvester.FindNearbyCollidingGameObjectsOfType<T>(searchRadius).Take(4).TakeRandom();
+                Log("   Looking for nearby resource...");
+                ResourceController nearByResource = harvester.FindNearbyCollidingGameObjectsOfType<T>(searchRadius).Take(4).TakeRandom();
 
-                if (nearByFood != null)
+                if (nearByResource != null)
                 {
-                    Log("   ... Food found!");
+                    Log("   ... Resource found!");
 
                     Log("   Programming robot and starting it...");
                     DateTime timeStart = DateTime.Now;
-                    List<Instruction> instructions = FindPathInstructions(harvester.gameObject, nearByFood.gameObject);
+                    List<Instruction> instructions = FindPathInstructions(harvester.gameObject, nearByResource.gameObject);
                     instructions.Add(new Instruction_Harvest());
                     instructions.Add(new Instruction_Harvest());
                     instructions.Add(new Instruction_Move(MoveDirection.Home));
@@ -192,7 +193,7 @@ namespace Robocodo.AndreAI
                     int msUsed = (timeEnd - timeStart).Milliseconds;
                     LogFormat("   ... Robot pathfound and programmed in in {0}ms!", msUsed);
 
-                    activeHarvestersTracker.Add(harvester, nearByFood);
+                    activeHarvestersTracker.Add(harvester, nearByResource);
 
                     return true;
                 }
