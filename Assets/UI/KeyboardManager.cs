@@ -14,10 +14,15 @@ public class KeyboardManager : NetworkBehaviour
             {
                 if (Input.GetKeyDown(KeyCode.KeypadMinus) && Time.timeScale > 1)
                     WorldTimeController.instance.DecreaseTimeScale();
+
                 else if (Input.GetKeyDown(KeyCode.KeypadPlus) && Time.timeScale < Settings.World_MaxTimeScale)
                     WorldTimeController.instance.IncreaseTimeScale();
+
                 else if (Input.GetKeyDown(KeyCode.Pause) || Input.GetKeyDown(KeyCode.P))
                     WorldTimeController.instance.TogglePause();
+
+                else if (Input.GetKeyDown(KeyCode.H))
+                    RTSCamera.instance.PositionRelativeTo(WorldController.instance.FindClientsOwnPlayer().City.transform);
             }
         }
 
