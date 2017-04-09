@@ -25,6 +25,12 @@ public class WorldBuilder
         for (int i = 0; i < reservedPlayerSpotCount; i++)
             ReservePlayerCoordinate(GetRandomEmptyCoordinate());
 
+        if (noiseConfig != null)
+            GenerateResources(noiseConfig);
+    }
+
+    private void GenerateResources(NoiseConfig noiseConfig)
+    {
         noiseMap = NoiseUtils.GenerateNoiseMap(width, height, noiseConfig);
 
         for (int x = 0; x < noiseMap.GetLength(0); x++)
@@ -38,9 +44,8 @@ public class WorldBuilder
                 else if (MathUtils.InRange(Settings.World_FoodNoiseRangeFrom, Settings.World_FoodNoiseRangeTo, noiseMap[x, z]))
                     SetTile(x, z, TileType.FoodNode);
                 //else
-                    //Debug.Log("Wierd noise value: " + noiseMap[x, y]);
+                //Debug.Log("Wierd noise value: " + noiseMap[x, y]);
             }
-
         }
 
         //SpawnResources(TileType.CopperNode, noiseConfig, Settings.World_CopperNoiseThreshold);
@@ -137,10 +142,9 @@ public class WorldBuilder
 
         if (openCoords.Count == 0)
             throw new Exception(string.Format("Could not find an open coordinate near {0} with minDistance {1} and maxDistance {2}.", coord, minDistance, maxDistance));
-
-        return openCoords.TakeRandom();
+        else
+            return openCoords.TakeRandom();
     }
-
 
     public List<Coordinate> GetCoordinatesNear(Coordinate coord, int maxDistance, TileType? filter = null)
     {
@@ -161,6 +165,15 @@ public class WorldBuilder
                     openCoords.Add(new Coordinate(x, z));
 
         return openCoords;
+    }
+
+    public bool IsWithinWorld(int x, int z)
+    {
+        return 
+            x >= 0 
+            && x < width 
+            && z >= 0 
+            && z < height;
     }
 }
 

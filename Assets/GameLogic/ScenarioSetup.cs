@@ -89,9 +89,7 @@ public static class ScenarioSetup
 
         wc.SpawnObject(wc.combatRobotPrefab, player.City.X + 2, player.City.Z);
 
-        GameObject combaRobotGO = AddRobot(WorldController.instance.combatRobotPrefab, player.City.X, player.City.Z, player, conn);
-        CombatRobotController combatRobot = combaRobotGO.GetComponent<CombatRobotController>();
-        combatRobot.SetInstructions(new List<Instruction>
+        AddRobot(WorldController.instance.combatRobotPrefab, player.City.X, player.City.Z, player, conn, new List<Instruction>
         {
             new Instruction_Move(MoveDirection.Up),
             new Instruction_Attack(AttackType.Nearby3),
@@ -124,9 +122,7 @@ public static class ScenarioSetup
 
         wc.SpawnResourceNode(new CopperItem(), player.City.X + 4, player.City.Z);
 
-        GameObject harvesterGO = AddRobot(WorldController.instance.harvesterRobotPrefab, player.City.X + 4, player.City.Z, player, conn);
-        HarvesterRobotController harvester = harvesterGO.GetComponent<HarvesterRobotController>();
-        harvester.SetInstructions(new List<Instruction>
+        AddRobot(WorldController.instance.harvesterRobotPrefab, player.City.X + 4, player.City.Z, player, conn, new List<Instruction>
         {
             new Instruction_Harvest(),
             new Instruction_Move(MoveDirection.Left),
@@ -134,16 +130,12 @@ public static class ScenarioSetup
             new Instruction_Move(MoveDirection.Right),
         });
 
-        GameObject storageRobotGO = AddRobot(WorldController.instance.storageRobotPrefab, player.City.X + 3, player.City.Z, player, conn);
-        StorageRobotController storageRobot = storageRobotGO.GetComponent<StorageRobotController>();
-        storageRobot.SetInstructions(new List<Instruction>
+        AddRobot(WorldController.instance.storageRobotPrefab, player.City.X + 3, player.City.Z, player, conn, new List<Instruction>
         {
             new Instruction_Idle()
         });
 
-        GameObject transporterGO = AddRobot(WorldController.instance.transporterRobotPrefab, player.City.X + 3, player.City.Z, player, conn);
-        TransporterRobotController transporter = transporterGO.GetComponent<TransporterRobotController>();
-        transporter.SetInstructions(new List<Instruction>
+        AddRobot(WorldController.instance.transporterRobotPrefab, player.City.X + 3, player.City.Z, player, conn, new List<Instruction>
         {
             new Instruction_PickUp(),
             new Instruction_Move(MoveDirection.Left),
@@ -209,8 +201,7 @@ public static class ScenarioSetup
     {
         AddFood(player.City, 20);
 
-        PurgeRobotController purger = AddRobot(WorldController.instance.purgeRobotPrefab, player.City.X + 1, player.City.Z, player, conn).GetComponent<PurgeRobotController>();
-        purger.SetInstructions(new List<Instruction>()
+        AddRobot(WorldController.instance.purgeRobotPrefab, player.City.X + 1, player.City.Z, player, conn, new List<Instruction>()
         {
             new Instruction_Purge()
         });
@@ -220,6 +211,12 @@ public static class ScenarioSetup
 
     private static GameObject AddRobot(GameObject prefab, int x, int z, PlayerController owner, NetworkConnection conn, List<Instruction> instructions = null)
     {
+        if (!WorldController.instance.worldBuilder.IsWithinWorld(x, z))
+        {
+            Debug.LogError("Tried to create scenario robot outside world boundary. Skipping");
+            return null;
+        }
+
         GameObject robotGO = WorldController.instance.SpawnObject(prefab, x, z, owner, conn);
 
         if (instructions != null)

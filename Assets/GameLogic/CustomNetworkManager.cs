@@ -40,7 +40,7 @@ public class CustomNetworkManager : NetworkManager
             WorldController.instance.GetComponent<WorldTickController>().enabled = true;
 
             for (int i = 0; i < (int)NetworkPanel.instance.aiCountSlider.value; i++)
-                WorldController.instance.SpawnAI("AI " + i + 1);
+                WorldController.instance.SpawnAI("AI " + (i + 1));
         }
 
         WorldController.instance.SpawnPlayer(conn);

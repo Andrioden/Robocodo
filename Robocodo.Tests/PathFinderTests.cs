@@ -13,7 +13,7 @@ namespace Robocodo.Tests
     public class PathFinderTests
     {
         [TestMethod]
-        public void FindPathTestPlayground()
+        public void FindPathTestPlaygroundTest()
         {
             int width = 20;
             int height = 20;
