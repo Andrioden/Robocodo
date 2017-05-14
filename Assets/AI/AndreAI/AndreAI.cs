@@ -18,7 +18,7 @@ namespace Robocodo.AndreAI
     ///     CONDITION CHECK 2...
     ///     
     ///     SEEK 1 (subseek)
-    ///     SEEK 2...
+    ///     SEEK 2 (subseek)...
     ///     
     ///     DO
     ///     
@@ -27,7 +27,7 @@ namespace Robocodo.AndreAI
     /// 
     ///  ---------- DETAILS ----------
     /// Has:
-    ///     - First we always check if what the AI seeks is not already completed
+    ///     - First we always check if the AI does not already have what it seeks
     /// 
     /// 
     /// Seek: 
@@ -48,8 +48,6 @@ namespace Robocodo.AndreAI
         public static int Setting_DelayedStart_Min = 2; // Should not be lower than 2, since the game need to initialize a bit before the AI starts. Typical setting Owner on objects.
         public static int Setting_DelayedStart_Max = 3;
         public static int Setting_ThinkingInterval = 2;
-
-        public int SeekingActiveFoodHarvesters = 4;
 
         private ActiveHarvestersTracker activeHarvestersTracker;
 
@@ -77,7 +75,10 @@ namespace Robocodo.AndreAI
             if (Settings.Debug_EnableAiLogging)
                 HumanCommunicator.ShowPopupForAllHumans("Thinking... " + Icons.Heart, player.transform.position, TextPopup.ColorType.DEFAULT);
 
-            Seek_ActiveFoodHarvesters(SeekingActiveFoodHarvesters, 30);
+            Seek_ActiveHarvesters<FoodController>(4, 30);
+            Seek_ActiveHarvesters<IronController>(2, 30);
+            Seek_ActiveHarvesters<CopperController>(2, 30);
+
             Do_ReprogramCompletedHarvesters();
         }
 
@@ -87,33 +88,33 @@ namespace Robocodo.AndreAI
             return true;
         }
 
-        private bool Seek_ActiveFoodHarvesters(int count, float searchRadius)
+        private bool Seek_ActiveHarvesters<T>(int count, float searchRadius) where T : ResourceController
         {
-            Log("Seek_ActiveFoodHarvesters(): " + count);
+            LogFormat("Seek_ActiveHarvesters<{0}>({1}): ", typeof(T), count);
 
-            if (Has_EnoughActiveFoodHarvesters(count))
+            if (Has_ActiveHarvesters<T>(count))
                 return true;
 
             if (!Seek_IdleRobot<HarvesterRobotController>(HarvesterRobotController.Settings_cost()))
                 return false;
 
-            Do_HarvestNearby<FoodController>(searchRadius);
+            Do_HarvestNearby<T>(searchRadius);
 
-            return Seek_ActiveFoodHarvesters(count, searchRadius);
+            return Seek_ActiveHarvesters<T>(count, searchRadius);
         }
 
-        private bool Has_EnoughActiveFoodHarvesters(int count)
+        private bool Has_ActiveHarvesters<T>(int count) where T : ResourceController
         {
-            bool b = activeHarvestersTracker.OfResourceTypeCount<FoodController>() >= count;
+            bool b = activeHarvestersTracker.OfResourceTypeCount<T>() >= count;
 
-            LogFormat("Has_EnoughActiveFoodHarvesters({0}): {1}", count, b);
+            LogFormat("Has_ActiveHarvesters<{0}>({1}): {2}", typeof(T), count, b);
 
             return b;
         }
 
         private bool Seek_IdleRobot<T>(Cost cost) where T : RobotController
         {
-            LogFormat("Seek_IdleRobot({0}): {1}", cost, typeof(T));
+            LogFormat("Seek_IdleRobot<{0}>({1}): {2}", typeof(T), cost, typeof(T));
 
             if (Has_IdleRobot<T>())
                 return true;
@@ -128,7 +129,7 @@ namespace Robocodo.AndreAI
         {
             bool b = GetOwnedRobot<T>(false).Count > 0;
 
-            LogFormat("Has_IdleRobot(): {0}", b);
+            LogFormat("Has_IdleRobot<{0}>(): {1}", typeof(T), b);
 
             return b;
         }
@@ -144,7 +145,7 @@ namespace Robocodo.AndreAI
 
         private bool Do_BuyRobot<T>() where T : RobotController
         {
-            LogFormat("Do_BuyRobot(): {0}", typeof(T));
+            LogFormat("Do_BuyRobot<{0}>()", typeof(T));
 
             if (typeof(T) == typeof(HarvesterRobotController))
                 player.City.CmdBuyHarvesterRobot();
@@ -164,23 +165,23 @@ namespace Robocodo.AndreAI
 
         private bool Do_HarvestNearby<T>(float searchRadius) where T : ResourceController
         {
-            LogFormat("Do_Harvest(): {0}", typeof(T));
+            LogFormat("Do_HarvestNearby<{0}>()", typeof(T));
 
-            Log("   Looking for idle harvester...");
+            //Log("   Looking for idle harvester...");
             HarvesterRobotController harvester = GetOwnedRobot<HarvesterRobotController>(false).FirstOrDefault();
 
             if (harvester != null)
             {
-                Log("   ... Harvester found!");
+                //Log("   ... Harvester found!");
 
-                Log("   Looking for nearby resource...");
+                //Log("   Looking for nearby resource...");
                 ResourceController nearByResource = harvester.FindNearbyCollidingGameObjectsOfType<T>(searchRadius).Take(4).TakeRandom();
 
                 if (nearByResource != null)
                 {
-                    Log("   ... Resource found!");
+                    //Log("   ... Resource found!");
 
-                    Log("   Programming robot and starting it...");
+                    //Log("   Programming robot and starting it...");
                     DateTime timeStart = DateTime.Now;
                     List<Instruction> instructions = FindPathInstructions(harvester.gameObject, nearByResource.gameObject);
                     instructions.Add(new Instruction_Harvest());

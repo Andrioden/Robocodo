@@ -19,7 +19,7 @@ namespace Robocodo.AndreAI
         {
             CleanupList();
 
-            return activeHarvesters.Count(h => h.Resource is FoodController);
+            return activeHarvesters.Count(h => h.Resource is T);
         }
 
         public void ReprogramCompletedHarvesters()
