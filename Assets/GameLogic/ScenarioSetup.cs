@@ -20,6 +20,7 @@ public static class ScenarioSetup
         scenarios.Add(new ScenarioEntry("Test Attack Neu Enemy", Scenario.Test_AttackNeutralEnemy, Test_AttackNeutralEnemy));
         scenarios.Add(new ScenarioEntry("Test Logistics Chain", Scenario.Test_LogisticsChain, Test_LogisticsChain));
         scenarios.Add(new ScenarioEntry("Test Stacking Robots", Scenario.Test_StackingRobots, Test_StackingRobots));
+        scenarios.Add(new ScenarioEntry("Test Battery Robot", Scenario.Test_BatteryRobot, Test_BatteryRobot));
         scenarios.Add(new ScenarioEntry("Test Infection Purging", Scenario.Test_InfectionPurge, Test_InfectionPurge));
         scenarios.Add(new ScenarioEntry("Test Infection Victory", Scenario.Test_InfectionVictory, Test_InfectionVictory));
     }
@@ -185,6 +186,25 @@ public static class ScenarioSetup
         });
     }
 
+    private static void Test_BatteryRobot(NetworkConnection conn, PlayerController player)
+    {
+        InfectionManager.instance.AddBigInfectionAwayFromCities(wc.worldBuilder.GetCityOrReservedCoordinates());
+
+        AddFood(player.City, 20);
+
+        AddRobot(WorldController.instance.batteryRobotPrefab, player.City.X + 2, player.City.Z, player, conn);
+
+        AddRobot(WorldController.instance.transporterRobotPrefab, player.City.X + 2, player.City.Z, player, conn, new List<Instruction>()
+        {
+            new Instruction_Move(MoveDirection.Up),
+            new Instruction_Move(MoveDirection.Up),
+            new Instruction_Move(MoveDirection.Up),
+            new Instruction_Move(MoveDirection.Down),
+            new Instruction_Move(MoveDirection.Down),
+            new Instruction_Move(MoveDirection.Down),
+        });
+    }
+
     private static void Test_InfectionPurge(NetworkConnection conn, PlayerController player)
     {
         AddFood(player.City, 20);
@@ -276,6 +296,7 @@ public enum Scenario
     Test_AttackNeutralEnemy = 2,
     Test_LogisticsChain = 3,
     Test_StackingRobots = 4,
-    Test_InfectionPurge = 5,
-    Test_InfectionVictory = 6
+    Test_BatteryRobot = 5,
+    Test_InfectionPurge = 6,
+    Test_InfectionVictory = 7
 }

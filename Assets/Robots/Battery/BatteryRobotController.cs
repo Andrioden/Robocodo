@@ -1,8 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BatteryRobotController : RobotController
+public class BatteryRobotController : RobotController, IEnergySource
 {
 
     public Sprite sprite;
@@ -47,6 +48,13 @@ public class BatteryRobotController : RobotController
     public override GameObject SpawnPreviewGameObjectClone()
     {
         return Instantiate(WorldController.instance.batteryRobotPrefab, new Vector3(x, 1, z), Quaternion.identity);
+    }
+
+    public int DrainEnergy(int maxDrain)
+    {
+        int drained = Math.Min(energy, maxDrain);
+        energy -= drained;
+        return drained;
     }
 
 }
