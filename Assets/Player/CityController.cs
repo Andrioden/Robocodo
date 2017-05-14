@@ -108,6 +108,8 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
     [Command]
     public void CmdBuyHarvesterRobot()
     {
+        ThrowExceptionIfDontHaveRobotTech(typeof(HarvesterRobotController));
+
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
         if (CanAfford(HarvesterRobotController.Settings_cost()))
         {
@@ -120,6 +122,8 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
     [Command]
     public void CmdBuyCombatRobot()
     {
+        ThrowExceptionIfDontHaveRobotTech(typeof(CombatRobotController));
+
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
         if (CanAfford(CombatRobotController.Settings_cost()))
         {
@@ -132,6 +136,8 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
     [Command]
     public void CmdBuyTransporterRobot()
     {
+        ThrowExceptionIfDontHaveRobotTech(typeof(TransporterRobotController));
+
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
         if (CanAfford(TransporterRobotController.Settings_cost()))
         {
@@ -144,6 +150,8 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
     [Command]
     public void CmdBuyStorageRobot()
     {
+        ThrowExceptionIfDontHaveRobotTech(typeof(StorageRobotController));
+
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
         if (CanAfford(StorageRobotController.Settings_cost()))
         {
@@ -156,6 +164,8 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
     [Command]
     public void CmdBuyPurgeRobot()
     {
+        ThrowExceptionIfDontHaveRobotTech(typeof(PurgeRobotController));
+
         // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
         if (CanAfford(PurgeRobotController.Settings_cost()))
         {
@@ -163,6 +173,12 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
             WorldController.instance.SpawnObjectWithClientAuthority(prefab, X, Z, Owner);
             RemoveResources(PurgeRobotController.Settings_cost());
         }
+    }
+
+    private void ThrowExceptionIfDontHaveRobotTech(Type robotType)
+    {
+        if (!Owner.TechTree.HasRobotTech(robotType))
+            throw new Exception("Has not robot tech to build robot of type: " + robotType);
     }
 
     /// <summary>

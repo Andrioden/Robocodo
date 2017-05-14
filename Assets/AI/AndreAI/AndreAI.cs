@@ -122,6 +122,9 @@ namespace Robocodo.AndreAI
             if (!Condition_CanAfford(cost))
                 return false;
 
+            if (!Seek_RobotTech<T>())
+                return false;
+
             return Do_BuyRobot<T>();
         }
 
@@ -141,6 +144,31 @@ namespace Robocodo.AndreAI
             LogFormat("Condition_CanAfford({0}): {1}", cost, b);
 
             return b;
+        }
+
+        private bool Seek_RobotTech<T>() where T : RobotController
+        {
+            if (Has_RobotTech<T>())
+                return true;
+
+            return Do_RobotTech<T>();
+        }
+
+        private bool Has_RobotTech<T>() where T : RobotController
+        {
+            return player.TechTree.HasRobotTech(typeof(T));
+        }
+
+        private bool Do_RobotTech<T>() where T : RobotController
+        {
+            Technology_Robot robotTech = player.TechTree.technologies
+                .Where(t => t is Technology_Robot)
+                .Select(t => (Technology_Robot)t)
+                .First(t => t.robotType == typeof(T));
+
+            player.TechTree.SetActiveResearch(robotTech);
+
+            return robotTech.IsResearched();
         }
 
         private bool Do_BuyRobot<T>() where T : RobotController

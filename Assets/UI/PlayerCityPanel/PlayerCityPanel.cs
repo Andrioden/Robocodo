@@ -68,19 +68,19 @@ public class PlayerCityPanel : MonoBehaviour
     {
         buildMenu.ClearBuildables();
 
-        if (city.Owner.TechTree.robotsThatCanBeBuilt.Contains((HarvesterRobotController.Settings_name)))
+        if (city.Owner.TechTree.HasRobotTech(typeof(HarvesterRobotController)))
             buildMenu.AddBuildableItem(HarvesterRobotController.Settings_name, BuyHarvesterRobot, HarvesterRobotController.Settings_cost(), harvesterRobotSprite);
 
-        if (city.Owner.TechTree.robotsThatCanBeBuilt.Contains((CombatRobotController.Settings_name)))
+        if (city.Owner.TechTree.HasRobotTech(typeof(CombatRobotController)))
             buildMenu.AddBuildableItem(CombatRobotController.Settings_name, BuyCombatRobot, CombatRobotController.Settings_cost(), combatRobotSprite);
 
-        if (city.Owner.TechTree.robotsThatCanBeBuilt.Contains((TransporterRobotController.Settings_name)))
+        if (city.Owner.TechTree.HasRobotTech(typeof(TransporterRobotController)))
             buildMenu.AddBuildableItem(TransporterRobotController.Settings_name, BuyTransporterRobot, TransporterRobotController.Settings_cost(), transporterRobotSprite);
 
-        if (city.Owner.TechTree.robotsThatCanBeBuilt.Contains((StorageRobotController.Settings_name)))
+        if (city.Owner.TechTree.HasRobotTech(typeof(StorageRobotController)))
             buildMenu.AddBuildableItem(StorageRobotController.Settings_name, BuyStorageRobot, StorageRobotController.Settings_cost(), storageRobotSprite);
 
-        if (city.Owner.TechTree.robotsThatCanBeBuilt.Contains((PurgeRobotController.Settings_name)))
+        if (city.Owner.TechTree.HasRobotTech(typeof(PurgeRobotController)))
             buildMenu.AddBuildableItem(PurgeRobotController.Settings_name, BuyPurgeRobot, PurgeRobotController.Settings_cost(), purgeRobotSprite);
     }
 

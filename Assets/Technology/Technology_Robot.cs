@@ -6,16 +6,11 @@ using System.Text;
 public class Technology_Robot : Technology
 {
 
-    public string robotName;
+    public Type robotType;
 
-    public Technology_Robot(TechnologyTree techTree, int id, string name, int scienceCost, string robotName) : base(techTree, id, name, scienceCost)
+    public Technology_Robot(TechnologyTree techTree, int id, string name, int scienceCost, Type robotType) : base(techTree, id, name, scienceCost)
     {
-        this.robotName = robotName;
-    }
-
-    public override void Complete()
-    {
-        techTree.robotsThatCanBeBuilt.Add(robotName);
+        this.robotType = robotType;
     }
 
 }

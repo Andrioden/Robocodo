@@ -15,8 +15,6 @@ public abstract class Technology
 
     public int cost;
 
-    public abstract void Complete();
-
     public Technology(TechnologyTree techTree, int id, string name, int cost)
     {
         this.techTree = techTree;
@@ -45,4 +43,6 @@ public abstract class Technology
     {
         return progress >= cost;
     }
+
+    public virtual void Complete() { }
 }

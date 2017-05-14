@@ -13,17 +13,15 @@ public class TechnologyTree : NetworkBehaviour
     public List<Technology> technologies = new List<Technology>();
     public Technology activeResearch;
 
-    public List<string> robotsThatCanBeBuilt = new List<string>();
-
     public event Action OnTechnologyUpdated = delegate { };
 
     public void Start()
     {
-        technologies.Add(new Technology_Robot(this, techIdIterator++, "Harvester", 100, HarvesterRobotController.Settings_name));
-        technologies.Add(new Technology_Robot(this, techIdIterator++, "Predator", 100, CombatRobotController.Settings_name));
-        technologies.Add(new Technology_Robot(this, techIdIterator++, "Transporter", 100, TransporterRobotController.Settings_name));
-        technologies.Add(new Technology_Robot(this, techIdIterator++, "Storage", 100, StorageRobotController.Settings_name));
-        technologies.Add(new Technology_Robot(this, techIdIterator++, "Purger", 100, PurgeRobotController.Settings_name));
+        technologies.Add(new Technology_Robot(this, techIdIterator++, "Harvester", 100, typeof(HarvesterRobotController)));
+        technologies.Add(new Technology_Robot(this, techIdIterator++, "Predator", 100, typeof(CombatRobotController)));
+        technologies.Add(new Technology_Robot(this, techIdIterator++, "Transporter", 100, typeof(TransporterRobotController)));
+        technologies.Add(new Technology_Robot(this, techIdIterator++, "Storage", 100, typeof(StorageRobotController)));
+        technologies.Add(new Technology_Robot(this, techIdIterator++, "Purger", 100, typeof(PurgeRobotController)));
         technologies.Add(new Technology_Victory(this, techIdIterator++, "DX Vaccine", 100));
 
         technologies[0].AddProgress(technologies[0].cost);
@@ -90,6 +88,16 @@ public class TechnologyTree : NetworkBehaviour
             throw new Exception("Could not find tech with id " + techId);
         else
             return tech;
+    }
+
+    [Server]
+    public bool HasRobotTech(Type robotTyoe)
+    {
+        return technologies.Any(t => 
+            (t is Technology_Robot) 
+            && (((Technology_Robot)t).robotType == robotTyoe)
+            && t.IsResearched()
+        );
     }
 
     public Technology GetFinishedVictoryTech()
