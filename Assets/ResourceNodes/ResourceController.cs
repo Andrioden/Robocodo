@@ -3,19 +3,22 @@ using UnityEngine.Networking;
 using System.Collections;
 using System;
 
-public class ResourceController : NetworkBehaviour, IClickable
+public abstract class ResourceController : NetworkBehaviour, IClickable
 {
 
     [SyncVar(hook = "OnRemainingItemsUpdated")]
     protected int remainingItems;
     public int RemainingItems { get { return remainingItems; } }
 
-    [SyncVar]
-    public string resourceType;
-
     public Transform physicalTransform;
 
     private Vector3 originalTransformScale;
+
+    // ********** SETTINGS : START **********
+
+    public abstract string SerializedInventoryType();
+
+    // ********** SETTINGS : END **********
 
     // Use this for initialization
     protected virtual void Start()
@@ -28,7 +31,7 @@ public class ResourceController : NetworkBehaviour, IClickable
 
     public void Click()
     {
-        Debug.LogFormat("This node of resouce type {0} has {1} remaining items", resourceType, remainingItems);
+        Debug.LogFormat("This node of resouce type {0} has {1} remaining items", GetType(), remainingItems);
     }
 
     public ClickablePriority ClickPriority()

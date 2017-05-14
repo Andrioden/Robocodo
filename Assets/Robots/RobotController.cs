@@ -94,7 +94,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     protected int energy;
     public int Energy { get { return energy; } }
 
-    // ********** SETTINGS **********
+    // ********** SETTINGS : START **********
 
     public abstract string Settings_Name();
     public abstract Color Settings_Color();
@@ -124,13 +124,16 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
     public List<Instruction> CommonInstructions { get { return commonInstructions; } }
 
+    // ********** SETTINGS : END **********
 
-    // ********** ABSTRACT METHODS  **********
+    // ********** ABSTRACT METHODS : START  **********
 
     public abstract List<Instruction> GetSpecializedInstructions();
     protected abstract List<Instruction> GetSuggestedInstructionSet();
     public abstract GameObject SpawnPreviewGameObjectClone();
     protected abstract void Animate();
+
+    // ********** ABSTRACT METHODS : END  **********
 
     // Use this for initialization
     private void Start()

@@ -124,7 +124,7 @@ public class WorldController : NetworkBehaviour
         player.connectionId = conn.connectionId.ToString();
         player.SetColor(playerColorManager.GetNextColor());
 
-        playerGO.AddComponent<AndreAI>();
+        //playerGO.AddComponent<AndreAI>();
 
         /* NOTE: Always set properties before spawning object, if not there will be a delay before all clients get the values. */
         if (NetworkServer.active)
@@ -169,8 +169,6 @@ public class WorldController : NetworkBehaviour
 
         GameObject resurceGameObject = SpawnObject(InventoryPrefab(item), x, z);
         ResourceController resourceController = resurceGameObject.GetComponent<ResourceController>();
-        resourceController.resourceType = item.Serialize();
-
         _resourceControllers.Add(resourceController);
 
         // Noise Visualisaztion helper code
@@ -207,7 +205,7 @@ public class WorldController : NetworkBehaviour
                 _resourceControllers.Remove(resourceController);
                 Destroy(resourceController.gameObject);
             }
-            return resourceController.resourceType;
+            return resourceController.SerializedInventoryType();
         }
         else
             return null;

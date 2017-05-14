@@ -8,6 +8,8 @@ public class FoodController : ResourceController
     private double growthPerTick;
     private double accumulatedGrowth = 0;
 
+    public override string SerializedInventoryType() { return FoodItem.SerializedType; }
+
     // Use this for initialization
     protected override void Start()
     {
