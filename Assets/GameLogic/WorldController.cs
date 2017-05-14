@@ -67,12 +67,12 @@ public class WorldController : NetworkBehaviour
         Destroy(groundGameObject);
     }
 
-    public void BuildWorld(int width, int height, int matchSize, NoiseConfig noiseConfig)
+    public void BuildWorld(int width, int height, int maxPlayers, NoiseConfig noiseConfig)
     {
         this.width = width;
         this.height = height;
 
-        worldBuilder = new WorldBuilder(width, height, matchSize, noiseConfig);
+        worldBuilder = new WorldBuilder(width, height, maxPlayers, noiseConfig);
 
         for (int x = 0; x < width; x++)
         {
@@ -110,6 +110,8 @@ public class WorldController : NetworkBehaviour
     {
         if (!IsServerOrDemo())
             return null;
+
+        Debug.Log("Spawning Player");
 
         var playerPos = worldBuilder.GetNextPlayerPosition();
 
@@ -251,7 +253,7 @@ public class WorldController : NetworkBehaviour
                 Debug.LogError("player parameter was given, but for a GameObject created from a prefab that is not supposed to be owned.");
         }
 
-        /* NOTE: Always set properties before spawning object, if not there will be a delay before all clients get the values. */
+        // NOTE: Always set properties before spawning object, if not there will be a delay before all clients get the values.
         if (conn != null)
             NetworkServer.SpawnWithClientAuthority(newGO, conn);
         else if (NetworkServer.active)
@@ -267,7 +269,7 @@ public class WorldController : NetworkBehaviour
         float xPosition = (width / 2f) - 0.5f; // Hack: The -0.5f is an offset we have to set to align the ground to the tiles
         float zPosition = (height / 2f) - 0.5f; // Hack: The -0.5f is an offset we have to set to align the ground to the tiles
 
-        groundGameObject = (GameObject)Instantiate(groundPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        groundGameObject = Instantiate(groundPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         groundGameObject.name = "Ground_NotNetwork";
 
         if (worldParent != null)

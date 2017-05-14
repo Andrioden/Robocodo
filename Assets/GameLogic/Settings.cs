@@ -3,19 +3,18 @@
     public static float World_IrlSecondsPerTick = 1.0f;
     public static float World_MaxTimeScale = 20;
 
-    //public static float World_CopperNoiseThreshold = 0.0f;
-    //public static float World_CopperNoiseThreshold = 0.92f;
-    //public static float World_IronNoiseThreshold = 0.92f;
-    //public static float World_FoodNoiseThreshold = 0.92f;
+    public static float World_Gen_CopperNoiseRangeFrom = 0.00f;
+    public static float World_Gen_CopperNoiseRangeTo = 0.10f;
+    public static float World_Gen_IronNoiseRangeFrom = 0.30f;
+    public static float World_Gen_IronNoiseRangeTo = 0.33f;
+    public static float World_Gen_FoodNoiseRangeFrom = 0.90f;
+    public static float World_Gen_FoodNoiseRangeTo = 1.00f;
 
-    public static float World_CopperNoiseRangeFrom = 0.00f;
-    public static float World_CopperNoiseRangeTo = 0.10f;
-
-    public static float World_IronNoiseRangeFrom = 0.30f;
-    public static float World_IronNoiseRangeTo = 0.33f;
-
-    public static float World_FoodNoiseRangeFrom = 0.90f;
-    public static float World_FoodNoiseRangeTo = 1.00f;
+    public static int World_Gen_PlayerAreaRadius = 10;
+    public static int World_Gen_PlayerStartingAreaResourceRadius = 5;
+    public static int World_Gen_PlayerStartingAreaCopper = 3;
+    public static int World_Gen_PlayerStartingAreaIron = 3;
+    public static int World_Gen_PlayerStartingAreaFood = 3;
 
     public static int World_Infection_SpreadDistance = 1;
     public static double World_Infection_GrowthPerTickPerTile = 0.12;
@@ -43,8 +42,7 @@
 
     public static int Robot_SalvagePercentage = 25;
     public static int Robot_ReprogramClearEachInstructionTicks = 5;
-
-    public static int Robot_Purge_InfectionReducedPerTick = 10;
+    public static int Robot_PurgeInfectionReducedPerTick = 10;
 
     public static bool GUI_EnableEdgeScrolling = false;
     public static bool GUI_EnableGameLobby = false;

@@ -13,7 +13,7 @@ public class Instruction_Purge : Instruction
     public override bool Execute(RobotController robot)
     {
         double oldInfection = InfectionManager.instance.GetTileInfection(robot.X, robot.Z);
-        double newInfection = InfectionManager.instance.DecreaseTileInfection(robot.X, robot.Z, robot.Owner, Settings.Robot_Purge_InfectionReducedPerTick);
+        double newInfection = InfectionManager.instance.DecreaseTileInfection(robot.X, robot.Z, robot.Owner, Settings.Robot_PurgeInfectionReducedPerTick);
 
         int infectionDecreased = (int)Math.Floor(oldInfection - newInfection);
         robot.Owner.TechTree.AddProgressToActiveResearch(infectionDecreased);

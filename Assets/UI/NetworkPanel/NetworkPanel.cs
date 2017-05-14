@@ -118,16 +118,16 @@ public class NetworkPanel : MonoBehaviour
     {
         maxPlayersLabel.text = "Max players: " + (int)newValue;
 
-        if (aiCountSlider.value > maxPlayersSlider.value)
-            aiCountSlider.value = maxPlayersSlider.value;
+        if (aiCountSlider.value > maxPlayersSlider.value - 1)
+            aiCountSlider.value = maxPlayersSlider.value - 1;
     }
 
     private void OnAiCountSliderChange(float newValue)
     {
         aiCountLabel.text = "AIs: " + (int)newValue;
 
-        if (maxPlayersSlider.value < aiCountSlider.value)
-            maxPlayersSlider.value = aiCountSlider.value;
+        if (maxPlayersSlider.value < aiCountSlider.value + 1)
+            maxPlayersSlider.value = aiCountSlider.value + 1;
     }
 
     private void LAN_OnHostClick()

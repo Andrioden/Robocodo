@@ -13,17 +13,16 @@ public class WorldBuilder
     public TileType[,] Tiles { get { return tiles; } }
     public float[,] noiseMap;
 
-    List<Coordinate> reservedPlayerCoordinates = new List<Coordinate>(); // Should never be manipulated directly, only through the designated method
-    int playerCordIncrement = 0;
+    Stack<Coordinate> reservedPlayerCoordinates = new Stack<Coordinate>();
 
-    public WorldBuilder(int width, int height, int reservedPlayerSpotCount, NoiseConfig noiseConfig)
+    public WorldBuilder(int width, int height, int maxPlayers, NoiseConfig noiseConfig)
     {
         this.width = width;
         this.height = height;
         tiles = new TileType[width, height];
 
-        for (int i = 0; i < reservedPlayerSpotCount; i++)
-            ReservePlayerCoordinate(GetRandomEmptyCoordinate());
+        for (int i = 0; i < maxPlayers; i++)
+            GeneratePlayerArea(GetRandomEmptyCoordinate());
 
         if (noiseConfig != null)
             GenerateResources(noiseConfig);
@@ -37,30 +36,26 @@ public class WorldBuilder
         {
             for (int z = 0; z < noiseMap.GetLength(1); z++)
             {
-                if (MathUtils.InRange(Settings.World_CopperNoiseRangeFrom, Settings.World_CopperNoiseRangeTo, noiseMap[x, z]))
+                if (tiles[x, z] != TileType.Empty)
+                    continue;
+                else if (MathUtils.InRange(Settings.World_Gen_CopperNoiseRangeFrom, Settings.World_Gen_CopperNoiseRangeTo, noiseMap[x, z]))
                     SetTile(x, z, TileType.CopperNode);
-                else if (MathUtils.InRange(Settings.World_IronNoiseRangeFrom, Settings.World_IronNoiseRangeTo, noiseMap[x, z]))
+                else if (MathUtils.InRange(Settings.World_Gen_IronNoiseRangeFrom, Settings.World_Gen_IronNoiseRangeTo, noiseMap[x, z]))
                     SetTile(x, z, TileType.IronNode);
-                else if (MathUtils.InRange(Settings.World_FoodNoiseRangeFrom, Settings.World_FoodNoiseRangeTo, noiseMap[x, z]))
+                else if (MathUtils.InRange(Settings.World_Gen_FoodNoiseRangeFrom, Settings.World_Gen_FoodNoiseRangeTo, noiseMap[x, z]))
                     SetTile(x, z, TileType.FoodNode);
                 //else
                 //Debug.Log("Wierd noise value: " + noiseMap[x, y]);
             }
         }
-
-        //SpawnResources(TileType.CopperNode, noiseConfig, Settings.World_CopperNoiseThreshold);
-        //SpawnResources(TileType.IronNode, noiseConfig, Settings.World_IronNoiseThreshold);
-        //SpawnResources(TileType.FoodNode, noiseConfig, Settings.World_FoodNoiseThreshold);
     }
 
     public Coordinate GetNextPlayerPosition()
     {
-        if (playerCordIncrement >= reservedPlayerCoordinates.Count)
-            return GetRandomEmptyCoordinate();
-
-        var nextPos = reservedPlayerCoordinates[playerCordIncrement];
-        playerCordIncrement++;
-        return nextPos;
+        if (reservedPlayerCoordinates.Count == 0)
+            throw new Exception("Out of reserved player coordinates. Should not allow players to join when no player coordinates is left. Someone messed up!");
+        else
+            return reservedPlayerCoordinates.Pop();
     }
 
     public List<Coordinate> GetCityOrReservedCoordinates()
@@ -69,33 +64,32 @@ public class WorldBuilder
 
         for (int x = 0; x < tiles.GetLength(0); x++)
             for (int z = 0; z < tiles.GetLength(1); z++)
-                if (tiles[x, z] == TileType.City || tiles[x, z] == TileType.CityReservation)
+                if (tiles[x, z] == TileType.PlayerCity || tiles[x, z] == TileType.PlayerCityReservation)
                     cities.Add(new Coordinate(x, z));
 
         return cities;
     }
 
-    private void ReservePlayerCoordinate(Coordinate playerCityCoordinate)
+    private void GeneratePlayerArea(Coordinate playerCityCoordinate)
     {
-        reservedPlayerCoordinates.Add(playerCityCoordinate);
+        reservedPlayerCoordinates.Push(playerCityCoordinate);
 
-        SetTile(GetRandomOpenCoordinateNear(playerCityCoordinate, 1, 3), TileType.CopperNode);
-        SetTile(GetRandomOpenCoordinateNear(playerCityCoordinate, 1, 3), TileType.IronNode);
-        SetTile(GetRandomOpenCoordinateNear(playerCityCoordinate, 1, 3), TileType.FoodNode);
+        SetTile(playerCityCoordinate.x, playerCityCoordinate.z, TileType.PlayerCityReservation);
 
-        SetTile(playerCityCoordinate.x, playerCityCoordinate.z, TileType.CityReservation);
+        List<Coordinate> playerResourceCordsList = GetCoordinatesNear(playerCityCoordinate, Settings.World_Gen_PlayerStartingAreaResourceRadius, TileType.Empty);
+        Utils.Shuffle(playerResourceCordsList);
+        Stack<Coordinate> playerResourceCordsStack = new Stack<Coordinate>(playerResourceCordsList);
+
+        for (int _ = 0; _ < Settings.World_Gen_PlayerStartingAreaCopper; _++)
+            SetTile(playerResourceCordsStack.Pop(), TileType.CopperNode);
+        for (int _ = 0; _ < Settings.World_Gen_PlayerStartingAreaIron; _++)
+            SetTile(playerResourceCordsStack.Pop(), TileType.IronNode);
+        for (int _ = 0; _ < Settings.World_Gen_PlayerStartingAreaFood; _++)
+            SetTile(playerResourceCordsStack.Pop(), TileType.FoodNode);
+
+        foreach (Coordinate cord in GetCoordinatesNear(playerCityCoordinate, Settings.World_Gen_PlayerAreaRadius, TileType.Empty))
+            SetTile(cord, TileType.PlayerArea);
     }
-
-    //private void SpawnResources(TileType tileType, NoiseConfig noiseConfig, float treshold)
-    //{
-    //    float[,] copperNoiseMap = NoiseUtils.GenerateNoiseMap(width, height, noiseConfig);
-    //    for (int x = 0; x < copperNoiseMap.GetLength(0); x++)
-    //        for (int y = 0; y < copperNoiseMap.GetLength(1); y++)
-    //            if (tiles[x, y] == TileType.Empty && copperNoiseMap[x, y] > treshold)
-    //                tiles[x, y] = tileType;
-
-    //    noiseMap = copperNoiseMap;
-    //}
 
     private void SetTile(Coordinate coord, TileType type)
     {
@@ -125,7 +119,7 @@ public class WorldBuilder
     }
 
     /// <summary>
-    /// Image you have two Squares, one big and one small. This method uses minDistance-1 as a little square and maxDistance as a big square.
+    /// Image you have two Squares, one big and one small. This method uses (minDistance - 1) as a little square and maxDistance as a big square.
     /// It finds availible open spots by withdrawing from the big square coordinates that is in the small square.
     /// </summary>
     private Coordinate GetRandomOpenCoordinateNear(Coordinate coord, int minDistance, int maxDistance)
@@ -180,8 +174,9 @@ public class WorldBuilder
 public enum TileType
 {
     Empty, // Is defaulted to this when initing enum array
-    CityReservation,
-    City,
+    PlayerCityReservation,
+    PlayerCity,
+    PlayerArea,
     CopperNode,
     IronNode,
     FoodNode
