@@ -12,6 +12,7 @@ public class PlayerCityPanel : MonoBehaviour
     public Sprite transporterRobotSprite;
     public Sprite storageRobotSprite;
     public Sprite purgeRobotSprite;
+    public Sprite batteryRobotSprite;
 
     private Animator animator;
     private CityController city;
@@ -82,6 +83,9 @@ public class PlayerCityPanel : MonoBehaviour
 
         if (city.Owner.TechTree.HasRobotTech(typeof(PurgeRobotController)))
             buildMenu.AddBuildableItem(PurgeRobotController.Settings_name, BuyPurgeRobot, PurgeRobotController.Settings_cost(), purgeRobotSprite);
+
+        if (city.Owner.TechTree.HasRobotTech(typeof(BatteryRobotController)))
+            buildMenu.AddBuildableItem(BatteryRobotController.Settings_name, BuyBatteryRobot, BatteryRobotController.Settings_cost(), batteryRobotSprite);
     }
 
     private void BuyHarvesterRobot()
@@ -128,4 +132,14 @@ public class PlayerCityPanel : MonoBehaviour
             instance.buildMenu.IndicateSuccessfulPurchase(PurgeRobotController.Settings_name);
         }
     }
+
+    private void BuyBatteryRobot()
+    {
+        if (city.CanAffordFlashIfNot(BatteryRobotController.Settings_cost()))
+        {
+            city.CmdBuyBatteryRobot();
+            instance.buildMenu.IndicateSuccessfulPurchase(BatteryRobotController.Settings_name);
+        }
+    }
+
 }

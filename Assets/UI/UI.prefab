@@ -3331,6 +3331,7 @@ MonoBehaviour:
     type: 3}
   storageRobotSprite: {fileID: 21300000, guid: c2d1de397726af54d9b1cbed92b9cb0e, type: 3}
   purgeRobotSprite: {fileID: 21300000, guid: 743387b053f8344448129d7d6d405d3f, type: 3}
+  batteryRobotSprite: {fileID: 21300000, guid: 8d79d528d44e6bc4383dacf49b749969, type: 3}
 --- !u!114 &114000011135477630
 MonoBehaviour:
   m_ObjectHideFlags: 1

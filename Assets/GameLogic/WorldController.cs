@@ -19,6 +19,7 @@ public class WorldController : NetworkBehaviour
     public GameObject transporterRobotPrefab;
     public GameObject purgeRobotPrefab;
     public GameObject storageRobotPrefab;
+    public GameObject batteryRobotPrefab;
 
     private GameObject groundGameObject;
 

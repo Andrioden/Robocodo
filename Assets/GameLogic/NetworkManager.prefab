@@ -56,7 +56,7 @@ MonoBehaviour:
   m_OfflineScene: 
   m_OnlineScene: 
   m_SpawnPrefabs:
-  - {fileID: 190096, guid: a52a093a005a4704ca0b0b49c72156c5, type: 2}
+  - {fileID: 0}
   - {fileID: 1469754915254386, guid: 32d26e5ab78055a4c884e3b3139ac22d, type: 2}
   - {fileID: 107340, guid: b7f3d2acfc9ba2c47a89b75545e00eeb, type: 2}
   - {fileID: 134104, guid: ee1cbd9e258bd9145a338baccd5ca91b, type: 2}
@@ -65,6 +65,7 @@ MonoBehaviour:
   - {fileID: 1094565523732136, guid: 0bee50b6f02442848b20937c1e4b2276, type: 2}
   - {fileID: 1322633384899872, guid: e4690caabb88ae64bbb73091b6a71e33, type: 2}
   - {fileID: 1097309779218706, guid: fcdf703781a64a245a43e0eec403860b, type: 2}
+  - {fileID: 1127501323600574, guid: c591448ab902e554ca880b1f9a8430b1, type: 2}
   - {fileID: 1000011173860404, guid: 45ca152e2d3f4fd40b8a63a8147ffd43, type: 2}
   - {fileID: 157114, guid: 1cc4c27114911bc449b6fa845ebbd524, type: 2}
   - {fileID: 162768, guid: 30884e0b2f8c9014e8fba6f006b16d3e, type: 2}

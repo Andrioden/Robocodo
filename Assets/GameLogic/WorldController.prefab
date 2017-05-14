@@ -63,6 +63,8 @@ MonoBehaviour:
     type: 2}
   storageRobotPrefab: {fileID: 1322633384899872, guid: e4690caabb88ae64bbb73091b6a71e33,
     type: 2}
+  batteryRobotPrefab: {fileID: 1127501323600574, guid: c591448ab902e554ca880b1f9a8430b1,
+    type: 2}
 --- !u!114 &11494072
 MonoBehaviour:
   m_ObjectHideFlags: 1

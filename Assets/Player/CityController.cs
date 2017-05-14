@@ -175,6 +175,20 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
         }
     }
 
+    [Command]
+    public void CmdBuyBatteryRobot()
+    {
+        ThrowExceptionIfDontHaveRobotTech(typeof(BatteryRobotController));
+
+        // Is checked on the server so we are sure the player doesnt doubleclick and creates some race condition. So server always control spawning of robot and deduction of resourecs at the same time
+        if (CanAfford(BatteryRobotController.Settings_cost()))
+        {
+            GameObject prefab = WorldController.instance.batteryRobotPrefab;
+            WorldController.instance.SpawnObjectWithClientAuthority(prefab, X, Z, Owner);
+            RemoveResources(BatteryRobotController.Settings_cost());
+        }
+    }
+
     private void ThrowExceptionIfDontHaveRobotTech(Type robotType)
     {
         if (!Owner.TechTree.HasRobotTech(robotType))

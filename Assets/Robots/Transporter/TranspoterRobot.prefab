@@ -54,7 +54,7 @@ GameObject:
   - component: {fileID: 54360441426926438}
   m_Layer: 0
   m_Name: TranspoterRobot
-  m_TagString: Untagged
+  m_TagString: Robot
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1200,8 +1200,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8913d8b53e77e1245a7fe2c50f30a6a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  x: 0
-  z: 0
   meshGO: {fileID: 1888496093035244}
   colorRenderers:
   - {fileID: 23503925056851262}
