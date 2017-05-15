@@ -9,9 +9,17 @@ public class StackingRobotsOverhangOverview : MonoBehaviour
     public GameObject stackingRobotsOverhangPrefab;
 
     private PlayerController _clientsOwnPlayer;
+    private PlayerController ClientsOwnPlayer()
+    {
+        if (_clientsOwnPlayer == null)
+            _clientsOwnPlayer = WorldController.instance.FindClientsOwnPlayer();
+
+        return _clientsOwnPlayer;
+    }
 
     private GameObject parent;
     private List<GameObject> spawnedGuiObjects = new List<GameObject>();
+    private int spawnedGuiObjectsHash;
 
     private float refreshInterval = 0.3f;
 
@@ -39,6 +47,7 @@ public class StackingRobotsOverhangOverview : MonoBehaviour
     public void DestroyAll()
     {
         spawnedGuiObjects.ForEach(go => Destroy(go));
+        spawnedGuiObjects.Clear();
     }
 
     private IEnumerator RefreshCoroutine()
@@ -52,39 +61,52 @@ public class StackingRobotsOverhangOverview : MonoBehaviour
 
     public void Refresh()
     {
-        PlayerController clientPlayer = GetClientPlayer();
-        if (clientPlayer == null)
+        if (ClientsOwnPlayer() == null)
         {
             Debug.Log("Could not find player city, stacking robot GUI will not refresh. This debug message is OK if runs at the start. Might be data-sync timing issues.");
             return;
         }
 
-        DestroyAll();
+        List<RobotController> ownedRobots = GameObject.FindGameObjectsWithTag("Robot").Select(go => go.GetComponent<RobotController>()).Where(r => r.Owner == ClientsOwnPlayer()).ToList();
 
-        List<RobotController> currentStackCheck = new List<RobotController>();
+        List<List<RobotController>> robotStacks = new List< List<RobotController> >();
+        robotStacks.Add(new List<RobotController>());
 
-        List<RobotController> ownedRobots = GameObject.FindGameObjectsWithTag("Robot").Select(go => go.GetComponent<RobotController>()).Where(r => r.Owner == clientPlayer).ToList();
         foreach (RobotController robot in ownedRobots.OrderBy(r => r.X).ThenBy(r => r.Z))
         {
-            if (currentStackCheck.Count == 0 || robot.X == currentStackCheck[0].X && robot.Z == currentStackCheck[0].Z)
-                currentStackCheck.Add(robot);
+            var lastRobotStack = robotStacks.Last();
+            if (lastRobotStack.Count == 0 || robot.X == lastRobotStack[0].X && robot.Z == lastRobotStack[0].Z)
+                lastRobotStack.Add(robot);
             else
             {
-                SpawnOverhangPossibly(currentStackCheck);
-                currentStackCheck.Clear();
-                currentStackCheck.Add(robot);
+                robotStacks.Add(new List<RobotController>());
+                robotStacks.Last().Add(robot);
             }
         }
 
-        SpawnOverhangPossibly(currentStackCheck);
+        robotStacks = robotStacks.Where(s => s.Count > 1).ToList(); // Filter away those with only 1 robot
+
+        List<RobotController> robotStacksFlatList = robotStacks.SelectMany(s => s).ToList();
+        if (IsRobotStackingChanged(robotStacksFlatList))
+        {
+            DestroyAll();
+
+            foreach (var stack in robotStacks)
+                SpawnOverhangPossibly(stack);
+
+            spawnedGuiObjectsHash = GetHashFromRobots(robotStacksFlatList);
+        }
     }
 
-    private PlayerController GetClientPlayer()
+    private bool IsRobotStackingChanged(List<RobotController> currentRobots)
     {
-        if (_clientsOwnPlayer == null)
-            _clientsOwnPlayer = WorldController.instance.FindClientsOwnPlayer();
+        return spawnedGuiObjectsHash != GetHashFromRobots(currentRobots);
+    }
 
-        return _clientsOwnPlayer;
+    private int GetHashFromRobots(List<RobotController> robots)
+    {
+        var arrayOfRobotStrings = robots.OrderBy(r => r.netId.Value).Select(r => string.Format("{0}{1}{2}", r.netId.Value, r.X, r.Z)).ToArray();
+        return string.Join(",", arrayOfRobotStrings).GetHashCode();
     }
 
     private void SpawnOverhangPossibly(List<RobotController> robots)

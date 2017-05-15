@@ -257,8 +257,8 @@ public class WorldController : NetworkBehaviour
             NetworkServer.SpawnWithClientAuthority(newGO, conn);
         else if (NetworkServer.active)
             NetworkServer.Spawn(newGO);
-        else
-            Debug.LogWarning("NetworkServer not active");
+        //else
+            //Debug.LogWarning("NetworkServer not active");
 
         return newGO;
     }

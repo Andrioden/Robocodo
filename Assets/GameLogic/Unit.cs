@@ -106,7 +106,7 @@ public abstract class Unit : OwnedNetworkBehaviour
 
     public Coordinate GetCoordinate()
     {
-        return new Coordinate((int)x, (int)z);
+        return new Coordinate(x, z);
     }
 
     public T FindFirstOnCurrentPosition<T>()
