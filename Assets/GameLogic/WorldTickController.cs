@@ -42,7 +42,7 @@ public class WorldTickController : MonoBehaviour
         //InvokeRepeating("UpdateTimeData", 0, 0.1f);
         float ellapsedTimeSinceGameStart = Time.time - startTime;
 
-        int newTick = Convert.ToInt32(ellapsedTimeSinceGameStart / Settings.World_IrlSecondsPerTick);
+        int newTick = Convert.ToInt32(ellapsedTimeSinceGameStart / Settings.World_Time_IrlSecondsPerTick);
         if (newTick > tick)
         {
             tick = newTick;
@@ -50,7 +50,7 @@ public class WorldTickController : MonoBehaviour
             OnAfterTick();
         }
 
-        int newHalfTick = Convert.ToInt32(ellapsedTimeSinceGameStart * 2.0f / Settings.World_IrlSecondsPerTick);
+        int newHalfTick = Convert.ToInt32(ellapsedTimeSinceGameStart * 2.0f / Settings.World_Time_IrlSecondsPerTick);
         if (newHalfTick > halfTick)
         {
             halfTick = newHalfTick;

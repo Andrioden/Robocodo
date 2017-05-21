@@ -15,7 +15,7 @@ public class FoodController : ResourceController
     {
         base.Start();
 
-        growthPerTick = Utils.RandomDouble(Settings.Resource_Food_GrowthPerTick_Min, Settings.Resource_Food_GrowthPerTick_Max);
+        growthPerTick = Utils.RandomDouble(Settings.World_Gen_FoodGrowthPerTick_Min, Settings.World_Gen_FoodGrowthPerTick_Max);
 
         WorldTickController.instance.OnTick += Grow;
     }
@@ -31,7 +31,7 @@ public class FoodController : ResourceController
         if (accumulatedGrowth >= 1)
         {
             int growth = (int)accumulatedGrowth; //Floors it
-            remainingItems = Mathf.Min(Settings.Resource_ItemsPerNode_Max, remainingItems + growth);
+            remainingItems = Mathf.Min(Settings.World_Gen_ResourceItemsPerNode_Max, remainingItems + growth);
             accumulatedGrowth -= growth;
 
             UpdateTransformSize();

@@ -19,6 +19,7 @@ public class HarvesterRobotController : RobotController
 
     public static string Settings_name = "HARVESTER";
     public static Cost Settings_cost() { return new Cost() { Copper = 1, Iron = 3 }; }
+    public static int Settings_inventoryCapacity = 2;
 
     public override string Settings_Name() { return Settings_name; }
     public override Color Settings_Color() { return Color.yellow; }
@@ -26,7 +27,7 @@ public class HarvesterRobotController : RobotController
     public override int Settings_Memory() { return 20; }
     public override int Settings_IPT() { return 1; }
     public override int Settings_MaxEnergy() { return 50; }
-    public override int Settings_InventoryCapacity() { return 2; }
+    public override int Settings_InventoryCapacity() { return Settings_inventoryCapacity; }
     public override int Settings_ModuleCapacity() { return 1; }
     public override int Settings_HarvestYield() { return 1; }
     public override int Settings_Damage() { return 0; }

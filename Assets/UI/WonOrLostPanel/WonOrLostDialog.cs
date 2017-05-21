@@ -40,6 +40,9 @@ public class WonOrLostDialog : MonoBehaviour
     public void Show(string text)
     {
         textLabel.text = text;
+        textLabel.text += "\n";
+        textLabel.text += "\n";
+        textLabel.text += "Tick: " + WorldTickController.instance.Tick;
         panel.SetActive(true);
     }
 

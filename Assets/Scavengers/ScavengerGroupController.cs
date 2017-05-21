@@ -33,7 +33,7 @@ public class ScavengerGroupController : Unit, IAttackable
     {
         var newPosition = new Vector3(x, transform.position.y, z);
         transform.LookAt(newPosition);
-        transform.position = Vector3.MoveTowards(transform.position, newPosition, (1.0f / Settings.World_IrlSecondsPerTick) * Time.deltaTime * 2 /* 2 = halftick */);
+        transform.position = Vector3.MoveTowards(transform.position, newPosition, (1.0f / Settings.World_Time_IrlSecondsPerTick) * Time.deltaTime * 2 /* 2 = halftick */);
     }
 
     private void AI_Ticker()

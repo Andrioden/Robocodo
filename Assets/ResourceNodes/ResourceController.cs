@@ -25,7 +25,7 @@ public abstract class ResourceController : NetworkBehaviour, IClickable
     {
         originalTransformScale = new Vector3(physicalTransform.localScale.x, physicalTransform.localScale.y, physicalTransform.localScale.z);
 
-        remainingItems = Utils.RandomInt(Settings.Resource_ItemsPerNode_Min, Settings.Resource_ItemsPerNode_Max);
+        remainingItems = Utils.RandomInt(Settings.World_Gen_ResourceItemsPerNode_Min, Settings.World_Gen_ResourceItemsPerNode_Max);
         UpdateTransformSize();
     }
 
@@ -61,7 +61,7 @@ public abstract class ResourceController : NetworkBehaviour, IClickable
     [Client]
     protected void UpdateTransformSize()
     {
-        double scalePercentage = MathUtils.LinearConversionDouble(0, Settings.Resource_ItemsPerNode_Max, 0, 100, remainingItems);
+        double scalePercentage = MathUtils.LinearConversionDouble(0, Settings.World_Gen_ResourceItemsPerNode_Max, 0, 100, remainingItems);
         double volumeScaleFactor = scalePercentage / 100.0;
         float sideScaleFactor = (float)MathUtils.CubicRoot(volumeScaleFactor);
 

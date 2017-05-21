@@ -240,7 +240,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     private void Move()
     {
         var newPosition = new Vector3(x, transform.position.y, z);
-        transform.position = Vector3.MoveTowards(transform.position, newPosition, (1.0f / Settings.World_IrlSecondsPerTick) * Time.deltaTime * Settings_IPT());
+        transform.position = Vector3.MoveTowards(transform.position, newPosition, (1.0f / Settings.World_Time_IrlSecondsPerTick) * Time.deltaTime * Settings_IPT());
     }
 
     [Client]

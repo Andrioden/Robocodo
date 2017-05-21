@@ -1,7 +1,7 @@
 ﻿public static class Settings
 {
-    public static float World_IrlSecondsPerTick = 1.0f;
-    public static float World_MaxTimeScale = 20;
+    public static float World_Time_IrlSecondsPerTick = 1.0f;
+    public static float World_Time_MaxTimeScale = 50;
 
     public static float World_Gen_CopperNoiseRangeFrom = 0.00f;
     public static float World_Gen_CopperNoiseRangeTo = 0.10f;
@@ -16,6 +16,11 @@
     public static int World_Gen_PlayerStartingAreaIron = 3;
     public static int World_Gen_PlayerStartingAreaFood = 3;
 
+    public static int World_Gen_ResourceItemsPerNode_Min = 100;
+    public static int World_Gen_ResourceItemsPerNode_Max = 200;
+    public static double World_Gen_FoodGrowthPerTick_Min = 0;
+    public static double World_Gen_FoodGrowthPerTick_Max = 0;
+
     public static int World_Infection_SpreadDistance = 1;
     public static double World_Infection_GrowthPerTickPerTile = 0.12;
     public static double World_Infection_MaxCityInfectionImpactPerTile = 1.3;
@@ -28,11 +33,6 @@
     public static double City_Population_FoodConsumedPerTick = 0.01;
     public static int City_Energy_RechargedPerTick = 500;
     public static double City_Science_PerPopulationPerTick = 1.0;
-
-    public static int Resource_ItemsPerNode_Min = 100;
-    public static int Resource_ItemsPerNode_Max = 200;
-    public static double Resource_Food_GrowthPerTick_Min = 0;
-    public static double Resource_Food_GrowthPerTick_Max = 1;
 
     public static int Scenario_Normal_AmountOfStartingHarvesterRobots = 2;
     public static int Scenario_Normal_AmountOfStartingCombatRobots = 1;
