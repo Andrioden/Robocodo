@@ -69,6 +69,9 @@ namespace Robocodo.AndreAI
 
         private void Think()
         {
+            if (player == null || player.City == null)
+                return;
+
             if (Settings.Debug_EnableAiLogging)
                 HumanCommunicator.ShowPopupForAllHumans("Thinking... " + Icons.Heart, player.transform.position, TextPopup.ColorType.DEFAULT);
 
