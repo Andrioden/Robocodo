@@ -48,4 +48,5 @@
     public static bool GUI_EnableGameLobby = false;
 
     public static bool Debug_EnableAiLogging = false;
+    public static bool Debug_PlayerAsAI = false;
 }

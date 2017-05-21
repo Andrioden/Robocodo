@@ -32,11 +32,13 @@ public abstract class AI : MonoBehaviour
         return GetOwned<T>().Where(r => r.IsStarted == isStarted).ToList();
     }
 
-    protected List<T> GetOwned<T>()
+    protected List<T> GetOwned<T>() where T : RobotController
     {
         return player.OwnedGameObjects
+            .Where(go => go != null)
             .Select(go => go.GetComponent<T>())
-            .Where(r => r != null).ToList();
+            .Where(r => r != null) // If it has the component then we know its of the right T type
+            .ToList();
     }
 
     protected List<Instruction> FindPathInstructions(GameObject from, GameObject to)

@@ -52,7 +52,7 @@ public class TechTreeDialog : MonoBehaviour
     {
         techColumn.transform.DestroyChildren();
 
-        foreach (Technology tech in player.TechTree.technologies)
+        foreach (Technology tech in player.TechTree.Technologies)
         {
             GameObject techButtonGO = Instantiate(techButtonPrefab);
             Button techButton = techButtonGO.GetComponent<Button>();

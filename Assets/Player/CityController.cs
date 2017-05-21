@@ -191,7 +191,7 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
 
     private void ThrowExceptionIfDontHaveRobotTech(Type robotType)
     {
-        if (!Owner.TechTree.HasRobotTech(robotType))
+        if (!Owner.TechTree.IsRobotTechResearched(robotType))
             throw new Exception("Has not robot tech to build robot of type: " + robotType);
     }
 

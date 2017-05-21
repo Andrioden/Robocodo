@@ -69,22 +69,22 @@ public class PlayerCityPanel : MonoBehaviour
     {
         buildMenu.ClearBuildables();
 
-        if (city.Owner.TechTree.HasRobotTech(typeof(HarvesterRobotController)))
+        if (city.Owner.TechTree.IsRobotTechResearched(typeof(HarvesterRobotController)))
             buildMenu.AddBuildableItem(HarvesterRobotController.Settings_name, BuyHarvesterRobot, HarvesterRobotController.Settings_cost(), harvesterRobotSprite);
 
-        if (city.Owner.TechTree.HasRobotTech(typeof(CombatRobotController)))
+        if (city.Owner.TechTree.IsRobotTechResearched(typeof(CombatRobotController)))
             buildMenu.AddBuildableItem(CombatRobotController.Settings_name, BuyCombatRobot, CombatRobotController.Settings_cost(), combatRobotSprite);
 
-        if (city.Owner.TechTree.HasRobotTech(typeof(TransporterRobotController)))
+        if (city.Owner.TechTree.IsRobotTechResearched(typeof(TransporterRobotController)))
             buildMenu.AddBuildableItem(TransporterRobotController.Settings_name, BuyTransporterRobot, TransporterRobotController.Settings_cost(), transporterRobotSprite);
 
-        if (city.Owner.TechTree.HasRobotTech(typeof(StorageRobotController)))
+        if (city.Owner.TechTree.IsRobotTechResearched(typeof(StorageRobotController)))
             buildMenu.AddBuildableItem(StorageRobotController.Settings_name, BuyStorageRobot, StorageRobotController.Settings_cost(), storageRobotSprite);
 
-        if (city.Owner.TechTree.HasRobotTech(typeof(PurgeRobotController)))
+        if (city.Owner.TechTree.IsRobotTechResearched(typeof(PurgeRobotController)))
             buildMenu.AddBuildableItem(PurgeRobotController.Settings_name, BuyPurgeRobot, PurgeRobotController.Settings_cost(), purgeRobotSprite);
 
-        if (city.Owner.TechTree.HasRobotTech(typeof(BatteryRobotController)))
+        if (city.Owner.TechTree.IsRobotTechResearched(typeof(BatteryRobotController)))
             buildMenu.AddBuildableItem(BatteryRobotController.Settings_name, BuyBatteryRobot, BatteryRobotController.Settings_cost(), batteryRobotSprite);
     }
 

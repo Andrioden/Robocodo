@@ -10,7 +10,8 @@ public class TechnologyTree : NetworkBehaviour
 
     private int techIdIterator = 0;
 
-    public List<Technology> technologies = new List<Technology>();
+    private List<Technology> technologies = new List<Technology>();
+    public List<Technology> Technologies { get { return technologies; } }
     public Technology activeResearch;
 
     public event Action OnTechnologyUpdated = delegate { };
@@ -69,6 +70,9 @@ public class TechnologyTree : NetworkBehaviour
         Technology tech = GetTechnology(techId);
         tech.SetProgress(progress);
         OnTechnologyUpdated();
+
+        if (tech.IsResearched())
+            activeResearch = null;
     }
 
     [Client]
@@ -94,7 +98,7 @@ public class TechnologyTree : NetworkBehaviour
     }
 
     [Server]
-    public bool HasRobotTech(Type robotTyoe)
+    public bool IsRobotTechResearched(Type robotTyoe)
     {
         return technologies.Any(t => 
             (t is Technology_Robot) 
