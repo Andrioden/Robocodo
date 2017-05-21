@@ -20,7 +20,8 @@ namespace Robocodo.AndreAI
             if (!Seek_IdleRobot<HarvesterRobotController>(HarvesterRobotController.Settings_cost()))
                 return false;
 
-            Do_HarvestNearby<T>(searchRadius);
+            if (!Do_HarvestNearby<T>(searchRadius))
+                return false;
 
             return Seek_ActiveHarvesters<T>(count, searchRadius);
         }
@@ -92,42 +93,31 @@ namespace Robocodo.AndreAI
         {
             LogFormat("Do_HarvestNearby<{0}>()", typeof(T));
 
-            //Log("   Looking for idle harvester...");
             HarvesterRobotController harvester = GetOwnedRobot<HarvesterRobotController>(false).FirstOrDefault();
 
-            if (harvester != null)
-            {
-                //Log("   ... Harvester found!");
-
-                //Log("   Looking for nearby resource...");
-                ResourceController nearByResource = harvester.FindNearbyCollidingGameObjectsOfType<T>(searchRadius).Take(4).TakeRandom();
-
-                if (nearByResource != null)
-                {
-                    //Log("   ... Resource found!");
-
-                    //Log("   Programming robot and starting it...");
-                    DateTime timeStart = DateTime.Now;
-                    List<Instruction> instructions = FindPathInstructions(harvester.gameObject, nearByResource.gameObject);
-                    instructions.Add(new Instruction_Harvest());
-                    instructions.Add(new Instruction_Harvest());
-                    instructions.Add(new Instruction_Move(MoveDirection.Home));
-                    instructions.Add(new Instruction_DropInventory());
-                    harvester.SetInstructions(instructions);
-                    harvester.CmdStartRobot();
-                    DateTime timeEnd = DateTime.Now;
-                    int msUsed = (timeEnd - timeStart).Milliseconds;
-                    LogFormat("   ... Robot pathfound and programmed in in {0}ms!", msUsed);
-
-                    activeHarvestersTracker.Add(harvester, nearByResource);
-
-                    return true;
-                }
-                else
-                    return false;
-            }
-            else
+            if (harvester == null)
                 return false;
+
+            ResourceController nearByResource = harvester.FindNearbyCollidingGameObjectsOfType<T>(searchRadius).Take(4).TakeRandom();
+
+            if (nearByResource == null)
+                return false;
+
+            DateTime timeStart = DateTime.Now;
+            List<Instruction> instructions = FindPathInstructions(harvester.gameObject, nearByResource.gameObject);
+            instructions.Add(new Instruction_Harvest());
+            instructions.Add(new Instruction_Harvest());
+            instructions.Add(new Instruction_Move(MoveDirection.Home));
+            instructions.Add(new Instruction_DropInventory());
+            harvester.SetInstructions(instructions);
+            harvester.CmdStartRobot();
+            DateTime timeEnd = DateTime.Now;
+            int msUsed = (timeEnd - timeStart).Milliseconds;
+            LogFormat("   ... Robot pathfound and programmed in in {0}ms!", msUsed);
+
+            activeHarvestersTracker.Add(harvester, nearByResource);
+
+            return true;
         }
 
     }

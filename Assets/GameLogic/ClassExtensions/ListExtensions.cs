@@ -19,7 +19,7 @@ public static class ListExtensions
     public static T TakeRandom<T>(this List<T> list)
     {
         if (list.Count == 0)
-            throw new Exception("About to get random element of empty list");
+            return default(T);
 
         int r = Utils.rnd.Next(list.Count);
         return list[r];
