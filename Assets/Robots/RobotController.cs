@@ -16,6 +16,9 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
     private bool isAlreadyHome = false;
 
+    private Quaternion targetRotation;
+    private Vector3 lastRotationTargetPosition;
+
     [SyncVar]
     private string feedback = "";
     public string Feedback { get { return feedback; } }
@@ -160,7 +163,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             EnterExitGarageCheck();
 
         Move();
-        Face();
+        Rotate();
         Animate();
     }
 
@@ -244,20 +247,34 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     }
 
     [Client]
-    private void Face()
+    private void Rotate()
     {
-        if (LastAppliedInstruction == null)
-            return;
+        if (LastAppliedInstruction != null)
+            CalculateNewTargetRotation();
 
-        Vector3? faceVector = null;
+        if(transform.rotation.eulerAngles != targetRotation.eulerAngles) {
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, (300.0f / Settings.World_Time_IrlSecondsPerTick) * Time.deltaTime);
+        }
+    }
+
+    private void CalculateNewTargetRotation()
+    {
+        Vector3? rotationTargetPosition = null;
 
         if (LastAppliedInstruction.GetType() == typeof(Instruction_Move))
-            faceVector = new Vector3(x, transform.position.y, z);
+            rotationTargetPosition = new Vector3(x, transform.position.y, z);
         else if (LastAppliedInstruction.GetType() == typeof(Instruction_Attack) && lastAttackedTargetWasAnHit)
-            faceVector = new Vector3(lastAttackedTargetX, transform.position.y, lastAttackedTargetZ);
+            rotationTargetPosition = new Vector3(lastAttackedTargetX, transform.position.y, lastAttackedTargetZ);
 
-        if (faceVector.HasValue)
-            transform.LookAt(faceVector.Value);
+        if (rotationTargetPosition.HasValue && rotationTargetPosition.Value != lastRotationTargetPosition)
+        {
+            var _direction = (rotationTargetPosition.Value - transform.position).normalized;
+            if (_direction != Vector3.zero)
+            {
+                targetRotation = Quaternion.LookRotation(_direction);
+                lastRotationTargetPosition = rotationTargetPosition.Value;
+            }
+        }
     }
 
     [ClientRpc]
@@ -408,7 +425,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             return;
 
         int energyAfterExecuting = energy - currentInstruction.Setting_EnergyCost();
-        
+
         if (energyAfterExecuting < 0)
             SetFeedback("NOT ENOUGH ENERGY", false, true);
         else if (energySource != null && currentInstructionIndex == 0 && energy != Settings_MaxEnergy())
