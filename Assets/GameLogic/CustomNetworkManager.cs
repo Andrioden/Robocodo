@@ -9,6 +9,8 @@ public class CustomNetworkManager : NetworkManager
 
     public GameObject worldControllerPrefab;
 
+    private int maxPlayers;
+
     public override void OnClientConnect(NetworkConnection conn)
     {
         ClientScene.Ready(conn);
@@ -33,7 +35,7 @@ public class CustomNetworkManager : NetworkManager
         {
             int width = Convert.ToInt32(NetworkPanel.instance.worldWidthField.text);
             int height = Convert.ToInt32(NetworkPanel.instance.worldHeightField.text);
-            int maxPlayers = (int)NetworkPanel.instance.maxPlayersSlider.value;
+            maxPlayers = (int)NetworkPanel.instance.maxPlayersSlider.value;
 
             GameObject worldControllerGameObject = Instantiate(worldControllerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             NetworkServer.Spawn(worldControllerGameObject);
@@ -51,7 +53,10 @@ public class CustomNetworkManager : NetworkManager
                 WorldController.instance.SpawnAI("AI " + (i + 1));
         }
 
-        WorldController.instance.SpawnPlayer(conn);
+        if (numPlayers < maxPlayers)
+            WorldController.instance.SpawnPlayer(conn);
+        else
+            conn.Disconnect(); //TODO: Send client a message about full server or something
     }
 
 }

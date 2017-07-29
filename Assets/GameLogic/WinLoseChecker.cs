@@ -27,6 +27,7 @@ public class WinLoseChecker : NetworkBehaviour
     // Use this for initialization
     private void Start()
     {
+        WonOrLostDialog.instance.RegisterWinLoseChecker(instance);
         WorldTickController.instance.OnAfterTick += WinLoseCheck;
     }
 

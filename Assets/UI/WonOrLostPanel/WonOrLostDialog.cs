@@ -24,10 +24,10 @@ public class WonOrLostDialog : MonoBehaviour
     }
 
     // Use this for initialization
-    private void Start()
+    public void RegisterWinLoseChecker(WinLoseChecker winLoseChecker)
     {
-        WinLoseChecker.instance.OnWon += Won;
-        WinLoseChecker.instance.OnLost += Lost;
+        winLoseChecker.OnWon += Won;
+        winLoseChecker.OnLost += Lost;
     }
 
     // Update is called once per frame

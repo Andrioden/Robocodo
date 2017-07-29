@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-public class GameLobbyPanel : NetworkBehaviour
+public class GameLobbyPanel : MonoBehaviour
 {
     public GameObject panel;
     public GameObject playersColumn;
@@ -13,6 +13,8 @@ public class GameLobbyPanel : NetworkBehaviour
     public Button startGameButton;
 
     public static GameLobbyPanel instance;
+
+    private DateTime lastUpdate;
 
     private void Awake()
     {
@@ -28,12 +30,29 @@ public class GameLobbyPanel : NetworkBehaviour
 
     private void Start()
     {
-        //TODO: Refactor to find if we are host in some other way, maybe helper method in CustomNetworkManager.
-        if (isServer)
-        {
-            startGameButton.onClick.RemoveAllListeners();
-            startGameButton.onClick.AddListener(StartGameButtonClicked);
-        }
+        startGameButton.gameObject.SetActive(false);
+    }
+
+    private void Update()
+    {
+        UpdatePlayerList();
+    }
+
+    public void EnableStartButton()
+    {
+        startGameButton.onClick.RemoveAllListeners();
+        startGameButton.onClick.AddListener(StartGameButtonClicked);
+        startGameButton.gameObject.SetActive(true);
+    }
+
+    public void Show()
+    {
+        panel.SetActive(true);
+    }
+
+    public void Hide()
+    {
+        panel.SetActive(false);
     }
 
     private void StartGameButtonClicked()
@@ -41,30 +60,27 @@ public class GameLobbyPanel : NetworkBehaviour
         WorldTimeController.instance.StartGame();
     }
 
-    public void Show()
-    {
-        panel.SetActive(true);
-        InvokeRepeating("UpdatePlayerList", 0, 0.5f);
-    }
-
-    public void Hide()
-    {
-        CancelInvoke();
-        panel.SetActive(false);
-    }
-
-    public void UpdatePlayerList()
+    private void UpdatePlayerList()
     {
         if (!panel.activeSelf)
+            return;
+
+        /* Could not use InvokeRepeating or Coroutine to update player list, because they both depend on Time moving forward. TimeScale is set to 0 while this panel is showing. */
+        if (lastUpdate.AddMilliseconds(1000) > DateTime.Now)
             return;
 
         playersColumn.transform.DestroyChildren();
 
         foreach (PlayerController playerController in WorldController.instance.FindPlayerControllers())
         {
+            if (string.IsNullOrEmpty(playerController.Nick))
+                continue;
+
             GameObject playerNickLabelGO = Instantiate(playerNickPanelPrefab);
-            playerNickLabelGO.GetComponentInChildren<Text>().text = playerController.Nick;
             playerNickLabelGO.transform.SetParent(playersColumn.transform, false);
+            playerNickLabelGO.GetComponentInChildren<Text>().text = playerController.Nick;
         }
+
+        lastUpdate = DateTime.Now;
     }
 }

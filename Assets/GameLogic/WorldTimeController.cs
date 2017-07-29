@@ -29,8 +29,10 @@ public class WorldTimeController : NetworkBehaviour
         if (Settings.GUI_EnableGameLobby)
         {
             timeScaleBeforeLobby = Time.timeScale;
-            timeScale = 0;
-            RpcShowGameLobbyPanel();
+            GameLobbyPanel.instance.Show();
+
+            if (isServer)
+                GameLobbyPanel.instance.EnableStartButton();
         }
     }
 
@@ -97,12 +99,6 @@ public class WorldTimeController : NetworkBehaviour
     private void RpcHidePauseDialog()
     {
         PauseDialog.instance.Hide();
-    }
-
-    [ClientRpc]
-    private void RpcShowGameLobbyPanel()
-    {
-        GameLobbyPanel.instance.Show();
     }
 
     [ClientRpc]
