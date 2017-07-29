@@ -58,6 +58,9 @@ public class HarvesterRobotController : RobotController
 
     protected override void Animate()
     {
+        if (!meshGO.activeSelf)
+            return;
+
         if (ShouldAnimationBePlayed())
         {
             if (LastAppliedInstruction.GetType() == typeof(Instruction_Harvest))
