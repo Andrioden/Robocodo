@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 9299986}
   - component: {fileID: 8146510}
   - component: {fileID: 8221808}
-  - component: {fileID: 114927714410104356}
+  - component: {fileID: 114367127223519098}
   m_Layer: 0
   m_Name: Camera
   m_TagString: MainCamera
@@ -94,6 +94,8 @@ Camera:
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 0
+  m_AllowMSAA: 0
+  m_ForceIntoRT: 0
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
@@ -111,7 +113,7 @@ AudioSource:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 126368}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 24300001, guid: b847589c7f7076547857d0711c3f5e2e,
     type: 2}
@@ -229,7 +231,7 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 128812}
   m_IsPrefabParent: 1
---- !u!114 &114927714410104356
+--- !u!114 &114367127223519098
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
