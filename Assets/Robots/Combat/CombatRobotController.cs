@@ -56,6 +56,9 @@ public class CombatRobotController : RobotController
 
     protected override void Animate()
     {
+        if (!meshGO.activeSelf)
+            return;
+
         if (ShouldAnimationBePlayed())
         {
             if (LastAppliedInstruction.GetType() == typeof(Instruction_Attack) && lastAttackedTargetWasAnHit)
@@ -70,8 +73,6 @@ public class CombatRobotController : RobotController
         }
         else if (energy <= 0)        
             StartCoroutine(PlayDeactivateAnimation(1f)); //If we add a way to restart a robot that ran out of energy then we should animate Activate as well.        
-        else
-            bodyAnimator.Play("Idle");
     }
 
     public override GameObject SpawnPreviewGameObjectClone()

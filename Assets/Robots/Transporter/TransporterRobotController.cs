@@ -44,6 +44,9 @@ public class TransporterRobotController : RobotController
 
     protected override void Animate()
     {
+        if (!meshGO.activeSelf)
+            return;
+
         if (energy <= 0)
             StartCoroutine(PlayDeactivateAnimation(1f));
     }

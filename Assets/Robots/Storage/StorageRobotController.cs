@@ -40,7 +40,8 @@ public class StorageRobotController : RobotController
 
     protected override void Animate()
     {
-
+        if (!meshGO.activeSelf)
+            return;
     }
 
     public override GameObject SpawnPreviewGameObjectClone()

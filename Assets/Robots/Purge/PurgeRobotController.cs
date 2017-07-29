@@ -45,7 +45,8 @@ public class PurgeRobotController : RobotController
 
     protected override void Animate()
     {
-
+        if (!meshGO.activeSelf)
+            return;
     }
 
     public override GameObject SpawnPreviewGameObjectClone()

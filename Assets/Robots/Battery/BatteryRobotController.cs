@@ -42,7 +42,8 @@ public class BatteryRobotController : RobotController, IEnergySource
 
     protected override void Animate()
     {
-
+        if (!meshGO.activeSelf)
+            return;
     }
 
     public override GameObject SpawnPreviewGameObjectClone()
