@@ -284,7 +284,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
         if (transform.rotation.eulerAngles != targetRotation.eulerAngles)
         {
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, (300.0f / Settings.World_Time_IrlSecondsPerTick) * Time.deltaTime);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, (600.0f / Settings.World_Time_IrlSecondsPerTick) * Time.deltaTime);
         }
     }
 
