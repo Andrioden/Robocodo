@@ -210,19 +210,49 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         if (IsHomeByTransform() && !isAlreadyHome)
         {
             isAlreadyHome = true;
-            meshGO.SetActive(false);
+            DisableMeshGOAfterDelay(0.2f);
             Owner.City.EnterGarage(this);
         }
         else if (!IsHomeByTransform() && isAlreadyHome)
         {
             isAlreadyHome = false;
-            meshGO.SetActive(true);
+            EnableMeshGOAfterDelay(0.2f);
             Owner.City.ExitGarage(this);
         }
         else if (IsHomeByTransform() && isAlreadyHome && MouseManager.currentlySelected == gameObject && !isStarted)
-            meshGO.SetActive(true);
+            EnableMeshGOAfterDelay(0);
         else if (IsHomeByTransform() && isAlreadyHome && MouseManager.currentlySelected != this && !isStarted)
-            meshGO.SetActive(false);
+            DisableMeshGOAfterDelay(0);
+    }
+
+    private void EnableMeshGOAfterDelay(float delay)
+    {
+        if (!meshGO.activeSelf)
+        {
+            Owner.City.PlayTeleportParticleSystem();
+            StartCoroutine(EnableMeshGO(delay));
+        }
+    }
+
+    private void DisableMeshGOAfterDelay(float delay)
+    {
+        if (meshGO.activeSelf)
+        {
+            Owner.City.PlayTeleportParticleSystem();
+            StartCoroutine(DisableMeshGO(delay));
+        }
+    }
+
+    private IEnumerator EnableMeshGO(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        meshGO.SetActive(true);
+    }
+
+    private IEnumerator DisableMeshGO(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        meshGO.SetActive(false);
     }
 
     [Command]
@@ -252,7 +282,8 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         if (LastAppliedInstruction != null)
             CalculateNewTargetRotation();
 
-        if(transform.rotation.eulerAngles != targetRotation.eulerAngles) {
+        if (transform.rotation.eulerAngles != targetRotation.eulerAngles)
+        {
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, (300.0f / Settings.World_Time_IrlSecondsPerTick) * Time.deltaTime);
         }
     }
