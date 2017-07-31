@@ -18,7 +18,7 @@ public class CombatRobotController : RobotController
     // ********** SETTINGS **********
 
     public static string Settings_name = "PREDATOR";
-    public static Cost Settings_cost() { return new Cost() { Copper = 5, Iron = 2 }; }
+    public static Cost Settings_cost() { return new Cost() { Copper = 20, Iron = 12 }; }
 
     public override string Settings_Name() { return Settings_name; }
     public override Color Settings_Color() { return Color.red; }

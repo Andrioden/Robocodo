@@ -18,7 +18,7 @@ public class HarvesterRobotController : RobotController
     // ********** SETTINGS **********
 
     public static string Settings_name = "HARVESTER";
-    public static Cost Settings_cost() { return new Cost() { Copper = 1, Iron = 3 }; }
+    public static Cost Settings_cost() { return new Cost() { Copper = 5, Iron = 10 }; }
     public static int Settings_inventoryCapacity = 2;
 
     public override string Settings_Name() { return Settings_name; }
