@@ -52,40 +52,41 @@ public class PlayerCityPanel : MonoBehaviour
     {
         this.city = city;
         KeyboardManager.KeyboardLockOff();
-        SetBuildableItemsToBuildMenu();
+        UpdateBuildMenuWithBuildableItems();
         tabController.SetFirstTabActive();
         garage.Show(city);
         animator.Play("RobotMenuSlideIn");
+
+        city.Owner.TechTree.OnNewRobotResearched += UpdateBuildMenuWithBuildableItems;
     }
 
     private void Close()
     {
         garage.Close();
+        city.Owner.TechTree.OnNewRobotResearched -= UpdateBuildMenuWithBuildableItems;
         city = null;
         animator.Play("RobotMenuSlideOut");
     }
 
-    private void SetBuildableItemsToBuildMenu()
+    private void UpdateBuildMenuWithBuildableItems()
     {
-        buildMenu.ClearBuildables();
-
         if (city.Owner.TechTree.IsRobotTechResearched(typeof(HarvesterRobotController)))
-            buildMenu.AddBuildableItem(HarvesterRobotController.Settings_name, BuyHarvesterRobot, HarvesterRobotController.Settings_cost(), harvesterRobotSprite);
+            buildMenu.AddBuildItemIfNotExists(HarvesterRobotController.Settings_name, BuyHarvesterRobot, HarvesterRobotController.Settings_cost(), harvesterRobotSprite);
 
         if (city.Owner.TechTree.IsRobotTechResearched(typeof(CombatRobotController)))
-            buildMenu.AddBuildableItem(CombatRobotController.Settings_name, BuyCombatRobot, CombatRobotController.Settings_cost(), combatRobotSprite);
+            buildMenu.AddBuildItemIfNotExists(CombatRobotController.Settings_name, BuyCombatRobot, CombatRobotController.Settings_cost(), combatRobotSprite);
 
         if (city.Owner.TechTree.IsRobotTechResearched(typeof(TransporterRobotController)))
-            buildMenu.AddBuildableItem(TransporterRobotController.Settings_name, BuyTransporterRobot, TransporterRobotController.Settings_cost(), transporterRobotSprite);
+            buildMenu.AddBuildItemIfNotExists(TransporterRobotController.Settings_name, BuyTransporterRobot, TransporterRobotController.Settings_cost(), transporterRobotSprite);
 
         if (city.Owner.TechTree.IsRobotTechResearched(typeof(StorageRobotController)))
-            buildMenu.AddBuildableItem(StorageRobotController.Settings_name, BuyStorageRobot, StorageRobotController.Settings_cost(), storageRobotSprite);
+            buildMenu.AddBuildItemIfNotExists(StorageRobotController.Settings_name, BuyStorageRobot, StorageRobotController.Settings_cost(), storageRobotSprite);
 
         if (city.Owner.TechTree.IsRobotTechResearched(typeof(PurgeRobotController)))
-            buildMenu.AddBuildableItem(PurgeRobotController.Settings_name, BuyPurgeRobot, PurgeRobotController.Settings_cost(), purgeRobotSprite);
+            buildMenu.AddBuildItemIfNotExists(PurgeRobotController.Settings_name, BuyPurgeRobot, PurgeRobotController.Settings_cost(), purgeRobotSprite);
 
         if (city.Owner.TechTree.IsRobotTechResearched(typeof(BatteryRobotController)))
-            buildMenu.AddBuildableItem(BatteryRobotController.Settings_name, BuyBatteryRobot, BatteryRobotController.Settings_cost(), batteryRobotSprite);
+            buildMenu.AddBuildItemIfNotExists(BatteryRobotController.Settings_name, BuyBatteryRobot, BatteryRobotController.Settings_cost(), batteryRobotSprite);
     }
 
     private void BuyHarvesterRobot()

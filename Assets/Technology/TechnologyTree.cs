@@ -15,6 +15,7 @@ public class TechnologyTree : NetworkBehaviour
     public Technology activeResearch;
 
     public event Action OnTechnologyUpdated = delegate { };
+    public event Action OnNewRobotResearched = delegate { };
 
     public void Start()
     {
@@ -132,5 +133,10 @@ public class TechnologyTree : NetworkBehaviour
             return technologies.Exists(x => !x.IsResearched());
 
         return false;
+    }
+
+    public void TriggerNewRobotResearchedEvent()
+    {
+        OnNewRobotResearched();
     }
 }

@@ -15,14 +15,11 @@ public class BuildMenu : MonoBehaviour
     Dictionary<string, Coroutine> _itemIDCoroutinePairs = new Dictionary<string, Coroutine>();
     private int _chainedPurchasesCount = 0;
 
-    public void ClearBuildables()
+    public void AddBuildItemIfNotExists(string name, UnityAction buyMethod, Cost cost, Sprite sprite)
     {
-        leftColumn.transform.DestroyChildren();
-        rightColumn.transform.DestroyChildren();
-    }
+        if (GetComponentsInChildren<BuildableItem>().ToList().Exists(x => x.ID == name))
+            return;
 
-    public void AddBuildableItem(string name, UnityAction buyMethod, Cost cost, Sprite sprite)
-    {
         GameObject menuItemGO = Instantiate(buildableItemPrefab);
         menuItemGO.transform.SetParent(GetColumn(), false);
 

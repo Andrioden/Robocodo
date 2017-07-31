@@ -13,4 +13,9 @@ public class Technology_Robot : Technology
         this.robotType = robotType;
     }
 
+    public override void Complete()
+    {
+        base.Complete();
+        techTree.TriggerNewRobotResearchedEvent();
+    }
 }
