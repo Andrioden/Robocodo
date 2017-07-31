@@ -8,7 +8,7 @@ public class WorldTimeController : NetworkBehaviour
     private float timeScale;
     private float timeScaleBeforePause = 0;
 
-    private float timeDebug;
+    public float timeDebug;
 
     public static WorldTimeController instance;
     private void Awake()
@@ -32,7 +32,10 @@ public class WorldTimeController : NetworkBehaviour
             GameLobbyPanel.instance.Show(isServer);
         }
         else
+        {
+            GameLobbyPanel.instance.Hide();
             WorldTickController.instance.StartTick();
+        }
     }
 
     private void Update()
@@ -88,21 +91,9 @@ public class WorldTimeController : NetworkBehaviour
     }
 
     [Server]
-    public void DecreaseTimeScaleSlightly()
-    {
-        timeScale = Time.timeScale - 0.05f;
-    }
-
-    [Server]
     public void IncreaseTimeScale()
     {
         timeScale = Time.timeScale + 1;
-    }
-
-    [Server]
-    public void IncreaseTimeScaleSlightly()
-    {
-        timeScale = Time.timeScale + 0.05f;
     }
 
     [ClientRpc]

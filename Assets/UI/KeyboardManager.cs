@@ -15,12 +15,6 @@ public class KeyboardManager : NetworkBehaviour
                 if (Input.GetKeyDown(KeyCode.KeypadMinus) && Time.timeScale > 1)
                     WorldTimeController.instance.DecreaseTimeScale();
 
-                else if (Input.GetKeyDown(KeyCode.KeypadMinus) && Time.timeScale <= 1)
-                    WorldTimeController.instance.DecreaseTimeScaleSlightly();
-
-                else if (Input.GetKeyDown(KeyCode.KeypadPlus) && Time.timeScale <= 1)
-                    WorldTimeController.instance.IncreaseTimeScaleSlightly();
-
                 else if (Input.GetKeyDown(KeyCode.KeypadPlus) && Time.timeScale < Settings.World_Time_MaxTimeScale)
                     WorldTimeController.instance.IncreaseTimeScale();
 
