@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 9299986}
   - component: {fileID: 8146510}
   - component: {fileID: 8221808}
-  - component: {fileID: 114367127223519098}
   - component: {fileID: 114826970548825516}
+  - component: {fileID: 114367127223519098}
   m_Layer: 0
   m_Name: Camera
   m_TagString: MainCamera
@@ -118,11 +118,11 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 24300001, guid: b847589c7f7076547857d0711c3f5e2e,
     type: 2}
-  m_audioClip: {fileID: 8300000, guid: 6dc4be81296344087a45172d7ba5e06f, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 98ce52de3b1087747a8f16a59380e1e4, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
-  Loop: 1
+  Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -255,6 +255,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66e14494108f32d42ae29174ccab03c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioSource: {fileID: 8221808}
   songs:
   - {fileID: 8300000, guid: b15ff5a2e363844f495045993610505b, type: 3}
   - {fileID: 8300000, guid: 46ec4ed652af74f7d9a680ac07e9f8a2, type: 3}
