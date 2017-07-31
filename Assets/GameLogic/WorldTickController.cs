@@ -6,6 +6,7 @@ public class WorldTickController : MonoBehaviour
 {
 
     private float startTime;
+    private bool started = false;
 
     private int tick = 0;
     public int Tick { get { return tick; } }
@@ -30,14 +31,18 @@ public class WorldTickController : MonoBehaviour
         }
     }
 
-    private void Start()
+    public void StartTick()
     {
         startTime = Time.time;
+        started = true;
     }
 
     // Update is called once per frame
     private void Update()
     {
+        if (!started)
+            return;
+
         // TODO MIGHT WANT TO LIMIT HOW OFTEN THIS RUN
         //InvokeRepeating("UpdateTimeData", 0, 0.1f);
         float ellapsedTimeSinceGameStart = Time.time - startTime;

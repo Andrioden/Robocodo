@@ -7,7 +7,8 @@ public class WorldTimeController : NetworkBehaviour
     [SyncVar(hook = "OnTimeScaleUpdated")]
     private float timeScale;
     private float timeScaleBeforePause = 0;
-    private float timeScaleBeforeLobby = 0;
+
+    private float timeDebug;
 
     public static WorldTimeController instance;
     private void Awake()
@@ -28,12 +29,15 @@ public class WorldTimeController : NetworkBehaviour
 
         if (Settings.GUI_EnableGameLobby)
         {
-            timeScaleBeforeLobby = Time.timeScale;
-            GameLobbyPanel.instance.Show();
-
-            if (isServer)
-                GameLobbyPanel.instance.EnableStartButton();
+            GameLobbyPanel.instance.Show(isServer);
         }
+        else
+            WorldTickController.instance.StartTick();
+    }
+
+    private void Update()
+    {
+        timeDebug = Time.time;
     }
 
     public override void OnStartClient()
@@ -44,8 +48,8 @@ public class WorldTimeController : NetworkBehaviour
     [Server]
     public void StartGame()
     {
-        timeScale = timeScaleBeforeLobby;
         RpcHideGameLobbyPanel();
+        WorldTickController.instance.StartTick();
     }
 
     [Server]

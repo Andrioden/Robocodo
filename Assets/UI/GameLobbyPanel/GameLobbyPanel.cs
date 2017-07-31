@@ -28,26 +28,23 @@ public class GameLobbyPanel : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        startGameButton.gameObject.SetActive(false);
-    }
-
     private void Update()
     {
         UpdatePlayerList();
     }
 
-    public void EnableStartButton()
-    {
-        startGameButton.onClick.RemoveAllListeners();
-        startGameButton.onClick.AddListener(StartGameButtonClicked);
-        startGameButton.gameObject.SetActive(true);
-    }
-
-    public void Show()
+    public void Show(bool isServer)
     {
         panel.SetActive(true);
+
+        if (isServer)
+        {
+            startGameButton.onClick.RemoveAllListeners();
+            startGameButton.onClick.AddListener(StartGameButtonClicked);
+            startGameButton.gameObject.SetActive(true);
+        }
+        else
+            startGameButton.gameObject.SetActive(false);
     }
 
     public void Hide()
