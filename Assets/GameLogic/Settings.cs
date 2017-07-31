@@ -35,9 +35,9 @@
     public static double City_Science_PerPopulationPerTick = 1.0;
 
     public static int Scenario_Normal_AmountOfStartingHarvesterRobots = 2;
-    public static int Scenario_Normal_AmountOfStartingCombatRobots = 1;
-    public static int Scenario_Normal_AmountOfStartingCopper = 50;
-    public static int Scenario_Normal_AmountOfStartingIron = 50;
+    public static int Scenario_Normal_AmountOfStartingCombatRobots = 0;
+    public static int Scenario_Normal_AmountOfStartingCopper = 5;
+    public static int Scenario_Normal_AmountOfStartingIron = 10;
     public static int Scenario_Normal_AmountOfStartingFood = 50;
 
     public static int Robot_SalvagePercentage = 25;
@@ -45,7 +45,7 @@
     public static int Robot_PurgeInfectionReducedPerTick = 10;
 
     public static bool GUI_EnableEdgeScrolling = false;
-    public static bool GUI_EnableGameLobby = true;
+    public static bool GUI_EnableGameLobby = false;
 
     public static bool Debug_EnableAiLogging = false;
     public static bool Debug_PlayerAsAI = false;
