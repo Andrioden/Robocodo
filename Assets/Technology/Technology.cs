@@ -15,8 +15,6 @@ public abstract class Technology
 
     public int cost;
 
-    public event Action OnNewRobotResearched = delegate { };
-
     public Technology(TechnologyTree techTree, int id, string name, int cost)
     {
         this.techTree = techTree;
