@@ -18,8 +18,8 @@
 
     public static int World_Gen_ResourceItemsPerNode_Min = 100;
     public static int World_Gen_ResourceItemsPerNode_Max = 200;
-    public static double World_Gen_FoodGrowthPerTick_Min = 0;
-    public static double World_Gen_FoodGrowthPerTick_Max = 0;
+    public static double World_Gen_FoodGrowthPerTick_Min = 0.1;
+    public static double World_Gen_FoodGrowthPerTick_Max = 1.0;
 
     public static int World_Infection_SpreadDistance = 1;
     public static double World_Infection_GrowthPerTickPerTile = 0.12;

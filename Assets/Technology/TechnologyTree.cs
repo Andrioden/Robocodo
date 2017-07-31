@@ -19,19 +19,19 @@ public class TechnologyTree : NetworkBehaviour
     public void Start()
     {
         technologies.Add(new Technology_Robot(this, techIdIterator++, "Harvester", 100, typeof(HarvesterRobotController)));
-        technologies.Add(new Technology_Robot(this, techIdIterator++, "Predator", 100, typeof(CombatRobotController)));
-        technologies.Add(new Technology_Robot(this, techIdIterator++, "Transporter", 100, typeof(TransporterRobotController)));
-        technologies.Add(new Technology_Robot(this, techIdIterator++, "Storage", 100, typeof(StorageRobotController)));
-        technologies.Add(new Technology_Robot(this, techIdIterator++, "Purger", 100, typeof(PurgeRobotController)));
-        technologies.Add(new Technology_Robot(this, techIdIterator++, "Battery", 100, typeof(BatteryRobotController)));
-        technologies.Add(new Technology_Victory(this, techIdIterator++, "DX Vaccine", 100));
+        technologies.Add(new Technology_Robot(this, techIdIterator++, "Predator", 1000, typeof(CombatRobotController)));
+        technologies.Add(new Technology_Robot(this, techIdIterator++, "Transporter", 1000, typeof(TransporterRobotController)));
+        technologies.Add(new Technology_Robot(this, techIdIterator++, "Storage", 1000, typeof(StorageRobotController)));
+        technologies.Add(new Technology_Robot(this, techIdIterator++, "Purger", 1000, typeof(PurgeRobotController)));
+        technologies.Add(new Technology_Robot(this, techIdIterator++, "Battery", 2000, typeof(BatteryRobotController)));
+        technologies.Add(new Technology_Victory(this, techIdIterator++, "DX Vaccine", 100000));
 
         technologies[0].AddProgress(technologies[0].cost);
-        technologies[1].AddProgress(technologies[1].cost);
-        technologies[2].AddProgress(technologies[2].cost);
-        technologies[3].AddProgress(technologies[3].cost);
+        //technologies[1].AddProgress(technologies[1].cost);
+        //technologies[2].AddProgress(technologies[2].cost);
+        //technologies[3].AddProgress(technologies[3].cost);
 
-        technologies[5].AddProgress(technologies[5].cost);
+        //technologies[5].AddProgress(technologies[5].cost);
 
         if (isServer)
             WorldTickController.instance.OnTick += ContinueResearch;
