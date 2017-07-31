@@ -19,7 +19,7 @@ public class TechnologyTree : NetworkBehaviour
     public void Start()
     {
         technologies.Add(new Technology_Robot(this, techIdIterator++, "Harvester", 100, typeof(HarvesterRobotController)));
-        technologies.Add(new Technology_Robot(this, techIdIterator++, "Predator", 1000, typeof(CombatRobotController)));
+        technologies.Add(new Technology_Robot(this, techIdIterator++, "Predator", 30, typeof(CombatRobotController)));
         technologies.Add(new Technology_Robot(this, techIdIterator++, "Transporter", 1000, typeof(TransporterRobotController)));
         technologies.Add(new Technology_Robot(this, techIdIterator++, "Storage", 1000, typeof(StorageRobotController)));
         technologies.Add(new Technology_Robot(this, techIdIterator++, "Purger", 1000, typeof(PurgeRobotController)));
@@ -76,8 +76,16 @@ public class TechnologyTree : NetworkBehaviour
     }
 
     [Client]
-    public void SetActiveResearch(Technology tech)
+    public void SetOrPauseActiveResearch(Technology tech)
     {
+        if (tech.IsResearched())
+            return;
+        else if (activeResearch == tech) {
+            activeResearch = null;
+            CmdClearActiveResearch();
+            return;
+        }
+
         activeResearch = tech;
         CmdSetActiveResearch(tech.id);
     }
@@ -86,6 +94,12 @@ public class TechnologyTree : NetworkBehaviour
     private void CmdSetActiveResearch(int techId)
     {
         activeResearch = GetTechnology(techId);
+    }
+
+    [Command]
+    private void CmdClearActiveResearch()
+    {
+        activeResearch = null;
     }
 
     private Technology GetTechnology(int techId)
@@ -112,4 +126,11 @@ public class TechnologyTree : NetworkBehaviour
         return technologies.FirstOrDefault(t => t.IsResearched() && t is Technology_Victory);
     }
 
+    public bool PlayerShouldSelectResearch()
+    {
+        if (activeResearch == null || activeResearch.IsResearched())
+            return technologies.Exists(x => !x.IsResearched());
+
+        return false;
+    }
 }

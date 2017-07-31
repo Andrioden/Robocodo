@@ -46,7 +46,7 @@ namespace Robocodo.AndreAI
 
         private bool Do_Tech(Technology tech)
         {
-            player.TechTree.SetActiveResearch(tech);
+            player.TechTree.SetOrPauseActiveResearch(tech);
 
             return tech.IsResearched();
         }

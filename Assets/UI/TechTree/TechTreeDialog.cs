@@ -48,6 +48,11 @@ public class TechTreeDialog : MonoBehaviour
         panel.SetActive(false);
     }
 
+    public bool IsOpen()
+    {
+        return panel.activeSelf;
+    }
+
     private void GenerateTechButtons()
     {
         techColumn.transform.DestroyChildren();
@@ -68,7 +73,7 @@ public class TechTreeDialog : MonoBehaviour
 
     private void SetActiveResearchClick(Technology tech)
     {
-        player.TechTree.SetActiveResearch(tech);
+        player.TechTree.SetOrPauseActiveResearch(tech);
 
         GenerateTechButtons();
     }

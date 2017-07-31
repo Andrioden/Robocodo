@@ -84,9 +84,21 @@ public class WorldTimeController : NetworkBehaviour
     }
 
     [Server]
+    public void DecreaseTimeScaleSlightly()
+    {
+        timeScale = Time.timeScale - 0.05f;
+    }
+
+    [Server]
     public void IncreaseTimeScale()
     {
         timeScale = Time.timeScale + 1;
+    }
+
+    [Server]
+    public void IncreaseTimeScaleSlightly()
+    {
+        timeScale = Time.timeScale + 0.05f;
     }
 
     [ClientRpc]
