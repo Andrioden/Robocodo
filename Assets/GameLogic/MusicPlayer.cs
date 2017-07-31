@@ -11,6 +11,7 @@ public class MusicPlayer : MonoBehaviour
     public AudioSource audioSource;
     public List<AudioClip> songs;
 
+    private bool isStarted = false;
     private int currentSong = 0;
     private bool songIsQueued = false;
 
@@ -21,6 +22,12 @@ public class MusicPlayer : MonoBehaviour
 
     private void Update()
     {
+        if (WorldTickController.instance == null)
+            return;
+
+        if (!WorldTickController.instance.IsStarted())
+            return;
+
         if (!audioSource.isPlaying && !songIsQueued)
         {
             currentSong++;

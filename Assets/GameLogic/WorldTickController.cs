@@ -37,6 +37,11 @@ public class WorldTickController : MonoBehaviour
         started = true;
     }
 
+    public bool IsStarted()
+    {
+        return started;
+    }
+
     // Update is called once per frame
     private void Update()
     {
