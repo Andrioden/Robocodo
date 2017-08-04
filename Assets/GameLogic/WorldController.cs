@@ -192,27 +192,6 @@ public class WorldController : NetworkBehaviour
             throw new Exception("Not prefab found for inventory item " + item);
     }
 
-    /// <summary>
-    /// Returns false if no node was found
-    /// </summary>
-    [Server]
-    public string HarvestFromNode(float x, float z)
-    {
-        ResourceController resourceController = _resourceControllers.Find(r => r.transform.position.x == x && r.transform.position.z == z);
-        if (resourceController != null)
-        {
-            resourceController.HarvestOneResourceItem();
-            if (resourceController.RemainingItems <= 0)
-            {
-                _resourceControllers.Remove(resourceController);
-                Destroy(resourceController.gameObject);
-            }
-            return resourceController.SerializedInventoryType();
-        }
-        else
-            return null;
-    }
-
     public GameObject SpawnObjectWithClientAuthority(GameObject prefab, int x, int z, PlayerController owner)
     {
         return SpawnObject(prefab, x, z, owner, owner.connectionToClient);
@@ -279,6 +258,27 @@ public class WorldController : NetworkBehaviour
         groundGameObject.transform.position = new Vector3(xPosition, -0.001f, zPosition);
 
         groundGameObject.GetComponent<TextureTilingController>().RescaleTileTexture();
+    }
+
+    /// <summary>
+    /// Returns false if no node was found
+    /// </summary>
+    [Server]
+    public string HarvestFromNode(float x, float z)
+    {
+        ResourceController resourceController = _resourceControllers.Find(r => r.transform.position.x == x && r.transform.position.z == z);
+        if (resourceController != null)
+        {
+            resourceController.HarvestOneResourceItem();
+            if (resourceController.RemainingItems <= 0)
+            {
+                _resourceControllers.Remove(resourceController);
+                Destroy(resourceController.gameObject);
+            }
+            return resourceController.SerializedInventoryType();
+        }
+        else
+            return null;
     }
 
     // I belive finding by tag is a quick unity action and not neccesary to cache

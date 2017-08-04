@@ -13,7 +13,7 @@ public class WorldBuilder
     public TileType[,] Tiles { get { return tiles; } }
     public float[,] noiseMap;
 
-    Stack<Coordinate> reservedPlayerCoordinates = new Stack<Coordinate>();
+    private Stack<Coordinate> reservedPlayerCoordinates = new Stack<Coordinate>();
 
     public WorldBuilder(int width, int height, int maxPlayers, NoiseConfig noiseConfig)
     {
@@ -48,6 +48,11 @@ public class WorldBuilder
                 //Debug.Log("Wierd noise value: " + noiseMap[x, y]);
             }
         }
+    }
+
+    public bool HasFreePlayerPosition()
+    {
+        return reservedPlayerCoordinates.Count > 0;
     }
 
     public Coordinate GetNextPlayerPosition()

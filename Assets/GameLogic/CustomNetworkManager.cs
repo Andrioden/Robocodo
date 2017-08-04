@@ -4,28 +4,27 @@ using UnityEngine.Networking;
 using UnityEngine.Networking.Match;
 using System;
 
+
 public class CustomNetworkManager : NetworkManager
 {
 
     public GameObject worldControllerPrefab;
 
-    private int maxPlayers;
-
     public override void OnClientConnect(NetworkConnection conn)
     {
+        client.RegisterHandler(MsgType.Highest + 5, ClientStatusMessenger.ClientReceive);
         ClientScene.Ready(conn);
         ClientScene.AddPlayer(0); // The ID input here is not used for anything
-        NetworkPanel.instance.feedbackText.text = "";
-        NetworkPanel.instance.joiningContainer.SetActive(false);
     }
 
     public override void OnClientDisconnect(NetworkConnection conn)
     {
+        client.UnregisterHandler(MsgType.Highest + 5);
         NetworkPanel.instance.ActivateMainMenu();
     }
 
     /// <summary>
-    /// No idea what happens with the playerControllerId, its swallowed and not used. Instead the connectionId will always be unique.
+    /// No idea what is the point of playerControllerId, it is swallowed and not used. Instead the connectionId will always be unique.
     /// </summary>
     public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
     {
@@ -35,13 +34,12 @@ public class CustomNetworkManager : NetworkManager
         {
             int width = Convert.ToInt32(NetworkPanel.instance.worldWidthField.text);
             int height = Convert.ToInt32(NetworkPanel.instance.worldHeightField.text);
-            maxPlayers = (int)NetworkPanel.instance.maxPlayersSlider.value;
 
             GameObject worldControllerGameObject = Instantiate(worldControllerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             NetworkServer.Spawn(worldControllerGameObject);
 
             NoiseConfig noiseConfig = new NoiseConfig() { Scale = 0.99f, Octaves = 4, Persistance = 0.3f, Lacunarity = 0.55f };
-            WorldController.instance.BuildWorld(width, height, maxPlayers, noiseConfig);
+            WorldController.instance.BuildWorld(width, height, MaxPlayers(), noiseConfig);
 
             InfectionManager.instance.Initialize(width, height);
 
@@ -53,10 +51,56 @@ public class CustomNetworkManager : NetworkManager
                 WorldController.instance.SpawnAI("AI " + (i + 1));
         }
 
-        if (numPlayers < maxPlayers)
-            WorldController.instance.SpawnPlayer(conn);
+        if (numPlayers >= MaxPlayers())
+            ClientStatusMessenger.ServerSend(conn, ClientStatusMessenger.Status.Join_Disonnected_ServerFull);
+        else if (!WorldController.instance.worldBuilder.HasFreePlayerPosition())
+            ClientStatusMessenger.ServerSend(conn, ClientStatusMessenger.Status.Join_Disonnected_ServerNoFreePlayerPosition);
         else
-            conn.Disconnect(); //TODO: Send client a message about full server or something
+        {
+            WorldController.instance.SpawnPlayer(conn);
+            ClientStatusMessenger.ServerSend(conn, ClientStatusMessenger.Status.Join_Connected);
+        }
+    }
+
+    private int MaxPlayers()
+    {
+        return (int)NetworkPanel.instance.maxPlayersSlider.value;
+    }
+
+}
+
+/// <summary>
+/// Inspiration: https://forum.unity3d.com/threads/sending-messages-to-single-client.354616/
+/// </summary>
+public class ClientStatusMessenger
+{
+
+    public class ClientMessage : MessageBase
+    {
+        public Status message;
+    }
+
+    public enum Status
+    {
+        Join_Connected,
+        Join_Disonnected_ServerFull,
+        Join_Disonnected_ServerNoFreePlayerPosition
+    }
+
+    public static void ServerSend(NetworkConnection conn, Status clientMessageEnumValue)
+    {
+        ClientMessage msg = new ClientMessage() { message = clientMessageEnumValue };
+        NetworkServer.SendToClient(conn.connectionId, MsgType.Highest + 5, msg);
+    }
+
+    public static void ClientReceive(NetworkMessage netMsg)
+    {
+        Status status = netMsg.ReadMessage<ClientMessage>().message;
+        Debug.Log("OnClientMessageFromServer: " + status);
+        if (status.ToString().Contains("Join_"))
+            NetworkPanel.instance.JoinClientStatusMessage(status);
+        else
+            throw new Exception("Status not supported: " + status.ToString());
     }
 
 }

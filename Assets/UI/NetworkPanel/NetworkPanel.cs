@@ -245,8 +245,29 @@ public class NetworkPanel : MonoBehaviour
 #endif
     }
 
+    public void JoinClientStatusMessage(ClientStatusMessenger.Status status)
+    {
+        if (status == ClientStatusMessenger.Status.Join_Connected)
+        {
+            feedbackText.text = "";
+            joiningContainer.SetActive(false);
+        }
+        else if (status == ClientStatusMessenger.Status.Join_Disonnected_ServerFull)
+            AbortJoin("Server is full");
+        else if (status == ClientStatusMessenger.Status.Join_Disonnected_ServerNoFreePlayerPosition)
+            AbortJoin("Server has no unused player positions");
+        else
+            AbortJoin("Unknown status: " + status);
+    }
+
     private void OnAbortJoinClick()
     {
+        AbortJoin("");
+    }
+
+    private void AbortJoin(string newFeedbackText)
+    {
+        feedbackText.text = newFeedbackText;
         networkManager.StopClient();
         ActivateMainMenu();
     }
