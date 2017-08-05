@@ -101,8 +101,8 @@ public class TechTreeDialog : MonoBehaviour
 
     private void UpdateTechButton(Technology tech, TechGUI techGUI)
     {
-        string activeReseachTextPart = IsActiveResearch(tech) ? "[X]" : "";
-        techGUI.techButtonText.text = string.Format("{0} {1} {2}/{3}", activeReseachTextPart, tech.name, tech.Progress, tech.cost);
+        string winConditionPart = tech is Technology_Victory ? "(victory)" : "";
+        techGUI.techButtonText.text = string.Format("{0} {1}/{2} {3}", tech.name, tech.Progress, tech.cost, winConditionPart);
 
         techGUI.techButton.interactable = tech.Progress < tech.cost;
 
