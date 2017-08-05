@@ -8,8 +8,6 @@ public class TechnologyTree : NetworkBehaviour
 {
     private PlayerController player;
 
-    private int techIdIterator = 0;
-
     private List<Technology> technologies = new List<Technology>();
     public List<Technology> Technologies { get { return technologies; } }
     public Technology activeResearch;
@@ -19,13 +17,7 @@ public class TechnologyTree : NetworkBehaviour
 
     public void Start()
     {
-        technologies.Add(new Technology_Robot(this, techIdIterator++, "Harvester", 100, typeof(HarvesterRobotController)));
-        technologies.Add(new Technology_Robot(this, techIdIterator++, "Predator", 30, typeof(CombatRobotController)));
-        technologies.Add(new Technology_Robot(this, techIdIterator++, "Transporter", 1000, typeof(TransporterRobotController)));
-        technologies.Add(new Technology_Robot(this, techIdIterator++, "Storage", 1000, typeof(StorageRobotController)));
-        technologies.Add(new Technology_Robot(this, techIdIterator++, "Purger", 1000, typeof(PurgeRobotController)));
-        technologies.Add(new Technology_Robot(this, techIdIterator++, "Battery", 2000, typeof(BatteryRobotController)));
-        technologies.Add(new Technology_Victory(this, techIdIterator++, "DX Vaccine", 100000));
+        technologies.AddRange(TechnologiesDB.Technologies(this));
 
         technologies[0].AddProgress(technologies[0].cost);
         //technologies[1].AddProgress(technologies[1].cost);
