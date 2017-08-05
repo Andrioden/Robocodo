@@ -414,7 +414,7 @@ public class RobotPanel : MonoBehaviour
         if (robot.isPreviewRobot)
             return;
 
-        titleText.text = robot.Settings_Name() + " SETUP";
+        titleText.text = robot.Settings_Name();
         SetupPossibleInstructions();
         ModulesUpdated(robot);
 
