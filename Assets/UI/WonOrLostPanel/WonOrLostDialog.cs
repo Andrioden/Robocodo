@@ -23,18 +23,11 @@ public class WonOrLostDialog : MonoBehaviour
         }
     }
 
-    // Use this for initialization
     public void RegisterWinLoseChecker(WinLoseChecker winLoseChecker)
     {
         winLoseChecker.OnWon += Won;
         winLoseChecker.OnLost += Lost;
-    }
-
-    // Update is called once per frame
-    private void Update()
-    {
-        //if (Input.GetKeyDown("escape") && panel.activeSelf)
-        //    panel.SetActive(false);
+        panel.SetActive(false);
     }
 
     public void Show(string text)
