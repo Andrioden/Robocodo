@@ -47,11 +47,11 @@ public class Instruction_Harvest : Instruction
         for (int i = 0; i < robot.Settings_HarvestYield(); i++)
         {
             if (robot.Settings_InventoryCapacity() == 0) {
-                robot.SetFeedback("NO INVENTORY CAPACITY", true, true);
+                robot.SetFeedback("NO INVENTORY CAPACITY", true, false);
                 return;
             }
             else if (robot.IsInventoryFull()) {
-                robot.SetFeedback("INVENTORY FULL", true, true);
+                robot.SetFeedback("INVENTORY FULL", true, false);
                 return;
             }
 
@@ -60,11 +60,11 @@ public class Instruction_Harvest : Instruction
             if (resourceType != null)
                 robot.TransferToInventory(InventoryItem.DeserializeType(resourceType));
             else
-                robot.SetFeedback("NOTHING TO HARVEST", true, true);
+                robot.SetFeedback("NOTHING TO HARVEST", true, false);
         }
 
         if (robot.Settings_HarvestYield() == 0)
-            robot.SetFeedback("NO HARVEST YIELD", true, true);
+            robot.SetFeedback("NO HARVEST YIELD", true, false);
     }
 
 }
