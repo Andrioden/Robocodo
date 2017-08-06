@@ -40,7 +40,7 @@ public class PlayerCityPanel : MonoBehaviour
     {
         if (city != null)
         {
-            if (MouseManager.currentlySelected == null || MouseManager.currentlySelected != city.gameObject)
+            if (MouseManager.instance.CurrentlySelectedObject == null || MouseManager.instance.CurrentlySelectedObject != city.gameObject)
             {
                 Close();
                 return;

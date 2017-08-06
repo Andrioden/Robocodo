@@ -40,7 +40,7 @@ public class StackingRobotsOverhangController : MonoBehaviour
 
     private void ClickOverhangButton(RobotController robot)
     {
-        MouseManager.ClickAndSelectGameObject(robot.transform.root.gameObject);
+        MouseManager.instance.ClickGameObject(robot.transform.root.gameObject);
     }
 
 }

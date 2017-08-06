@@ -19,12 +19,8 @@ public class TechnologyTree : NetworkBehaviour
     {
         technologies.AddRange(TechnologiesDB.Technologies(this));
 
+        //Unlock Harvester from the start
         technologies[0].AddProgress(technologies[0].cost);
-        //technologies[1].AddProgress(technologies[1].cost);
-        //technologies[2].AddProgress(technologies[2].cost);
-        //technologies[3].AddProgress(technologies[3].cost);
-
-        //technologies[5].AddProgress(technologies[5].cost);
 
         if (isServer)
             WorldTickController.instance.OnTick += ContinueResearch;
@@ -104,12 +100,11 @@ public class TechnologyTree : NetworkBehaviour
             return tech;
     }
 
-    [Server]
-    public bool IsRobotTechResearched(Type robotTyoe)
+    public bool IsRobotTechResearched(Type robotType)
     {
         return technologies.Any(t => 
             (t is Technology_Robot) 
-            && (((Technology_Robot)t).robotType == robotTyoe)
+            && (((Technology_Robot)t).robotType == robotType)
             && t.IsResearched()
         );
     }

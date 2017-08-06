@@ -30,7 +30,7 @@ public class KeyboardManager : NetworkBehaviour
         }
 
         if (Input.GetKeyDown("escape"))
-            MouseManager.currentlySelected = null;
+            MouseManager.instance.ClearSelectedObject();
     }
 
     [Client]

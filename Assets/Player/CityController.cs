@@ -301,4 +301,14 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
 
         return Math.Round(distanceAdjustedInfectionImpact * 100 / Settings.World_Infection_InfectionImpactLoss, 1);
     }
+
+    public string GetName()
+    {
+        return "City";
+    }
+
+    public string GetSummary()
+    {
+        return "Owned by " + Owner.Nick;
+    }
 }
