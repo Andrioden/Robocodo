@@ -15,6 +15,9 @@ public class HarvesterRobotController : RobotController
     public Sprite sprite;
     public override Sprite Sprite() { return sprite; }
 
+    //Sounds
+    public AudioClip harvestSound;
+
     // ********** SETTINGS **********
 
     public static string Settings_name = "HARVESTER";
@@ -76,6 +79,8 @@ public class HarvesterRobotController : RobotController
         {
             leftToolParticleSystem.Play();
             rightToolParticleSystem.Play();
+
+            audioSource.PlayOneShot(harvestSound, 1f);
         }
     }
 

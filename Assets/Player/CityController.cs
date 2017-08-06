@@ -6,12 +6,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+[RequireComponent(typeof(AudioSource))]
 public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory, IEnergySource
 {
     public MeshRenderer bodyMeshRenderer;
-    public ParticleSystem[] teleportParticleSystems;
 
     private bool isColorSet = false;
+
+    private AudioSource audioSource;
+    public ParticleSystem[] teleportParticleSystems;
+    public AudioClip teleportationSound;
 
     public int X { get { return (int)gameObject.transform.position.x; } }
     public int Z { get { return (int)gameObject.transform.position.z; } }
@@ -38,12 +42,12 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
     public static int Settings_StartHealth = 10;
     public static int Settings_MaxEnergyStorage = 200;
 
-
     // Use this for initialization
     private void Start()
     {
         health = Settings_StartHealth;
 
+        audioSource = GetComponent<AudioSource>();
         populationManager = GetComponent<PopulationManager>();
         if (isServer)
         {
@@ -75,11 +79,10 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
 
     public void PlayTeleportParticleSystem()
     {
-        //if (!teleportParticleSystems.First().isPlaying)
-        //{
-            foreach (var particleSystem in teleportParticleSystems)
-                particleSystem.Play();
-        //}
+        foreach (var particleSystem in teleportParticleSystems)
+            particleSystem.Play();
+
+        audioSource.PlayOneShot(teleportationSound);
     }
 
     private void Tick()

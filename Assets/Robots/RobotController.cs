@@ -14,6 +14,8 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     public Renderer[] colorRenderers;
     private bool isColorSet = false;
 
+    protected AudioSource audioSource;
+
     private bool isAlreadyHome = false;
 
     private Quaternion targetRotation;
@@ -151,6 +153,8 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
         if (isServer)
             InitDefaultValues();
+
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
