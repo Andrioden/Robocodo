@@ -6,45 +6,66 @@ using System;
 
 public class MusicPlayer : MonoBehaviour
 {
-    /* This is a really basic music player. We would need to create something more polished before shipping. */
-
     public AudioSource audioSource;
     public List<AudioClip> songs;
+    private float originalVolume;
 
     private int currentSong = 0;
-    private bool songIsQueued = false;
+    private bool isFadingOut = false;
 
     private void Start()
     {
         songs.Shuffle();
+        originalVolume = audioSource.volume;
     }
 
     private void Update()
     {
-        if (WorldTickController.instance == null)
+        if (!LobbyManager.HasGameStarted)
             return;
 
-        if (!WorldTickController.instance.IsStarted())
-            return;
-
-        if (!audioSource.isPlaying && !songIsQueued)
+        if (!audioSource.isPlaying)
         {
             currentSong++;
-            if (currentSong >= songs.Count)            
-                currentSong = 0;            
+            if (currentSong >= songs.Count)
+                currentSong = 0;
 
             audioSource.clip = songs[currentSong];
-            StartCoroutine(PlayAfterDelay());
+            StartCoroutine(FadeIn(audioSource, 3f));
         }
+        else
+        if (!isFadingOut && (audioSource.clip.length - audioSource.time < 5))
+            StartCoroutine(FadeOut(audioSource, 5f));
     }
 
-    /* This is used to create a small pause before the next track start. */
-    private IEnumerator PlayAfterDelay()
+    public IEnumerator FadeOut(AudioSource audioSource, float FadeTime)
     {
-        songIsQueued = true;
-        yield return new WaitForSecondsRealtime(1f);
+        isFadingOut = true;
+        float startVolume = audioSource.volume;
 
+        while (audioSource.volume > 0)
+        {
+            audioSource.volume -= startVolume * Time.deltaTime / FadeTime;
+            yield return null;
+        }
+
+        audioSource.Stop();
+        audioSource.volume = startVolume;
+        isFadingOut = false;
+    }
+
+    public IEnumerator FadeIn(AudioSource audioSource, float FadeTime)
+    {
+        float startVolume = 0.2f;
+        audioSource.volume = 0;
         audioSource.Play();
-        songIsQueued = false;
+
+        while (audioSource.volume < originalVolume)
+        {
+            audioSource.volume += startVolume * Time.deltaTime / FadeTime;
+            yield return null;
+        }
+
+        audioSource.volume = originalVolume;
     }
 }

@@ -116,17 +116,16 @@ AudioSource:
   m_GameObject: {fileID: 126368}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24300001, guid: b847589c7f7076547857d0711c3f5e2e,
-    type: 2}
-  m_audioClip: {fileID: 8300000, guid: 98ce52de3b1087747a8f16a59380e1e4, type: 3}
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: f7af166e6c63e9d4094bf3363f37d05f, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.2
   m_Pitch: 1
   Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 160
   DopplerLevel: 1
   MinDistance: 1
   MaxDistance: 500
@@ -257,14 +256,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioSource: {fileID: 8221808}
   songs:
-  - {fileID: 8300000, guid: b15ff5a2e363844f495045993610505b, type: 3}
-  - {fileID: 8300000, guid: 46ec4ed652af74f7d9a680ac07e9f8a2, type: 3}
-  - {fileID: 8300000, guid: 2e03ea08721f4428bad8a4aca5b4d869, type: 3}
-  - {fileID: 8300000, guid: 6dc4be81296344087a45172d7ba5e06f, type: 3}
-  - {fileID: 8300000, guid: fc55e85438fe44522b95eb893c55a09f, type: 3}
-  - {fileID: 8300000, guid: 83a0a974ab25a4adfba3cbb3a1aaa76e, type: 3}
-  - {fileID: 8300000, guid: e39f69181b3274f06aa80dbe740aaa13, type: 3}
-  - {fileID: 8300000, guid: 4ed329fb053834bc281b49629c77fa03, type: 3}
-  - {fileID: 8300000, guid: 0ba6ef1638d3a4bea93b34bbef0a123c, type: 3}
-  - {fileID: 8300000, guid: 32d36c25bc878498baecca74e4fb719f, type: 3}
-  - {fileID: 8300000, guid: 59056f5a0de7d475aafd3a2a7a12b08a, type: 3}
+  - {fileID: 8300000, guid: c4b9871e447d776469573232f12d2b0e, type: 3}
+  - {fileID: 8300000, guid: f2b90c7b0ec32684bae3b9209d6bb040, type: 3}
+  - {fileID: 8300000, guid: 015811f801eac9846a12fc63496ab2ae, type: 3}
+  - {fileID: 8300000, guid: 55a62fb5d08b04a45b4a6edf3d554933, type: 3}
+  - {fileID: 8300000, guid: f7af166e6c63e9d4094bf3363f37d05f, type: 3}
+  - {fileID: 8300000, guid: c089558b9d7bff74c9b4544ee1349e85, type: 3}
+  - {fileID: 8300000, guid: cfdc0334c95f6e8479196d9f65d381c0, type: 3}
+  - {fileID: 8300000, guid: f9ea28a995355e04b941c3a32f866168, type: 3}
+  - {fileID: 8300000, guid: ac45331c4dcc44a42ba03824d7d9b640, type: 3}
+  - {fileID: 8300000, guid: 79afd87add50d6840a937ca316fbdbde, type: 3}
+  - {fileID: 8300000, guid: b35e0ce3a7639b24482841cdd66ba180, type: 3}
+  - {fileID: 8300000, guid: 4f1891951636d5a4fb9a525e3fe90dc6, type: 3}
