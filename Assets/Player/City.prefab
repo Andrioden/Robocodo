@@ -166,6 +166,7 @@ MonoBehaviour:
   - {fileID: 198567401670649532}
   - {fileID: 198342801488566452}
   teleportationSound: {fileID: 8300000, guid: a70346eea85063549a07cd6b5d72318e, type: 3}
+  resourceSound: {fileID: 8300000, guid: 07bc9810ab34ff4459c4e263ede46d64, type: 3}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
