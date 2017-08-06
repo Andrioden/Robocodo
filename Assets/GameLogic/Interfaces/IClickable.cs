@@ -7,6 +7,8 @@ public interface IClickable
     ClickablePriority ClickPriority();
     GameObject GetGameObject();
 
+    string GetName();
+    string GetSummary();
 }
 
 public enum ClickablePriority

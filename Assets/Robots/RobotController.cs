@@ -14,6 +14,8 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     public Renderer[] colorRenderers;
     private bool isColorSet = false;
 
+    protected AudioSource audioSource;
+
     private bool isAlreadyHome = false;
 
     private Quaternion targetRotation;
@@ -151,6 +153,8 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
         if (isServer)
             InitDefaultValues();
+
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -219,9 +223,9 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             EnableMeshGOAfterDelay(0.2f);
             Owner.City.ExitGarage(this);
         }
-        else if (IsHomeByTransform() && isAlreadyHome && MouseManager.currentlySelected == gameObject && !isStarted)
+        else if (IsHomeByTransform() && isAlreadyHome && MouseManager.instance.CurrentlySelectedObject == gameObject && !isStarted)
             EnableMeshGOAfterDelay(0);
-        else if (IsHomeByTransform() && isAlreadyHome && MouseManager.currentlySelected != this && !isStarted)
+        else if (IsHomeByTransform() && isAlreadyHome && MouseManager.instance.CurrentlySelectedObject != this && !isStarted)
             DisableMeshGOAfterDelay(0);
     }
 
@@ -587,12 +591,12 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     [Server]
     public bool TransferToInventory(InventoryItem item)
     {
-        List<InventoryItem> notAddedItems = AddToInventory(new List<InventoryItem> { item });
+        List<InventoryItem> notAddedItems = AddToInventory(new List<InventoryItem> { item }, false);
         return notAddedItems.Count == 0;
     }
 
     [Server]
-    public List<InventoryItem> AddToInventory(List<InventoryItem> items)
+    public List<InventoryItem> AddToInventory(List<InventoryItem> items, bool playSoundEffect)
     {
         List<InventoryItem> notAdded = new List<InventoryItem>();
         foreach (InventoryItem item in items)
@@ -745,7 +749,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         for (int c = 0; c < salvagedIron; c++)
             salvagedResources.Add(new IronItem());
 
-        Owner.City.AddToInventory(salvagedResources);
+        Owner.City.AddToInventory(salvagedResources, false);
 
         Owner.ShowPopupForOwner("SALVAGED!", transform.position, TextPopup.ColorType.DEFAULT);
 
@@ -811,5 +815,15 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     {
         InitDefaultValues();
         SetXzToTransformPosition();
+    }
+
+    public virtual string GetName()
+    {
+        return Settings_Name();
+    }
+
+    public virtual string GetSummary()
+    {
+        return "Owned by " + GetOwner().Nick;
     }
 }

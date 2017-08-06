@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class FoodController : ResourceController
 {
@@ -38,4 +36,8 @@ public class FoodController : ResourceController
         }
     }
 
+    public override string GetSummary()
+    {
+        return base.GetSummary() + string.Format("\nGrowth: {0:0.00}", growthPerTick);
+    }
 }

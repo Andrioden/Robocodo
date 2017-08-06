@@ -50,6 +50,7 @@ public class PlayerController : NetworkBehaviour
         {
             ResourcePanel.instance.RegisterLocalPlayer(this);
             ActionsPanel.instance.RegisterLocalPlayer(this);
+            MouseManager.instance.RegisterLocalPlayer(this);
             PositionCameraRelativeTo();
         }
 

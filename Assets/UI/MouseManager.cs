@@ -9,10 +9,29 @@ using System.Collections.Generic;
 /// </summary>
 public class MouseManager : MonoBehaviour
 {
-    public static GameObject currentlySelected = null;
+    private GameObject currentlySelected = null;
+    public GameObject CurrentlySelectedObject { get { return currentlySelected; } }
+
+    private IClickable lastClicked = null;
+    public IClickable LastClickedObject { get { return lastClicked; } }
 
     private int loopingClickableNumber = 0;
     private ClickablePriority previousClickablePriority;
+    private PlayerController localPlayer;
+
+    public static MouseManager instance;
+
+    private void Awake()
+    {
+        if (instance == null)
+            instance = this;
+
+        else if (instance != this)
+        {
+            Debug.LogError("Tried to create another instance of " + GetType() + ". Destroying.");
+            Destroy(gameObject);
+        }
+    }
 
     private void Update()
     {
@@ -25,10 +44,47 @@ public class MouseManager : MonoBehaviour
             clickables = (new HashSet<IClickable>(clickables)).ToList(); // Distinct
 
             if (clickables.Count == 0)
-                currentlySelected = null;
+                ClearSelectedObject();
             else
                 ClickObjectOfHighestPriorityInLoopingOrder(clickables);
         }
+    }
+
+    public void RegisterLocalPlayer(PlayerController player)
+    {
+        localPlayer = player;
+    }
+
+    public void ClickGameObject(GameObject gameObject)
+    {
+        IClickable clickableObject = gameObject.GetComponent<IClickable>();
+        if (clickableObject != null)
+        {
+            clickableObject.Click();
+            lastClicked = clickableObject;
+            SelectIfSelectable(gameObject, clickableObject);
+            return;
+        }
+        else
+            ClearSelectedObject();
+    }
+
+    public void ClearSelectedObject()
+    {
+        lastClicked = null;
+        currentlySelected = null;
+    }
+
+    private void SelectIfSelectable(GameObject gameObject, IClickable clickableObject)
+    {
+        if (clickableObject is ISelectable)
+        {
+            var owner = gameObject.GetComponent<OwnedNetworkBehaviour>().GetOwner();
+            if (owner != null && owner == localPlayer)
+                currentlySelected = gameObject;
+        }
+        else
+            currentlySelected = null;
     }
 
     private void ClickObjectOfHighestPriorityInLoopingOrder(List<IClickable> clickables)
@@ -43,26 +99,9 @@ public class MouseManager : MonoBehaviour
         if (loopingClickableNumber >= highestClickables.Count)
             loopingClickableNumber = 0;
 
-        ClickAndSelectGameObject(highestClickables[loopingClickableNumber].GetGameObject());
+        ClickGameObject(highestClickables[loopingClickableNumber].GetGameObject());
 
         loopingClickableNumber++;
         previousClickablePriority = highestClickablePriority;
-    }
-
-    public static void ClickAndSelectGameObject(GameObject gameObject)
-    {
-        IClickable clickableObject = gameObject.GetComponent<IClickable>();
-        if (clickableObject != null)
-        {
-            clickableObject.Click();
-            if (clickableObject is ISelectable)
-                currentlySelected = gameObject;
-            else
-                currentlySelected = null;
-
-            return;
-        }
-        else
-            currentlySelected = null;
     }
 }

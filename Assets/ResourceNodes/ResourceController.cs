@@ -35,7 +35,7 @@ public abstract class ResourceController : NetworkBehaviour, IClickable
 
     public void Click()
     {
-        Debug.LogFormat("This node of resouce type {0} has {1} remaining items", GetType(), remainingItems);
+        //Debug.LogFormat("This node of resouce type {0} has {1} remaining items", GetType(), remainingItems);
     }
 
     public ClickablePriority ClickPriority()
@@ -77,4 +77,13 @@ public abstract class ResourceController : NetworkBehaviour, IClickable
         return string.Format("{0},{1}: {2} ", transform.position.x, transform.position.z, GetType());
     }
 
+    public virtual string GetName()
+    {
+        return SerializedInventoryType();
+    }
+
+    public virtual string GetSummary()
+    {
+        return "Remaining: " + RemainingItems;
+    }
 }

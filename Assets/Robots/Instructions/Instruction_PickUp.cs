@@ -50,7 +50,7 @@ public class Instruction_PickUp : Instruction
         foreach(IHasInventory droppableTarget in droppableTargets)
         {
             List<InventoryItem> pickedUpItems = droppableTarget.PickUp(robot.Settings_InventoryCapacity() - robot.Inventory.Count());
-            List<InventoryItem> itemsNotAdded = robot.AddToInventory(pickedUpItems);
+            List<InventoryItem> itemsNotAdded = robot.AddToInventory(pickedUpItems, false);
 
             if (itemsNotAdded.Count > 0)
                 throw new Exception("Was not able to add all picked up items to the inventory. Should not logically happen.");

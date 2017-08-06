@@ -49,7 +49,7 @@ public abstract class InventoryItem
 
 public class CopperItem : InventoryItem
 {
-    public static readonly string SerializedType = "CopperItem";
+    public static readonly string SerializedType = "Copper";
     public override string Serialize()
     {
         return SerializedType;
@@ -58,7 +58,7 @@ public class CopperItem : InventoryItem
 
 public class IronItem : InventoryItem
 {
-    public static readonly string SerializedType = "IronItem";
+    public static readonly string SerializedType = "Iron";
     public override string Serialize()
     {
         return SerializedType;
@@ -67,7 +67,7 @@ public class IronItem : InventoryItem
 
 public class FoodItem : InventoryItem
 {
-    public static readonly string SerializedType = "FoodItem";
+    public static readonly string SerializedType = "Food";
     public override string Serialize()
     {
         return SerializedType;

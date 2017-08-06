@@ -253,7 +253,7 @@ public static class ScenarioSetup
         List<InventoryItem> startingResources = new List<InventoryItem>();
         for (int i = 0; i < amount; i++)
             startingResources.Add(new CopperItem());
-        city.AddToInventory(startingResources);
+        city.AddToInventory(startingResources, false);
     }
 
     private static void AddIron(CityController city, int amount)
@@ -261,7 +261,7 @@ public static class ScenarioSetup
         List<InventoryItem> startingResources = new List<InventoryItem>();
         for (int i = 0; i < amount; i++)
             startingResources.Add(new IronItem());
-        city.AddToInventory(startingResources);
+        city.AddToInventory(startingResources, false);
     }
 
     private static void AddFood(CityController city, int amount)
@@ -269,7 +269,7 @@ public static class ScenarioSetup
         List<InventoryItem> startingResources = new List<InventoryItem>();
         for (int i = 0; i < amount; i++)
             startingResources.Add(new FoodItem());
-        city.AddToInventory(startingResources);
+        city.AddToInventory(startingResources, false);
     }
 
 }

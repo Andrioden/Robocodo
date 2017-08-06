@@ -6,12 +6,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+[RequireComponent(typeof(AudioSource))]
 public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory, IEnergySource
 {
     public MeshRenderer bodyMeshRenderer;
-    public ParticleSystem[] teleportParticleSystems;
 
     private bool isColorSet = false;
+
+    private AudioSource audioSource;
+    public ParticleSystem[] teleportParticleSystems;
+    public AudioClip teleportationSound;
+    public AudioClip resourceSound;
 
     public int X { get { return (int)gameObject.transform.position.x; } }
     public int Z { get { return (int)gameObject.transform.position.z; } }
@@ -38,12 +43,12 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
     public static int Settings_StartHealth = 10;
     public static int Settings_MaxEnergyStorage = 200;
 
-
     // Use this for initialization
     private void Start()
     {
         health = Settings_StartHealth;
 
+        audioSource = GetComponent<AudioSource>();
         populationManager = GetComponent<PopulationManager>();
         if (isServer)
         {
@@ -75,11 +80,10 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
 
     public void PlayTeleportParticleSystem()
     {
-        //if (!teleportParticleSystems.First().isPlaying)
-        //{
-            foreach (var particleSystem in teleportParticleSystems)
-                particleSystem.Play();
-        //}
+        foreach (var particleSystem in teleportParticleSystems)
+            particleSystem.Play();
+
+        audioSource.PlayOneShot(teleportationSound);
     }
 
     private void Tick()
@@ -209,10 +213,10 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
     /// Returns the items not added to the inventory
     /// </summary>
     [Server]
-    public List<InventoryItem> AddToInventory(List<InventoryItem> items)
+    public List<InventoryItem> AddToInventory(List<InventoryItem> items, bool playSoundEffect)
     {
         inventory.AddRange(items);
-        RpcSyncInventory(InventoryItem.Serialize(inventory));
+        RpcSyncInventory(InventoryItem.Serialize(inventory), items.Count, playSoundEffect);
         return new List<InventoryItem>(); // No items was not added since city has no max capacity
     }
 
@@ -225,6 +229,7 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
     [Server]
     public void RemoveResources(Cost cost)
     {
+        int countBefore = inventory.Count;
         for (int c = 0; c < cost.Copper; c++)
             inventory.RemoveAt(inventory.FindIndex(x => x.GetType() == typeof(CopperItem)));
         for (int i = 0; i < cost.Iron; i++)
@@ -232,13 +237,22 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
         for (int i = 0; i < cost.Food; i++)
             inventory.RemoveAt(inventory.FindIndex(x => x.GetType() == typeof(FoodItem)));
 
-        RpcSyncInventory(InventoryItem.Serialize(inventory));
+        int countDifference = inventory.Count - countBefore;
+        RpcSyncInventory(InventoryItem.Serialize(inventory), countDifference, false);
     }
 
     [ClientRpc]
-    private void RpcSyncInventory(string[] itemCounts)
+    private void RpcSyncInventory(string[] itemCounts, int countDifference, bool playSoundEffect)
     {
         inventory = InventoryItem.Deserialize(itemCounts);
+
+        PlayResouceGainedSoundEffect(countDifference, playSoundEffect);
+    }
+
+    private void PlayResouceGainedSoundEffect(int countDifference, bool playSoundEffect)
+    {
+        if (hasAuthority && countDifference > 0 && playSoundEffect)
+            StartCoroutine(AudioUtils.RepeatAudioClipCoroutine(audioSource, resourceSound, countDifference, 0.25f, 5f));
     }
 
     public bool CanAfford(Cost cost)
@@ -300,5 +314,15 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
         }
 
         return Math.Round(distanceAdjustedInfectionImpact * 100 / Settings.World_Infection_InfectionImpactLoss, 1);
+    }
+
+    public string GetName()
+    {
+        return "City";
+    }
+
+    public string GetSummary()
+    {
+        return "Owned by " + Owner.Nick;
     }
 }

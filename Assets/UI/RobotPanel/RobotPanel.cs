@@ -116,7 +116,7 @@ public class RobotPanel : MonoBehaviour
     {
         if (robot != null)
         {
-            if (MouseManager.currentlySelected == null || MouseManager.currentlySelected != robot.gameObject)
+            if (MouseManager.instance.CurrentlySelectedObject == null || MouseManager.instance.CurrentlySelectedObject != robot.gameObject)
             {
                 Close();
                 return;

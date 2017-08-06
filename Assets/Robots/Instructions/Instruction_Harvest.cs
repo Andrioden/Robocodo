@@ -46,10 +46,14 @@ public class Instruction_Harvest : Instruction
     {
         for (int i = 0; i < robot.Settings_HarvestYield(); i++)
         {
-            if (robot.Settings_InventoryCapacity() == 0)
+            if (robot.Settings_InventoryCapacity() == 0) {
                 robot.SetFeedback("NO INVENTORY CAPACITY", true, true);
-            else if (robot.IsInventoryFull())
+                return;
+            }
+            else if (robot.IsInventoryFull()) {
                 robot.SetFeedback("INVENTORY FULL", true, true);
+                return;
+            }
 
             string resourceType = WorldController.instance.HarvestFromNode(robot.X, robot.Z);
 
