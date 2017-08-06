@@ -12,6 +12,7 @@ public abstract class ResourceController : NetworkBehaviour, IClickable
 
     public Transform physicalTransform;
 
+    [SyncVar]
     private Vector3 originalTransformScale;
 
     // ********** SETTINGS : START **********
@@ -20,11 +21,14 @@ public abstract class ResourceController : NetworkBehaviour, IClickable
 
     // ********** SETTINGS : END **********
 
+    public override void OnStartServer()
+    {
+        originalTransformScale = new Vector3(physicalTransform.localScale.x, physicalTransform.localScale.y, physicalTransform.localScale.z);
+    }
+
     // Use this for initialization
     protected virtual void Start()
     {
-        originalTransformScale = new Vector3(physicalTransform.localScale.x, physicalTransform.localScale.y, physicalTransform.localScale.z);
-
         remainingItems = Utils.RandomInt(Settings.World_Gen_ResourceItemsPerNode_Min, Settings.World_Gen_ResourceItemsPerNode_Max);
         UpdateTransformSize();
     }

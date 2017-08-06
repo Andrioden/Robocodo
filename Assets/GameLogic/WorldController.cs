@@ -68,11 +68,14 @@ public class WorldController : NetworkBehaviour
         Destroy(groundGameObject);
     }
 
-    public void BuildWorld(int width, int height, int maxPlayers, NoiseConfig noiseConfig)
+    public void SetDimensions(int width, int height)
     {
         this.width = width;
         this.height = height;
+    }
 
+    public void BuildWorld(int maxPlayers, NoiseConfig noiseConfig)
+    {
         worldBuilder = new WorldBuilder(width, height, maxPlayers, noiseConfig);
 
         for (int x = 0; x < width; x++)
@@ -102,17 +105,18 @@ public class WorldController : NetworkBehaviour
     {
         classIsUsedAsDemo = true;
         worldParent = demoWorldParent;
-        BuildWorld(width, height, 10, noiseConfig);
+        SetDimensions(width, height);
+        BuildWorld(10, noiseConfig);
         SpawnAndAdjustGround();
     }
 
     // [Server] enforced with inline code check
-    public GameObject SpawnPlayer(NetworkConnection conn)
+    public GameObject SpawnPlayer(NetworkConnection conn, string nick)
     {
         if (!IsServerOrDemo())
             return null;
 
-        Debug.Log("Spawning Player");
+        Debug.LogFormat("Spawning Player with connectionID {0} and nick {1}", conn.connectionId, nick);
 
         var playerPos = worldBuilder.GetNextPlayerPosition();
 
@@ -122,17 +126,16 @@ public class WorldController : NetworkBehaviour
             playerGO.transform.parent = worldParent;
 
         PlayerController player = playerGO.GetComponent<PlayerController>();
-        player.connectionId = conn.connectionId.ToString();
-        player.SetColor(playerColorManager.GetNextColor());
+        player.Initialize(conn.connectionId.ToString(), nick, playerColorManager.GetNextColor());
 
         if (Settings.Debug_PlayerAsAI)
             playerGO.AddComponent<AndreAI>();
 
         /* NOTE: Always set properties before spawning object, if not there will be a delay before all clients get the values. */
         if (NetworkServer.active)
-            NetworkServer.AddPlayerForConnection(conn, playerGO, 0); // playerControllerId hardcoded to 0 because we dont know what it is used for
+            NetworkServer.AddPlayerForConnection(conn, playerGO, 0); // playerControllerId is used if multiple players is using one connection
         else
-            Debug.LogWarning("NetworkServer not active");
+            Debug.LogWarning("NetworkServer not active, it should be when spawning player");
 
         SpawnObject(cityPrefab, playerPos.x, playerPos.z, player, conn);
 
@@ -142,17 +145,16 @@ public class WorldController : NetworkBehaviour
     }
 
     [Server]
-    public GameObject SpawnAI(string name)
+    public GameObject SpawnAI(string nick)
     {
-        Debug.Log("Spawning AI: " + name);
+        Debug.Log("Spawning AI: " + nick);
 
         var aiPos = worldBuilder.GetNextPlayerPosition();
 
         GameObject aiPlayerGO = SpawnObject(playerPrefab, aiPos.x, aiPos.z);
 
         PlayerController player = aiPlayerGO.GetComponent<PlayerController>();
-        player.connectionId = name.Replace(" ", "_");
-        player.SetColor(playerColorManager.GetNextColor());
+        player.Initialize(nick.Replace(" ", "_"), nick, playerColorManager.GetNextColor());
 
         SpawnObject(cityPrefab, aiPos.x, aiPos.z, player);
 
@@ -237,14 +239,14 @@ public class WorldController : NetworkBehaviour
             NetworkServer.SpawnWithClientAuthority(newGO, conn);
         else if (NetworkServer.active)
             NetworkServer.Spawn(newGO);
-        //else
-            //Debug.LogWarning("NetworkServer not active");
 
         return newGO;
     }
 
     public void SpawnAndAdjustGround()
     {
+        Debug.LogFormat("Spawning ground with dimensions {0} x {1}", width, height);
+
         float xPosition = (width / 2f) - 0.5f; // Hack: The -0.5f is an offset we have to set to align the ground to the tiles
         float zPosition = (height / 2f) - 0.5f; // Hack: The -0.5f is an offset we have to set to align the ground to the tiles
 
@@ -291,7 +293,7 @@ public class WorldController : NetworkBehaviour
 
     public PlayerController FindPlayerController(string connectionID)
     {
-        return FindPlayerControllers().Where(p => p.connectionId == connectionID).FirstOrDefault();
+        return FindPlayerControllers().Where(p => p.ConnectionID == connectionID).FirstOrDefault();
     }
 
     public PlayerController FindClientsOwnPlayer()
@@ -303,7 +305,7 @@ public class WorldController : NetworkBehaviour
     {
         return GameObject.FindGameObjectsWithTag("PlayerCity")
             .Select(go => go.GetComponent<CityController>())
-            .Where(p => p != null && p.Owner != null && p.Owner.connectionId == connectionID).FirstOrDefault();
+            .Where(p => p != null && p.Owner != null && p.Owner.ConnectionID == connectionID).FirstOrDefault();
     }
 
     private bool IsServerOrDemo()

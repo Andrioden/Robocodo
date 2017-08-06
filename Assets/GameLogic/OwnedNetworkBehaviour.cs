@@ -28,7 +28,7 @@ public abstract class OwnedNetworkBehaviour : NetworkBehaviour
     public void SetOwner(PlayerController player)
     {
         __owner = player;
-        ownerConnectionID = player.connectionId;
+        ownerConnectionID = player.ConnectionID;
     }
 
     public override string ToString()

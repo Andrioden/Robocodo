@@ -14,8 +14,6 @@ public class GameLobbyPanel : MonoBehaviour
 
     public static GameLobbyPanel instance;
 
-    private DateTime lastUpdate;
-
     private void Awake()
     {
         if (instance == null)
@@ -30,17 +28,21 @@ public class GameLobbyPanel : MonoBehaviour
 
     private void Update()
     {
-        UpdatePlayerList();
+        if (LobbyManager.HasGameStarted && panel.activeSelf)
+            Hide();
     }
 
     public void Show(bool isServer)
     {
         panel.SetActive(true);
 
+        UpdatePlayerList(LobbyManager.Players);
+        LobbyManager.OnPlayerListUpdated += UpdatePlayerList;
+
         if (isServer)
         {
             startGameButton.onClick.RemoveAllListeners();
-            startGameButton.onClick.AddListener(StartGameButtonClicked);
+            startGameButton.onClick.AddListener(LobbyManager.StartGame);
             startGameButton.gameObject.SetActive(true);
         }
         else
@@ -49,35 +51,20 @@ public class GameLobbyPanel : MonoBehaviour
 
     public void Hide()
     {
+        LobbyManager.OnPlayerListUpdated -= UpdatePlayerList;
         panel.SetActive(false);
     }
 
-    private void StartGameButtonClicked()
+    private void UpdatePlayerList(List<LobbyPlayer> players)
     {
-        WorldTimeController.instance.StartGame();
-    }
-
-    private void UpdatePlayerList()
-    {
-        if (!panel.activeSelf)
-            return;
-
-        /* Could not use InvokeRepeating or Coroutine to update player list, because they both depend on Time moving forward. TimeScale is set to 0 while this panel is showing. */
-        if (lastUpdate.AddMilliseconds(1000) > DateTime.Now)
-            return;
-
         playersColumn.transform.DestroyChildren();
 
-        foreach (PlayerController playerController in WorldController.instance.FindPlayerControllers())
+        foreach (LobbyPlayer player in players)
         {
-            if (string.IsNullOrEmpty(playerController.Nick))
-                continue;
-
             GameObject playerNickLabelGO = Instantiate(playerNickPanelPrefab);
             playerNickLabelGO.transform.SetParent(playersColumn.transform, false);
-            playerNickLabelGO.GetComponentInChildren<Text>().text = playerController.Nick;
+            playerNickLabelGO.GetComponentInChildren<Text>().text = player.Nick;
         }
-
-        lastUpdate = DateTime.Now;
     }
+
 }

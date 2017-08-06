@@ -66,7 +66,7 @@ public class NetworkPanel : MonoBehaviour
         foreach (var scenario in ScenarioSetup.Scenarios)
             gameModeDropdown.options.Add(new Dropdown.OptionData(scenario.FriendlyName));
 
-        networkManager = FindObjectOfType<CustomNetworkManager>();
+        networkManager = CustomNetworkManager.instance;
         networkManager.SetMatchHost(PlayerSettings.MM_Server, networkManager.matchPort, true); //TODO: Maybe make a user choice in the far future
 
         nickInput.text = PlayerSettings.Game_Nick;
@@ -91,7 +91,7 @@ public class NetworkPanel : MonoBehaviour
         foreach (Button leaveButton in leaveButtons)
         {
             leaveButton.onClick.RemoveAllListeners();
-            leaveButton.onClick.AddListener(OnQuitNetworkGameCLick);
+            leaveButton.onClick.AddListener(QuitNetworkGame);
         }
 
         hostMMutton.onClick.RemoveAllListeners();
@@ -112,6 +112,32 @@ public class NetworkPanel : MonoBehaviour
     public Scenario GetSelectedScenarioChoice()
     {
         return (Scenario)gameModeDropdown.value;
+    }
+
+    public void LobbyEventBehavior(LobbyManager.Event lobbyEvent)
+    {
+        if (lobbyEvent == LobbyManager.Event.ClientConnectionResponse_GameAlreadyStarted)
+        {
+            feedbackText.text = "";
+            joiningContainer.SetActive(false);
+        }
+        else if (lobbyEvent == LobbyManager.Event.ClientConnectionResponse_OpenLobby)
+        {
+            GameLobbyPanel.instance.Show(LobbyManager.IsServer);
+            feedbackText.text = "";
+            joiningContainer.SetActive(false);
+        }
+        else if (lobbyEvent == LobbyManager.Event.ClientConnectionResponse_NoNick)
+            AbortJoin("Cant join without a nick!");
+        else if (lobbyEvent == LobbyManager.Event.ClientConnectionResponse_ServerFull)
+            AbortJoin("Server is full");
+        else if (lobbyEvent == LobbyManager.Event.ClientConnectionResponse_ServerNoFreePlayerPosition)
+            AbortJoin("Server has no unused player positions");
+    }
+
+    public int MaxPlayers()
+    {
+        return (int)maxPlayersSlider.value;
     }
 
     private void OnMaxPlayersSliderChange(float newValue)
@@ -222,17 +248,15 @@ public class NetworkPanel : MonoBehaviour
         joiningContainer.SetActive(true);
     }
 
-    private void OnQuitNetworkGameCLick()
+    public void QuitNetworkGame()
     {
-        feedbackText.text = "";
-
         if (NetworkServer.active)
             networkManager.StopHost();
         else
             networkManager.StopClient();
 
+        feedbackText.text = "";
         GameObject.Find("ClientGameObjects").transform.DestroyChildren();
-
         ActivateMainMenu();
     }
 
@@ -245,21 +269,6 @@ public class NetworkPanel : MonoBehaviour
 #endif
     }
 
-    public void JoinClientStatusMessage(ClientStatusMessenger.Status status)
-    {
-        if (status == ClientStatusMessenger.Status.Join_Connected)
-        {
-            feedbackText.text = "";
-            joiningContainer.SetActive(false);
-        }
-        else if (status == ClientStatusMessenger.Status.Join_Disonnected_ServerFull)
-            AbortJoin("Server is full");
-        else if (status == ClientStatusMessenger.Status.Join_Disonnected_ServerNoFreePlayerPosition)
-            AbortJoin("Server has no unused player positions");
-        else
-            AbortJoin("Unknown status: " + status);
-    }
-
     private void OnAbortJoinClick()
     {
         AbortJoin("");
@@ -267,8 +276,10 @@ public class NetworkPanel : MonoBehaviour
 
     private void AbortJoin(string newFeedbackText)
     {
-        feedbackText.text = newFeedbackText;
         networkManager.StopClient();
+
+        Debug.Log("Aborting join!" + newFeedbackText);
+        feedbackText.text = newFeedbackText;
         ActivateMainMenu();
     }
 
@@ -318,8 +329,8 @@ public class NetworkPanel : MonoBehaviour
     private void SetMainMenuActive(bool action)
     {
         mainMenuContainer.gameObject.SetActive(action);
-        foreach (Button leaveButton in leaveButtons)
-            leaveButton.gameObject.SetActive(!action);
+        //foreach (Button leaveButton in leaveButtons)
+        //    leaveButton.gameObject.SetActive(!action);
     }
 
     public void SetIngameUIActive(bool active)

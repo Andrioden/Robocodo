@@ -27,15 +27,7 @@ public class WorldTimeController : NetworkBehaviour
     {
         timeScale = Time.timeScale;
 
-        if (Settings.GUI_EnableGameLobby)
-        {
-            GameLobbyPanel.instance.Show(isServer);
-        }
-        else
-        {
-            GameLobbyPanel.instance.Hide();
-            WorldTickController.instance.StartTick();
-        }
+        WorldTickController.instance.StartTick();
     }
 
     private void Update()
@@ -46,13 +38,6 @@ public class WorldTimeController : NetworkBehaviour
     public override void OnStartClient()
     {
         Time.timeScale = timeScale;
-    }
-
-    [Server]
-    public void StartGame()
-    {
-        RpcHideGameLobbyPanel();
-        WorldTickController.instance.StartTick();
     }
 
     [Server]
@@ -108,9 +93,4 @@ public class WorldTimeController : NetworkBehaviour
         PauseDialog.instance.Hide();
     }
 
-    [ClientRpc]
-    private void RpcHideGameLobbyPanel()
-    {
-        GameLobbyPanel.instance.Hide();
-    }
 }

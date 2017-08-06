@@ -10,7 +10,8 @@ public class PlayerController : NetworkBehaviour
     public GameObject cityRubblePrefab;
 
     [SyncVar]
-    public string connectionId = "";
+    private string connectionID = ""; // It is string so we can set an AI friendly "fake" connection ID. I think, cant remember my reasoning fully.
+    public string ConnectionID { get { return connectionID; } }
 
     private CityController _city;
     public CityController City
@@ -18,7 +19,7 @@ public class PlayerController : NetworkBehaviour
         get
         {
             if (_city == null)
-                _city = WorldController.instance.FindCityController(connectionId);
+                _city = WorldController.instance.FindCityController(ConnectionID);
             return _city;
         }
     }
@@ -49,7 +50,6 @@ public class PlayerController : NetworkBehaviour
         {
             ResourcePanel.instance.RegisterLocalPlayer(this);
             ActionsPanel.instance.RegisterLocalPlayer(this);
-            CmdRegisterPlayerNick(NetworkPanel.instance.nickInput.text);
             PositionCameraRelativeTo();
         }
 
@@ -58,8 +58,10 @@ public class PlayerController : NetworkBehaviour
     }
 
     [Server]
-    public void SetColor(Color32 teamColor)
+    public void Initialize(string connectionID, string nick, Color32 teamColor)
     {
+        this.connectionID = connectionID.ToString();
+        this.nick = nick;
         hexColor = Utils.ColorToHex(teamColor);
     }
 
@@ -75,7 +77,7 @@ public class PlayerController : NetworkBehaviour
             if (connectionToClient == null) // TODO: This is a temp solution to get AI feedback on player screen
             {
                 if (Settings.Debug_EnableAiLogging) // Dont put on same if check as connectionToClient
-                    TextPopupManager.instance.ShowPopupGeneric(connectionId + ": " + text, position, colorType.Color());
+                    TextPopupManager.instance.ShowPopupGeneric(ConnectionID + ": " + text, position, colorType.Color());
             }
             else
             {
@@ -90,17 +92,6 @@ public class PlayerController : NetworkBehaviour
     private void TargetShowPopup(NetworkConnection target, string text, Vector3 position, Color color)
     {
         TextPopupManager.instance.ShowPopupGeneric(text, position, color);
-    }
-
-    [Command]
-    private void CmdRegisterPlayerNick(string nick)
-    {
-        List<string> currentNicks = WorldController.instance.FindPlayerControllers().Where(p => !string.IsNullOrEmpty(p.Nick)).Select(p => p.Nick).ToList();
-
-        if (!currentNicks.Contains(nick))
-            this.nick = nick;
-        else
-            this.nick = nick + (currentNicks.Count(n => n.Contains(nick)) + 1);
     }
 
     [Server]

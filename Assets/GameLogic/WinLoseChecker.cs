@@ -56,7 +56,7 @@ public class WinLoseChecker : NetworkBehaviour
 
         if (lossType != LossType.None)
         {
-            RpcNotifyLoser(player.connectionId, (int)lossType);
+            RpcNotifyLoser(player.ConnectionID, (int)lossType);
             player.LostAndDestroy();
         }
     }
@@ -71,7 +71,7 @@ public class WinLoseChecker : NetworkBehaviour
 
         if (winType != WinType.None)
         {
-            RpcNotifyWinner(player.connectionId, (int)winType);
+            RpcNotifyWinner(player.ConnectionID, (int)winType);
             Time.timeScale = 0;
         }
     }
@@ -95,7 +95,7 @@ public class WinLoseChecker : NetworkBehaviour
     [ClientRpc]
     public void RpcNotifyWinner(string wonPlayerConnectionId, int wonTypeInt)
     {
-        if (WorldController.instance.FindClientsOwnPlayer().connectionId == wonPlayerConnectionId)
+        if (WorldController.instance.FindClientsOwnPlayer().ConnectionID == wonPlayerConnectionId)
             OnWon((WinType)wonTypeInt);
         else
             OnLost((LossType)wonTypeInt);
@@ -104,7 +104,7 @@ public class WinLoseChecker : NetworkBehaviour
     [ClientRpc]
     public void RpcNotifyLoser(string lostPlayerConnectionId, int lossTypeInt)
     {
-        if (WorldController.instance.FindClientsOwnPlayer().connectionId == lostPlayerConnectionId)
+        if (WorldController.instance.FindClientsOwnPlayer().ConnectionID == lostPlayerConnectionId)
             OnLost((LossType)lossTypeInt);
         //TODO: On non-losing clients, maybe notify a player lost?
     }
