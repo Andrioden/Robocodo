@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class GameLobbyPanel : MonoBehaviour
 {
-    public GameObject panel;
+    public GameObject container;
     public GameObject playersColumn;
     public GameObject playerNickPanelPrefab;
     public Button startGameButton;
@@ -28,13 +28,13 @@ public class GameLobbyPanel : MonoBehaviour
 
     private void Update()
     {
-        if (LobbyManager.HasGameStarted && panel.activeSelf)
+        if (LobbyManager.HasGameStarted && container.activeSelf)
             Hide();
     }
 
     public void Show(bool isServer)
     {
-        panel.SetActive(true);
+        container.SetActive(true);
 
         UpdatePlayerList(LobbyManager.Players);
         LobbyManager.OnPlayerListUpdated += UpdatePlayerList;
@@ -52,7 +52,7 @@ public class GameLobbyPanel : MonoBehaviour
     public void Hide()
     {
         LobbyManager.OnPlayerListUpdated -= UpdatePlayerList;
-        panel.SetActive(false);
+        container.SetActive(false);
     }
 
     private void UpdatePlayerList(List<LobbyPlayer> players)
