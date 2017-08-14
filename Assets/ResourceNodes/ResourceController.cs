@@ -31,6 +31,13 @@ public abstract class ResourceController : NetworkBehaviour, IClickable
     {
         remainingItems = Utils.RandomInt(Settings.World_Gen_ResourceItemsPerNode_Min, Settings.World_Gen_ResourceItemsPerNode_Max);
         UpdateTransformSize();
+        //RandomizeRotation();
+    }
+
+    private void RandomizeRotation()
+    {
+        int randomMultiplier = Utils.RandomInt(0,3);
+        transform.Rotate(new Vector3(0f, 90f * randomMultiplier, 0));
     }
 
     public void Click()
@@ -67,7 +74,7 @@ public abstract class ResourceController : NetworkBehaviour, IClickable
     {
         double scalePercentage = MathUtils.LinearConversionDouble(0, Settings.World_Gen_ResourceItemsPerNode_Max, 0, 100, remainingItems);
         double volumeScaleFactor = scalePercentage / 100.0;
-        float sideScaleFactor = (float)MathUtils.CubicRoot(volumeScaleFactor);
+        float sideScaleFactor = (float)MathUtils.CubicRoot(volumeScaleFactor) * 1.3f;
 
         physicalTransform.localScale = new Vector3(originalTransformScale.x * sideScaleFactor, originalTransformScale.y * sideScaleFactor, originalTransformScale.z * sideScaleFactor);
     }
