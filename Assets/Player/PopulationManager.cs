@@ -13,6 +13,8 @@ public class PopulationManager : NetworkBehaviour
     private int population;
     public int Population { get { return population; } }
 
+    private double foodConsumeProgress = 0;
+
     [SyncVar]
     private double growthProgress = 0;
     public double GrowthProgress { get { return growthProgress; } }
@@ -45,23 +47,31 @@ public class PopulationManager : NetworkBehaviour
         if (population <= 0)
             return;
 
-        growthProgress += Settings.City_Population_FoodConsumedPerTick * population;
-        if (growthProgress >= 1)
+        foodConsumeProgress += Settings.City_Population_FoodConsumedPerTick * population;
+        if (foodConsumeProgress >= 1)
         {
-            int foodGrowthCost = (int)growthProgress;
-            Cost growthCost = new Cost() { Food = foodGrowthCost };
-
-            if (city.CanAfford(growthCost))
+            Cost foodConsumed = new Cost() { Food = (int)foodConsumeProgress };
+            if (city.CanAfford(foodConsumed))
             {
-                city.RemoveResources(growthCost);
-                growthProgress -= growthProgress;
-                population++;
+                city.RemoveResources(foodConsumed);
+                foodConsumeProgress -= foodConsumed.Food;
             }
             else
             {
                 growthProgress = 0;
+                foodConsumeProgress = 0;
                 population--;
+
+                if (population <= 0)
+                    return;
             }
+        }
+
+        growthProgress += Settings.City_Population_FoodConsumedPerTick * city.GetItemCount<FoodItem>() / (population * population);
+        if (growthProgress >= 1)
+        {
+            population += (int)growthProgress;
+            growthProgress -= (int)growthProgress;
         }
     }
 
