@@ -9,7 +9,7 @@ public class GameLobbyPanel : MonoBehaviour
 {
     public GameObject container;
     public GameObject playersColumn;
-    public GameObject playerNickPanelPrefab;
+    public GameObject playerNickItemPrefab;
     public Button startGameButton;
 
     public static GameLobbyPanel instance;
@@ -61,7 +61,7 @@ public class GameLobbyPanel : MonoBehaviour
 
         foreach (LobbyPlayer player in players)
         {
-            GameObject playerNickLabelGO = Instantiate(playerNickPanelPrefab);
+            GameObject playerNickLabelGO = Instantiate(playerNickItemPrefab);
             playerNickLabelGO.transform.SetParent(playersColumn.transform, false);
             playerNickLabelGO.GetComponentInChildren<Text>().text = player.Nick;
         }

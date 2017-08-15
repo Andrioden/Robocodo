@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 114517705610710314}
   - component: {fileID: 114955270932428558}
   m_Layer: 5
-  m_Name: PlayerNickPanel
+  m_Name: PlayerNickItem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -124,6 +124,7 @@ MonoBehaviour:
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!222 &222600846650786568
 CanvasRenderer:
   m_ObjectHideFlags: 1
