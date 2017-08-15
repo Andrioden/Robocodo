@@ -24,6 +24,10 @@ MonoBehaviour:
         motionVectorsOpacity: 1
         motionVectorsResolution: 24
         motionVectorsAmplitude: 64
+  fog:
+    m_Enabled: 1
+    m_Settings:
+      excludeSkybox: 1
   antialiasing:
     m_Enabled: 1
     m_Settings:
@@ -43,7 +47,7 @@ MonoBehaviour:
       sampleCount: 10
       downsampling: 1
       forceForwardCompatibility: 0
-      ambientOnly: 0
+      ambientOnly: 1
       highPrecision: 0
   screenSpaceReflection:
     m_Enabled: 0
@@ -85,7 +89,8 @@ MonoBehaviour:
       highPercent: 95
       minLuminance: 0.03
       maxLuminance: 2
-      exposureCompensation: 0.5
+      keyValue: 0.25
+      dynamicKeyValue: 1
       adaptationType: 0
       speedUp: 2
       speedDown: 1
@@ -298,6 +303,9 @@ MonoBehaviour:
       roundness: 1
       mask: {fileID: 0}
       opacity: 1
+      rounded: 0
+  dithering:
+    m_Enabled: 0
   monitors:
     currentMonitorID: 0
     refreshOnPlay: 0
