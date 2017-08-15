@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 
+[Serializable]
 public abstract class Technology
 {
 

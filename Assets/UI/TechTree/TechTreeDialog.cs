@@ -19,6 +19,9 @@ public class TechTreeDialog : MonoBehaviour
     private Color activeResearchTextColor = Utils.HexToColor("#00D9E3FF");
     private Color normalResearchTextColor;
 
+    private bool _firstShow = true;
+    private DateTime _lastUpdateWhileHidden;
+
     public static TechTreeDialog instance;
     private void Awake()
     {
@@ -42,16 +45,22 @@ public class TechTreeDialog : MonoBehaviour
     public void Show(PlayerController player)
     {
         this.player = player;
-
         GenerateTechButtons();
 
-        player.TechTree.OnTechnologyUpdated += RefreshTechnologyUI;
+        if (_firstShow)
+        {
+            player.TechTree.OnTechnologyUpdated += RefreshTechnologyUI;
+            _firstShow = false;
+        }
 
         panel.SetActive(true);
     }
 
     private void RefreshTechnologyUI()
     {
+        if (!ShouldUpdatePanel())
+            return;
+
         foreach (Technology tech in player.TechTree.Technologies)
         {
             foreach (TechGUI techGUI in techGUICacheList)
@@ -65,10 +74,26 @@ public class TechTreeDialog : MonoBehaviour
         }
     }
 
+    private bool ShouldUpdatePanel()
+    {
+        if (IsOpen())
+            return true;
+
+        else
+        {
+            //Update every 5 seconds even when hidden to avoid a lag effect on progress when panel reopens.
+            if ((DateTime.Now - _lastUpdateWhileHidden).TotalSeconds < 5)
+                return false;
+            else
+            {
+                _lastUpdateWhileHidden = DateTime.Now;
+                return true;
+            }
+        }
+    }
+
     public void Hide()
     {
-        player.TechTree.OnTechnologyUpdated -= RefreshTechnologyUI;
-
         panel.SetActive(false);
     }
 
@@ -104,9 +129,14 @@ public class TechTreeDialog : MonoBehaviour
         string winConditionPart = tech is Technology_Victory ? "(victory)" : "";
         techGUI.techButtonText.text = string.Format("{0} {1}/{2} {3}", tech.name, tech.Progress, tech.cost, winConditionPart);
 
-        techGUI.techButton.interactable = tech.Progress < tech.cost;
-
-        if (IsActiveResearch(tech))
+        if (tech.Progress >= tech.cost)
+        {
+            techGUI.techButton.interactable = false;
+            techGUI.techButtonText.color = Utils.HexToColor("#CF8B31FF");
+            techGUI.GetComponent<Image>().enabled = false;
+            techGUI.techDescription.color = normalResearchTextColor;
+        }
+        else if (IsActiveResearch(tech))
         {
             techGUI.GetComponent<Image>().enabled = true;
             techGUI.techDescription.color = activeResearchTextColor;

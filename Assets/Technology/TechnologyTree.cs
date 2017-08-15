@@ -39,6 +39,9 @@ public class TechnologyTree : NetworkBehaviour
     [Server]
     private void ContinueResearch()
     {
+        if (activeResearch == null)
+            return;
+
         int scienceEarned = (int)(Settings.City_Science_PerPopulationPerTick * player.City.PopulationManager.Population);
         AddProgressToActiveResearch(scienceEarned);
     }
@@ -46,11 +49,8 @@ public class TechnologyTree : NetworkBehaviour
     [Server]
     public void AddProgressToActiveResearch(int addedProgress)
     {
-        if (activeResearch != null)
-        {
-            activeResearch.AddProgress(addedProgress);
-            TargetSetProgress(player.connectionToClient, activeResearch.id, activeResearch.Progress);
-        }
+        activeResearch.AddProgress(addedProgress);
+        TargetSetProgress(player.connectionToClient, activeResearch.id, activeResearch.Progress);
     }
 
     [TargetRpc]
@@ -59,9 +59,6 @@ public class TechnologyTree : NetworkBehaviour
         Technology tech = GetTechnology(techId);
         tech.SetProgress(progress);
         OnTechnologyUpdated();
-
-        if (tech.IsResearched())
-            activeResearch = null;
     }
 
     [Client]
@@ -69,7 +66,8 @@ public class TechnologyTree : NetworkBehaviour
     {
         if (tech.IsResearched())
             return;
-        else if (activeResearch == tech) {
+        else if (activeResearch == tech)
+        {
             activeResearch = null;
             CmdClearActiveResearch();
             return;
@@ -102,8 +100,8 @@ public class TechnologyTree : NetworkBehaviour
 
     public bool IsRobotTechResearched(Type robotType)
     {
-        return technologies.Any(t => 
-            (t is Technology_Robot) 
+        return technologies.Any(t =>
+            (t is Technology_Robot)
             && (((Technology_Robot)t).robotType == robotType)
             && t.IsResearched()
         );
