@@ -8,7 +8,8 @@ public class SelectionIndicatorController : MonoBehaviour
     public GameObject quad;
     private Vector3 defaultScale;
     private float robotScaleFactor = 0.8f;
-    private GameObject lastSelection = null;
+    private GameObject selectedGameObjectlastFrame = null;
+    private IClickable lastClickedObjectCache;
 
     public GameObject selectedObjectPanel;
     public Text nameText;
@@ -29,27 +30,31 @@ public class SelectionIndicatorController : MonoBehaviour
             SetScale();
         }
         else
-        {
             quad.SetActive(false);
-            //selectedObjectPanel.SetActive(false);
-        }
 
-        if (MouseManager.instance.LastClickedObject != null && MouseManager.instance.LastClickedObject.GetGameObject() != MouseManager.instance.CurrentlySelectedObject)
+        var lastClickedGO = MouseManager.instance.LastClickedObject;
+        if (lastClickedGO != null && lastClickedGO != MouseManager.instance.CurrentlySelectedObject)
         {
-            nameText.text = MouseManager.instance.LastClickedObject.GetName();
-            summaryText.text = MouseManager.instance.LastClickedObject.GetSummary();
+            if (lastClickedObjectCache == null || lastClickedObjectCache.GetGameObject() != lastClickedGO)
+                lastClickedObjectCache = lastClickedGO.GetComponent<IClickable>();
+
+            nameText.text = lastClickedObjectCache.GetName();
+            summaryText.text = lastClickedObjectCache.GetSummary();
             selectedObjectPanel.SetActive(true);
         }
         else
+        {
             selectedObjectPanel.SetActive(false);
+            lastClickedObjectCache = null;
+        }
     }
 
     private void SetScale()
     {
-        if (lastSelection == MouseManager.instance.CurrentlySelectedObject)
+        if (selectedGameObjectlastFrame == MouseManager.instance.CurrentlySelectedObject)
             return;
         else
-            lastSelection = MouseManager.instance.CurrentlySelectedObject;
+            selectedGameObjectlastFrame = MouseManager.instance.CurrentlySelectedObject;
 
         bool isRobot = false;
         var robotComponent = MouseManager.instance.CurrentlySelectedObject.GetComponent<RobotController>();

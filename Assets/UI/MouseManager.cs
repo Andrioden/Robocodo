@@ -12,8 +12,8 @@ public class MouseManager : MonoBehaviour
     private GameObject currentlySelected = null;
     public GameObject CurrentlySelectedObject { get { return currentlySelected; } }
 
-    private IClickable lastClicked = null;
-    public IClickable LastClickedObject { get { return lastClicked; } }
+    private GameObject lastClicked = null;
+    public GameObject LastClickedObject { get { return lastClicked; } }
 
     private int loopingClickableNumber = 0;
     private ClickablePriority previousClickablePriority;
@@ -61,7 +61,7 @@ public class MouseManager : MonoBehaviour
         if (clickableObject != null)
         {
             clickableObject.Click();
-            lastClicked = clickableObject;
+            lastClicked = gameObject;
             SelectIfSelectable(gameObject, clickableObject);
             return;
         }
