@@ -97,9 +97,6 @@ public class RobotPanel : MonoBehaviour
     {
         animator = GetComponent<Animator>();
 
-        RobotController.OnInventoryChanged += InventoryUpdated;
-        RobotController.OnModulesChanged += ModulesUpdated;
-
         _highlightColor = Utils.HexToColor("#D5A042FF");
         _defaultButtonStateColors = runButton.GetComponent<Image>().color;
 
@@ -185,14 +182,18 @@ public class RobotPanel : MonoBehaviour
     private void LoadRobot(RobotController robot)
     {
         this.robot = robot;
-        RobotController.OnInstructionsChanged += RobotInstructionsWasUpdated;
+        this.robot.OnInstructionsChanged += LoadInstructions;
+        this.robot.OnInventoryChanged += LoadInventory;
+        this.robot.OnModulesChanged += LoadModules;
     }
 
     private void UnloadCurrentRobot()
     {
         if (robot != null)
         {
-            RobotController.OnInstructionsChanged -= RobotInstructionsWasUpdated;
+            robot.OnInstructionsChanged -= LoadInstructions;
+            robot.OnInventoryChanged -= LoadInventory;
+            robot.OnModulesChanged -= LoadModules;
             if (!robot.IsStarted)
                 robot.SetInstructions(GetCleanedCodeInput());
 
@@ -364,15 +365,12 @@ public class RobotPanel : MonoBehaviour
         return codeInputField.caretPosition == 0 ? lastCaretPosition : codeInputField.caretPosition;
     }
 
-    private void InventoryUpdated(RobotController robot)
+    private void LoadInventory(List<InventoryItem> inventory)
     {
-        if (this.robot != null && robot == this.robot)
-        {
-            inventoryContainer.transform.DestroyChildren();
+        inventoryContainer.transform.DestroyChildren();
 
-            var currentInventory = this.robot.Inventory;
-            currentInventory.ForEach(item => AddInventoryItem(item));
-        }
+        var currentInventory = this.robot.Inventory;
+        currentInventory.ForEach(item => AddInventoryItem(item));
     }
 
     private void AddInventoryItem(InventoryItem item)
@@ -389,24 +387,15 @@ public class RobotPanel : MonoBehaviour
         inventoryImage.transform.SetParent(inventoryContainer.transform, false);
     }
 
-    private void RobotInstructionsWasUpdated(RobotController eventRobot)
-    {
-        if (eventRobot == robot)
-            LoadInstructionsFromRobot();
-    }
-
-    private void LoadInstructionsFromRobot()
+    private void LoadInstructions(List<Instruction> instructions)
     {
         _indentedInstructionsCache = robot.Instructions.Select(i => i.Serialize()).ToList();
         AutoIndentInstructions(_indentation, _indentedInstructionsCache);
     }
 
-    private void ModulesUpdated(RobotController robot)
+    private void LoadModules(List<Module> modules)
     {
-        if (this.robot != null && robot == this.robot)
-        {
-            installedModulesListTextField.text = string.Join("\n", robot.Modules.Select(m => m.Settings_Name()).ToArray());
-        }
+        installedModulesListTextField.text = string.Join("\n", robot.Modules.Select(m => m.Settings_Name()).ToArray());
     }
 
     private void EnableSetupModePanel()
@@ -416,7 +405,7 @@ public class RobotPanel : MonoBehaviour
 
         titleText.text = robot.Settings_Name();
         SetupPossibleInstructions();
-        ModulesUpdated(robot);
+        LoadModules(robot.Modules);
 
         codeInputPanel.SetActive(true);
         codeInputField.text = string.Join("\n", InstructionsHelper.SerializeList(robot.Instructions));  /* Pre filled example data */
@@ -457,9 +446,9 @@ public class RobotPanel : MonoBehaviour
     private void EnableRunningModePanel()
     {
         titleText.text = robot.Settings_Name();
-        LoadInstructionsFromRobot();
-        InventoryUpdated(robot);
-        ModulesUpdated(robot);
+        LoadInstructions(robot.Instructions);
+        LoadInventory(robot.Inventory);
+        LoadModules(robot.Modules);
 
         codeRunningPanel.SetActive(true);
         inventoryPanel.SetActive(true);

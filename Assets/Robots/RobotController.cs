@@ -35,8 +35,8 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
     protected List<Instruction> instructions = new List<Instruction>();
     public List<Instruction> Instructions { get { return instructions; } }
-    public static event Action<RobotController> OnInstructionsChanged = delegate { };
-    public void NotifyInstructionsChanged() { OnInstructionsChanged(this); }
+    public event Action<List<Instruction>> OnInstructionsChanged = delegate { };
+    public void NotifyInstructionsChanged() { OnInstructionsChanged(instructions); }
 
     [SyncVar]
     public int nextInstructionIndex;
@@ -78,11 +78,11 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
     private List<InventoryItem> inventory = new List<InventoryItem>();
     public List<InventoryItem> Inventory { get { return inventory; } }
-    public static event Action<RobotController> OnInventoryChanged = delegate { };
+    public event Action<List<InventoryItem>> OnInventoryChanged = delegate { };
 
     private List<Module> modules = new List<Module>();
     public List<Module> Modules { get { return modules; } }
-    public static event Action<RobotController> OnModulesChanged = delegate { };
+    public event Action<List<Module>> OnModulesChanged = delegate { };
 
     [SyncVar]
     private bool willSalvageWhenHome = false;
@@ -610,7 +610,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
                 inventory.Add(item);
         }
 
-        OnInventoryChanged(this);
+        OnInventoryChanged(inventory);
 
         RpcSyncInventory(InventoryItem.Serialize(inventory));
 
@@ -627,7 +627,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     public void SetInventory(List<InventoryItem> items)
     {
         inventory = items;
-        OnInventoryChanged(this);
+        OnInventoryChanged(inventory);
 
         RpcSyncInventory(InventoryItem.Serialize(inventory));
     }
@@ -641,7 +641,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     private void RpcSyncInventory(string[] serializedItemCounts)
     {
         inventory = InventoryItem.Deserialize(serializedItemCounts);
-        OnInventoryChanged(this);
+        OnInventoryChanged(inventory);
     }
 
     [Command]
@@ -686,7 +686,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         modules = Module.DeserializeList(serializedModules); // Not installed on client.
 
         if (OnModulesChanged != null)
-            OnModulesChanged(this);
+            OnModulesChanged(modules);
     }
 
     private void SetMaterialColor()
