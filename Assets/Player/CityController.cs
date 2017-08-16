@@ -223,13 +223,14 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
     [Server]
     public List<InventoryItem> PickUp(int count)
     {
-        return inventory.PopLast(count);
+        List<InventoryItem> itemsPickedUp = inventory.PopLast(count);
+        RpcSyncInventory(InventoryItem.Serialize(inventory), -itemsPickedUp.Count, false);
+        return itemsPickedUp;
     }
 
     [Server]
     public void RemoveResources(Cost cost)
     {
-        int countBefore = inventory.Count;
         for (int c = 0; c < cost.Copper; c++)
             inventory.RemoveAt(inventory.FindIndex(x => x.GetType() == typeof(CopperItem)));
         for (int i = 0; i < cost.Iron; i++)
@@ -237,22 +238,25 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
         for (int i = 0; i < cost.Food; i++)
             inventory.RemoveAt(inventory.FindIndex(x => x.GetType() == typeof(FoodItem)));
 
-        int countDifference = inventory.Count - countBefore;
-        RpcSyncInventory(InventoryItem.Serialize(inventory), countDifference, false);
+        RpcSyncInventory(InventoryItem.Serialize(inventory), -cost.TotalCost(), false);
     }
 
+    /// <summary>
+    /// Cant calculate inventoryChange locally because that wont work on the server which already has the correct inventory before method is called
+    /// </summary>
     [ClientRpc]
-    private void RpcSyncInventory(string[] itemCounts, int countDifference, bool playSoundEffect)
+    private void RpcSyncInventory(string[] itemCounts, int inventoryChange, bool playSoundEffect)
     {
         inventory = InventoryItem.Deserialize(itemCounts);
 
-        PlayResouceGainedSoundEffect(countDifference, playSoundEffect);
+        if (playSoundEffect && inventoryChange > 0)
+            PlayResouceGainedSoundEffect(inventoryChange);
     }
 
-    private void PlayResouceGainedSoundEffect(int countDifference, bool playSoundEffect)
+    private void PlayResouceGainedSoundEffect(int numberOfRepeats)
     {
-        if (hasAuthority && countDifference > 0 && playSoundEffect)
-            StartCoroutine(AudioUtils.RepeatAudioClipCoroutine(audioSource, resourceSound, countDifference, 0.25f, 5f));
+        if (hasAuthority && numberOfRepeats > 0)
+            StartCoroutine(AudioUtils.RepeatAudioClipCoroutine(audioSource, resourceSound, numberOfRepeats, 0.25f, 5f));
     }
 
     public bool CanAfford(Cost cost)

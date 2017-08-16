@@ -67,13 +67,13 @@ public class HarvesterRobotController : RobotController
         if (ShouldAnimationBePlayed())
         {
             if (LastAppliedInstruction.GetType() == typeof(Instruction_Harvest))
-                PlayHarvestParticleSystem();
+                PlayHarvestEffects();
         }
         else if(energy <= 0)
             StartCoroutine(PlayDeactivateAnimation(1f));
     }
 
-    private void PlayHarvestParticleSystem()
+    private void PlayHarvestEffects()
     {
         if (!leftToolParticleSystem.isPlaying || !rightToolParticleSystem.isPlaying)
         {
