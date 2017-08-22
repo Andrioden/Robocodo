@@ -19,7 +19,6 @@ public class TechTreeDialog : MonoBehaviour
     private Color activeResearchTextColor = Utils.HexToColor("#00D9E3FF");
     private Color normalResearchTextColor;
 
-    private bool _firstShow = true;
     private DateTime _lastUpdateWhileHidden;
 
     public static TechTreeDialog instance;
@@ -47,13 +46,16 @@ public class TechTreeDialog : MonoBehaviour
         this.player = player;
         GenerateTechButtons();
 
-        if (_firstShow)
-        {
-            player.TechTree.OnTechnologyUpdated += RefreshTechnologyUI;
-            _firstShow = false;
-        }
+        RefreshTechnologyUI();
+        player.TechTree.OnTechnologyUpdated += RefreshTechnologyUI;
 
         panel.SetActive(true);
+    }
+
+    public void Hide()
+    {
+        player.TechTree.OnTechnologyUpdated -= RefreshTechnologyUI;
+        panel.SetActive(false);
     }
 
     private void RefreshTechnologyUI()
@@ -90,11 +92,6 @@ public class TechTreeDialog : MonoBehaviour
                 return true;
             }
         }
-    }
-
-    public void Hide()
-    {
-        panel.SetActive(false);
     }
 
     public bool IsOpen()
