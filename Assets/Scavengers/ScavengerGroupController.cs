@@ -14,7 +14,8 @@ public class ScavengerGroupController : Unit, IAttackable
     // Use this for initialization
     private void Start()
     {
-        SetXzToTransformPosition();
+        if (isServer)
+            SetXzToTransformPosition();
     }
 
     private void Update()

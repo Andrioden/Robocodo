@@ -146,13 +146,15 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         if (!meshGO)
             Debug.LogError("Mesh game object reference missing. Will not be able to hide physical robot when in garage etc.");
 
-        SetXzToTransformPosition();
 
         if (instructions.Count == 0)
             SetInstructions(GetSuggestedInstructionSet());
 
         if (isServer)
+        {
+            SetXzToTransformPosition();
             InitDefaultValues();
+        }
 
         audioSource = GetComponent<AudioSource>();
     }
