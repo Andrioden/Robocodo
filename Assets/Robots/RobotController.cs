@@ -601,7 +601,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     public List<InventoryItem> AddToInventory(List<InventoryItem> items, bool playSoundEffect)
     {
         if (playSoundEffect)
-            throw new Exception("Not added sound effect for when robot receives items");
+            Debug.LogError("Not added sound effect for when robot receives items");
 
         List<InventoryItem> notAdded = new List<InventoryItem>();
         foreach (InventoryItem item in items)

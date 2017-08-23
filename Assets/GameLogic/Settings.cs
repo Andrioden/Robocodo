@@ -31,14 +31,14 @@
     public static int World_ScavengerAggressiveness = 1;
 
     public static double City_Population_FoodConsumedPerTick = 0.01;
-    public static int City_Energy_RechargedPerTick = 500;
     public static double City_Science_PerPopulationPerTick = 1.0;
+    public static int City_Energy_RechargedPerTick = 20; // Basically how many robots it can support
 
     public static int Scenario_Normal_AmountOfStartingHarvesterRobots = 2;
     public static int Scenario_Normal_AmountOfStartingCombatRobots = 0;
     public static int Scenario_Normal_AmountOfStartingCopper = 5;
     public static int Scenario_Normal_AmountOfStartingIron = 10;
-    public static int Scenario_Normal_AmountOfStartingFood = 50;
+    public static int Scenario_Normal_AmountOfStartingFood = 10;
 
     public static int Robot_SalvagePercentage = 25;
     public static int Robot_ReprogramClearEachInstructionTicks = 5;
