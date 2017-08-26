@@ -22,7 +22,7 @@ public class WorldBuilder
         tiles = new TileType[width, height];
 
         for (int i = 0; i < maxPlayers; i++)
-            GeneratePlayerArea(GetRandomEmptyCoordinate());
+            GeneratePlayerArea();
 
         if (noiseConfig != null)
             GenerateResources(noiseConfig);
@@ -75,25 +75,44 @@ public class WorldBuilder
         return cities;
     }
 
-    private void GeneratePlayerArea(Coordinate playerCityCoordinate)
+    private void GeneratePlayerArea()
     {
-        reservedPlayerCoordinates.Push(playerCityCoordinate);
+        Coordinate playerCityCoordinate = GetRandomCoordinate(TileType.Empty);
+        if (playerCityCoordinate == null)
+            playerCityCoordinate = GetRandomCoordinate(TileType.PlayerArea); // No empty found, fallback on just spawning it on a player area.
 
         SetTile(playerCityCoordinate.x, playerCityCoordinate.z, TileType.PlayerCityReservation);
 
+        List<TileType> playerAreaResourceTiles = new List<TileType>();
+        for (int _ = 0; _ < Settings.World_Gen_PlayerStartingAreaCopper; _++)
+            playerAreaResourceTiles.Add(TileType.CopperNode);
+        for (int _ = 0; _ < Settings.World_Gen_PlayerStartingAreaIron; _++)
+            playerAreaResourceTiles.Add(TileType.IronNode);
+        for (int _ = 0; _ < Settings.World_Gen_PlayerStartingAreaFood; _++)
+            playerAreaResourceTiles.Add(TileType.FoodNode);
+
         List<Coordinate> playerResourceCordsList = GetCoordinatesNear(playerCityCoordinate, Settings.World_Gen_PlayerStartingAreaResourceRadius, TileType.Empty);
+        if (playerAreaResourceTiles.Count > playerResourceCordsList.Count) // Not enough empty tiles?
+        {
+            // Ok then, then we also use other PlayerArea tiles. Gonna be crowded!
+            var otherPlayerAreaCords = GetCoordinatesNear(playerCityCoordinate, Settings.World_Gen_PlayerStartingAreaResourceRadius, TileType.PlayerArea);
+            playerResourceCordsList.AddRange(otherPlayerAreaCords);
+        }
+        if (playerAreaResourceTiles.Count > playerResourceCordsList.Count) // Still not enough tiles?
+        {
+            Debug.LogWarning("Could not find enough space for players. Skipping");
+            return;
+        }
+
         Utils.Shuffle(playerResourceCordsList);
         Stack<Coordinate> playerResourceCordsStack = new Stack<Coordinate>(playerResourceCordsList);
-
-        for (int _ = 0; _ < Settings.World_Gen_PlayerStartingAreaCopper; _++)
-            SetTile(playerResourceCordsStack.Pop(), TileType.CopperNode);
-        for (int _ = 0; _ < Settings.World_Gen_PlayerStartingAreaIron; _++)
-            SetTile(playerResourceCordsStack.Pop(), TileType.IronNode);
-        for (int _ = 0; _ < Settings.World_Gen_PlayerStartingAreaFood; _++)
-            SetTile(playerResourceCordsStack.Pop(), TileType.FoodNode);
+        foreach(TileType tilType in playerAreaResourceTiles)
+            SetTile(playerResourceCordsStack.Pop(), tilType);
 
         foreach (Coordinate cord in GetCoordinatesNear(playerCityCoordinate, Settings.World_Gen_PlayerAreaRadius, TileType.Empty))
             SetTile(cord, TileType.PlayerArea);
+
+        reservedPlayerCoordinates.Push(playerCityCoordinate);
     }
 
     private void SetTile(Coordinate coord, TileType type)
@@ -107,18 +126,21 @@ public class WorldBuilder
             tiles[x, z] = type;
     }
 
-    private Coordinate GetRandomEmptyCoordinate()
+    private Coordinate GetRandomCoordinate(TileType tileType)
     {
         int attempts = 0;
         while (true)
         {
             attempts++;
             if (attempts > 3000)
-                throw new Exception("Failed to find a random open coordinate, should probably rewrite the algorithm anyway");
+            {
+                Debug.LogWarning("Failed to find a random open coordinate, should probably rewrite the algorithm anyway");
+                return null;
+            }
 
             int x = Utils.RandomInt(0, width);
             int z = Utils.RandomInt(0, height);
-            if (tiles[x, z] == TileType.Empty)
+            if (tiles[x, z] == tileType)
                 return new Coordinate(x, z);
         }
     }
