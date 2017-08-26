@@ -52,6 +52,8 @@ public class MusicPlayer : MonoBehaviour
         audioSource.Stop();
         audioSource.volume = startVolume;
         isFadingOut = false;
+
+        yield return null;
     }
 
     public IEnumerator FadeIn(AudioSource audioSource, float FadeTime)
@@ -67,5 +69,7 @@ public class MusicPlayer : MonoBehaviour
         }
 
         audioSource.volume = originalVolume;
+
+        yield return null;
     }
 }
