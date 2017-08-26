@@ -16,6 +16,9 @@ public class TechTreeDialog : MonoBehaviour
     private PlayerController player;
     private List<TechGUI> techGUICacheList = new List<TechGUI>();
 
+    private Color researcedTechButtonTextColor = Utils.HexToColor("#CF8B31FF");
+    private Color normalTechButtonTextColor;
+
     private Color activeResearchTextColor = Utils.HexToColor("#00D9E3FF");
     private Color normalResearchTextColor;
 
@@ -38,6 +41,7 @@ public class TechTreeDialog : MonoBehaviour
         closeButton.onClick.RemoveAllListeners();
         closeButton.onClick.AddListener(Hide);
 
+        normalTechButtonTextColor = techPrefab.GetComponent<TechGUI>().techButtonText.color;
         normalResearchTextColor = techPrefab.GetComponent<TechGUI>().techDescription.color;
     }
 
@@ -58,6 +62,11 @@ public class TechTreeDialog : MonoBehaviour
         panel.SetActive(false);
     }
 
+    public bool IsOpen()
+    {
+        return panel.activeSelf;
+    }
+
     private void RefreshTechnologyUI()
     {
         if (!ShouldUpdatePanel())
@@ -65,14 +74,8 @@ public class TechTreeDialog : MonoBehaviour
 
         foreach (Technology tech in player.TechTree.Technologies)
         {
-            foreach (TechGUI techGUI in techGUICacheList)
-            {
-                if (techGUI.techId == tech.id)
-                {
-                    UpdateTechButton(tech, techGUI);
-                    break;
-                }
-            }
+            TechGUI techGUI = techGUICacheList.Find(t => t.techId == tech.id);
+            UpdateTechButton(tech, techGUI);
         }
     }
 
@@ -94,9 +97,37 @@ public class TechTreeDialog : MonoBehaviour
         }
     }
 
-    public bool IsOpen()
+    private void UpdateTechButton(Technology tech, TechGUI techGUI)
     {
-        return panel.activeSelf;
+        string winConditionPart = tech is Technology_Victory ? "(victory)" : "";
+        techGUI.techButtonText.text = string.Format("{0} {1}/{2} {3}", tech.name, tech.Progress, tech.cost, winConditionPart);
+
+        if (tech.Progress >= tech.cost)
+        {
+            techGUI.techButton.interactable = false;
+            techGUI.techButtonText.color = researcedTechButtonTextColor;
+            techGUI.GetComponent<Image>().enabled = false;
+            techGUI.techDescription.color = normalResearchTextColor;
+        }
+        else if (IsActiveResearch(tech))
+        {
+            techGUI.techButton.interactable = true;
+            techGUI.techButtonText.color = normalResearchTextColor;
+            techGUI.GetComponent<Image>().enabled = true;
+            techGUI.techDescription.color = activeResearchTextColor;
+        }
+        else
+        {
+            techGUI.techButton.interactable = true;
+            techGUI.techButtonText.color = normalResearchTextColor;
+            techGUI.GetComponent<Image>().enabled = false;
+            techGUI.techDescription.color = normalResearchTextColor;
+        }
+    }
+
+    private bool IsActiveResearch(Technology tech)
+    {
+        return player.TechTree.activeResearch == tech;
     }
 
     private void GenerateTechButtons()
@@ -119,35 +150,6 @@ public class TechTreeDialog : MonoBehaviour
             techGUI.techDescription.text = tech.description;
             techGUICacheList.Add(techGUI);
         }
-    }
-
-    private void UpdateTechButton(Technology tech, TechGUI techGUI)
-    {
-        string winConditionPart = tech is Technology_Victory ? "(victory)" : "";
-        techGUI.techButtonText.text = string.Format("{0} {1}/{2} {3}", tech.name, tech.Progress, tech.cost, winConditionPart);
-
-        if (tech.Progress >= tech.cost)
-        {
-            techGUI.techButton.interactable = false;
-            techGUI.techButtonText.color = Utils.HexToColor("#CF8B31FF");
-            techGUI.GetComponent<Image>().enabled = false;
-            techGUI.techDescription.color = normalResearchTextColor;
-        }
-        else if (IsActiveResearch(tech))
-        {
-            techGUI.GetComponent<Image>().enabled = true;
-            techGUI.techDescription.color = activeResearchTextColor;
-        }
-        else
-        {
-            techGUI.GetComponent<Image>().enabled = false;
-            techGUI.techDescription.color = normalResearchTextColor;
-        }
-    }
-
-    private bool IsActiveResearch(Technology tech)
-    {
-        return player.TechTree.activeResearch == tech;
     }
 
     private void SetActiveResearchClick(Technology tech)
