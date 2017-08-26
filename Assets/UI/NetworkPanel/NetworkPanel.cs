@@ -63,6 +63,7 @@ public class NetworkPanel : MonoBehaviour
 
         Time.timeScale = 1;
 
+        gameModeDropdown.options.Clear();
         foreach (var scenario in ScenarioSetup.Scenarios)
             gameModeDropdown.options.Add(new Dropdown.OptionData(scenario.FriendlyName));
 
