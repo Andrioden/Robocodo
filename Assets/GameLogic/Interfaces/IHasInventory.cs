@@ -4,6 +4,8 @@ using System.Collections.Generic;
 public interface IHasInventory
 {
 
+    bool HasOpenInventory();
+
     /// <summary>
     /// Should return the items not transfered to the inventory
     /// </summary>

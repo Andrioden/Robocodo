@@ -598,10 +598,18 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     }
 
     [Server]
+    public bool HasOpenInventory()
+    {
+        if (!IsStarted)
+            return false;
+        else
+            return (LastAppliedInstruction.GetType() == typeof(Instruction_OpenInventory));
+    }
+
+    [Server]
     public List<InventoryItem> AddToInventory(List<InventoryItem> items, bool playSoundEffect)
     {
-        if (playSoundEffect)
-            Debug.LogError("Not added sound effect for when robot receives items");
+        // Playsound effect not added
 
         List<InventoryItem> notAdded = new List<InventoryItem>();
         foreach (InventoryItem item in items)
@@ -831,4 +839,5 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     {
         return "Owned by " + GetOwner().Nick;
     }
+
 }

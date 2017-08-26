@@ -26,7 +26,7 @@ public class StorageRobotController : RobotController
 
     private List<Instruction> spezializedInstructions = new List<Instruction>()
     {
-        //Nothing
+        new Instruction_OpenInventory()
     };
     public override List<Instruction> GetSpecializedInstructions() { return spezializedInstructions; }
 

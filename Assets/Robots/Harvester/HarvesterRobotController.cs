@@ -38,8 +38,9 @@ public class HarvesterRobotController : RobotController
 
     private List<Instruction> spezializedInstructions = new List<Instruction>()
     {
+        new Instruction_OpenInventory(),
         new Instruction_Harvest(),
-        new Instruction_DropInventory(),
+        new Instruction_DropInventory()
     };
     public override List<Instruction> GetSpecializedInstructions() { return spezializedInstructions; }
 

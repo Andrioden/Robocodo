@@ -13,9 +13,12 @@ public static class ScenarioSetup
     private static List<ScenarioEntry> scenarios = new List<ScenarioEntry>();
     public static List<ScenarioEntry> Scenarios { get { return scenarios; } }
 
+    public static bool IsAllTechUnlocked = false;
+
     static ScenarioSetup()
     {
         scenarios.Add(new ScenarioEntry("Normal", Scenario.Normal, Normal));
+        scenarios.Add(new ScenarioEntry("Rich And Teched", Scenario.RichAndTeched, RichAndTeched));
         scenarios.Add(new ScenarioEntry("Wild PvE", Scenario.WildPvE, WildPvE));
         scenarios.Add(new ScenarioEntry("Test Attack Neu Enemy", Scenario.Test_AttackNeutralEnemy, Test_AttackNeutralEnemy));
         scenarios.Add(new ScenarioEntry("Test Logistics Chain", Scenario.Test_LogisticsChain, Test_LogisticsChain));
@@ -36,10 +39,12 @@ public static class ScenarioSetup
     //}
 
     /// <summary>
-    /// NetworkConnection is null if AI:
+    /// NetworkConnection is null if AI
     /// </summary>
     public static void Run(Scenario scenario, NetworkConnection conn, PlayerController player)
     {
+        IsAllTechUnlocked = false;
+
         ScenarioEntry scenarioEntry = scenarios.Where(s => s.ScenarioEnumRef == scenario).FirstOrDefault();
         if (scenarioEntry == null)
             throw new Exception("Not added support for the Scenario enum: " + scenario);
@@ -59,6 +64,17 @@ public static class ScenarioSetup
             AddRobot(WorldController.instance.harvesterRobotPrefab, player.City.X, player.City.Z, player, conn);
         for (int i = 0; i < Settings.Scenario_Normal_AmountOfStartingCombatRobots; i++)
             AddRobot(WorldController.instance.combatRobotPrefab, player.City.X, player.City.Z, player, conn);
+    }
+
+    private static void RichAndTeched(NetworkConnection conn, PlayerController player)
+    {
+        InfectionManager.instance.AddBigInfectionAwayFromCities(wc.worldBuilder.GetCityOrReservedCoordinates());
+
+        AddCopper(player.City, 200);
+        AddIron(player.City, 200);
+        AddFood(player.City, 200);
+
+        IsAllTechUnlocked = true; // Unable to add this directly because the TechTree is created after this code runs
     }
 
     private static void WildPvE(NetworkConnection conn, PlayerController player)
@@ -133,7 +149,7 @@ public static class ScenarioSetup
 
         AddRobot(WorldController.instance.storageRobotPrefab, player.City.X + 3, player.City.Z, player, conn, new List<Instruction>
         {
-            new Instruction_Idle()
+            new Instruction_OpenInventory()
         });
 
         AddRobot(WorldController.instance.transporterRobotPrefab, player.City.X + 3, player.City.Z, player, conn, new List<Instruction>
@@ -292,11 +308,12 @@ public class ScenarioEntry
 public enum Scenario
 {
     Normal = 0,
-    WildPvE = 1,
-    Test_AttackNeutralEnemy = 2,
-    Test_LogisticsChain = 3,
-    Test_StackingRobots = 4,
-    Test_BatteryRobot = 5,
-    Test_InfectionPurge = 6,
-    Test_InfectionVictory = 7
+    RichAndTeched = 1,
+    WildPvE = 2,
+    Test_AttackNeutralEnemy = 3,
+    Test_LogisticsChain = 4,
+    Test_StackingRobots = 5,
+    Test_BatteryRobot = 6,
+    Test_InfectionPurge = 7,
+    Test_InfectionVictory = 8
 }

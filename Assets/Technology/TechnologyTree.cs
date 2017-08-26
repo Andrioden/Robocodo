@@ -22,6 +22,10 @@ public class TechnologyTree : NetworkBehaviour
         //Unlock Harvester from the start
         technologies[0].AddProgress(technologies[0].cost);
 
+        if (ScenarioSetup.IsAllTechUnlocked)
+            foreach (Technology tech in technologies.Where(t => t.GetType() != typeof(Technology_Victory)))
+                tech.AddProgress(tech.cost);
+
         if (isServer)
             WorldTickController.instance.OnTick += ContinueResearch;
     }

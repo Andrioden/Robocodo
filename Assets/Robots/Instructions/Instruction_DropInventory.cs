@@ -45,7 +45,7 @@ public class Instruction_DropInventory : Instruction
 
     private void DropInventory()
     {
-        IHasInventory droppableTarget = FindDroppableTargetPrioritized();
+        IHasInventory droppableTarget = robot.FindAllOnCurrentPosition<IHasInventory>().FirstOrDefault(r => r.HasOpenInventory());
 
         if (droppableTarget != null)
         {
@@ -56,19 +56,6 @@ public class Instruction_DropInventory : Instruction
         }
         else
             Debug.Log("SERVER: No droppable, should drop items on ground. Not fully implemented.");
-    }
-
-    private IHasInventory FindDroppableTargetPrioritized()
-    {
-        IHasInventory storageRobot = robot.FindFirstOnCurrentPosition<StorageRobotController>();
-        if (storageRobot != null)
-            return storageRobot;
-
-        IHasInventory transporterRobot = robot.FindFirstOnCurrentPosition<TransporterRobotController>();
-        if (transporterRobot != null)
-            return transporterRobot;
-
-        return robot.FindFirstOnCurrentPosition<IHasInventory>();
     }
 
 }

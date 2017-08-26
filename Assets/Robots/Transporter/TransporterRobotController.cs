@@ -27,6 +27,7 @@ public class TransporterRobotController : RobotController
 
     private List<Instruction> spezializedInstructions = new List<Instruction>()
     {
+        new Instruction_OpenInventory(),
         new Instruction_DropInventory(),
         new Instruction_PickUp(),
         new Instruction_IdleUntilThen(UntilWhat.Full, null),

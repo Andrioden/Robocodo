@@ -209,6 +209,12 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
             throw new Exception("Has not robot tech to build robot of type: " + robotType);
     }
 
+    [Server]
+    public bool HasOpenInventory()
+    {
+        return true;
+    }
+
     /// <summary>
     /// Returns the items not added to the inventory
     /// </summary>
