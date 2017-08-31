@@ -34,13 +34,13 @@ public class KeyboardManager : NetworkBehaviour
     }
 
     [Client]
-    public static void KeyboardLockOn(string arg0 = "")
+    public static void KeyboardLockOn()
     {
         KeyboardLock = true;
     }
 
     [Client]
-    public static void KeyboardLockOff(string arg0 = "")
+    public static void KeyboardLockOff(string notUsedOnlyHereToAllowAddedAsListener = "")
     {
         KeyboardLock = false;
     }

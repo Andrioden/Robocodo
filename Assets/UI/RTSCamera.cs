@@ -48,6 +48,7 @@ public class RTSCamera : MonoBehaviour
 
         if (Settings.GUI_EnableEdgeScrolling)
             MoveCameraWithMouseAndScreenEdge();
+
         ZoomCameraWithScrollWheel();
     }
 
@@ -58,7 +59,6 @@ public class RTSCamera : MonoBehaviour
 
     private void MoveCameraWithKeyboard()
     {
-
         float horizontal = Input.GetAxis("Horizontal") * _scrollSpeed * Time.deltaTime / Math.Max(1, Time.timeScale);
         float vertical = Input.GetAxis("Vertical") * _scrollSpeed * Time.deltaTime / Math.Max(1, Time.timeScale);
 
