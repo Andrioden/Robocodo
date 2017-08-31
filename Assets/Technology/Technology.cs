@@ -42,6 +42,11 @@ public abstract class Technology
             Complete();
     }
 
+    public int GetProgressPercent()
+    {
+        return (int)Math.Floor(100.0 * progress / cost);
+    }
+
     public bool IsResearched()
     {
         return progress >= cost;

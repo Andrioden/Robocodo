@@ -100,7 +100,7 @@ public class TechTreeDialog : MonoBehaviour
     private void UpdateTechButton(Technology tech, TechGUI techGUI)
     {
         string winConditionPart = tech is Technology_Victory ? "(victory)" : "";
-        techGUI.techButtonText.text = string.Format("{0} {1}/{2} {3}", tech.name, tech.Progress, tech.cost, winConditionPart);
+        techGUI.techButtonText.text = string.Format("{0} {1}/{2} ({3}%) {4}", tech.name, tech.Progress, tech.cost, tech.GetProgressPercent(), winConditionPart);
 
         if (tech.Progress >= tech.cost)
         {
