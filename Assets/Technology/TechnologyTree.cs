@@ -53,6 +53,9 @@ public class TechnologyTree : NetworkBehaviour
     [Server]
     public void AddProgressToActiveResearch(int addedProgress)
     {
+        if (activeResearch == null)
+            return;
+
         activeResearch.AddProgress(addedProgress);
         if (player.connectionToClient != null) // Is AI
             TargetSetProgress(player.connectionToClient, activeResearch.id, activeResearch.Progress);
