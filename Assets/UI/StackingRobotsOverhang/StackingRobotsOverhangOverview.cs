@@ -8,15 +8,6 @@ public class StackingRobotsOverhangOverview : MonoBehaviour
 {
     public GameObject stackingRobotsOverhangPrefab;
 
-    private PlayerController _clientsOwnPlayer;
-    private PlayerController ClientsOwnPlayer()
-    {
-        if (_clientsOwnPlayer == null)
-            _clientsOwnPlayer = WorldController.instance.FindClientsOwnPlayer();
-
-        return _clientsOwnPlayer;
-    }
-
     private GameObject parent;
     private List<GameObject> spawnedGuiObjects = new List<GameObject>();
     private int spawnedGuiObjectsHash;
@@ -61,13 +52,15 @@ public class StackingRobotsOverhangOverview : MonoBehaviour
 
     public void Refresh()
     {
-        if (ClientsOwnPlayer() == null)
+        if (WorldController.instance.ClientsOwnPlayer() == null)
         {
             Debug.Log("Could not find player city, stacking robot GUI will not refresh. This debug message is OK if runs at the start. Might be data-sync timing issues.");
             return;
         }
 
-        List<RobotController> ownedRobots = GameObject.FindGameObjectsWithTag("Robot").Select(go => go.GetComponent<RobotController>()).Where(r => r.Owner == ClientsOwnPlayer()).ToList();
+        List<RobotController> ownedRobots = GameObject.FindGameObjectsWithTag("Robot")
+            .Select(go => go.GetComponent<RobotController>())
+            .Where(r => r.Owner == WorldController.instance.ClientsOwnPlayer()).ToList();
 
         List<List<RobotController>> robotStacks = new List< List<RobotController> >();
         robotStacks.Add(new List<RobotController>());

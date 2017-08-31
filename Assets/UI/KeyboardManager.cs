@@ -25,7 +25,7 @@ public class KeyboardManager : NetworkBehaviour
                     WorldTimeController.instance.TogglePause();
 
                 else if (Input.GetKeyDown(KeyCode.H))
-                    RTSCamera.instance.PositionRelativeTo(WorldController.instance.FindClientsOwnPlayer().City.transform);
+                    RTSCamera.instance.PositionRelativeTo(WorldController.instance.ClientsOwnPlayer().City.transform);
             }
         }
 

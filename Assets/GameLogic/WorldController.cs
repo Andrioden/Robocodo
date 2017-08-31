@@ -39,6 +39,15 @@ public class WorldController : NetworkBehaviour
     private Transform worldParent;
     private bool classIsUsedAsDemo = false;
 
+    private PlayerController _clientsOwnPlayer;
+    public PlayerController ClientsOwnPlayer()
+    {
+        if (_clientsOwnPlayer == null)
+            _clientsOwnPlayer = FindPlayerControllers().Where(p => p.hasAuthority).FirstOrDefault();
+
+        return _clientsOwnPlayer;
+    }
+
     public static WorldController instance;
     private void Awake()
     {
@@ -283,10 +292,9 @@ public class WorldController : NetworkBehaviour
             return null;
     }
 
-    // I belive finding by tag is a quick unity action and not neccesary to cache
     public List<PlayerController> FindPlayerControllers()
     {
-        return GameObject.FindGameObjectsWithTag("Player")
+        return GameObject.FindGameObjectsWithTag("Player") // Ok performance: https://forum.unity3d.com/threads/findgameobjectswithtag-efficiency.3612/#post-26597
             .Where(go => go.GetComponent<PlayerController>() != null)
             .Select(go => go.GetComponent<PlayerController>()).ToList();
     }
@@ -294,11 +302,6 @@ public class WorldController : NetworkBehaviour
     public PlayerController FindPlayerController(string connectionID)
     {
         return FindPlayerControllers().Where(p => p.ConnectionID == connectionID).FirstOrDefault();
-    }
-
-    public PlayerController FindClientsOwnPlayer()
-    {
-        return FindPlayerControllers().Where(p => p.hasAuthority).FirstOrDefault();
     }
 
     public CityController FindCityController(string connectionID)

@@ -86,7 +86,7 @@ public class WinLoseChecker : NetworkBehaviour
     [ClientRpc]
     public void RpcNotifyAllInfectionCleared()
     {
-        if (WorldController.instance.FindClientsOwnPlayer().infectionContribution == GetMaxInfectionContribution())
+        if (WorldController.instance.ClientsOwnPlayer().infectionContribution == GetMaxInfectionContribution())
             OnWon(WinType.Infection_TopContributor);
         else
             OnLost(LossType.Infection_NotTopContributor);
@@ -95,7 +95,7 @@ public class WinLoseChecker : NetworkBehaviour
     [ClientRpc]
     public void RpcNotifyWinner(string wonPlayerConnectionId, int wonTypeInt)
     {
-        if (WorldController.instance.FindClientsOwnPlayer().ConnectionID == wonPlayerConnectionId)
+        if (WorldController.instance.ClientsOwnPlayer().ConnectionID == wonPlayerConnectionId)
             OnWon((WinType)wonTypeInt);
         else
             OnLost((LossType)wonTypeInt);
@@ -104,7 +104,7 @@ public class WinLoseChecker : NetworkBehaviour
     [ClientRpc]
     public void RpcNotifyLoser(string lostPlayerConnectionId, int lossTypeInt)
     {
-        if (WorldController.instance.FindClientsOwnPlayer().ConnectionID == lostPlayerConnectionId)
+        if (WorldController.instance.ClientsOwnPlayer().ConnectionID == lostPlayerConnectionId)
             OnLost((LossType)lossTypeInt);
         //TODO: On non-losing clients, maybe notify a player lost?
     }

@@ -20,7 +20,7 @@ public class CityButton : MonoBehaviour {
     private void CenterCameraAndSelectCity()
     {
         if(city == null)
-            city = WorldController.instance.FindClientsOwnPlayer().City;
+            city = WorldController.instance.ClientsOwnPlayer().City;
 
         RTSCamera.instance.PositionRelativeTo(city.transform);
         MouseManager.instance.ClickGameObject(city.gameObject);
