@@ -7,6 +7,7 @@ public abstract class Instruction
 {
 
     public abstract int Setting_EnergyCost();
+    public abstract bool IsStill();
 
     /// <summary>
     /// Execute instruction for a robot

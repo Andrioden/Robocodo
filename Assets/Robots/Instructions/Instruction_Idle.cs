@@ -7,6 +7,7 @@ public class Instruction_Idle : Instruction
 {
 
     public override int Setting_EnergyCost() { return 0; }
+    public override bool IsStill() { return true; }
 
     public static readonly string Format = "IDLE";
 

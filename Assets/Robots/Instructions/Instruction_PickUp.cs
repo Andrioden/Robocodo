@@ -8,6 +8,7 @@ public class Instruction_PickUp : Instruction
 {
 
     public override int Setting_EnergyCost() { return 1; }
+    public override bool IsStill() { return false; }
 
     public static readonly string Format = "PICK UP";
 

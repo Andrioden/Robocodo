@@ -7,6 +7,7 @@ public class Instruction_Unknown : Instruction
 {
 
     public override int Setting_EnergyCost() { return 1; }
+    public override bool IsStill() { return false; }
 
     private string instruction;
 

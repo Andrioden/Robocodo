@@ -541,6 +541,15 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             feedback = string.Empty;
     }
 
+
+    public bool IsStill()
+    {
+        if (lastAppliedInstruction == null)
+            return true;
+        else
+            return lastAppliedInstruction.IsStill();
+    }
+
     public bool IsAtPlayerCity()
     {
         if (Owner == null || Owner.City == null)

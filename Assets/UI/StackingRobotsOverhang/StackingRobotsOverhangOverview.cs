@@ -60,7 +60,7 @@ public class StackingRobotsOverhangOverview : MonoBehaviour
 
         List<RobotController> ownedRobots = GameObject.FindGameObjectsWithTag("Robot")
             .Select(go => go.GetComponent<RobotController>())
-            .Where(r => r.Owner == WorldController.instance.ClientsOwnPlayer()).ToList();
+            .Where(r => r.Owner == WorldController.instance.ClientsOwnPlayer() && (r.IsStill() || r.IsAtPlayerCity())).ToList();
 
         List<List<RobotController>> robotStacks = new List< List<RobotController> >();
         robotStacks.Add(new List<RobotController>());
@@ -77,7 +77,7 @@ public class StackingRobotsOverhangOverview : MonoBehaviour
             }
         }
 
-        robotStacks = robotStacks.Where(s => s.Count > 1).ToList(); // Filter away those with only 1 robot
+        robotStacks = robotStacks.Where(s => s.Count > 1 || (s.Count == 1 && s[0].IsAtPlayerCity())).ToList(); // Filter away those with only 1 robot and not on city
 
         List<RobotController> robotStacksFlatList = robotStacks.SelectMany(s => s).ToList();
         if (IsRobotStackingChanged(robotStacksFlatList))
@@ -104,7 +104,7 @@ public class StackingRobotsOverhangOverview : MonoBehaviour
 
     private void SpawnOverhangPossibly(List<RobotController> robots)
     {
-        if (robots.Count <= 1)
+        if (robots.Count < 1)
             return;
 
         GameObject stackingRobotsOverhangGO = Instantiate(stackingRobotsOverhangPrefab, robots[0].transform);

@@ -8,6 +8,7 @@ public class Instruction_IdleUntilThen : Instruction
 {
 
     public override int Setting_EnergyCost() { return 1; }
+    public override bool IsStill() { return true; }
 
     public static readonly string Format = "IDLE UNTIL [WHAT] THEN [INSTRUCTION]";
 
