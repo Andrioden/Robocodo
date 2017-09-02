@@ -26,6 +26,7 @@ public static class ScenarioSetup
         scenarios.Add(new ScenarioEntry("Test Battery Robot", Scenario.Test_BatteryRobot, Test_BatteryRobot));
         scenarios.Add(new ScenarioEntry("Test Infection Purging", Scenario.Test_InfectionPurge, Test_InfectionPurge));
         scenarios.Add(new ScenarioEntry("Test Infection Victory", Scenario.Test_InfectionVictory, Test_InfectionVictory));
+        scenarios.Add(new ScenarioEntry("Test Crash", Scenario.Test_Crash, Test_Crash));
     }
 
     public static void RegisterWorldController(WorldController worldController)
@@ -245,6 +246,21 @@ public static class ScenarioSetup
         InfectionManager.instance.IncreaseTileInfection(player.City.X + 1, player.City.Z, 20);
     }
 
+    private static void Test_Crash(NetworkConnection conn, PlayerController player)
+    {
+        InfectionManager.instance.AddBigInfectionAwayFromCities(wc.worldBuilder.GetCityOrReservedCoordinates());
+
+        AddRobot(WorldController.instance.harvesterRobotPrefab, player.City.X + 1, player.City.Z + 3, player, conn, new List<Instruction>()
+        {
+            new Instruction_Move(MoveDirection.Down)
+        });
+
+        AddRobot(WorldController.instance.harvesterRobotPrefab, player.City.X + 1, player.City.Z - 3, player, conn, new List<Instruction>()
+        {
+            new Instruction_Move(MoveDirection.Up)
+        });
+    }
+
     private static GameObject AddRobot(GameObject prefab, int x, int z, PlayerController owner, NetworkConnection conn, List<Instruction> instructions = null)
     {
         if (!WorldController.instance.worldBuilder.IsWithinWorld(x, z))
@@ -315,5 +331,6 @@ public enum Scenario
     Test_StackingRobots = 5,
     Test_BatteryRobot = 6,
     Test_InfectionPurge = 7,
-    Test_InfectionVictory = 8
+    Test_InfectionVictory = 8,
+    Test_Crash = 9
 }

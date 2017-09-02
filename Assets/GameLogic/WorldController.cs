@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine.Networking;
 using Assets.GameLogic;
 using Robocodo.AndreAI;
+using System.Collections;
 
 public class WorldController : NetworkBehaviour
 {
@@ -269,6 +270,14 @@ public class WorldController : NetworkBehaviour
         groundGameObject.transform.position = new Vector3(xPosition, -0.001f, zPosition);
 
         groundGameObject.GetComponent<TextureTilingController>().RescaleTileTexture();
+    }
+
+    [Server]
+    public IEnumerator DestroyNetworkObject(GameObject GO, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        NetworkServer.Destroy(GO);
     }
 
     /// <summary>
