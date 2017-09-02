@@ -146,7 +146,6 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         if (!meshGO)
             Debug.LogError("Mesh game object reference missing. Will not be able to hide physical robot when in garage etc.");
 
-
         if (instructions.Count == 0)
             SetInstructions(GetSuggestedInstructionSet());
 
@@ -155,6 +154,8 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             SetXzToTransformPosition();
             InitDefaultValues();
         }
+        else
+            CmdTellServerToSendOwnerInstructions(); // Client has network timing issue, so the client asks for the updated list
 
         audioSource = GetComponent<AudioSource>();
     }
@@ -373,7 +374,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     {
         instructions = newInstructions;
         if (Network.isServer && Owner.connectionToClient != null)
-            TargetSetInstructions(Owner.connectionToClient, InstructionsHelper.SerializeList(newInstructions));
+            TargetSetInstructions(Owner.connectionToClient, InstructionsHelper.SerializeList(instructions));
     }
 
     [TargetRpc]
@@ -386,6 +387,13 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     private void CmdSetInstructions(string[] newInstructions)
     {
         instructions = InstructionsHelper.Deserialize(newInstructions.ToList());
+    }
+
+    [Command]
+    private void CmdTellServerToSendOwnerInstructions()
+    {
+        if (Owner.connectionToClient != null)
+            TargetSetInstructions(Owner.connectionToClient, InstructionsHelper.SerializeList(instructions));
     }
 
     public void CacheAllowedInstructions()
