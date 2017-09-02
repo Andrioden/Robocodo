@@ -819,6 +819,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
             currentInstructionIndex = 0;
             currentInstructionIndexIsValid = true;
+            nextInstructionIndex = 0;
             mainLoopIterationCount = 0;
             SetFeedback("", false, true);
 
