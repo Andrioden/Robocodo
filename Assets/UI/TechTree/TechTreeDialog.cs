@@ -112,14 +112,14 @@ public class TechTreeDialog : MonoBehaviour
         else if (IsActiveResearch(tech))
         {
             techGUI.techButton.interactable = true;
-            techGUI.techButtonText.color = normalResearchTextColor;
+            techGUI.techButtonText.color = normalTechButtonTextColor;
             techGUI.GetComponent<Image>().enabled = true;
             techGUI.techDescription.color = activeResearchTextColor;
         }
         else
         {
             techGUI.techButton.interactable = true;
-            techGUI.techButtonText.color = normalResearchTextColor;
+            techGUI.techButtonText.color = normalTechButtonTextColor;
             techGUI.GetComponent<Image>().enabled = false;
             techGUI.techDescription.color = normalResearchTextColor;
         }
