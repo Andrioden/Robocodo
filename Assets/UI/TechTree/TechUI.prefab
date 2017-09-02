@@ -239,7 +239,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   techButton: {fileID: 114165303283052772}
   techButtonText: {fileID: 114388597435888848}
-  techDescription: {fileID: 114793893506831994}
+  techDescriptionText: {fileID: 114793893506831994}
 --- !u!114 &114793893506831994
 MonoBehaviour:
   m_ObjectHideFlags: 1

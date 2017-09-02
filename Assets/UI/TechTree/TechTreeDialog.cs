@@ -16,11 +16,11 @@ public class TechTreeDialog : MonoBehaviour
     private PlayerController player;
     private List<TechGUI> techGUICacheList = new List<TechGUI>();
 
-    private Color researcedTechButtonTextColor = Utils.HexToColor("#CF8B31FF");
-    private Color normalTechButtonTextColor;
+    private Color researchCompletedTechButtonTextColor = Utils.HexToColor("#CF8B31FF");
+    private Color defaultTechButtonTextColor;
 
-    private Color activeResearchTextColor = Utils.HexToColor("#00D9E3FF");
-    private Color normalResearchTextColor;
+    private Color activeTechDescriptionTextColor = Utils.HexToColor("#00D9E3FF");
+    private Color defaultTechDescriptionTextColor;
 
     private DateTime _lastUpdateWhileHidden;
 
@@ -41,8 +41,8 @@ public class TechTreeDialog : MonoBehaviour
         closeButton.onClick.RemoveAllListeners();
         closeButton.onClick.AddListener(Hide);
 
-        normalTechButtonTextColor = techPrefab.GetComponent<TechGUI>().techButtonText.color;
-        normalResearchTextColor = techPrefab.GetComponent<TechGUI>().techDescription.color;
+        defaultTechButtonTextColor = techPrefab.GetComponent<TechGUI>().techButtonText.color;
+        defaultTechDescriptionTextColor = techPrefab.GetComponent<TechGUI>().techDescriptionText.color;
     }
 
     public void Show(PlayerController player)
@@ -69,31 +69,10 @@ public class TechTreeDialog : MonoBehaviour
 
     private void RefreshTechnologyUI()
     {
-        if (!ShouldUpdatePanel())
-            return;
-
         foreach (Technology tech in player.TechTree.Technologies)
         {
             TechGUI techGUI = techGUICacheList.Find(t => t.techId == tech.id);
             UpdateTechButton(tech, techGUI);
-        }
-    }
-
-    private bool ShouldUpdatePanel()
-    {
-        if (IsOpen())
-            return true;
-
-        else
-        {
-            //Update every 5 seconds even when hidden to avoid a lag effect on progress when panel reopens.
-            if ((DateTime.Now - _lastUpdateWhileHidden).TotalSeconds < 5)
-                return false;
-            else
-            {
-                _lastUpdateWhileHidden = DateTime.Now;
-                return true;
-            }
         }
     }
 
@@ -105,23 +84,23 @@ public class TechTreeDialog : MonoBehaviour
         if (tech.Progress >= tech.cost)
         {
             techGUI.techButton.interactable = false;
-            techGUI.techButtonText.color = researcedTechButtonTextColor;
+            techGUI.techButtonText.color = researchCompletedTechButtonTextColor;
             techGUI.GetComponent<Image>().enabled = false;
-            techGUI.techDescription.color = normalResearchTextColor;
+            techGUI.techDescriptionText.color = defaultTechDescriptionTextColor;
         }
         else if (IsActiveResearch(tech))
         {
             techGUI.techButton.interactable = true;
-            techGUI.techButtonText.color = normalResearchTextColor;
+            techGUI.techButtonText.color = defaultTechButtonTextColor;
             techGUI.GetComponent<Image>().enabled = true;
-            techGUI.techDescription.color = activeResearchTextColor;
+            techGUI.techDescriptionText.color = activeTechDescriptionTextColor;
         }
         else
         {
             techGUI.techButton.interactable = true;
-            techGUI.techButtonText.color = normalResearchTextColor;
+            techGUI.techButtonText.color = defaultTechButtonTextColor;
             techGUI.GetComponent<Image>().enabled = false;
-            techGUI.techDescription.color = normalResearchTextColor;
+            techGUI.techDescriptionText.color = defaultTechDescriptionTextColor;
         }
     }
 
@@ -147,7 +126,7 @@ public class TechTreeDialog : MonoBehaviour
 
             UpdateTechButton(tech, techGUI);
 
-            techGUI.techDescription.text = tech.description;
+            techGUI.techDescriptionText.text = tech.description;
             techGUICacheList.Add(techGUI);
         }
     }
