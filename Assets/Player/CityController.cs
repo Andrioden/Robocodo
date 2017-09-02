@@ -33,21 +33,14 @@ public class CityController : OwnedNetworkBehaviour, ISelectable, IHasInventory,
     public PopulationManager PopulationManager { get { return populationManager; } }
 
     [SyncVar]
-    private int health;
-    public int Health { get { return health; } }
-
-    [SyncVar]
     private int energy;
     public int Energy { get { return energy; } }
 
-    public static int Settings_StartHealth = 10;
     public static int Settings_MaxEnergyStorage = 200;
 
     // Use this for initialization
     private void Start()
     {
-        health = Settings_StartHealth;
-
         audioSource = GetComponent<AudioSource>();
         populationManager = GetComponent<PopulationManager>();
         if (isServer)

@@ -49,8 +49,6 @@ public class WinLoseChecker : NetworkBehaviour
 
         if (player.City.GetInfectionImpactLossPercentage() >= 100)
             lossType = LossType.Infection;
-        else if (player.City.Health <= 0)
-            lossType = LossType.CityDestroyed;
         else if (player.City.PopulationManager.Population <= 0)
             lossType = LossType.StarvedToDeath;
 
@@ -121,7 +119,6 @@ public enum LossType
     None = 0,
     Infection = 10,
     Infection_NotTopContributor = 11,
-    CityDestroyed = 20,
     StarvedToDeath = 30,
     Technology = 40,
 }
