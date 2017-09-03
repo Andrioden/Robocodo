@@ -601,10 +601,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
     public bool IsStill()
     {
-        if (lastAppliedInstruction == null)
-            return true;
-        else
-            return lastAppliedInstruction.Setting_Still();
+        return !isStarted || isReprogrammingRobot || lastAppliedInstruction == null || lastAppliedInstruction.Setting_Still();
     }
 
     public bool IsAtPlayerCity()
