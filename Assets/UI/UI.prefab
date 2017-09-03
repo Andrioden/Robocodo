@@ -2721,7 +2721,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1843802160017378
 GameObject:
   m_ObjectHideFlags: 1
@@ -3232,7 +3232,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 35
   m_Viewport: {fileID: 224000011995382294}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 114000013179697416}
@@ -3579,39 +3579,7 @@ MonoBehaviour:
   m_ItemImage: {fileID: 0}
   m_Value: 0
   m_Options:
-    m_Options:
-    - m_Text: Normal
-      m_Image: {fileID: 0}
-    - m_Text: Wild PvE
-      m_Image: {fileID: 0}
-    - m_Text: Test Attack Neu Enemy
-      m_Image: {fileID: 0}
-    - m_Text: Test Logistics Chain
-      m_Image: {fileID: 0}
-    - m_Text: Test Stacking Robots
-      m_Image: {fileID: 0}
-    - m_Text: Test Battery Robot
-      m_Image: {fileID: 0}
-    - m_Text: Test Infection Purging
-      m_Image: {fileID: 0}
-    - m_Text: Test Infection Victory
-      m_Image: {fileID: 0}
-    - m_Text: Normal
-      m_Image: {fileID: 0}
-    - m_Text: Wild PvE
-      m_Image: {fileID: 0}
-    - m_Text: Test Attack Neu Enemy
-      m_Image: {fileID: 0}
-    - m_Text: Test Logistics Chain
-      m_Image: {fileID: 0}
-    - m_Text: Test Stacking Robots
-      m_Image: {fileID: 0}
-    - m_Text: Test Battery Robot
-      m_Image: {fileID: 0}
-    - m_Text: Test Infection Purging
-      m_Image: {fileID: 0}
-    - m_Text: Test Infection Victory
-      m_Image: {fileID: 0}
+    m_Options: []
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -13863,8 +13831,8 @@ RectTransform:
   m_Father: {fileID: 224432625246410564}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.03448276, y: 0}
-  m_AnchorMax: {x: 0.03448276, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -14455,7 +14423,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0.03448276, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -14675,7 +14643,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -14827,7 +14795,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
