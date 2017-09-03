@@ -60,8 +60,6 @@ public class WonOrLostDialog : MonoBehaviour
             Show("The infection got to high near your city, your people got infected and everyone died, good job...");
         else if (type == LossType.Infection_NotTopContributor)
             ShowInfectionWinLoss("All infection was cleared from the world, life may now slowly return to normal. However, the people of the world took note that you did not contribute enough and considers you a loser");
-        else if (type == LossType.CityDestroyed)
-            Show("You lost! City destroyed!");
         else if (type == LossType.StarvedToDeath)
             Show("You lost! Everyone died of starvation.");
         else if (type == LossType.Technology)

@@ -25,13 +25,13 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     private string feedback = "";
     public string Feedback { get { return feedback; } }
 
-    private IEnumerator feedbackClearCoroutine;
-
     [SyncVar(hook = "OnIsStartedUpdated")]
     private bool isStarted = false;
     public bool IsStarted { get { return isStarted; } }
 
     public bool isPreviewRobot = false;
+
+    private bool isDestroyed = false;
 
     protected List<Instruction> instructions = new List<Instruction>();
     public List<Instruction> Instructions { get { return instructions; } }
@@ -146,7 +146,6 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         if (!meshGO)
             Debug.LogError("Mesh game object reference missing. Will not be able to hide physical robot when in garage etc.");
 
-
         if (instructions.Count == 0)
             SetInstructions(GetSuggestedInstructionSet());
 
@@ -155,6 +154,8 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             SetXzToTransformPosition();
             InitDefaultValues();
         }
+        else
+            CmdTellServerToSendOwnerInstructions(); // Client has network timing issue, so the client asks for the updated list
 
         audioSource = GetComponent<AudioSource>();
     }
@@ -180,6 +181,8 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             StopTicking();
             if (isServer)
                 modules.ForEach(module => module.Uninstall());
+
+            SetFeedback("DESTROYED!", true, true); // Remove when animation present
         }
     }
 
@@ -371,7 +374,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     {
         instructions = newInstructions;
         if (Network.isServer && Owner.connectionToClient != null)
-            TargetSetInstructions(Owner.connectionToClient, InstructionsHelper.SerializeList(newInstructions));
+            TargetSetInstructions(Owner.connectionToClient, InstructionsHelper.SerializeList(instructions));
     }
 
     [TargetRpc]
@@ -384,6 +387,13 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     private void CmdSetInstructions(string[] newInstructions)
     {
         instructions = InstructionsHelper.Deserialize(newInstructions.ToList());
+    }
+
+    [Command]
+    private void CmdTellServerToSendOwnerInstructions()
+    {
+        if (Owner.connectionToClient != null)
+            TargetSetInstructions(Owner.connectionToClient, InstructionsHelper.SerializeList(instructions));
     }
 
     public void CacheAllowedInstructions()
@@ -437,6 +447,12 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     {
         SetFeedback("", false, true);
 
+        if (isDestroyed)
+        {
+            SetFeedback("DESTROYED", false, true);
+            return;
+        }
+
         if (instructions.Count == 0)
         {
             SetFeedback("NO INSTRUCTIONS", true, true);
@@ -471,6 +487,9 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
                 InstructionCompleted();
             energy = energyAfterExecuting;
         }
+
+        if (!isPreviewRobot)
+            DestroyWithDelayIfCrash();
     }
 
     [Server]
@@ -521,26 +540,9 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         if (isPreviewRobot || Owner == null)
             return;
 
-        /* If the feedback has not changed after 1 second we will clear it using a coroutine. */
-        if (feedbackClearCoroutine != null)
-            StopCoroutine(feedbackClearCoroutine);
-
-        feedbackClearCoroutine = ClearFeedbackAfterSecondsIfNotChanged(message, 1f);
-        StartCoroutine(feedbackClearCoroutine);
-
         if (popup)
             Owner.ShowPopupForOwner(message, transform.position, TextPopup.ColorType.NEGATIVE);
     }
-
-    private IEnumerator ClearFeedbackAfterSecondsIfNotChanged(string lastFeedback, float secondsDelay)
-    {
-        yield return new WaitForSeconds(secondsDelay);
-
-        /* We will only clear the feedback if it still the same. Trying to avoid clearing a new feedback set from somewhere else. */
-        if (feedback == lastFeedback)
-            feedback = string.Empty;
-    }
-
 
     public bool IsStill()
     {
@@ -747,6 +749,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         {
             if (Owner != null)
                 Owner.ShowPopupForOwner("DESTROYED!", transform.position, TextPopup.ColorType.NEGATIVE);
+
             NetworkServer.Destroy(gameObject);
         }
     }
@@ -819,6 +822,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
             currentInstructionIndex = 0;
             currentInstructionIndexIsValid = true;
+            nextInstructionIndex = 0;
             mainLoopIterationCount = 0;
             SetFeedback("", false, true);
 
@@ -831,6 +835,31 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         }
         else
             SetFeedback(feedback, false, true);
+    }
+
+    /// <summary>
+    /// Does not immidiately destroy the robot GameObject, the client handles this itself.
+    /// </summary>
+    [Server]
+    private void DestroyWithDelayIfCrash()
+    {
+        if (isPreviewRobot || IsAtPlayerCity())
+            return;
+
+        List<RobotController> otherRobotsOnUnitPosition = FindNearbyCollidingGameObjectsOfType<RobotController>().Where(r => r.x == x && r.z == z && !r.isPreviewRobot).ToList();
+
+        if (otherRobotsOnUnitPosition.Count > 0)
+            DestroyWithDelay(this);
+
+        foreach(RobotController otherRobot in otherRobotsOnUnitPosition)
+            DestroyWithDelay(otherRobot);
+    }
+
+    [Server]
+    private void DestroyWithDelay(RobotController robot)
+    {
+        robot.isDestroyed = true;
+        DestroyObject(robot.gameObject, 10);
     }
 
     public void PreviewReset()
