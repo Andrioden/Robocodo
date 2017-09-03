@@ -251,15 +251,33 @@ public static class ScenarioSetup
     {
         InfectionManager.instance.AddBigInfectionAwayFromCities(wc.worldBuilder.GetCityOrReservedCoordinates());
 
-        AddRobot(WorldController.instance.harvesterRobotPrefab, player.City.X + 1, player.City.Z + 3, player, conn, new List<Instruction>()
-        {
-            new Instruction_Move(MoveDirection.Down)
-        });
+        var robotPrefabs = new List<GameObject>() {
+            WorldController.instance.harvesterRobotPrefab,
+            WorldController.instance.combatRobotPrefab,
+            WorldController.instance.transporterRobotPrefab,
+            WorldController.instance.storageRobotPrefab,
+            WorldController.instance.batteryRobotPrefab,
+            WorldController.instance.purgeRobotPrefab
+        };
 
-        AddRobot(WorldController.instance.harvesterRobotPrefab, player.City.X + 1, player.City.Z - 3, player, conn, new List<Instruction>()
+        int xOffset = 1;
+        foreach (var robotType in robotPrefabs)
         {
-            new Instruction_Move(MoveDirection.Up)
-        });
+            foreach (var oppositRobotPrefab in robotPrefabs)
+            {
+                AddRobot(oppositRobotPrefab, player.City.X + xOffset, player.City.Z + 3, player, conn, new List<Instruction>()
+                {
+                    new Instruction_Move(MoveDirection.Down)
+                });
+
+                AddRobot(robotType, player.City.X + xOffset, player.City.Z - 3, player, conn, new List<Instruction>()
+                {
+                    new Instruction_Move(MoveDirection.Up)
+                });
+
+                xOffset++;
+            }
+        }
     }
 
     private static void Test_Loop(NetworkConnection conn, PlayerController player)

@@ -11,7 +11,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
     public GameObject meshGO;
 
-    public Renderer[] colorRenderers;
+    public ColorRenderers colorRenderers;
     private bool isColorSet = false;
 
     protected AudioSource audioSource;
@@ -739,14 +739,14 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         if (string.IsNullOrEmpty(Owner.hexColor))
             return;
 
-        if (colorRenderers.Length == 0)
+        if (colorRenderers.renderers.Length == 0)
         {
             Debug.LogError(Settings_Name() + " has no team color renderers. Won't be able to indicate team color. Set the rendere object to a GO that will be colored.");
             return;
         }
 
         var color = Utils.HexToColor(Owner.hexColor);
-        foreach (Renderer renderer in colorRenderers)
+        foreach (Renderer renderer in colorRenderers.renderers)
             renderer.material.color = color;
 
         isColorSet = true;

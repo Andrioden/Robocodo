@@ -22,6 +22,8 @@ GameObject:
   - component: {fileID: 114287470572446552}
   - component: {fileID: 114511222989332288}
   - component: {fileID: 82941391063554876}
+  - component: {fileID: 114894675316847266}
+  - component: {fileID: 54848710395860788}
   m_Layer: 0
   m_Name: PurgeRobot
   m_TagString: Robot
@@ -55,6 +57,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4986668004489526}
   - component: {fileID: 65760584569118210}
+  - component: {fileID: 114988353234792760}
   m_Layer: 0
   m_Name: Mesh
   m_TagString: Untagged
@@ -282,6 +285,21 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1514529877947316}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!54 &54848710395860788
+Rigidbody:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1094565523732136}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!65 &65760584569118210
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -289,10 +307,10 @@ BoxCollider:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1453499040373022}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 0.43, y: 0.11, z: 0.39}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!82 &82941391063554876
 AudioSource:
@@ -418,12 +436,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   meshGO: {fileID: 1453499040373022}
-  colorRenderers:
-  - {fileID: 23037699108310734}
-  - {fileID: 23226238080820828}
+  colorRenderers: {fileID: 114988353234792760}
   isPreviewRobot: 0
   nextInstructionIndex: 0
   lastAttackedTargetWasAnHit: 0
   lastAttackedTargetX: 0
   lastAttackedTargetZ: 0
   sprite: {fileID: 21300000, guid: 743387b053f8344448129d7d6d405d3f, type: 3}
+--- !u!114 &114894675316847266
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1094565523732136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e67bbce0f289625489008bb556a0bf79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explotionPrefab: {fileID: 100008, guid: 7b346dd5b9c872e4f811ddc8000908a1, type: 2}
+  rubblePrefab: {fileID: 1515908441325696, guid: e28d4b2660580184b9a5a1bb37cf6096,
+    type: 2}
+--- !u!114 &114988353234792760
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1453499040373022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6168f394df991ca448c424501e3de849, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  renderers:
+  - {fileID: 23146441578428230}
