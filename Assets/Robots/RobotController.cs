@@ -31,7 +31,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
     public bool isPreviewRobot = false;
 
-    private bool isDestroyed = false;
+    private bool isDestroyedWithDelay = false;
 
     protected List<Instruction> instructions = new List<Instruction>();
     public List<Instruction> Instructions { get { return instructions; } }
@@ -184,7 +184,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             if (isServer)
                 modules.ForEach(module => module.Uninstall());
 
-            SetFeedback("DESTROYED!", true, true); // Remove when animation present
+            //SetFeedback("DESTROYED!", true, true); // Consider showing in some cases
         }
     }
 
@@ -449,7 +449,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     {
         SetFeedback("", false, true);
 
-        if (isDestroyed)
+        if (isDestroyedWithDelay)
         {
             SetFeedback("DESTROYED", false, true);
             return;
@@ -879,7 +879,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     [Server]
     private void DestroyWithDelay(RobotController robot)
     {
-        robot.isDestroyed = true;
+        robot.isDestroyedWithDelay = true;
         DestroyObject(robot.gameObject, 10);
     }
 
