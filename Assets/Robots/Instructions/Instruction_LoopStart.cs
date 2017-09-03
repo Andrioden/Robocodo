@@ -7,8 +7,10 @@ using System.Text.RegularExpressions;
 public class Instruction_LoopStart : Instruction
 {
 
-    public override int Setting_EnergyCost() { return 1; }
-    public override bool IsStill() { return false; }
+    public override int Setting_EnergyCost() { return 0; }
+    public override bool Setting_Still() { return false; }
+    public override bool Setting_ConsumesTick() { return false; }
+    public override bool CanBePreviewed() { return true; }
 
     public static readonly string Format = "LOOP START";
 
@@ -34,11 +36,6 @@ public class Instruction_LoopStart : Instruction
         IterateCounterIfNeeded();
         robot.ResetAllInnerLoopStarts(robot.nextInstructionIndex + 1);
 
-        return true;
-    }
-
-    public override bool CanBePreviewed()
-    {
         return true;
     }
 
@@ -79,7 +76,7 @@ public class Instruction_LoopStart : Instruction
 
     public bool IsIterationsCompleted()
     {
-        return currentIteration == iterations;
+        return iterations != 0 && currentIteration == iterations;
     }
 
     public void ResetCurrentIterations()

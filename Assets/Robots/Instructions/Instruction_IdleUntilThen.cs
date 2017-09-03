@@ -8,7 +8,9 @@ public class Instruction_IdleUntilThen : Instruction
 {
 
     public override int Setting_EnergyCost() { return 1; }
-    public override bool IsStill() { return true; }
+    public override bool Setting_Still() { return true; }
+    public override bool Setting_ConsumesTick() { return true; }
+    public override bool CanBePreviewed() { return false; }
 
     public static readonly string Format = "IDLE UNTIL [WHAT] THEN [INSTRUCTION]";
 
@@ -27,11 +29,6 @@ public class Instruction_IdleUntilThen : Instruction
             return false;
 
         return thenInstruction.Execute(robot);
-    }
-
-    public override bool CanBePreviewed()
-    {
-        return false;
     }
 
     public override string Serialize()

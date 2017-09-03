@@ -7,7 +7,9 @@ public class Instruction_Unknown : Instruction
 {
 
     public override int Setting_EnergyCost() { return 1; }
-    public override bool IsStill() { return false; }
+    public override bool Setting_Still() { return false; }
+    public override bool Setting_ConsumesTick() { return true; }
+    public override bool CanBePreviewed() { return false; }
 
     private string instruction;
 
@@ -19,11 +21,6 @@ public class Instruction_Unknown : Instruction
     public override bool Execute(RobotController robot)
     {
         throw new Exception("ATTEMPTED TO RUN UNKNOWN INSTRUCTION: '{0}'. Please check for unknown instruction before running it.");
-    }
-
-    public override bool CanBePreviewed()
-    {
-        return false;
     }
 
     public override string Serialize()

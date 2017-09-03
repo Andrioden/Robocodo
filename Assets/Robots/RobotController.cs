@@ -63,6 +63,8 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         }
     }
 
+    private int _nonConsumeTickCounter;
+
     [SyncVar]
     public bool lastAttackedTargetWasAnHit;
     [SyncVar]
@@ -415,9 +417,9 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         isStarted = true;
 
         if (Settings_IPT() == 1)
-            WorldTickController.instance.OnTick += Tick;
+            WorldTickController.instance.OnTick += ProcessNextInstruction;
         else if (Settings_IPT() == 2)
-            WorldTickController.instance.OnHalfTick += Tick;
+            WorldTickController.instance.OnHalfTick += ProcessNextInstruction;
         else
             throw new Exception("IPT value not supported: " + Settings_IPT());
     }
@@ -435,15 +437,15 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     private void StopTicking()
     {
         if (Settings_IPT() == 1)
-            WorldTickController.instance.OnTick -= Tick;
+            WorldTickController.instance.OnTick -= ProcessNextInstruction;
         else if (Settings_IPT() == 2)
-            WorldTickController.instance.OnHalfTick -= Tick;
+            WorldTickController.instance.OnHalfTick -= ProcessNextInstruction;
     }
 
     /// <summary>
     /// Is not set to [Server] because it is used by the movement previewer
     /// </summary>
-    public void Tick()
+    public void ProcessNextInstruction()
     {
         SetFeedback("", false, true);
 
@@ -459,9 +461,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             return;
         }
 
-        currentInstructionIndexIsValid = true;
-        currentInstructionIndex = nextInstructionIndex;
-        Instruction currentInstruction = instructions[nextInstructionIndex];
+        Instruction currentInstruction = LoadNextInstruction();
 
         IEnergySource energySource = FindFirstOnCurrentPosition<IEnergySource>();
         if (energySource != null)
@@ -485,7 +485,20 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         {
             if (ExecuteInstruction(currentInstruction))
                 InstructionCompleted();
+
             energy = energyAfterExecuting;
+
+            if (!currentInstruction.Setting_ConsumesTick())
+            {
+                _nonConsumeTickCounter++;
+                if (_nonConsumeTickCounter < 100)
+                    ProcessNextInstruction();
+                else
+                {
+                    _nonConsumeTickCounter = 0;
+                    SetFeedback("INSTRUCTION PROCESSING TOOK TO LONG", false, true);
+                }
+            }
         }
 
         if (!isPreviewRobot)
@@ -512,6 +525,14 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         return false;
     }
 
+    private Instruction LoadNextInstruction()
+    {
+        currentInstructionIndexIsValid = true;
+        currentInstructionIndex = nextInstructionIndex;
+        Instruction currentInstruction = instructions[nextInstructionIndex];
+        return currentInstruction;
+    }
+
     private bool ExecuteInstruction(Instruction instruction)
     {
         LastAppliedInstruction = instruction;
@@ -530,39 +551,6 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         }
         else
             return instruction.Execute(this);
-    }
-
-    public void SetFeedback(string message, bool popup, bool whatToSetIsCurrentInstructionValidTo)
-    {
-        feedback = message;
-        currentInstructionIndexIsValid = whatToSetIsCurrentInstructionValidTo;
-
-        if (isPreviewRobot || Owner == null)
-            return;
-
-        if (popup)
-            Owner.ShowPopupForOwner(message, transform.position, TextPopup.ColorType.NEGATIVE);
-    }
-
-    public bool IsStill()
-    {
-        if (lastAppliedInstruction == null)
-            return true;
-        else
-            return lastAppliedInstruction.IsStill();
-    }
-
-    public bool IsAtPlayerCity()
-    {
-        if (Owner == null || Owner.City == null)
-            return false;
-        else
-            return x == Owner.City.X && z == Owner.City.Z;
-    }
-
-    private bool IsHomeByTransform()
-    {
-        return transform.position.x == Owner.City.X && transform.position.z == Owner.City.Z;
     }
 
     private void InstructionCompleted()
@@ -596,6 +584,39 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
                     loopEndSkippingUntilDone--;
             }
         }
+    }
+
+    public void SetFeedback(string message, bool popup, bool whatToSetIsCurrentInstructionValidTo)
+    {
+        feedback = message;
+        currentInstructionIndexIsValid = whatToSetIsCurrentInstructionValidTo;
+
+        if (isPreviewRobot || Owner == null)
+            return;
+
+        if (popup)
+            Owner.ShowPopupForOwner(message, transform.position, TextPopup.ColorType.NEGATIVE);
+    }
+
+    public bool IsStill()
+    {
+        if (lastAppliedInstruction == null)
+            return true;
+        else
+            return lastAppliedInstruction.Setting_Still();
+    }
+
+    public bool IsAtPlayerCity()
+    {
+        if (Owner == null || Owner.City == null)
+            return false;
+        else
+            return x == Owner.City.X && z == Owner.City.Z;
+    }
+
+    private bool IsHomeByTransform()
+    {
+        return transform.position.x == Owner.City.X && transform.position.z == Owner.City.Z;
     }
 
     /// <summary>

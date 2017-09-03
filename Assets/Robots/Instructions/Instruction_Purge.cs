@@ -7,7 +7,9 @@ public class Instruction_Purge : Instruction
 {
 
     public override int Setting_EnergyCost() { return 1; }
-    public override bool IsStill() { return false; }
+    public override bool Setting_Still() { return false; }
+    public override bool Setting_ConsumesTick() { return true; }
+    public override bool CanBePreviewed() { return false; }
 
     public static readonly string Format = "PURGE";
 
@@ -20,11 +22,6 @@ public class Instruction_Purge : Instruction
         robot.Owner.TechTree.AddProgressToActiveResearch(infectionDecreased);
 
         return newInfection <= 0;
-    }
-
-    public override bool CanBePreviewed()
-    {
-        return false;
     }
 
     public override string Serialize()

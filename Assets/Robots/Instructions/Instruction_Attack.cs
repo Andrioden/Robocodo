@@ -8,7 +8,9 @@ public class Instruction_Attack : Instruction
 {
 
     public override int Setting_EnergyCost() { return 1; }
-    public override bool IsStill() { return false; }
+    public override bool Setting_Still() { return false; }
+    public override bool Setting_ConsumesTick() { return true; }
+    public override bool CanBePreviewed() { return false; }
 
     public static readonly string Format = "ATTACK [DIRECTION]";
 
@@ -25,11 +27,6 @@ public class Instruction_Attack : Instruction
         this.robot = robot;
         AttackInDirection(direction);
         return true;
-    }
-
-    public override bool CanBePreviewed()
-    {
-        return false;
     }
 
     public override string Serialize()

@@ -6,8 +6,10 @@ using System.Text;
 public class Instruction_LoopEnd : Instruction
 {
 
-    public override int Setting_EnergyCost() { return 1; }
-    public override bool IsStill() { return false; }
+    public override int Setting_EnergyCost() { return 0; }
+    public override bool Setting_Still() { return false; }
+    public override bool Setting_ConsumesTick() { return false; }
+    public override bool CanBePreviewed() { return true; }
 
     public static readonly string Format = "LOOP END";
 
@@ -17,11 +19,6 @@ public class Instruction_LoopEnd : Instruction
     {
         this.robot = robot;
         SetInstructionToMatchingLoopStart();
-        return true;
-    }
-
-    public override bool CanBePreviewed()
-    {
         return true;
     }
 

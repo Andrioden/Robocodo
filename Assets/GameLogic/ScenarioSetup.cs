@@ -27,6 +27,7 @@ public static class ScenarioSetup
         scenarios.Add(new ScenarioEntry("Test Infection Purging", Scenario.Test_InfectionPurge, Test_InfectionPurge));
         scenarios.Add(new ScenarioEntry("Test Infection Victory", Scenario.Test_InfectionVictory, Test_InfectionVictory));
         scenarios.Add(new ScenarioEntry("Test Crash", Scenario.Test_Crash, Test_Crash));
+        scenarios.Add(new ScenarioEntry("Test Loop", Scenario.Test_Loop, Test_Loop));
     }
 
     public static void RegisterWorldController(WorldController worldController)
@@ -261,6 +262,18 @@ public static class ScenarioSetup
         });
     }
 
+    private static void Test_Loop(NetworkConnection conn, PlayerController player)
+    {
+        InfectionManager.instance.AddBigInfectionAwayFromCities(wc.worldBuilder.GetCityOrReservedCoordinates());
+
+        AddRobot(WorldController.instance.harvesterRobotPrefab, player.City.X + 1, player.City.Z + 3, player, conn, new List<Instruction>()
+        {
+            new Instruction_LoopStart(),
+            new Instruction_Move(MoveDirection.Down),
+            new Instruction_LoopEnd()
+        });
+    }
+
     private static GameObject AddRobot(GameObject prefab, int x, int z, PlayerController owner, NetworkConnection conn, List<Instruction> instructions = null)
     {
         if (!WorldController.instance.worldBuilder.IsWithinWorld(x, z))
@@ -332,5 +345,6 @@ public enum Scenario
     Test_BatteryRobot = 6,
     Test_InfectionPurge = 7,
     Test_InfectionVictory = 8,
-    Test_Crash = 9
+    Test_Crash = 9,
+    Test_Loop = 10
 }

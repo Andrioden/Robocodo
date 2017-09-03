@@ -7,16 +7,13 @@ public class Instruction_Idle : Instruction
 {
 
     public override int Setting_EnergyCost() { return 0; }
-    public override bool IsStill() { return true; }
+    public override bool Setting_Still() { return true; }
+    public override bool Setting_ConsumesTick() { return true; }
+    public override bool CanBePreviewed() { return true; }
 
     public static readonly string Format = "IDLE";
 
     public override bool Execute(RobotController robot)
-    {
-        return true;
-    }
-
-    public override bool CanBePreviewed()
     {
         return true;
     }

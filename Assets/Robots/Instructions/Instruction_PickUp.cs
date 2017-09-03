@@ -8,7 +8,9 @@ public class Instruction_PickUp : Instruction
 {
 
     public override int Setting_EnergyCost() { return 1; }
-    public override bool IsStill() { return false; }
+    public override bool Setting_Still() { return false; }
+    public override bool Setting_ConsumesTick() { return true; }
+    public override bool CanBePreviewed() { return false; }
 
     public static readonly string Format = "PICK UP";
 
@@ -19,11 +21,6 @@ public class Instruction_PickUp : Instruction
         this.robot = robot;
         PickUp();
         return true;
-    }
-
-    public override bool CanBePreviewed()
-    {
-        return false;
     }
 
     public override string Serialize()

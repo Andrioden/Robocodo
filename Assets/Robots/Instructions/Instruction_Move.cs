@@ -7,7 +7,8 @@ public class Instruction_Move : Instruction
 {
 
     public override int Setting_EnergyCost() { return 1; }
-    public override bool IsStill() { return false; }
+    public override bool Setting_Still() { return false; }
+    public override bool Setting_ConsumesTick() { return true; }
 
     public static readonly string Format = "MOVE [DIRECTION]";
 
