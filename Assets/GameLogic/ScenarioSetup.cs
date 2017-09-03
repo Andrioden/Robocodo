@@ -265,12 +265,12 @@ public static class ScenarioSetup
         {
             foreach (var oppositRobotPrefab in robotPrefabs)
             {
-                AddRobot(oppositRobotPrefab, player.City.X + xOffset, player.City.Z + 3, player, conn, new List<Instruction>()
+                AddRobot(oppositRobotPrefab, xOffset, 6, player, conn, new List<Instruction>()
                 {
                     new Instruction_Move(MoveDirection.Down)
                 });
 
-                AddRobot(robotType, player.City.X + xOffset, player.City.Z - 3, player, conn, new List<Instruction>()
+                AddRobot(robotType, xOffset, 0, player, conn, new List<Instruction>()
                 {
                     new Instruction_Move(MoveDirection.Up)
                 });
