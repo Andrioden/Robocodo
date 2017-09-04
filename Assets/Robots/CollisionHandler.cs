@@ -17,7 +17,6 @@ public class CollisionHandler : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        RobotController otherRobotController = other.transform.root.GetComponent<RobotController>();
         if (robotController.isDestroyedWithDelay)
             Invoke("SpawnExplosion", 0.2f);
     }

@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-public class csLightIntancityControl : MonoBehaviour {
+public class LightIntensityControl : MonoBehaviour {
 	
 	public Light _light;
 	float _time = 0;

@@ -7,7 +7,6 @@ using UnityEngine.Networking.NetworkSystem;
 
 public class CustomNetworkManager : NetworkManager
 {
-
     public GameObject worldControllerPrefab;
 
     public static CustomNetworkManager instance;
@@ -22,7 +21,7 @@ public class CustomNetworkManager : NetworkManager
             Destroy(gameObject);
         }
     }
-
+    
     public override void OnStartServer()
     {
         //Debug.Log("OnStartServer");
