@@ -9,6 +9,7 @@ public abstract class Instruction
     public abstract int Setting_EnergyCost();
     public abstract bool Setting_Still();
     public abstract bool Setting_ConsumesTick();
+    public abstract bool Setting_AllowStacking();
     public abstract bool CanBePreviewed();
 
     /// <summary>

@@ -273,7 +273,13 @@ public class WorldController : NetworkBehaviour
     }
 
     [Server]
-    public IEnumerator DestroyNetworkObject(GameObject GO, float delay)
+    public void DestroyNetworkObjectCoroutine(GameObject GO, float delay)
+    {
+        StartCoroutine(DestroyNetworkObject(GO, delay));
+    }
+
+    [Server]
+    private IEnumerator DestroyNetworkObject(GameObject GO, float delay)
     {
         yield return new WaitForSeconds(delay);
 

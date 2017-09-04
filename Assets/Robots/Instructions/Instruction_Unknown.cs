@@ -9,6 +9,7 @@ public class Instruction_Unknown : Instruction
     public override int Setting_EnergyCost() { return 1; }
     public override bool Setting_Still() { return false; }
     public override bool Setting_ConsumesTick() { return true; }
+    public override bool Setting_AllowStacking() { return false; }
     public override bool CanBePreviewed() { return false; }
 
     private string instruction;

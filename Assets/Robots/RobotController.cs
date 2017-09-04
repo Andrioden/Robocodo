@@ -862,23 +862,40 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     [Server]
     private void DestroyWithDelayIfCrash()
     {
-        if (isPreviewRobot || IsAtPlayerCity())
+        if (!IsRobotCrashable())
             return;
 
         List<RobotController> otherRobotsOnUnitPosition = FindNearbyCollidingGameObjectsOfType<RobotController>().Where(r => r.x == x && r.z == z && !r.isPreviewRobot).ToList();
 
-        if (otherRobotsOnUnitPosition.Count > 0)
-            DestroyWithDelay(this);
+        if (otherRobotsOnUnitPosition.Count == 0)
+            return;
+        if (otherRobotsOnUnitPosition.Any(r => r.AllowsStacking()))
+            return;
 
-        foreach(RobotController otherRobot in otherRobotsOnUnitPosition)
-            DestroyWithDelay(otherRobot);
+        otherRobotsOnUnitPosition.Add(this);
+
+        foreach (RobotController crashingRobot in otherRobotsOnUnitPosition)
+        {
+            crashingRobot.isDestroyedWithDelay = true;
+            WorldController.instance.DestroyNetworkObjectCoroutine(crashingRobot.gameObject, 2);
+        }
     }
 
     [Server]
-    private void DestroyWithDelay(RobotController robot)
+    private bool IsRobotCrashable()
     {
-        robot.isDestroyedWithDelay = true;
-        DestroyObject(robot.gameObject, 2);
+        if (isPreviewRobot)
+            return false;
+        else if (IsAtPlayerCity())
+            return false;
+        else
+            return !AllowsStacking();
+    }
+
+    [Server]
+    public bool AllowsStacking()
+    {
+        return lastAppliedInstruction != null && lastAppliedInstruction.Setting_AllowStacking();
     }
 
     public void PreviewReset()

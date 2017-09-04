@@ -10,6 +10,7 @@ public class Instruction_Attack : Instruction
     public override int Setting_EnergyCost() { return 1; }
     public override bool Setting_Still() { return false; }
     public override bool Setting_ConsumesTick() { return true; }
+    public override bool Setting_AllowStacking() { return false; }
     public override bool CanBePreviewed() { return false; }
 
     public static readonly string Format = "ATTACK [DIRECTION]";

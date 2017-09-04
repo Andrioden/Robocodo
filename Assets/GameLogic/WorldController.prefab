@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 11442508}
   - component: {fileID: 114000010834226174}
   - component: {fileID: 114621773990477836}
-  - component: {fileID: 114000013151650332}
   - component: {fileID: 114186496318461494}
   - component: {fileID: 114297340602436028}
+  - component: {fileID: 114000013151650332}
   - component: {fileID: 114085405689950794}
   m_Layer: 0
   m_Name: WorldController
@@ -173,6 +173,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c469515917833f84eb813150d5494d97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  timeDebug: 0
 --- !u!114 &114621773990477836
 MonoBehaviour:
   m_ObjectHideFlags: 1
