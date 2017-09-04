@@ -36,7 +36,7 @@ public class Instruction_DetectThen : Instruction
             return true;
         else if (detectSource == DetectSource.Iron || detectSource == DetectSource.Copper)
         {
-            robot.SetFeedback("Cant detect IRON or COPPER yet. Not implemented", true, false);
+            robot.SetFeedback("CAN NOT DETECT IRON OR COPPER YET. NOT IMPLEMENTED", true, false);
             return true;
         }
 

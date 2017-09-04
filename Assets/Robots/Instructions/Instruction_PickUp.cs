@@ -56,7 +56,7 @@ public class Instruction_PickUp : Instruction
         }
 
         if (droppableTargets.Count == 0)
-            robot.SetFeedback("NO PICK UP TARGET", true, true);
+            robot.SetFeedback("NO PICK UP TARGET", true, false);
     }
 
 }

@@ -51,7 +51,7 @@ public class Instruction_DropInventory : Instruction
             List<InventoryItem> itemsNotAdded = droppableTarget.AddToInventory(robot.Inventory, true);
             robot.SetInventory(itemsNotAdded);
             if (itemsNotAdded.Count > 0)
-                robot.SetFeedback("NOT ALL ITEMS DROPPED, TARGET FULL", true, true);
+                robot.SetFeedback("NOT ALL ITEMS DROPPED; TARGET FULL", true, false);
         }
         else
             Debug.Log("SERVER: No droppable, should drop items on ground. Not fully implemented.");
