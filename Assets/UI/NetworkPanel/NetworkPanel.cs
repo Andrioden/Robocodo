@@ -25,6 +25,8 @@ public class NetworkPanel : MonoBehaviour
     public Slider aiCountSlider;
     public InputField worldWidthField;
     public InputField worldHeightField;
+    public InputField fpsLimitField;
+    public Text fpsLimitHelpLabel;
 
     public Button hostLanButton;
     public Button joinLanButton;
@@ -82,6 +84,10 @@ public class NetworkPanel : MonoBehaviour
         aiCountSlider.value = PlayerSettings.Game_AIs;
 
         OnAiCountSliderChange(aiCountSlider.value);
+
+        fpsLimitField.onValueChanged.AddListener(OnFpsLimitChange);
+        fpsLimitField.onEndEdit.AddListener(EnsureValidFpsLimitValue);
+        fpsLimitField.text = PlayerSettings.Graphics_MaxFPS.ToString();
 
         hostLanButton.onClick.RemoveAllListeners();
         hostLanButton.onClick.AddListener(LAN_OnHostClick);
@@ -316,6 +322,7 @@ public class NetworkPanel : MonoBehaviour
     private void ActivateIngame()
     {
         SetMainMenuActive(false);
+        LimitFPS();
         SavePlayerSettings();
     }
 
@@ -339,11 +346,39 @@ public class NetworkPanel : MonoBehaviour
         ingameUiGameObjects.ToList().ForEach(go => go.SetActive(active));
     }
 
+    private void LimitFPS()
+    {
+        //Setting max fps to keep the GPU from running at 100% when it's overkill. Might want to add this as an optional setting in the game menu when we create it.
+        string maxFpsString = NetworkPanel.instance.fpsLimitField.text;
+        Application.targetFrameRate = string.IsNullOrEmpty(maxFpsString) ? 0 : int.Parse(maxFpsString);
+    }
+
     private void SavePlayerSettings()
     {
         PlayerSettings.Game_Nick = nickInput.text;
         PlayerSettings.Game_ScenarioChoice = GetSelectedScenarioChoice();
         PlayerSettings.Game_AIs = (int)aiCountSlider.value;
+        PlayerSettings.Graphics_MaxFPS = string.IsNullOrEmpty(fpsLimitField.text) ? 0 : int.Parse(fpsLimitField.text);
         //PlayerSettings.Save(); // Not implemented
+    }
+
+    private void EnsureValidFpsLimitValue(string arg0)
+    {
+        if (string.IsNullOrEmpty(arg0))
+            fpsLimitField.text = "0";
+
+        int value;
+        bool isInt = int.TryParse(fpsLimitField.text, out value);
+
+        if (!isInt)
+            fpsLimitField.text = "0";
+    }
+
+    private void OnFpsLimitChange(string arg0)
+    {
+        if (arg0 == "0")
+            fpsLimitHelpLabel.enabled = true;
+        else
+            fpsLimitHelpLabel.enabled = false;
     }
 }

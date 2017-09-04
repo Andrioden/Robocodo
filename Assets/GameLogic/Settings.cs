@@ -45,6 +45,7 @@
     public static int Robot_PurgeInfectionReducedPerTick = 10;
 
     public static bool GUI_EnableEdgeScrolling = false;
+    public static bool GUI_ShowFPSCounter = true;
 
     public static bool Debug_EnableGameLobby = false;
     public static bool Debug_EnableAiLogging = false;
