@@ -31,7 +31,8 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
     public bool isPreviewRobot = false;
 
-    private bool isDestroyedWithDelay = false;
+    [SyncVar]
+    public bool isDestroyedWithDelay = false;
 
     protected List<Instruction> instructions = new List<Instruction>();
     public List<Instruction> Instructions { get { return instructions; } }
@@ -600,10 +601,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
     public bool IsStill()
     {
-        if (lastAppliedInstruction == null)
-            return true;
-        else
-            return lastAppliedInstruction.Setting_Still();
+        return !isStarted || isReprogrammingRobot || lastAppliedInstruction == null || lastAppliedInstruction.Setting_Still();
     }
 
     public bool IsAtPlayerCity()
@@ -880,7 +878,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     private void DestroyWithDelay(RobotController robot)
     {
         robot.isDestroyedWithDelay = true;
-        DestroyObject(robot.gameObject, 10);
+        DestroyObject(robot.gameObject, 2);
     }
 
     public void PreviewReset()

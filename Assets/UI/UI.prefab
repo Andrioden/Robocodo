@@ -3336,7 +3336,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 35
   m_Viewport: {fileID: 224000011995382294}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 114000013179697416}
@@ -3683,39 +3683,7 @@ MonoBehaviour:
   m_ItemImage: {fileID: 0}
   m_Value: 0
   m_Options:
-    m_Options:
-    - m_Text: Normal
-      m_Image: {fileID: 0}
-    - m_Text: Wild PvE
-      m_Image: {fileID: 0}
-    - m_Text: Test Attack Neu Enemy
-      m_Image: {fileID: 0}
-    - m_Text: Test Logistics Chain
-      m_Image: {fileID: 0}
-    - m_Text: Test Stacking Robots
-      m_Image: {fileID: 0}
-    - m_Text: Test Battery Robot
-      m_Image: {fileID: 0}
-    - m_Text: Test Infection Purging
-      m_Image: {fileID: 0}
-    - m_Text: Test Infection Victory
-      m_Image: {fileID: 0}
-    - m_Text: Normal
-      m_Image: {fileID: 0}
-    - m_Text: Wild PvE
-      m_Image: {fileID: 0}
-    - m_Text: Test Attack Neu Enemy
-      m_Image: {fileID: 0}
-    - m_Text: Test Logistics Chain
-      m_Image: {fileID: 0}
-    - m_Text: Test Stacking Robots
-      m_Image: {fileID: 0}
-    - m_Text: Test Battery Robot
-      m_Image: {fileID: 0}
-    - m_Text: Test Infection Purging
-      m_Image: {fileID: 0}
-    - m_Text: Test Infection Victory
-      m_Image: {fileID: 0}
+    m_Options: []
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []

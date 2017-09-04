@@ -507,7 +507,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   spreadCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -531,7 +531,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
 --- !u!114 &114151649780530394
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -608,6 +608,7 @@ MonoBehaviour:
   meshGO: {fileID: 1493522665652526}
   colorRenderers: {fileID: 114183143168863378}
   isPreviewRobot: 0
+  isDestroyedWithDelay: 0
   nextInstructionIndex: 0
   lastAttackedTargetWasAnHit: 0
   lastAttackedTargetX: 0

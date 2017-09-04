@@ -60,7 +60,7 @@ public class StackingRobotsOverhangOverview : MonoBehaviour
 
         List<RobotController> ownedRobots = GameObject.FindGameObjectsWithTag("Robot")
             .Select(go => go.GetComponent<RobotController>())
-            .Where(r => r.Owner == WorldController.instance.ClientsOwnPlayer() && (r.IsStill() || r.IsAtPlayerCity())).ToList();
+            .Where(r => r.Owner == WorldController.instance.ClientsOwnPlayer() && r.IsStill()).ToList();
 
         List<List<RobotController>> robotStacks = new List< List<RobotController> >();
         robotStacks.Add(new List<RobotController>());
