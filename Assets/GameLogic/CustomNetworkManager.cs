@@ -78,7 +78,7 @@ public class CustomNetworkManager : NetworkManager
     /// </summary>
     public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId, NetworkReader extraMessageReader)
     {
-        Debug.Log("Joined a player with connectionId: " + conn.connectionId.ToString());
+        //Debug.Log("Joined a player with connectionId: " + conn.connectionId.ToString());
 
         string nick = extraMessageReader.ReadMessage<StringMessage>().value;
 

@@ -194,8 +194,8 @@ Light:
   m_Enabled: 1
   serializedVersion: 8
   m_Type: 2
-  m_Color: {r: 1, g: 0.26896554, b: 0, a: 1}
-  m_Intensity: 10
+  m_Color: {r: 1, g: 0.48529413, b: 0, a: 1}
+  m_Intensity: 15
   m_Range: 1
   m_SpotAngle: 30
   m_CookieSize: 10
@@ -214,7 +214,7 @@ Light:
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_Lightmapping: 1
+  m_Lightmapping: 4
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
   m_FalloffTable:
@@ -247,8 +247,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _light: {fileID: 10800000}
-  Delay: 0.5
-  Down: 10
+  Delay: 0.1
+  Down: 15
 --- !u!198 &19800000
 ParticleSystem:
   m_ObjectHideFlags: 1
@@ -5885,8 +5885,8 @@ ParticleSystem:
       properties: 0
   LightsModule:
     enabled: 0
-    ratio: 0
-    light: {fileID: 0}
+    ratio: 1
+    light: {fileID: 10800000}
     randomDistribution: 1
     color: 1
     range: 1

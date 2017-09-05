@@ -61,7 +61,7 @@ public class NetworkPanel : MonoBehaviour
     // Is also run everytime the player leaves a game because leaving restarts the Scene, which reinitiates the scene Game Objects.
     private void Start()
     {
-        Debug.Log("Starting NetworkPanel");
+        //Debug.Log("Starting NetworkPanel");
 
         Time.timeScale = 1;
 
@@ -169,7 +169,7 @@ public class NetworkPanel : MonoBehaviour
         if (ValidateMandatoryInput() && ValidateHostInput())
         {
             networkManager.StartHost();
-            Debug.LogFormat("Hosting on {0}:{1}", networkManager.networkAddress, networkManager.networkPort);
+            //Debug.LogFormat("Hosting on {0}:{1}", networkManager.networkAddress, networkManager.networkPort);
 
             if (networkManager.isNetworkActive)
                 ActivateIngame();
@@ -185,7 +185,7 @@ public class NetworkPanel : MonoBehaviour
         {
             networkManager.StartClient();
 
-            Debug.LogFormat("Joining {0}:{1}", networkManager.networkAddress, networkManager.networkPort);
+            //Debug.LogFormat("Joining {0}:{1}", networkManager.networkAddress, networkManager.networkPort);
             ActivateIngame();
             joiningContainer.SetActive(true);
         }
@@ -247,7 +247,7 @@ public class NetworkPanel : MonoBehaviour
 
     private void MM_OnJoinGameClick(NetworkID networkId)
     {
-        Debug.Log("Joining matchmaking game with match id: " + networkId);
+        //Debug.Log("Joining matchmaking game with match id: " + networkId);
         networkManager.matchMaker.JoinMatch(networkId, "", "", "", 0, 0, networkManager.OnMatchJoined);
         feedbackText.text = "Joining...";
 
@@ -285,7 +285,7 @@ public class NetworkPanel : MonoBehaviour
     {
         networkManager.StopClient();
 
-        Debug.Log("Aborting join!" + newFeedbackText);
+        //Debug.Log("Aborting join!" + newFeedbackText);
         feedbackText.text = newFeedbackText;
         ActivateMainMenu();
     }

@@ -126,7 +126,7 @@ public class WorldController : NetworkBehaviour
         if (!IsServerOrDemo())
             return null;
 
-        Debug.LogFormat("Spawning Player with connectionID {0} and nick {1}", conn.connectionId, nick);
+        //Debug.LogFormat("Spawning Player with connectionID {0} and nick {1}", conn.connectionId, nick);
 
         var playerPos = worldBuilder.GetNextPlayerPosition();
 
@@ -255,7 +255,7 @@ public class WorldController : NetworkBehaviour
 
     public void SpawnAndAdjustGround()
     {
-        Debug.LogFormat("Spawning ground with dimensions {0} x {1}", width, height);
+        //Debug.LogFormat("Spawning ground with dimensions {0} x {1}", width, height);
 
         float xPosition = (width / 2f) - 0.5f; // Hack: The -0.5f is an offset we have to set to align the ground to the tiles
         float zPosition = (height / 2f) - 0.5f; // Hack: The -0.5f is an offset we have to set to align the ground to the tiles
