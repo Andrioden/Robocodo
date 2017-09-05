@@ -157,7 +157,8 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             SetXzToTransformPosition();
             InitDefaultValues();
         }
-        else
+        
+        if (isClient && hasAuthority)
             CmdTellServerToSendOwnerInstructions(); // Client has network timing issue, so the client asks for the updated list
 
         audioSource = GetComponent<AudioSource>();
@@ -911,7 +912,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
     public virtual string GetSummary()
     {
-        return "Owned by " + GetOwner().Nick;
+        return "Owned by " + (Owner == null ? "Neutral" : Owner.Nick);
     }
 
 }
