@@ -31,18 +31,25 @@ public class PopulationManager : NetworkBehaviour
         population = 1;
         foodValueTracker = new ValueTracker(0.1, city.GetItemCount<FoodItem>());
 
-        WorldTickController.instance.OnTick += Grow;
+        WorldTickController.instance.OnTick += ConsumeFoodAndGrow;
         WorldTickController.instance.OnAfterTick += CalculateFoodPerTick;
     }
 
     private void OnDestroy()
     {
-        WorldTickController.instance.OnTick -= Grow;
+        WorldTickController.instance.OnTick -= ConsumeFoodAndGrow;
         WorldTickController.instance.OnAfterTick -= CalculateFoodPerTick;
     }
 
     [Server]
-    private void Grow()
+    private void ConsumeFoodAndGrow()
+    {
+        ConsumeFood();
+        Grow();
+    }
+
+    [Server]
+    private void ConsumeFood()
     {
         if (population <= 0)
             return;
@@ -66,8 +73,19 @@ public class PopulationManager : NetworkBehaviour
                     return;
             }
         }
+    }
+    [Server]
+    private void Grow()
+    {
+        if (population <= 0)
+            return;
 
-        growthProgress += Settings.City_Population_FoodConsumedPerTick * city.GetItemCount<FoodItem>() / (population * population);
+        // Algorithm #1 - Exponential increased difficulty growing
+        //growthProgress += Settings.City_Population_FoodConsumedPerTick * city.GetItemCount<FoodItem>() / (population * population);
+
+        // Algorithm #2 - Linearly*10 increased difficulty growing
+        growthProgress += Settings.City_Population_FoodConsumedPerTick * Math.Max(0, (city.GetItemCount<FoodItem>() - (population * 10.0)));
+
         if (growthProgress >= 1)
         {
             population += (int)growthProgress;
