@@ -15,54 +15,71 @@ public class RobotMovementPreviewer : MonoBehaviour
     private List<GameObject> previewImages = new List<GameObject>();
     private float drawPreviewTime = -1f;
 
-    private GameObject robotClone;
-    private RobotController robotCloneController;
+    private RobotController originalRobotController;
+    private GameObject previeRobot;
+    private RobotController previewRobotController;
 
     private List<CoordinatePreviewImage> processedCoordImgs;
 
     public void Update()
     {
-        if (robotClone != null && drawPreviewTime != -1f && drawPreviewTime < Time.time)
+        if (previeRobot != null && drawPreviewTime != -1f && drawPreviewTime < Time.time)
             DrawPreview();
     }
 
-    public void Reset(RobotController selectedRobot, List<Instruction> instructions)
+    public void Load(RobotController loadingRobotController)
     {
-        robotClone = selectedRobot.SpawnPreviewGameObjectClone();
-        robotClone.SetActive(false);
-        robotCloneController = robotClone.GetComponent<RobotController>();
-        robotCloneController.isPreviewRobot = true;
-        robotCloneController.SetOwner(selectedRobot.GetOwner());
-        robotCloneController.InitDefaultValues();
-        UpdateInstructions(instructions);
+        Debug.Log("Loading");
+        Unload();
+
+        originalRobotController = loadingRobotController;
+        originalRobotController.OnCurrentInstructionIndexChanged += Reload;
+
+        previeRobot = originalRobotController.SpawnPreviewGameObjectClone();
+        previeRobot.SetActive(false);
+        previewRobotController = previeRobot.GetComponent<RobotController>();
+        previewRobotController.isPreviewRobot = true;
+        previewRobotController.SetOwner(originalRobotController.GetOwner());
+        previewRobotController.InitDefaultValues();
+        UpdateInstructions(originalRobotController.Instructions);
+        previewRobotController.nextInstructionIndex = originalRobotController.nextInstructionIndex;
+
+        DrawPreview();
     }
 
     public void UpdateInstructions(List<Instruction> instructions)
     {
-        robotCloneController.SetInstructions(instructions);
-        robotCloneController.PreviewReset();
+        previewRobotController.SetInstructions(instructions);
+        previewRobotController.PreviewReset();
+    }
+
+    private void Reload(int newValue)
+    {
+        Load(originalRobotController);
     }
 
     public void Unload()
     {
+        if (originalRobotController != null)
+            originalRobotController.OnCurrentInstructionIndexChanged -= Reload;
+
         DestroyPreview();
 
-        Destroy(robotClone);
-        Destroy(robotCloneController);
+        Destroy(previeRobot);
+        Destroy(previewRobotController);
         
         // Not really important, but do it to fully empty this class
-        robotClone = null;
-        robotCloneController = null;
+        previeRobot = null;
+        previewRobotController = null;
     }
 
-    public void DrawPreviewAfterDelay()
+    public void DrawPreviewAfterDelay(float secondsDelay)
     {
-        drawPreviewTime = Time.time + 0.1f;
+        drawPreviewTime = Time.time + secondsDelay;
     }
 
-    public void DrawPreview()
+    private void DrawPreview()
     {
-        Debug.Log("drawing");
         DestroyPreview();
 
         processedCoordImgs = new List<CoordinatePreviewImage>();
@@ -75,7 +92,7 @@ public class RobotMovementPreviewer : MonoBehaviour
 
             AdjustImage(previewImgAdjustablePart, coordImg);
             AdjustRotation(previewImgAdjustablePart, coordImg);
-            AdjustAlign(previewImgAdjustablePart, coordImg);
+            AdjustAlignment(previewImgAdjustablePart, coordImg);
 
             processedCoordImgs.Add(coordImg);
             previewImages.Add(previewImgGO);
@@ -106,7 +123,7 @@ public class RobotMovementPreviewer : MonoBehaviour
             previewImgAdjustablePart.transform.rotation = Quaternion.Euler(rotation.x, 270, rotation.z);
     }
 
-    private void AdjustAlign(Transform previewImgAdjustablePart, CoordinatePreviewImage coordImg)
+    private void AdjustAlignment(Transform previewImgAdjustablePart, CoordinatePreviewImage coordImg)
     {
         float localX = 0;
         float localZ = 0;
@@ -128,7 +145,7 @@ public class RobotMovementPreviewer : MonoBehaviour
         // Horizontal
         if (coordImg.previewImage.HorizontalAlign == HorizontalAlign.Dynamic)
         {
-            if (processedCoordImgs.Any(i => Coordinate.IsEqual(i.coordinate, coordImg.coordinate) && i.previewImage.HorizontalAlign == HorizontalAlign.Right))
+            if (processedCoordImgs.Any(i => Coordinate.IsEqual(i.coordinate, coordImg.coordinate) && i.previewImage.HorizontalAlign == HorizontalAlign.Right && i.previewImage.VerticalAlign == coordImg.previewImage.VerticalAlign))
                 coordImg.previewImage.HorizontalAlign = HorizontalAlign.Left;
             else
                 coordImg.previewImage.HorizontalAlign = HorizontalAlign.Right;
@@ -144,27 +161,27 @@ public class RobotMovementPreviewer : MonoBehaviour
 
     private List<CoordinatePreviewImage> GetPreviewCoordinateImages()
     {
-        if (robotCloneController.Instructions.Count == 0)
+        if (previewRobotController.Instructions.Count == 0)
             return new List<CoordinatePreviewImage>();
 
         List<CoordinatePreviewImage> coordinateImages = new List<CoordinatePreviewImage>();
 
         // Add an initial coordinate so it can be used to detect movement direction for the first instruction
-        coordinateImages.Add(new CoordinatePreviewImage(robotCloneController.GetCoordinate()));
+        coordinateImages.Add(new CoordinatePreviewImage(previewRobotController.GetCoordinate()));
 
         int instructionsRun = 0;
         while (true)
         {
-            robotCloneController.ProcessNextInstruction();
+            previewRobotController.ProcessNextInstruction();
 
-            PreviewImage previewImage = robotCloneController.LastExecutedInstruction.Setting_PreviewImage();
+            PreviewImage previewImage = previewRobotController.LastExecutedInstruction.Setting_PreviewImage();
             if (previewImage != null)
             {
                 // Handling movement direction for Move instructions is a special rule
-                if (robotCloneController.LastExecutedInstruction.GetType() == typeof(Instruction_Move))
+                if (previewRobotController.LastExecutedInstruction.GetType() == typeof(Instruction_Move))
                 {
                     Coordinate prevCoordinate = coordinateImages[coordinateImages.Count - 1].coordinate;
-                    Coordinate curCoordinate = robotCloneController.GetCoordinate();
+                    Coordinate curCoordinate = previewRobotController.GetCoordinate();
                     if (curCoordinate.x != prevCoordinate.x || curCoordinate.z != prevCoordinate.z)
                     {
                         previewImage.Direction = FindCoordinateDirection(prevCoordinate, curCoordinate);
@@ -172,10 +189,10 @@ public class RobotMovementPreviewer : MonoBehaviour
                     }
                 }
                 else // Normal preview image
-                    coordinateImages.Add(new CoordinatePreviewImage(robotCloneController.GetCoordinate(), previewImage));
+                    coordinateImages.Add(new CoordinatePreviewImage(previewRobotController.GetCoordinate(), previewImage));
             }
 
-            if (robotCloneController.MainLoopIterationCount > 0 || robotCloneController.Energy <= 0)
+            if (previewRobotController.MainLoopIterationCount > 0 || previewRobotController.Energy <= 0)
                 break;
             else if (instructionsRun > Settings_MaxPreviewInstructions)
             {

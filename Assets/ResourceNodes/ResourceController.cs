@@ -6,7 +6,7 @@ using System;
 public abstract class ResourceController : NetworkBehaviour, IClickable
 {
 
-    [SyncVar(hook = "OnRemainingItemsUpdated")]
+    [SyncVar(hook = "OnRemainingItemsHook")]
     protected int remainingItems;
     public int RemainingItems { get { return remainingItems; } }
 
@@ -63,7 +63,7 @@ public abstract class ResourceController : NetworkBehaviour, IClickable
     }
 
     [Client]
-    private void OnRemainingItemsUpdated(int newRemainingItems)
+    private void OnRemainingItemsHook(int newRemainingItems)
     {
         remainingItems = newRemainingItems;
         UpdateTransformSize();

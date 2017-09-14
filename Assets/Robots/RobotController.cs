@@ -25,7 +25,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     private string feedback = "";
     public string Feedback { get { return feedback; } }
 
-    [SyncVar(hook = "OnIsStartedUpdated")]
+    [SyncVar(hook = "OnIsStartedHook")]
     private bool isStarted = false;
     public bool IsStarted { get { return isStarted; } }
 
@@ -42,9 +42,10 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     [SyncVar]
     public int nextInstructionIndex;
 
-    [SyncVar]
+    [SyncVar(hook = "OnCurrentInstructionIndexHook")]
     protected int currentInstructionIndex;
     public int CurrentInstructionIndex { get { return currentInstructionIndex; } }
+    public event Action<int> OnCurrentInstructionIndexChanged = delegate { };
 
     [SyncVar]
     private bool currentInstructionIndexIsValid = true;
@@ -326,14 +327,19 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     }
 
     [Client]
-    private void OnIsStartedUpdated(bool newValue)
+    private void OnIsStartedHook(bool newValue)
     {
         isStarted = newValue;
 
         if (Owner != null)
-        {
             RobotPanel.instance.Refresh(this);
-        }
+    }
+    
+    [Client]
+    private void OnCurrentInstructionIndexHook(int newValue)
+    {
+        currentInstructionIndex = newValue;
+        OnCurrentInstructionIndexChanged(currentInstructionIndex);
     }
 
     [Client]

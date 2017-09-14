@@ -118,7 +118,6 @@ public class RobotPanel : MonoBehaviour
             _hadRobotLastFrame = true;
 
             _formattedInstructions = _indentedInstructionsCache.Select(instruction => instruction.ToString()).ToList();
-            UpdateCodeRunningUI();
             UpdateRobotInfoLabels();
             UpdateReprogramAndSalvageButtonsState();
 
@@ -176,6 +175,7 @@ public class RobotPanel : MonoBehaviour
     private void LoadRobot(RobotController robot)
     {
         this.robot = robot;
+        this.robot.OnCurrentInstructionIndexChanged += LoadCodeRunning;
         this.robot.OnInstructionsChanged += LoadInstructions;
         this.robot.OnInventoryChanged += LoadInventory;
         this.robot.OnModulesChanged += LoadModules;
@@ -185,6 +185,7 @@ public class RobotPanel : MonoBehaviour
     {
         if (robot != null)
         {
+            robot.OnCurrentInstructionIndexChanged -= LoadCodeRunning;
             robot.OnInstructionsChanged -= LoadInstructions;
             robot.OnInventoryChanged -= LoadInventory;
             robot.OnModulesChanged -= LoadModules;
@@ -192,9 +193,9 @@ public class RobotPanel : MonoBehaviour
                 robot.SetInstructions(GetCleanedCodeInput());
 
             robot = null;
-        }
 
-        previewer.Unload();
+            previewer.Unload();
+        }
     }
 
     private void RunRobot()
@@ -204,8 +205,6 @@ public class RobotPanel : MonoBehaviour
 
         if (robot.IsStarted)
             EnableRunningModePanel();
-
-        previewer.Unload();
     }
 
     private List<string> GetCleanedCodeInput()
@@ -252,7 +251,7 @@ public class RobotPanel : MonoBehaviour
         _codeInputCharCountLastEdit = codeInputField.text.Count();
 
         previewer.UpdateInstructions(InstructionsHelper.Deserialize(instructions));
-        previewer.DrawPreviewAfterDelay();
+        previewer.DrawPreviewAfterDelay(0.1f);
 
         if (codeInputField.isFocused)
             KeyboardManager.KeyboardLockOn();
@@ -399,8 +398,7 @@ public class RobotPanel : MonoBehaviour
         SetupPossibleInstructions();
         LoadModules(robot.Modules);
 
-        previewer.Reset(robot, robot.Instructions);
-        previewer.DrawPreview();
+        previewer.Load(robot);
 
         codeInputPanel.SetActive(true);
         codeInputField.text = string.Join("\n", InstructionsHelper.SerializeList(robot.Instructions));  /* Pre filled example data */
@@ -441,6 +439,8 @@ public class RobotPanel : MonoBehaviour
         LoadInstructions(robot.Instructions);
         LoadInventory(robot.Inventory);
         LoadModules(robot.Modules);
+
+        previewer.Load(robot);
 
         codeRunningPanel.SetActive(true);
         inventoryPanel.SetActive(true);
@@ -510,7 +510,7 @@ public class RobotPanel : MonoBehaviour
         }
     }
 
-    private void UpdateCodeRunningUI()
+    private void LoadCodeRunning(int currentInstructionIndex)
     {
         if (robot.IsStarted)
         {

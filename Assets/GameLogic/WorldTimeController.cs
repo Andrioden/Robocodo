@@ -4,7 +4,7 @@ using UnityEngine.Networking;
 
 public class WorldTimeController : NetworkBehaviour
 {
-    [SyncVar(hook = "OnTimeScaleUpdated")]
+    [SyncVar(hook = "OnTimeScaleHook")]
     private float timeScale;
     private float timeScaleBeforePause = 0;
 
@@ -57,7 +57,7 @@ public class WorldTimeController : NetworkBehaviour
     }
 
     [Client]
-    private void OnTimeScaleUpdated(float newTimeScale)
+    private void OnTimeScaleHook(float newTimeScale)
     {
         timeScale = newTimeScale;
         Time.timeScale = timeScale;
