@@ -57,8 +57,6 @@ public class RobotPanel : MonoBehaviour
 
     public ModuleMenuController moduleMenuController;
 
-    public GameObject arrowPrefab;
-
     public static RobotPanel instance;
 
     private Animator animator;
@@ -71,8 +69,6 @@ public class RobotPanel : MonoBehaviour
     private int lastCaretPosition = 0;
 
     private RobotMovementPreviewer previewer;
-    private List<GameObject> previewArrows = new List<GameObject>();
-    private float drawPreviewArrowTime = -1f;
 
     private Color _highlightColor;
     private Color _defaultButtonStateColors;
@@ -96,6 +92,7 @@ public class RobotPanel : MonoBehaviour
     private void Start()
     {
         animator = GetComponent<Animator>();
+        previewer = GetComponent<RobotMovementPreviewer>();
 
         _highlightColor = Utils.HexToColor("#D5A042FF");
         _defaultButtonStateColors = runButton.GetComponent<Image>().color;
@@ -124,9 +121,6 @@ public class RobotPanel : MonoBehaviour
             UpdateCodeRunningUI();
             UpdateRobotInfoLabels();
             UpdateReprogramAndSalvageButtonsState();
-
-            if (drawPreviewArrowTime != -1f && drawPreviewArrowTime < Time.time)
-                DrawPreviewArrows();
 
             feedbackText.text = ColorTextOnCondition(true, Color.red, robot.Feedback);
         }
@@ -199,7 +193,8 @@ public class RobotPanel : MonoBehaviour
 
             robot = null;
         }
-        CleanUpPreviewer();
+
+        previewer.Unload();
     }
 
     private void RunRobot()
@@ -210,7 +205,7 @@ public class RobotPanel : MonoBehaviour
         if (robot.IsStarted)
             EnableRunningModePanel();
 
-        CleanUpPreviewer();
+        previewer.Unload();
     }
 
     private List<string> GetCleanedCodeInput()
@@ -256,11 +251,8 @@ public class RobotPanel : MonoBehaviour
             AdjustCaretBasedOnContext();
         _codeInputCharCountLastEdit = codeInputField.text.Count();
 
-        if (previewer != null)
-        {
-            previewer.UpdateInstructions(InstructionsHelper.Deserialize(instructions));
-            DrawPreviewArrowsIfNoNewInput();
-        }
+        previewer.UpdateInstructions(InstructionsHelper.Deserialize(instructions));
+        previewer.DrawPreviewAfterDelay();
 
         if (codeInputField.isFocused)
             KeyboardManager.KeyboardLockOn();
@@ -407,6 +399,9 @@ public class RobotPanel : MonoBehaviour
         SetupPossibleInstructions();
         LoadModules(robot.Modules);
 
+        previewer.Reset(robot, robot.Instructions);
+        previewer.DrawPreview();
+
         codeInputPanel.SetActive(true);
         codeInputField.text = string.Join("\n", InstructionsHelper.SerializeList(robot.Instructions));  /* Pre filled example data */
         codeInputField.onValueChanged.RemoveAllListeners();
@@ -423,9 +418,6 @@ public class RobotPanel : MonoBehaviour
 
         inventoryPanel.SetActive(false);
         codeRunningPanel.SetActive(false);
-
-        previewer = new RobotMovementPreviewer(robot, robot.Instructions);
-        DrawPreviewArrows();
     }
 
     private void ToggleShowModuleMenu()
@@ -557,54 +549,8 @@ public class RobotPanel : MonoBehaviour
         energyText.text = ColorTextOnCondition(robot.Energy < 4, Color.red, string.Format("ENERGY: {0}/{1}", robot.Energy, robot.Settings_MaxEnergy()));
     }
 
-    private void CleanUpPreviewer()
-    {
-        DestroyPreviewArrows();
-
-        if (previewer != null)
-        {
-            previewer.Destroy();
-            previewer = null;
-        }
-    }
-
-    private void DrawPreviewArrowsIfNoNewInput()
-    {
-        drawPreviewArrowTime = Time.time + 0.3f;
-    }
-
-    private void DrawPreviewArrows()
-    {
-        DestroyPreviewArrows();
-
-        foreach (CoordinateDirection coordDir in previewer.GetPreviewCoordinateDirections())
-        {
-            GameObject arrowGO = Instantiate(arrowPrefab);
-            arrowGO.transform.position = new Vector3(coordDir.x, arrowGO.transform.position.y, coordDir.z);
-            Vector3 rotation = arrowGO.transform.rotation.eulerAngles;
-            if (coordDir.direction == Direction.Right)
-                arrowGO.transform.rotation = Quaternion.Euler(rotation.x, 0, rotation.z);
-            else if (coordDir.direction == Direction.Down)
-                arrowGO.transform.rotation = Quaternion.Euler(rotation.x, 90, rotation.z);
-            else if (coordDir.direction == Direction.Left)
-                arrowGO.transform.rotation = Quaternion.Euler(rotation.x, 180, rotation.z);
-            else if (coordDir.direction == Direction.Up)
-                arrowGO.transform.rotation = Quaternion.Euler(rotation.x, 270, rotation.z);
-
-            previewArrows.Add(arrowGO);
-        }
-
-        drawPreviewArrowTime = -1f;
-    }
-
-    private void DestroyPreviewArrows()
-    {
-        foreach (GameObject arrow in previewArrows)
-            Destroy(arrow);
-    }
-
     /// <summary>
-    /// Has to have a middlemethod run the robot method, cant run the robot.Cmd.. method directly 
+    /// Has to have a method in class, cant run the robot.Cmd.. method directly 
     /// </summary>
     private void ToggleReprogramming()
     {
@@ -612,7 +558,7 @@ public class RobotPanel : MonoBehaviour
     }
 
     /// <summary>
-    /// Has to have a middlemethod run the robot method, cant run the robot.Cmd.. method directly 
+    /// Has to have a method in class, cant run the robot.Cmd.. method directly 
     /// </summary>
     private void ToggleSalvaging()
     {

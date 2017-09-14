@@ -67,7 +67,7 @@ public class HarvesterRobotController : RobotController
 
         if (ShouldAnimationBePlayed())
         {
-            if (LastAppliedInstruction.GetType() == typeof(Instruction_Harvest))
+            if (LastExecutedInstruction.GetType() == typeof(Instruction_Harvest))
                 PlayHarvestEffects();
         }
         else if(energy <= 0)

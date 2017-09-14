@@ -10,7 +10,8 @@ public class Instruction_Unknown : Instruction
     public override bool Setting_Still() { return false; }
     public override bool Setting_ConsumesTick() { return true; }
     public override bool Setting_AllowStacking() { return false; }
-    public override bool CanBePreviewed() { return false; }
+    public override PreviewImage Setting_PreviewImage() { return null; }
+    public override bool CanBeExecutedForPreviewRobot() { return false; }
 
     private string instruction;
 

@@ -50,17 +50,17 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     private bool currentInstructionIndexIsValid = true;
     public bool CurrentInstructionIndexIsValid { get { return currentInstructionIndexIsValid; } }
 
-    protected Instruction lastAppliedInstruction;
-    protected Instruction LastAppliedInstruction
+    protected Instruction lastExecutedInstruction; // Dont use directly except for setting it in RpcSync method (RpcSyncLastExecutedInstruction)
+    public Instruction LastExecutedInstruction
     {
-        get { return lastAppliedInstruction; }
+        get { return lastExecutedInstruction; }
         set
         {
-            lastAppliedInstruction = value;
+            lastExecutedInstruction = value;
             if (isServer)
-                RpcSyncLastAppliedInstruction(lastAppliedInstruction.Serialize());
+                RpcSyncLastExecutedInstruction(lastExecutedInstruction.Serialize());
             else if (isClient)
-                Debug.LogError("Should not set variable LastAppliedInstruction on client");
+                Debug.LogError("Should not set variable LastExecutedInstruction on client because of RpcLoop.");
         }
     }
 
@@ -292,7 +292,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     [Client]
     private void Rotate()
     {
-        if (LastAppliedInstruction != null)
+        if (LastExecutedInstruction != null)
             CalculateNewTargetRotation();
 
         if (transform.rotation.eulerAngles != targetRotation.eulerAngles)
@@ -303,9 +303,9 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     {
         Vector3? rotationTargetPosition = null;
 
-        if (LastAppliedInstruction.GetType() == typeof(Instruction_Move))
+        if (LastExecutedInstruction.GetType() == typeof(Instruction_Move))
             rotationTargetPosition = new Vector3(x, transform.position.y, z);
-        else if (LastAppliedInstruction.GetType() == typeof(Instruction_Attack) && lastAttackedTargetWasAnHit)
+        else if (LastExecutedInstruction.GetType() == typeof(Instruction_Attack) && lastAttackedTargetWasAnHit)
             rotationTargetPosition = new Vector3(lastAttackedTargetX, transform.position.y, lastAttackedTargetZ);
 
         if (rotationTargetPosition.HasValue && rotationTargetPosition.Value != lastRotationTargetPosition)
@@ -320,9 +320,9 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     }
 
     [ClientRpc]
-    private void RpcSyncLastAppliedInstruction(string instructionString)
+    private void RpcSyncLastExecutedInstruction(string instructionString)
     {
-        lastAppliedInstruction = InstructionsHelper.Deserialize(instructionString);
+        lastExecutedInstruction = InstructionsHelper.Deserialize(instructionString);
     }
 
     [Client]
@@ -339,7 +339,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     [Client]
     protected bool ShouldAnimationBePlayed()
     {
-        return (energy > 0) && IsStarted && currentInstructionIndexIsValid && !isReprogrammingRobot && (LastAppliedInstruction != null);
+        return (energy > 0) && IsStarted && currentInstructionIndexIsValid && !isReprogrammingRobot && (LastExecutedInstruction != null);
     }
 
     [Client]
@@ -537,9 +537,9 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
     private bool ExecuteInstruction(Instruction instruction)
     {
-        LastAppliedInstruction = instruction;
+        LastExecutedInstruction = instruction;
 
-        if (isPreviewRobot && !instruction.CanBePreviewed())
+        if (isPreviewRobot && !instruction.CanBeExecutedForPreviewRobot())
             return true;
         else if (instruction.GetType() == typeof(Instruction_Unknown))
         {
@@ -602,7 +602,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
     public bool IsStill()
     {
-        return !isStarted || isReprogrammingRobot || lastAppliedInstruction == null || lastAppliedInstruction.Setting_Still();
+        return !isStarted || isReprogrammingRobot || LastExecutedInstruction == null || LastExecutedInstruction.Setting_Still();
     }
 
     public bool IsAtPlayerCity()
@@ -634,7 +634,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         if (!IsStarted)
             return false;
         else
-            return (LastAppliedInstruction.GetType() == typeof(Instruction_OpenInventory));
+            return (LastExecutedInstruction.GetType() == typeof(Instruction_OpenInventory));
     }
 
     [Server]
@@ -896,7 +896,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     [Server]
     public bool AllowsStacking()
     {
-        return lastAppliedInstruction != null && lastAppliedInstruction.Setting_AllowStacking();
+        return LastExecutedInstruction != null && LastExecutedInstruction.Setting_AllowStacking();
     }
 
     public void PreviewReset()

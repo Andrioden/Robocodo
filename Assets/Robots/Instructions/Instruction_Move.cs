@@ -10,6 +10,7 @@ public class Instruction_Move : Instruction
     public override bool Setting_Still() { return false; }
     public override bool Setting_ConsumesTick() { return true; }
     public override bool Setting_AllowStacking() { return false; }
+    public override PreviewImage Setting_PreviewImage() { return new PreviewImage { Name = "ArrowRight", VerticalAlign = VerticalAlign.Bottom }; }
 
     public static readonly string Format = "MOVE [DIRECTION]";
 
@@ -27,7 +28,7 @@ public class Instruction_Move : Instruction
         return Move(direction);
     }
 
-    public override bool CanBePreviewed()
+    public override bool CanBeExecutedForPreviewRobot()
     {
         if (direction == MoveDirection.Random)
             return false;

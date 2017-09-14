@@ -11,7 +11,8 @@ public class Instruction_DropInventory : Instruction
     public override bool Setting_Still() { return false; }
     public override bool Setting_ConsumesTick() { return true; }
     public override bool Setting_AllowStacking() { return false; }
-    public override bool CanBePreviewed() { return false; }
+    public override PreviewImage Setting_PreviewImage() { return new PreviewImage { Name = "Wheelbarrow", VerticalAlign = VerticalAlign.Top }; }
+    public override bool CanBeExecutedForPreviewRobot() { return false; }
 
     public static readonly string Format = "DROP INVENTORY";
 

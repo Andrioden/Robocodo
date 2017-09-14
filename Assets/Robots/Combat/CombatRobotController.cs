@@ -61,12 +61,12 @@ public class CombatRobotController : RobotController
 
         if (ShouldAnimationBePlayed())
         {
-            if (LastAppliedInstruction.GetType() == typeof(Instruction_Attack) && lastAttackedTargetWasAnHit)
+            if (LastExecutedInstruction.GetType() == typeof(Instruction_Attack) && lastAttackedTargetWasAnHit)
             {
                 bodyAnimator.Play("Idle");
                 PlayShootingAnimation();
             }
-            else if (LastAppliedInstruction.GetType() == typeof(Instruction_Move))
+            else if (LastExecutedInstruction.GetType() == typeof(Instruction_Move))
                 bodyAnimator.Play("Walk");
             else
                 bodyAnimator.Play("Idle");

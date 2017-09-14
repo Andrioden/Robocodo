@@ -708,6 +708,7 @@ GameObject:
   - component: {fileID: 225000011893026908}
   - component: {fileID: 95000013962975794}
   - component: {fileID: 114000010092107746}
+  - component: {fileID: 114103552185554630}
   m_Layer: 5
   m_Name: RobotPanel
   m_TagString: Untagged
@@ -3154,7 +3155,6 @@ MonoBehaviour:
   installedModulesPanel: {fileID: 1000012316052508}
   installedModulesListTextField: {fileID: 114000010894271018}
   moduleMenuController: {fileID: 114000013585753236}
-  arrowPrefab: {fileID: 181972, guid: 65c97c1709e830d468dcdb900e3db303, type: 2}
 --- !u!114 &114000010131985786
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7020,6 +7020,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3db6e142034ed8489cd20d59a3c0165, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114103552185554630
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000012063361376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c6ac600ecce8d543a3b3bdf01507be5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  previewImagePrefab: {fileID: 1196829732581274, guid: f4cd20887ddf7644798d8e4c1faa22b2,
+    type: 2}
+  previewImageTextures:
+  - {fileID: 2800000, guid: 39489ada27dfbeb439d07778e92f129a, type: 3}
+  - {fileID: 2800000, guid: 845a633a06a2b3141b572a44a74af093, type: 3}
+  - {fileID: 2800000, guid: 4eac266e157646a4a978387d3a3fdcad, type: 3}
 --- !u!114 &114111798849258674
 MonoBehaviour:
   m_ObjectHideFlags: 1

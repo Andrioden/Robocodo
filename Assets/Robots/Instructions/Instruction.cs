@@ -10,7 +10,8 @@ public abstract class Instruction
     public abstract bool Setting_Still();
     public abstract bool Setting_ConsumesTick();
     public abstract bool Setting_AllowStacking();
-    public abstract bool CanBePreviewed();
+    public abstract PreviewImage Setting_PreviewImage();
+    public abstract bool CanBeExecutedForPreviewRobot();
 
     /// <summary>
     /// Execute instruction for a robot

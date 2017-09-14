@@ -220,8 +220,14 @@ public class Coordinate
         this.z = z;
     }
 
+    public static bool IsEqual(Coordinate c1, Coordinate c2)
+    {
+        return c1.x == c2.x && c1.z == c2.z;
+    }
+
     public override string ToString()
     {
         return string.Format("Coord({0},{1})", x, z);
     }
+
 }
