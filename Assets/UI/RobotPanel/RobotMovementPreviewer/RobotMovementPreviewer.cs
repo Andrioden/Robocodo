@@ -29,7 +29,6 @@ public class RobotMovementPreviewer : MonoBehaviour
 
     public void Load(RobotController loadingRobotController)
     {
-        Debug.Log("Loading");
         Unload();
 
         originalRobotController = loadingRobotController;

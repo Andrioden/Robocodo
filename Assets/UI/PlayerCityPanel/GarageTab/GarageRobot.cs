@@ -10,6 +10,7 @@ public class GarageRobot : MonoBehaviour
     public Image icon;
     public Text nameLabel;
     public Text statusLabel;
+    public Text startedIndicatorLabel;
 
     public void SetupGarageRobot(RobotController robot)
     {
@@ -26,6 +27,8 @@ public class GarageRobot : MonoBehaviour
             return;
 
         statusLabel.text = robot.Feedback;
+
+        startedIndicatorLabel.gameObject.SetActive(robot.IsStarted);
     }
 
     private void SelectRobot()
