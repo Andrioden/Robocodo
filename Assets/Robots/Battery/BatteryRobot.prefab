@@ -39,7 +39,6 @@ GameObject:
   - component: {fileID: 114580053816552592}
   - component: {fileID: 114825346627165004}
   - component: {fileID: 82674739105409430}
-  - component: {fileID: 114513240724266152}
   - component: {fileID: 54470833667506496}
   m_Layer: 0
   m_Name: BatteryRobot
@@ -406,20 +405,6 @@ MonoBehaviour:
   renderers:
   - {fileID: 23126132821167206}
   - {fileID: 23747114245653838}
---- !u!114 &114513240724266152
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1127501323600574}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e67bbce0f289625489008bb556a0bf79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  explotionPrefab: {fileID: 100008, guid: 7b346dd5b9c872e4f811ddc8000908a1, type: 2}
-  rubblePrefab: {fileID: 1666045611546998, guid: bae9294cee44b3b49bcb77f8f08855ca,
-    type: 2}
 --- !u!114 &114580053816552592
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -644,7 +644,6 @@ GameObject:
   - component: {fileID: 11485784}
   - component: {fileID: 11421170}
   - component: {fileID: 82885384841583308}
-  - component: {fileID: 114420274254181086}
   - component: {fileID: 54012542310639454}
   m_Layer: 0
   m_Name: CombatRobot
@@ -4131,6 +4130,7 @@ MonoBehaviour:
   meshGO: {fileID: 191336}
   colorRenderers: {fileID: 114577146630274778}
   isPreviewRobot: 0
+  isDestroyedWithDelay: 0
   nextInstructionIndex: 0
   lastAttackedTargetWasAnHit: 0
   lastAttackedTargetX: 0
@@ -4558,20 +4558,6 @@ Light:
   m_UseColorTemperature: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
---- !u!114 &114420274254181086
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 129906}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e67bbce0f289625489008bb556a0bf79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  explotionPrefab: {fileID: 100008, guid: 7b346dd5b9c872e4f811ddc8000908a1, type: 2}
-  rubblePrefab: {fileID: 1506893544245862, guid: c53e1f2499dcb76449559045c43053f3,
-    type: 2}
 --- !u!114 &114577146630274778
 MonoBehaviour:
   m_ObjectHideFlags: 1
