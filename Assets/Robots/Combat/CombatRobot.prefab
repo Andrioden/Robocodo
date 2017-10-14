@@ -645,6 +645,7 @@ GameObject:
   - component: {fileID: 11421170}
   - component: {fileID: 82885384841583308}
   - component: {fileID: 54012542310639454}
+  - component: {fileID: 114688149794054200}
   m_Layer: 0
   m_Name: CombatRobot
   m_TagString: Robot
@@ -4572,6 +4573,20 @@ MonoBehaviour:
   renderers:
   - {fileID: 2308666}
   - {fileID: 2364686}
+--- !u!114 &114688149794054200
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 129906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d653c8e875660f344b62a0c7df1cd151, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explotionPrefab: {fileID: 100008, guid: 7b346dd5b9c872e4f811ddc8000908a1, type: 2}
+  rubblePrefab: {fileID: 1506893544245862, guid: c53e1f2499dcb76449559045c43053f3,
+    type: 2}
 --- !u!198 &198045272246952374
 ParticleSystem:
   m_ObjectHideFlags: 1

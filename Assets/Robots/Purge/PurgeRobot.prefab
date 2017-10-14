@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 114511222989332288}
   - component: {fileID: 82941391063554876}
   - component: {fileID: 54848710395860788}
+  - component: {fileID: 114092220263412738}
   m_Layer: 0
   m_Name: PurgeRobot
   m_TagString: Robot
@@ -391,6 +392,20 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!114 &114092220263412738
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1094565523732136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d653c8e875660f344b62a0c7df1cd151, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explotionPrefab: {fileID: 100008, guid: 7b346dd5b9c872e4f811ddc8000908a1, type: 2}
+  rubblePrefab: {fileID: 1515908441325696, guid: e28d4b2660580184b9a5a1bb37cf6096,
+    type: 2}
 --- !u!114 &114287470572446552
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -314,6 +314,7 @@ GameObject:
   - component: {fileID: 11476490}
   - component: {fileID: 82108266208915106}
   - component: {fileID: 54020811067852016}
+  - component: {fileID: 114197513690987294}
   m_Layer: 0
   m_Name: HarvesterRobot
   m_TagString: Robot
@@ -8123,6 +8124,20 @@ Light:
   m_UseColorTemperature: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!114 &114197513690987294
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 162562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d653c8e875660f344b62a0c7df1cd151, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explotionPrefab: {fileID: 100008, guid: 7b346dd5b9c872e4f811ddc8000908a1, type: 2}
+  rubblePrefab: {fileID: 1183867635412216, guid: 2ef61305315419343acebf9832716c7c,
+    type: 2}
 --- !u!114 &114387607716122688
 MonoBehaviour:
   m_ObjectHideFlags: 1

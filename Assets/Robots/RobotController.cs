@@ -186,7 +186,6 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             StopTicking();
             if (isServer)
                 modules.ForEach(module => module.Uninstall());
-
             //SetFeedback("DESTROYED!", true, true); // Consider showing in some cases
         }
     }
@@ -776,7 +775,8 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             if (Owner != null)
                 Owner.ShowPopupForOwner("DESTROYED!", transform.position, TextPopup.ColorType.NEGATIVE);
 
-            NetworkServer.Destroy(gameObject);
+            isDestroyedWithDelay = true;
+            WorldController.instance.DestroyNetworkObjectCoroutine(gameObject, 2);
         }
     }
 

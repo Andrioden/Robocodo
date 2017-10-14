@@ -53,6 +53,7 @@ GameObject:
   - component: {fileID: 114752629248317866}
   - component: {fileID: 54360441426926438}
   - component: {fileID: 82465261564766246}
+  - component: {fileID: 114696999227635524}
   m_Layer: 0
   m_Name: TranspoterRobot
   m_TagString: Robot
@@ -1296,6 +1297,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wheelDiameter: 1
+--- !u!114 &114696999227635524
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1097309779218706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d653c8e875660f344b62a0c7df1cd151, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explotionPrefab: {fileID: 100008, guid: 7b346dd5b9c872e4f811ddc8000908a1, type: 2}
+  rubblePrefab: {fileID: 1361196975093608, guid: ed3887a300ca4b246bed5a2fe258348a,
+    type: 2}
 --- !u!114 &114719223069704638
 MonoBehaviour:
   m_ObjectHideFlags: 1

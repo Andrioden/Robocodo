@@ -40,6 +40,7 @@ GameObject:
   - component: {fileID: 114825346627165004}
   - component: {fileID: 82674739105409430}
   - component: {fileID: 54470833667506496}
+  - component: {fileID: 114607739762405534}
   m_Layer: 0
   m_Name: BatteryRobot
   m_TagString: Robot
@@ -437,6 +438,20 @@ MonoBehaviour:
     i15: 177
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 1
+--- !u!114 &114607739762405534
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1127501323600574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d653c8e875660f344b62a0c7df1cd151, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explotionPrefab: {fileID: 100008, guid: 7b346dd5b9c872e4f811ddc8000908a1, type: 2}
+  rubblePrefab: {fileID: 1666045611546998, guid: bae9294cee44b3b49bcb77f8f08855ca,
+    type: 2}
 --- !u!114 &114825346627165004
 MonoBehaviour:
   m_ObjectHideFlags: 1
