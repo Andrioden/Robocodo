@@ -35,7 +35,7 @@ public class WorldController : NetworkBehaviour
     private int height;
     public int Height { get { return height; } }
 
-    public int[,] unitMovementTicks;
+    public int[,] robotMovementsTick;
 
     private List<ResourceController> _resourceControllers = new List<ResourceController>();
 
@@ -85,7 +85,7 @@ public class WorldController : NetworkBehaviour
         this.width = width;
         this.height = height;
 
-        unitMovementTicks = new int[width, height];
+        robotMovementsTick = new int[width, height];
     }
 
     public void BuildWorld(int maxPlayers, NoiseConfig noiseConfig)

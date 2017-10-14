@@ -57,7 +57,7 @@ public class Instruction_Move : Instruction
 
     private bool Move(MoveDirection direction)
     {
-        if (!robot.isPreviewRobot && WorldController.instance.unitMovementTicks[robot.X, robot.Z] == WorldTickController.instance.Tick)
+        if (!robot.isPreviewRobot && !robot.IsAtPlayerCity() && WorldController.instance.robotMovementsTick[robot.X, robot.Z] == WorldTickController.instance.Tick)
         {
             robot.SetFeedback("WAITING FOR OTHER ROBOT", true, false);
             return false;
@@ -65,7 +65,7 @@ public class Instruction_Move : Instruction
         else
         {
             if (!robot.isPreviewRobot)
-                WorldController.instance.unitMovementTicks[robot.X, robot.Z] = WorldTickController.instance.Tick;
+                WorldController.instance.robotMovementsTick[robot.X, robot.Z] = WorldTickController.instance.Tick;
 
             bool instructionCompleted = false;
 
@@ -79,7 +79,7 @@ public class Instruction_Move : Instruction
             }
 
             if (!robot.isPreviewRobot)
-                WorldController.instance.unitMovementTicks[robot.X, robot.Z] = WorldTickController.instance.Tick;
+                WorldController.instance.robotMovementsTick[robot.X, robot.Z] = WorldTickController.instance.Tick;
 
             return instructionCompleted;
         }
