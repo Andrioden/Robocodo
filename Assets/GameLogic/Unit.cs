@@ -60,6 +60,22 @@ public abstract class Unit : OwnedNetworkBehaviour
             throw new Exception("This acting entity can not move in direction: " + direction);
     }
 
+    public void MoveTowards(int toPosX, int toPosZ)
+    {
+        float difX = Math.Abs(x - toPosX);
+        float difZ = Math.Abs(z - toPosZ);
+
+        int newPosX = x;
+        int newPosZ = z;
+
+        if (difX >= difZ)
+            newPosX += GetIncremementOrDecrementToGetCloser(x, toPosX);
+        else if (difX < difZ)
+            newPosZ += GetIncremementOrDecrementToGetCloser(z, toPosZ);
+
+        ChangePosition(newPosX, newPosZ);
+    }
+
     public bool ChangePosition(int newPosX, int newPosZ)
     {
         if (newPosX >= WorldController.instance.Width || newPosX < 0 || newPosZ >= WorldController.instance.Height || newPosZ < 0)
@@ -72,22 +88,6 @@ public abstract class Unit : OwnedNetworkBehaviour
         }
     }
 
-    public void MoveTowards(int toPosX, int toPosZ)
-    {
-        SanityCheckIsWholeNumber("position X", x);
-        SanityCheckIsWholeNumber("position Z", z);
-        SanityCheckIsWholeNumber("to position X", toPosX);
-        SanityCheckIsWholeNumber("to position Z", toPosZ);
-
-        float difX = Math.Abs(x - toPosX);
-        float difZ = Math.Abs(z - toPosZ);
-
-        if (difX >= difZ)
-            x += GetIncremementOrDecrementToGetCloser(x, toPosX);
-        else if (difX < difZ)
-            z += GetIncremementOrDecrementToGetCloser(z, toPosZ);
-    }
-
     private int GetIncremementOrDecrementToGetCloser(float posValue, float homeValue)
     {
         if (posValue > homeValue)
@@ -98,18 +98,12 @@ public abstract class Unit : OwnedNetworkBehaviour
             throw new Exception("Should not call this method without a value difference");
     }
 
-    private void SanityCheckIsWholeNumber(string friendlyName, float number)
-    {
-        if ((number % 1) != 0)
-            throw new Exception(string.Format("Robot {0} is not a whole number, it is: '{1}'", friendlyName, number));
-    }
-
     public Coordinate GetCoordinate()
     {
         return new Coordinate(x, z);
     }
 
-    public T FindFirstOnCurrentPosition<T>()
+    public T FindFirstOnCurrentTransformPosition<T>()
     {
         return FindNearbyCollidingGameObjects<T>()
             .Where(go => go.transform.position.x == x && go.transform.position.z == z)
@@ -117,11 +111,19 @@ public abstract class Unit : OwnedNetworkBehaviour
             .FirstOrDefault();
     }
 
-    public List<T> FindAllOnCurrentPosition<T>()
+    public List<T> FindAllOnCurrentTransformPosition<T>()
     {
         return FindNearbyCollidingGameObjects<T>()
             .Where(go => go.transform.position.x == x && go.transform.position.z == z)
             .Select(go => go.transform.root.GetComponent<T>())
+            .ToList();
+    }
+
+    public List<T> FindAllOnCurrentPosition<T>() where T : Unit
+    {
+        return FindNearbyCollidingGameObjects<T>()
+            .Select(go => go.transform.root.GetComponent<T>())
+            .Where(u => u.x == x && u.z == z)
             .ToList();
     }
 

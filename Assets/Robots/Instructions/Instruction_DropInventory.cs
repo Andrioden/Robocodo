@@ -45,7 +45,7 @@ public class Instruction_DropInventory : Instruction
 
     private void DropInventory()
     {
-        IHasInventory droppableTarget = robot.FindAllOnCurrentPosition<IHasInventory>().FirstOrDefault(r => r.HasOpenInventory());
+        IHasInventory droppableTarget = robot.FindAllOnCurrentTransformPosition<IHasInventory>().FirstOrDefault(r => r.HasOpenInventory());
 
         if (droppableTarget != null)
         {

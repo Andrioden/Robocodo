@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 public class Instruction_Move : Instruction
 {
@@ -56,13 +57,31 @@ public class Instruction_Move : Instruction
 
     private bool Move(MoveDirection direction)
     {
-        if (direction == MoveDirection.Home)
-            return MoveHome();
+        if (!robot.isPreviewRobot && WorldController.instance.unitMovementTicks[robot.X, robot.Z] == WorldTickController.instance.Tick)
+        {
+            robot.SetFeedback("WAITING FOR OTHER ROBOT", true, false);
+            return false;
+        }
         else
         {
-            if(!robot.Move(direction))
-                robot.SetFeedback("CAN NOT MOVE THERE", true, false);
-            return true;
+            if (!robot.isPreviewRobot)
+                WorldController.instance.unitMovementTicks[robot.X, robot.Z] = WorldTickController.instance.Tick;
+
+            bool instructionCompleted = false;
+
+            if (direction == MoveDirection.Home)
+                instructionCompleted = MoveHome();
+            else
+            {
+                if (!robot.Move(direction))
+                    robot.SetFeedback("CAN NOT MOVE THERE", true, false);
+                instructionCompleted = true;
+            }
+
+            if (!robot.isPreviewRobot)
+                WorldController.instance.unitMovementTicks[robot.X, robot.Z] = WorldTickController.instance.Tick;
+
+            return instructionCompleted;
         }
     }
 

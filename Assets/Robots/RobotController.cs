@@ -471,7 +471,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
         Instruction currentInstruction = LoadNextInstruction();
 
-        IEnergySource energySource = FindFirstOnCurrentPosition<IEnergySource>();
+        IEnergySource energySource = FindFirstOnCurrentTransformPosition<IEnergySource>();
         if (energySource != null)
         {
             if (isPreviewRobot)
@@ -504,7 +504,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
                 else
                 {
                     _nonConsumeTickCounter = 0;
-                    SetFeedback("INSTRUCTION PROCESSING TOOK TO LONG", false, true);
+                    SetFeedback("INSTRUCTION PROCESSING TOOK TO MANY TICKS", false, true);
                 }
             }
         }
@@ -538,6 +538,9 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         return currentInstruction;
     }
 
+    /// <summary>
+    /// Returns true if instruction is completed
+    /// </summary>
     private bool ExecuteInstruction(Instruction instruction)
     {
         LastExecutedInstruction = instruction;
@@ -591,10 +594,10 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         }
     }
 
-    public void SetFeedback(string message, bool popup, bool whatToSetIsCurrentInstructionValidTo)
+    public void SetFeedback(string message, bool popup, bool isCurrentInstructionValid)
     {
         feedback = message;
-        currentInstructionIndexIsValid = whatToSetIsCurrentInstructionValidTo;
+        currentInstructionIndexIsValid = isCurrentInstructionValid;
 
         if (isPreviewRobot || Owner == null)
             return;

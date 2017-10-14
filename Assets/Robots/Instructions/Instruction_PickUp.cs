@@ -45,7 +45,7 @@ public class Instruction_PickUp : Instruction
 
     private void PickUp()
     {
-        List<IHasInventory> droppableTargets = robot.FindAllOnCurrentPosition<IHasInventory>();
+        List<IHasInventory> droppableTargets = robot.FindAllOnCurrentTransformPosition<IHasInventory>();
 
         foreach(IHasInventory droppableTarget in droppableTargets)
         {
