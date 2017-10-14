@@ -50,6 +50,9 @@ public class PlayerCityPanel : MonoBehaviour
 
     public void Show(CityController city)
     {
+        if (this.city == city)
+            return;
+
         this.city = city;
         KeyboardManager.KeyboardLockOff();
         UpdateBuildMenuWithBuildableItems();
