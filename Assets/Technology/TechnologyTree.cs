@@ -43,9 +43,6 @@ public class TechnologyTree : NetworkBehaviour
     [Server]
     private void ContinueResearch()
     {
-        if (activeResearch == null)
-            return;
-
         int scienceEarned = (int)(Settings.City_Science_PerPopulationPerTick * player.City.PopulationManager.Population);
         AddProgressToActiveResearch(scienceEarned);
     }
@@ -53,7 +50,7 @@ public class TechnologyTree : NetworkBehaviour
     [Server]
     public void AddProgressToActiveResearch(int addedProgress)
     {
-        if (activeResearch == null)
+        if (activeResearch == null || activeResearch.IsResearched())
             return;
 
         activeResearch.AddProgress(addedProgress);

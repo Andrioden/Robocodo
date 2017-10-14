@@ -26,19 +26,20 @@ public abstract class Technology
         this.cost = cost;
     }
 
-    public void SetProgress(int newProgress)
-    {
-        progress = Math.Min(cost, newProgress);
-
-        if (progress >= cost)
-            Complete();
-    }
-
     public void AddProgress(int addedProgress)
     {
-        progress = Math.Min(cost, progress + addedProgress);
+        int newProgress = Math.Min(cost, progress + addedProgress);
+        SetProgress(newProgress);
+    }
 
-        if (progress >= cost)
+    public void SetProgress(int newProgress)
+    {
+        if (IsResearched())
+            return;
+
+        progress = Math.Min(cost, newProgress);
+
+        if (IsResearched())
             Complete();
     }
 
