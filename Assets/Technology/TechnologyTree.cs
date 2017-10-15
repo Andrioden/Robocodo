@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using UnityEngine.Networking;
+using UnityEngine;
 
 public class TechnologyTree : NetworkBehaviour
 {
@@ -32,12 +33,18 @@ public class TechnologyTree : NetworkBehaviour
 
     private void OnDestroy()
     {
-        WorldTickController.instance.OnTick -= ContinueResearch;
+        StopContinueResearch();
     }
 
     public void Initialize(PlayerController player)
     {
         this.player = player;
+    }
+
+    [Server]
+    public void StopContinueResearch()
+    {
+        WorldTickController.instance.OnTick -= ContinueResearch;
     }
 
     [Server]

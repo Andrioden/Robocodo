@@ -99,7 +99,7 @@ public class PlayerController : NetworkBehaviour
     public void LostAndDestroy()
     {
         hasLost = true;
-        Destroy(techTree);
+        techTree.StopContinueResearch();
         ownedGameObjects.ForEach(go => Destroy(go));
 
         WorldController.instance.SpawnObject(cityRubblePrefab, (int)transform.position.x, (int)transform.position.z);
