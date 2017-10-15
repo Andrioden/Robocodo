@@ -52,7 +52,7 @@ public class RobotMovementPreviewer : MonoBehaviour
         previewRobotController.PreviewReset();
     }
 
-    private void Reload(int newValue)
+    private void Reload()
     {
         Load(originalRobotController);
     }
@@ -79,6 +79,7 @@ public class RobotMovementPreviewer : MonoBehaviour
 
     private void DrawPreview()
     {
+        //DateTime time1 = DateTime.Now;
         DestroyPreview();
 
         processedCoordImgs = new List<CoordinatePreviewImage>();
@@ -98,6 +99,7 @@ public class RobotMovementPreviewer : MonoBehaviour
         }
 
         StopUpdatingPreview();
+        //Debug.Log((DateTime.Now - time1).Milliseconds);
     }
 
     private void AdjustImage(Transform previewImgAdjustablePart, CoordinatePreviewImage coordImg)

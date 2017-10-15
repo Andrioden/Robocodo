@@ -36,8 +36,8 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
     protected List<Instruction> instructions = new List<Instruction>();
     public List<Instruction> Instructions { get { return instructions; } }
-    public event Action<List<Instruction>> OnInstructionsChanged = delegate { };
-    public void NotifyInstructionsChanged() { OnInstructionsChanged(instructions); }
+    public event Action OnInstructionsChanged = delegate { };
+    public void NotifyInstructionsChanged() { OnInstructionsChanged(); }
 
     [SyncVar]
     public int nextInstructionIndex;
@@ -45,7 +45,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     [SyncVar(hook = "OnCurrentInstructionIndexHook")]
     protected int currentInstructionIndex;
     public int CurrentInstructionIndex { get { return currentInstructionIndex; } }
-    public event Action<int> OnCurrentInstructionIndexChanged = delegate { };
+    public event Action OnCurrentInstructionIndexChanged = delegate { };
 
     [SyncVar]
     private bool currentInstructionIndexIsValid = true;
@@ -82,11 +82,11 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
     private List<InventoryItem> inventory = new List<InventoryItem>();
     public List<InventoryItem> Inventory { get { return inventory; } }
-    public event Action<List<InventoryItem>> OnInventoryChanged = delegate { };
+    public event Action OnInventoryChanged = delegate { };
 
     private List<Module> modules = new List<Module>();
     public List<Module> Modules { get { return modules; } }
-    public event Action<List<Module>> OnModulesChanged = delegate { };
+    public event Action OnModulesChanged = delegate { };
 
     [SyncVar]
     private bool willSalvageWhenHome = false;
@@ -329,9 +329,11 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     [Client]
     private void OnIsStartedHook(bool newValue)
     {
+        bool didValueChange = isStarted != newValue;
+
         isStarted = newValue;
 
-        if (Owner != null)
+        if (Owner != null && didValueChange)
             RobotPanel.instance.Refresh(this);
     }
     
@@ -339,7 +341,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     private void OnCurrentInstructionIndexHook(int newValue)
     {
         currentInstructionIndex = newValue;
-        OnCurrentInstructionIndexChanged(currentInstructionIndex);
+        OnCurrentInstructionIndexChanged();
     }
 
     [Client]
@@ -657,7 +659,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
                 inventory.Add(item);
         }
 
-        OnInventoryChanged(inventory);
+        OnInventoryChanged();
 
         RpcSyncInventory(InventoryItem.Serialize(inventory));
 
@@ -674,7 +676,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     public void SetInventory(List<InventoryItem> items)
     {
         inventory = items;
-        OnInventoryChanged(inventory);
+        OnInventoryChanged();
 
         RpcSyncInventory(InventoryItem.Serialize(inventory));
     }
@@ -688,7 +690,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     private void RpcSyncInventory(string[] serializedItemCounts)
     {
         inventory = InventoryItem.Deserialize(serializedItemCounts);
-        OnInventoryChanged(inventory);
+        OnInventoryChanged();
     }
 
     [Command]
@@ -733,7 +735,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         modules = Module.DeserializeList(serializedModules); // Not installed on client.
 
         if (OnModulesChanged != null)
-            OnModulesChanged(modules);
+            OnModulesChanged();
     }
 
     private void SetMaterialColor()

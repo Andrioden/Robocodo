@@ -64,7 +64,6 @@ public class RobotPanel : MonoBehaviour
 
     public static readonly string _indentation = "   ";
     private List<string> _indentedInstructionsCache = new List<string>();
-    private List<string> _formattedInstructions = new List<string>();
     private int _codeInputCharCountLastEdit = 0;
     private int lastCaretPosition = 0;
 
@@ -117,7 +116,6 @@ public class RobotPanel : MonoBehaviour
             }
             _hadRobotLastFrame = true;
 
-            _formattedInstructions = _indentedInstructionsCache.Select(instruction => instruction.ToString()).ToList();
             UpdateRobotInfoLabels();
             UpdateReprogramAndSalvageButtonsState();
 
@@ -175,8 +173,8 @@ public class RobotPanel : MonoBehaviour
     private void LoadRobot(RobotController robot)
     {
         this.robot = robot;
-        this.robot.OnCurrentInstructionIndexChanged += LoadCodeRunning;
         this.robot.OnInstructionsChanged += LoadInstructions;
+        this.robot.OnCurrentInstructionIndexChanged += LoadCodeRunning;
         this.robot.OnInventoryChanged += LoadInventory;
         this.robot.OnModulesChanged += LoadModules;
     }
@@ -185,8 +183,8 @@ public class RobotPanel : MonoBehaviour
     {
         if (robot != null)
         {
-            robot.OnCurrentInstructionIndexChanged -= LoadCodeRunning;
             robot.OnInstructionsChanged -= LoadInstructions;
+            robot.OnCurrentInstructionIndexChanged -= LoadCodeRunning;
             robot.OnInventoryChanged -= LoadInventory;
             robot.OnModulesChanged -= LoadModules;
             if (!robot.IsStarted)
@@ -356,12 +354,11 @@ public class RobotPanel : MonoBehaviour
         return codeInputField.caretPosition == 0 ? lastCaretPosition : codeInputField.caretPosition;
     }
 
-    private void LoadInventory(List<InventoryItem> inventory)
+    private void LoadInventory()
     {
         inventoryContainer.transform.DestroyChildren();
 
-        var currentInventory = this.robot.Inventory;
-        currentInventory.ForEach(item => AddInventoryItem(item));
+        robot.Inventory.ForEach(item => AddInventoryItem(item));
     }
 
     private void AddInventoryItem(InventoryItem item)
@@ -378,13 +375,13 @@ public class RobotPanel : MonoBehaviour
         inventoryImage.transform.SetParent(inventoryContainer.transform, false);
     }
 
-    private void LoadInstructions(List<Instruction> instructions)
+    private void LoadInstructions()
     {
         _indentedInstructionsCache = robot.Instructions.Select(i => i.Serialize()).ToList();
         AutoIndentInstructions(_indentation, _indentedInstructionsCache);
     }
 
-    private void LoadModules(List<Module> modules)
+    private void LoadModules()
     {
         installedModulesListTextField.text = string.Join("\n", robot.Modules.Select(m => m.Settings_Name()).ToArray());
     }
@@ -396,7 +393,7 @@ public class RobotPanel : MonoBehaviour
 
         titleText.text = robot.Settings_Name();
         SetupPossibleInstructions();
-        LoadModules(robot.Modules);
+        LoadModules();
 
         previewer.Load(robot);
 
@@ -436,9 +433,10 @@ public class RobotPanel : MonoBehaviour
     private void EnableRunningModePanel()
     {
         titleText.text = robot.Settings_Name();
-        LoadInstructions(robot.Instructions);
-        LoadInventory(robot.Inventory);
-        LoadModules(robot.Modules);
+        LoadInstructions();
+        LoadCodeRunning();
+        LoadInventory();
+        LoadModules();
 
         previewer.Load(robot);
 
@@ -510,21 +508,23 @@ public class RobotPanel : MonoBehaviour
         }
     }
 
-    private void LoadCodeRunning(int currentInstructionIndex)
+    private void LoadCodeRunning()
     {
         if (robot.IsStarted)
         {
-            if (_formattedInstructions.Count <= 0)
+            List<string> instructionsClone = new List<string>(_indentedInstructionsCache);
+
+            if (instructionsClone.Count == 0)
                 return;
 
             if (robot.CurrentInstructionIndexIsValid)
-                _formattedInstructions[robot.CurrentInstructionIndex] = ColorTextOnCondition(true, _highlightColor, _formattedInstructions[robot.CurrentInstructionIndex]);
+                instructionsClone[robot.CurrentInstructionIndex] = ColorTextOnCondition(true, _highlightColor, instructionsClone[robot.CurrentInstructionIndex]);
             else
             {
-                _formattedInstructions[robot.CurrentInstructionIndex] = ColorTextOnCondition(true, Color.red, _formattedInstructions[robot.CurrentInstructionIndex]);
+                instructionsClone[robot.CurrentInstructionIndex] = ColorTextOnCondition(true, Color.red, instructionsClone[robot.CurrentInstructionIndex]);
             }
 
-            codeRunningField.text = string.Join("\n", _formattedInstructions.ToArray());
+            codeRunningField.text = string.Join("\n", instructionsClone.ToArray());
 
             if (robot.MainLoopIterationCount == 1)
                 codeRunningLabel.text = string.Format("RUNNING CODE ({0} iteration)", robot.MainLoopIterationCount);
