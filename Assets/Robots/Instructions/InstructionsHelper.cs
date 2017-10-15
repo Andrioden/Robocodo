@@ -30,6 +30,11 @@ public static class InstructionsHelper
         return instruction.Select(i => Deserialize(i)).ToList();
     }
 
+    public static List<Instruction> Clone(List<Instruction> instructions)
+    {
+        return Deserialize(SerializeList(instructions).ToList());
+    }
+
     private static List<Type> GetInstructionTypes()
     {
         if (_cachedInstructionTypes == null)

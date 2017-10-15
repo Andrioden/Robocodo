@@ -43,12 +43,12 @@ public class RobotMovementPreviewer : MonoBehaviour
         UpdateInstructions(originalRobotController.Instructions);
         previewRobotController.nextInstructionIndex = originalRobotController.nextInstructionIndex;
 
-        DrawPreview();
+        DrawPreviewAfterDelay(0);
     }
 
     public void UpdateInstructions(List<Instruction> instructions)
     {
-        previewRobotController.SetInstructions(instructions);
+        previewRobotController.SetInstructions(InstructionsHelper.Clone(instructions)); // Cloned
         previewRobotController.PreviewReset();
     }
 
@@ -77,6 +77,9 @@ public class RobotMovementPreviewer : MonoBehaviour
         drawPreviewTime = Time.time + secondsDelay;
     }
 
+    /// <summary>
+    /// Should only be called from Update() method, do not call directly, use DrawPreviewAfterDelay
+    /// </summary>
     private void DrawPreview()
     {
         //DateTime time1 = DateTime.Now;
