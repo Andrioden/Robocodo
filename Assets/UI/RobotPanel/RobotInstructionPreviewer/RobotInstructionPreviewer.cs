@@ -196,6 +196,7 @@ public class RobotInstructionPreviewer : MonoBehaviour
                     if (curCoordinate.x != prevCoordinate.x || curCoordinate.z != prevCoordinate.z)
                     {
                         previewImage.Direction = FindCoordinateDirection(prevCoordinate, curCoordinate);
+                        previewImage.HorizontalAlign = FindMovementHorizontalAlign(previewImage.Direction);
                         coordinateImages.Add(new CoordinatePreviewImage(curCoordinate, previewImage));
                     }
                 }
@@ -232,6 +233,16 @@ public class RobotInstructionPreviewer : MonoBehaviour
             return Direction.Left;
         else
             throw new Exception("Tried to find coordinate between the same coordinate, should not happend!");
+    }
+
+    private HorizontalAlign FindMovementHorizontalAlign(Direction direction)
+    {
+        if (direction == Direction.Up || direction == Direction.Left)
+            return HorizontalAlign.Left;
+        else if (direction == Direction.Down || direction == Direction.Right)
+            return HorizontalAlign.Right;
+        else
+            return HorizontalAlign.Dynamic;
     }
 
     private void StopUpdatingPreview()
