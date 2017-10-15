@@ -19,8 +19,6 @@ public class RobotInstructionPreviewer : MonoBehaviour
     private GameObject previeRobot;
     private RobotController previewRobotController;
 
-    private List<CoordinatePreviewImage> processedCoordImgs;
-
     public void Update()
     {
         if (previeRobot != null && drawPreviewTime != -1f && drawPreviewTime < Time.time)
@@ -82,10 +80,10 @@ public class RobotInstructionPreviewer : MonoBehaviour
     /// </summary>
     private void DrawPreview()
     {
-        //DateTime time1 = DateTime.Now;
+        DateTime time1 = DateTime.Now;
         DestroyPreview();
 
-        processedCoordImgs = new List<CoordinatePreviewImage>();
+        List<CoordinatePreviewImage> processedCoordImgs = new List<CoordinatePreviewImage>();
 
         foreach (CoordinatePreviewImage coordImg in GetPreviewCoordinateImages())
         {
@@ -95,7 +93,7 @@ public class RobotInstructionPreviewer : MonoBehaviour
 
             AdjustImage(previewImgAdjustablePart, coordImg);
             AdjustRotation(previewImgAdjustablePart, coordImg);
-            AdjustAlignment(previewImgAdjustablePart, coordImg);
+            AdjustAlignment(previewImgAdjustablePart, processedCoordImgs, coordImg);
 
             processedCoordImgs.Add(coordImg);
             previewImages.Add(previewImgGO);
@@ -127,7 +125,7 @@ public class RobotInstructionPreviewer : MonoBehaviour
             previewImgAdjustablePart.transform.rotation = Quaternion.Euler(rotation.x, 270, rotation.z);
     }
 
-    private void AdjustAlignment(Transform previewImgAdjustablePart, CoordinatePreviewImage coordImg)
+    private void AdjustAlignment(Transform previewImgAdjustablePart, List<CoordinatePreviewImage> processedCoordImgs, CoordinatePreviewImage coordImg)
     {
         float localX = 0;
         float localZ = 0;
@@ -179,6 +177,11 @@ public class RobotInstructionPreviewer : MonoBehaviour
             previewRobotController.ProcessNextInstruction();
 
             PreviewImage previewImage = previewRobotController.LastExecutedInstruction.Setting_PreviewImage();
+
+            // Handles edge case where a START LOOP or other non tick consuming instructions are the last instruction and the first instruction is processed again
+            if (previewRobotController.MainLoopIterationCount > 0 && previewRobotController.nextInstructionIndex != 0)
+                break;
+
             if (previewImage != null)
             {
                 // Handling movement direction for Move instructions is a special rule
