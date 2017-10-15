@@ -223,6 +223,9 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     {
         if (IsHomeByTransform() && !isAlreadyHome)
         {
+            if (IsExecutingMovement())
+                return;
+
             isAlreadyHome = true;
             DisableMeshGOAfterDelay(0.2f);
             Owner.City.EnterGarage(this);
@@ -237,6 +240,11 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             EnableMeshGOAfterDelay(0);
         else if (IsHomeByTransform() && isAlreadyHome && MouseManager.instance.CurrentlySelectedObject != this && !isStarted)
             DisableMeshGOAfterDelay(0);
+    }
+
+    private bool IsExecutingMovement()
+    {
+        return isStarted && instructions[currentInstructionIndex].ToString().Contains("MOVE") && !instructions[currentInstructionIndex].ToString().Contains("HOME");
     }
 
     private void EnableMeshGOAfterDelay(float delay)
