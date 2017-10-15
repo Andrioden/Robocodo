@@ -27,7 +27,7 @@ public static class InstructionsHelper
 
     public static List<Instruction> Deserialize(List<string> instruction)
     {
-        return instruction.Select(i => Deserialize(i)).ToList();
+        return instruction.Select(i => Deserialize(i.Trim())).ToList();
     }
 
     public static List<Instruction> Clone(List<Instruction> instructions)
