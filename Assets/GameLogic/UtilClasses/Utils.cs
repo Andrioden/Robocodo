@@ -110,4 +110,17 @@ public static class Utils
         return str.ToUpper();
     }
 
+    /// <summary>
+    /// https://stackoverflow.com/questions/892618/create-a-hashcode-of-two-numbers
+    /// </summary>
+    public static int Hash(List<object> values)
+    {
+        int hash = 23;
+
+        foreach(object value in values)
+            hash = hash * 31 + value.GetHashCode();
+
+        return hash;
+    }
+
 }

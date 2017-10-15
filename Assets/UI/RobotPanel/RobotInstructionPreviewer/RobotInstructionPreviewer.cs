@@ -275,7 +275,13 @@ public class RobotInstructionPreviewer : MonoBehaviour
 
     private int GetRobotStatusHash(RobotController robot)
     {
-        return (robot.X + robot.Z + robot.CurrentInstructionIndex + robot.Instructions.Sum(i => (long)i.Serialize().GetHashCode())).GetHashCode();
+        return Utils.Hash(new List<object>
+        {
+            robot.X,
+            robot.Z,
+            robot.CurrentInstructionIndex,
+            robot.Instructions.Sum(i => (long)i.Serialize().GetHashCode())
+        });
     }
 
 }
