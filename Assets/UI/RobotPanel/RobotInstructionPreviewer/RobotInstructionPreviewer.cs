@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 
-public class RobotMovementPreviewer : MonoBehaviour
+public class RobotInstructionPreviewer : MonoBehaviour
 {
 
     private int Settings_MaxPreviewInstructions = 200;
@@ -43,16 +43,16 @@ public class RobotMovementPreviewer : MonoBehaviour
         UpdateInstructions(originalRobotController.Instructions);
         previewRobotController.nextInstructionIndex = originalRobotController.nextInstructionIndex;
 
-        DrawPreview();
+        DrawPreviewAfterDelay(0);
     }
 
     public void UpdateInstructions(List<Instruction> instructions)
     {
-        previewRobotController.SetInstructions(instructions);
+        previewRobotController.SetInstructions(InstructionsHelper.Clone(instructions)); // Cloned
         previewRobotController.PreviewReset();
     }
 
-    private void Reload(int newValue)
+    private void Reload()
     {
         Load(originalRobotController);
     }
@@ -77,8 +77,12 @@ public class RobotMovementPreviewer : MonoBehaviour
         drawPreviewTime = Time.time + secondsDelay;
     }
 
+    /// <summary>
+    /// Should only be called from Update() method, do not call directly, use DrawPreviewAfterDelay
+    /// </summary>
     private void DrawPreview()
     {
+        //DateTime time1 = DateTime.Now;
         DestroyPreview();
 
         processedCoordImgs = new List<CoordinatePreviewImage>();
@@ -98,6 +102,7 @@ public class RobotMovementPreviewer : MonoBehaviour
         }
 
         StopUpdatingPreview();
+        //Debug.Log((DateTime.Now - time1).Milliseconds);
     }
 
     private void AdjustImage(Transform previewImgAdjustablePart, CoordinatePreviewImage coordImg)

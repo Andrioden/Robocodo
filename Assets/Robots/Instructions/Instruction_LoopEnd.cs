@@ -20,7 +20,7 @@ public class Instruction_LoopEnd : Instruction
     public override bool Execute(RobotController robot)
     {
         this.robot = robot;
-        SetInstructionToMatchingLoopStart();
+        SetNextInstructionToMatchingLoopStartIfNotCompleted();
         return true;
     }
 
@@ -42,7 +42,7 @@ public class Instruction_LoopEnd : Instruction
         return instruction == Format;
     }
 
-    private void SetInstructionToMatchingLoopStart()
+    private void SetNextInstructionToMatchingLoopStartIfNotCompleted()
     {
         int skippingLoopStarts = 0;
         for (int i = robot.nextInstructionIndex - 1; i >= 0; i--)
@@ -58,6 +58,8 @@ public class Instruction_LoopEnd : Instruction
                         return;
                     else
                     {
+                        loopStartInstruction.IterateCounterIfNeeded();
+                        robot.NotifyInstructionsChanged();
                         robot.nextInstructionIndex = i - 1;
                         return;
                     }

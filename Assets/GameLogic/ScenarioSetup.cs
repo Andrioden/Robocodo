@@ -286,9 +286,10 @@ public static class ScenarioSetup
 
         AddRobot(WorldController.instance.harvesterRobotPrefab, player.City.X + 1, player.City.Z + 3, player, conn, new List<Instruction>()
         {
-            new Instruction_LoopStart(),
+            new Instruction_LoopStart(3),
             new Instruction_Move(MoveDirection.Down),
-            new Instruction_LoopEnd()
+            new Instruction_LoopEnd(),
+            new Instruction_Move(MoveDirection.Right)
         });
     }
 

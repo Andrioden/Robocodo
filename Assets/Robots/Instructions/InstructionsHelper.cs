@@ -19,18 +19,20 @@ public static class InstructionsHelper
     public static Instruction Deserialize(string instruction)
     {
         foreach(Type type in GetInstructionTypes())
-        {
-            bool isValid = (bool)TypeUtils.RunPublicStaticMethod(type, "IsValid", instruction);
-            if (isValid)
+            if ((bool)TypeUtils.RunPublicStaticMethod(type, "IsValid", instruction))
                 return (Instruction)TypeUtils.RunPublicStaticMethod(type, "Deserialize", instruction);
-        }
 
         return new Instruction_Unknown(instruction);
     }
 
     public static List<Instruction> Deserialize(List<string> instruction)
     {
-        return instruction.Select(i => Deserialize(i)).ToList();
+        return instruction.Select(i => Deserialize(i.Trim())).ToList();
+    }
+
+    public static List<Instruction> Clone(List<Instruction> instructions)
+    {
+        return Deserialize(SerializeList(instructions).ToList());
     }
 
     private static List<Type> GetInstructionTypes()
@@ -66,7 +68,7 @@ public static class InstructionsHelper
     public static string GetStringAfterSpace(string str, int spaceNumber)
     {
         if (spaceNumber == 0)
-            throw new Exception("Tried to find the string after spaceNumber 0 which obviously dont exist");
+            throw new Exception("spaceNumber 0 is not valid input");
 
         string[] stringSplit = str.Split(' ');
 
