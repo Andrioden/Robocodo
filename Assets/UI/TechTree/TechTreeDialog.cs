@@ -22,8 +22,6 @@ public class TechTreeDialog : MonoBehaviour
     private Color activeTechDescriptionTextColor = Utils.HexToColor("#00D9E3FF");
     private Color defaultTechDescriptionTextColor;
 
-    private DateTime _lastUpdateWhileHidden;
-
     public static TechTreeDialog instance;
     private void Awake()
     {
