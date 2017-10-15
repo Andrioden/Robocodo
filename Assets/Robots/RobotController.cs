@@ -559,6 +559,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     /// </summary>
     private bool ExecuteInstruction(Instruction instruction)
     {
+        //Debug.Log("Executing " + instruction);
         LastExecutedInstruction = instruction;
 
         if (isPreviewRobot && !instruction.CanBeExecutedForPreviewRobot())
@@ -598,7 +599,9 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             {
                 Instruction_LoopStart loopStartInstruction = (Instruction_LoopStart)Instructions[i];
                 loopEndSkippingUntilDone++;
-                loopStartInstruction.ResetCurrentIterations();
+
+                Instructions[i] = new Instruction_LoopStart(loopStartInstruction.Iterations);
+                NotifyInstructionsChanged();
             }
             else if (Instructions[i].GetType() == typeof(Instruction_LoopEnd))
             {

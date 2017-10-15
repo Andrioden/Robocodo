@@ -18,7 +18,8 @@ public class Instruction_LoopStart : Instruction
 
     private RobotController robot;
     private int iterations;
-    private int currentIteration;
+    public int Iterations { get { return iterations; } }
+    private int currentIteration = 1;
 
     public Instruction_LoopStart(int iterations = 0)
     {
@@ -35,7 +36,6 @@ public class Instruction_LoopStart : Instruction
     {
         this.robot = robot;
 
-        IterateCounterIfNeeded();
         robot.ResetAllInnerLoopStarts(robot.nextInstructionIndex + 1);
 
         return true;
@@ -58,7 +58,7 @@ public class Instruction_LoopStart : Instruction
         string[] loopNumberSplit = loopNumber.Split('/');
 
         if (loopNumberSplit.Length == 1)
-            return new Instruction_LoopStart(0, Convert.ToInt32(loopNumberSplit[0]));
+            return new Instruction_LoopStart(1, Convert.ToInt32(loopNumberSplit[0]));
         else if (loopNumberSplit.Length == 2)
             return new Instruction_LoopStart(Convert.ToInt32(loopNumberSplit[0]), Convert.ToInt32(loopNumberSplit[1]));
         else
@@ -81,13 +81,7 @@ public class Instruction_LoopStart : Instruction
         return iterations != 0 && currentIteration == iterations;
     }
 
-    public void ResetCurrentIterations()
-    {
-        currentIteration = 0;
-        robot.NotifyInstructionsChanged();
-    }
-
-    private void IterateCounterIfNeeded()
+    public void IterateCounterIfNeeded()
     {
         if (iterations == 0)
             return;
