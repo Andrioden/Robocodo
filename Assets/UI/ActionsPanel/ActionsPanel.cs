@@ -7,6 +7,7 @@ public class ActionsPanel : MonoBehaviour
 {
     public Button techTreeButton;
     private Animator techTreeButtonAnimator;
+    public Slider techProgressbar;
 
     private PlayerController localPlayer;
 
@@ -56,10 +57,20 @@ public class ActionsPanel : MonoBehaviour
         if (localPlayer == null)
             return;
 
-        bool shouldGlow = false;
+        bool techTreeIsIdle = false;
         if (localPlayer.TechTree.PlayerShouldSelectResearch() && !TechTreeDialog.instance.IsOpen())
-            shouldGlow = true;
+            techTreeIsIdle = true;
 
-        techTreeButtonAnimator.SetBool("DoGlow", shouldGlow);
+        techTreeButtonAnimator.SetBool("DoGlow", techTreeIsIdle);
+
+        if (!techTreeIsIdle && localPlayer.TechTree.activeResearch != null)
+        {
+            techProgressbar.gameObject.SetActive(true);
+            techProgressbar.value = Mathf.Clamp01(localPlayer.TechTree.activeResearch.GetProgressPercent() / 100f);
+        }
+        else
+        {
+            techProgressbar.gameObject.SetActive(false);
+        }
     }
 }
