@@ -8,6 +8,7 @@ public class WonOrLostDialog : MonoBehaviour
 {
 
     public GameObject panel;
+    public Text titleLabel;
     public Text textLabel;
 
     public static WonOrLostDialog instance;
@@ -30,8 +31,10 @@ public class WonOrLostDialog : MonoBehaviour
         panel.SetActive(false);
     }
 
-    public void Show(string text)
+    public void Show(string title, string text)
     {
+        titleLabel.text = title;
+
         textLabel.text = text;
         textLabel.text += "\n";
         textLabel.text += "\n";
@@ -47,9 +50,9 @@ public class WonOrLostDialog : MonoBehaviour
     private void Won(WinType type)
     {
         if (type == WinType.Infection_TopContributor)
-            ShowInfectionWinLoss("All infection was cleared from the world, life may now slowly return to normal. The people of the world recognize you as the top contributor. Grats! You are the winner!");
+            ShowInfectionWinLoss("Victory!", "All infection was cleared from the world, life may now slowly return to normal. The people of the world recognize you as the top contributor. Grats! You are the winner!");
         else if (type == WinType.Technology)
-            Show("You won! THE CURE IS REAL; THE PEOPLE CHERISH YOUR ACCOMPLISHMENTS ON RESEARCHING " + WorldController.instance.ClientsOwnPlayer().TechTree.GetFinishedVictoryTech().name);
+            Show("Victory!", "You won! THE CURE IS REAL; THE PEOPLE CHERISH YOUR ACCOMPLISHMENTS ON RESEARCHING " + WorldController.instance.ClientsOwnPlayer().TechTree.GetFinishedVictoryTech().name);
         else
             throw new Exception("Win type not supported " + type);
     }
@@ -57,25 +60,25 @@ public class WonOrLostDialog : MonoBehaviour
     private void Lost(LossType type)
     {
         if (type == LossType.Infection)
-            Show("The infection got to high near your city, your people got infected and everyone died, good job...");
+            Show("Infection defeat!", "The infection got to high near your city, your people got infected and everyone died, good job...");
         else if (type == LossType.Infection_NotTopContributor)
-            ShowInfectionWinLoss("All infection was cleared from the world, life may now slowly return to normal. However, the people of the world took note that you did not contribute enough and considers you a loser");
+            ShowInfectionWinLoss("Infection defeat!", "All infection was cleared from the world, life may now slowly return to normal. However, the people of the world took note that you did not contribute enough and considers you a loser");
         else if (type == LossType.StarvedToDeath)
-            Show("You lost! Everyone died of starvation.");
+            Show("Starvation defeat!", "You lost! Everyone died of starvation.");
         else if (type == LossType.Technology)
-            Show("You lost! Someone else in this world found the cure, and when you die, as you will, you will not be remebered, at all.");
+            Show("Technology defeat!", "You lost! Someone else in this world found the cure, and when you die, as you will, you will not be remebered, at all.");
         else
             throw new Exception("Loss type not supported " + type);
     }
 
-    private void ShowInfectionWinLoss(string baseText)
+    private void ShowInfectionWinLoss(string title, string baseText)
     {
         string text = baseText;
         text += "\n";
         text += "\n";
         text += GetInfectionContributionListString();
 
-        Show(text);
+        Show(title, text);
     }
 
     private string GetInfectionContributionListString()
