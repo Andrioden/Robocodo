@@ -35,7 +35,7 @@ public class WorldController : NetworkBehaviour
     private int height;
     public int Height { get { return height; } }
 
-    public int[,] robotMovementsTick;
+    public RobotTick[,] robotMovements;
 
     private List<ResourceController> _resourceControllers = new List<ResourceController>();
 
@@ -85,7 +85,7 @@ public class WorldController : NetworkBehaviour
         this.width = width;
         this.height = height;
 
-        robotMovementsTick = new int[width, height];
+        robotMovements = new RobotTick[width, height];
     }
 
     public void BuildWorld(int maxPlayers, NoiseConfig noiseConfig)
@@ -341,5 +341,17 @@ public class WorldController : NetworkBehaviour
             Debug.LogWarning("Method is called by a non-server. Stopping method excecution.");
             return false;
         }
+    }
+}
+
+public class RobotTick
+{
+    public RobotController Robot;
+    public int Tick;
+
+    public RobotTick(RobotController robot, int tick)
+    {
+        Robot = robot;
+        Tick = tick;
     }
 }

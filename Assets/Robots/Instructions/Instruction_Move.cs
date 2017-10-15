@@ -57,15 +57,14 @@ public class Instruction_Move : Instruction
 
     private bool Move(MoveDirection direction)
     {
-        if (!robot.isPreviewRobot && !robot.IsAtPlayerCity() && WorldController.instance.robotMovementsTick[robot.X, robot.Z] == WorldTickController.instance.Tick)
+        if (IsBlockedByOtherRobots())
         {
             robot.SetFeedback("WAITING FOR OTHER ROBOT", true, false);
             return false;
         }
         else
         {
-            if (!robot.isPreviewRobot)
-                WorldController.instance.robotMovementsTick[robot.X, robot.Z] = WorldTickController.instance.Tick;
+            SetRobotMovementOnCurrentCordIfNotPreview();
 
             bool instructionCompleted = false;
 
@@ -78,8 +77,7 @@ public class Instruction_Move : Instruction
                 instructionCompleted = true;
             }
 
-            if (!robot.isPreviewRobot)
-                WorldController.instance.robotMovementsTick[robot.X, robot.Z] = WorldTickController.instance.Tick;
+            SetRobotMovementOnCurrentCordIfNotPreview();
 
             return instructionCompleted;
         }
@@ -91,11 +89,29 @@ public class Instruction_Move : Instruction
             throw new Exception("Robot has no owner.");
         else if (!robot.IsAtPlayerCity())
         {
+            SetRobotMovementOnCurrentCordIfNotPreview();
             robot.MoveTowards(robot.Owner.City.X, robot.Owner.City.Z);
+            SetRobotMovementOnCurrentCordIfNotPreview();
+
             return false;
         }
         else
             return true;
+    }
+
+    private bool IsBlockedByOtherRobots()
+    {
+        if (robot.isPreviewRobot || robot.IsAtPlayerCity())
+            return false;
+
+        RobotTick robotMovement = WorldController.instance.robotMovements[robot.X, robot.Z];
+        return robotMovement != null && robotMovement.Robot != robot && robotMovement.Tick == WorldTickController.instance.Tick;
+    }
+
+    private void SetRobotMovementOnCurrentCordIfNotPreview()
+    {
+        if (!robot.isPreviewRobot)
+            WorldController.instance.robotMovements[robot.X, robot.Z] = new RobotTick(robot, WorldTickController.instance.Tick);
     }
 
 }
