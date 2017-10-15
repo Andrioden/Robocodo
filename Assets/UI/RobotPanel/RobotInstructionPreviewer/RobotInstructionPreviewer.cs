@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 
-public class RobotMovementPreviewer : MonoBehaviour
+public class RobotInstructionPreviewer : MonoBehaviour
 {
 
     private int Settings_MaxPreviewInstructions = 200;

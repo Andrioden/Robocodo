@@ -71,7 +71,7 @@ public class RobotPanel : MonoBehaviour
     private int _codeInputCharCountLastEdit = 0;
     private int lastCaretPosition = 0;
 
-    private RobotMovementPreviewer previewer;
+    private RobotInstructionPreviewer previewer;
 
     private Color _highlightColor;
     private Color _defaultButtonStateColors;
@@ -95,7 +95,7 @@ public class RobotPanel : MonoBehaviour
     private void Start()
     {
         animator = GetComponent<Animator>();
-        previewer = GetComponent<RobotMovementPreviewer>();
+        previewer = GetComponent<RobotInstructionPreviewer>();
 
         _highlightColor = Utils.HexToColor("#D5A042FF");
         _defaultButtonStateColors = runButton.GetComponent<Image>().color;
