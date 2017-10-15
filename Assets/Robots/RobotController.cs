@@ -244,7 +244,13 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
 
     private bool IsExecutingMovement()
     {
-        return isStarted && instructions[currentInstructionIndex].ToString().Contains("MOVE") && !instructions[currentInstructionIndex].ToString().Contains("HOME");
+        if (isStarted && instructions[currentInstructionIndex].GetType() == typeof(Instruction_Move))
+        {
+            var moveInstruction = (Instruction_Move)instructions[currentInstructionIndex];
+            return moveInstruction.direction != MoveDirection.Home;
+        }
+        else
+            return false;
     }
 
     private void EnableMeshGOAfterDelay(float delay)
