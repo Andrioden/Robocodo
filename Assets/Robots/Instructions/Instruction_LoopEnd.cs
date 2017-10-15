@@ -59,6 +59,7 @@ public class Instruction_LoopEnd : Instruction
                     else
                     {
                         loopStartInstruction.IterateCounterIfNeeded();
+                        robot.NotifyInstructionsChanged();
                         robot.nextInstructionIndex = i - 1;
                         return;
                     }

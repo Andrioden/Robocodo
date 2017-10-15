@@ -86,9 +86,6 @@ public class Instruction_LoopStart : Instruction
         if (iterations == 0)
             return;
         else
-        {
             currentIteration++;
-            robot.NotifyInstructionsChanged();
-        }
     }
 }
