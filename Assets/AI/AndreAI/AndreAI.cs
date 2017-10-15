@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace Robocodo.AndreAI
+namespace Robocodo.AI.AndreAI
 {
     /// <summary>
     /// This AI class follows a SEEK-DO pattern:
@@ -28,7 +28,6 @@ namespace Robocodo.AndreAI
     ///  ---------- DETAILS ----------
     /// Has:
     ///     - First we always check if the AI does not already have what it seeks
-    /// 
     /// 
     /// Seek: 
     ///     - Something the AI wants to gain

@@ -1,16 +1,18 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using System;
 using System.Linq;
-using System.Text;
 
-namespace Robocodo.AndreAI
+namespace Robocodo.AI
 {
-    public partial class AndreAI : AI
+
+
+    public abstract partial class AI : MonoBehaviour
     {
+        protected ActiveHarvestersTracker activeHarvestersTracker;
 
-        private ActiveHarvestersTracker activeHarvestersTracker;
-
-        private bool Seek_ActiveHarvesters<T>(int count, float searchRadius) where T : ResourceController
+        protected bool Seek_ActiveHarvesters<T>(int count, float searchRadius) where T : ResourceController
         {
             LogFormat("Seek_ActiveHarvesters<{0}>({1}): ", typeof(T), count);
 
@@ -26,7 +28,7 @@ namespace Robocodo.AndreAI
             return Seek_ActiveHarvesters<T>(count, searchRadius);
         }
 
-        private bool Has_ActiveHarvesters<T>(int count) where T : ResourceController
+        protected bool Has_ActiveHarvesters<T>(int count) where T : ResourceController
         {
             bool b = activeHarvestersTracker.OfResourceTypeCount<T>() >= count;
 
@@ -35,7 +37,7 @@ namespace Robocodo.AndreAI
             return b;
         }
 
-        private bool Seek_IdleRobot<T>(Cost cost) where T : RobotController
+        protected bool Seek_IdleRobot<T>(Cost cost) where T : RobotController
         {
             LogFormat("Seek_IdleRobot<{0}>({1}): {2}", typeof(T), cost, typeof(T));
 
@@ -51,7 +53,7 @@ namespace Robocodo.AndreAI
             return Do_BuyRobot<T>();
         }
 
-        private bool Has_IdleRobot<T>() where T : RobotController
+        protected bool Has_IdleRobot<T>() where T : RobotController
         {
             bool b = GetOwnedRobot<T>(false).Count > 0;
 
@@ -60,7 +62,7 @@ namespace Robocodo.AndreAI
             return b;
         }
 
-        private bool Condition_CanAfford(Cost cost)
+        protected bool Condition_CanAfford(Cost cost)
         {
             bool b = player.City.CanAfford(cost);
 
@@ -69,7 +71,7 @@ namespace Robocodo.AndreAI
             return b;
         }
 
-        private bool Do_BuyRobot<T>() where T : RobotController
+        protected bool Do_BuyRobot<T>() where T : RobotController
         {
             LogFormat("Do_BuyRobot<{0}>()", typeof(T));
 
@@ -89,7 +91,7 @@ namespace Robocodo.AndreAI
             return true;
         }
 
-        private bool Do_HarvestNearby<T>(float searchRadius) where T : ResourceController
+        protected bool Do_HarvestNearby<T>(float searchRadius) where T : ResourceController
         {
             LogFormat("Do_HarvestNearby<{0}>()", typeof(T));
 
@@ -119,6 +121,6 @@ namespace Robocodo.AndreAI
 
             return true;
         }
-
     }
+
 }

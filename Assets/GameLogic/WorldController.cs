@@ -4,7 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine.Networking;
 using Assets.GameLogic;
-using Robocodo.AndreAI;
+using Robocodo.AI.AndreAI;
 using System.Collections;
 
 public class WorldController : NetworkBehaviour
