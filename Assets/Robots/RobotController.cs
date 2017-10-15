@@ -45,7 +45,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     [SyncVar(hook = "OnCurrentInstructionIndexHook")]
     protected int currentInstructionIndex;
     public int CurrentInstructionIndex { get { return currentInstructionIndex; } }
-    public event Action OnCurrentInstructionIndexChanged = delegate { };
+    public event Action<int> OnCurrentInstructionIndexChanged = delegate { };
 
     [SyncVar]
     private bool currentInstructionIndexIsValid = true;
@@ -355,7 +355,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     private void OnCurrentInstructionIndexHook(int newValue)
     {
         currentInstructionIndex = newValue;
-        OnCurrentInstructionIndexChanged();
+        OnCurrentInstructionIndexChanged(newValue);
     }
 
     [Client]

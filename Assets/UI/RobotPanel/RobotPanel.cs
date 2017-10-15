@@ -477,7 +477,7 @@ public class RobotPanel : MonoBehaviour
     {
         titleText.text = robot.Settings_Name();
         LoadInstructions();
-        LoadCodeRunning();
+        LoadCodeRunning(0);
         LoadInventory();
         LoadModules();
 
@@ -553,7 +553,10 @@ public class RobotPanel : MonoBehaviour
         }
     }
 
-    private void LoadCodeRunning()
+    /// <summary>
+    /// Input value not used, only given here to listen to event
+    /// </summary>
+    private void LoadCodeRunning(int _)
     {
         if (robot.IsStarted)
         {

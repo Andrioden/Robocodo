@@ -19,6 +19,8 @@ public class RobotInstructionPreviewer : MonoBehaviour
     private GameObject previeRobot;
     private RobotController previewRobotController;
 
+    private int _previousRobotStatusHash;
+
     public void Update()
     {
         if (previeRobot != null && drawPreviewTime != -1f && drawPreviewTime < Time.time)
@@ -44,17 +46,6 @@ public class RobotInstructionPreviewer : MonoBehaviour
         DrawPreviewAfterDelay(0);
     }
 
-    public void UpdateInstructions(List<Instruction> instructions)
-    {
-        previewRobotController.SetInstructions(InstructionsHelper.Clone(instructions)); // Cloned
-        previewRobotController.PreviewReset();
-    }
-
-    private void Reload()
-    {
-        Load(originalRobotController);
-    }
-
     public void Unload()
     {
         if (originalRobotController != null)
@@ -70,6 +61,18 @@ public class RobotInstructionPreviewer : MonoBehaviour
         previewRobotController = null;
     }
 
+    private void Reload(int newCurrentInstructionIndex)
+    {
+        if (ShouldReloadAndSavePreviousHash(newCurrentInstructionIndex))
+            Load(originalRobotController);
+    }
+
+    public void UpdateInstructions(List<Instruction> instructions)
+    {
+        previewRobotController.SetInstructions(InstructionsHelper.Clone(instructions)); // Cloned
+        previewRobotController.PreviewReset();
+    }
+
     public void DrawPreviewAfterDelay(float secondsDelay)
     {
         drawPreviewTime = Time.time + secondsDelay;
@@ -81,6 +84,7 @@ public class RobotInstructionPreviewer : MonoBehaviour
     private void DrawPreview()
     {
         DateTime time1 = DateTime.Now;
+
         DestroyPreview();
 
         List<CoordinatePreviewImage> processedCoordImgs = new List<CoordinatePreviewImage>();
@@ -100,7 +104,7 @@ public class RobotInstructionPreviewer : MonoBehaviour
         }
 
         StopUpdatingPreview();
-        //Debug.Log((DateTime.Now - time1).Milliseconds);
+        //Debug.Log((DateTime.Now - time1).TotalMilliseconds);
     }
 
     private void AdjustImage(Transform previewImgAdjustablePart, CoordinatePreviewImage coordImg)
@@ -241,6 +245,26 @@ public class RobotInstructionPreviewer : MonoBehaviour
             Destroy(image);
 
         previewImages = new List<GameObject>();
+    }
+
+    private bool ShouldReloadAndSavePreviousHash(int newCurrentInstructionIndex)
+    {
+        if (!originalRobotController.Instructions[newCurrentInstructionIndex].Setting_ConsumesTick())
+            return false;
+
+        int currentRobotStatusHash = GetRobotStatusHash(originalRobotController);
+        if (_previousRobotStatusHash == currentRobotStatusHash)
+            return false;
+        else
+        {
+            _previousRobotStatusHash = currentRobotStatusHash;
+            return true;
+        }
+    }
+
+    private int GetRobotStatusHash(RobotController robot)
+    {
+        return (robot.X + robot.Z + robot.CurrentInstructionIndex + robot.Instructions.Sum(i => (long)i.Serialize().GetHashCode())).GetHashCode();
     }
 
 }
