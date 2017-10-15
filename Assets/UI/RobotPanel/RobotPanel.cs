@@ -181,7 +181,10 @@ public class RobotPanel : MonoBehaviour
 
     public void CopyCode()
     {
-        GUIUtility.systemCopyBuffer = codeInputField.text;
+        if (robot.IsStarted)
+            GUIUtility.systemCopyBuffer = string.Join("\n", InstructionsHelper.SerializeList(robot.Instructions));
+        else
+            GUIUtility.systemCopyBuffer = codeInputField.text;
     }
 
     public void PasteCode()
