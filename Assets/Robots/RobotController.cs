@@ -80,7 +80,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     private int mainLoopIterationCount;
     public int MainLoopIterationCount { get { return mainLoopIterationCount; } }
 
-    private List<InventoryItem> inventory = new List<InventoryItem>();
+    protected List<InventoryItem> inventory = new List<InventoryItem>();
     public List<InventoryItem> Inventory { get { return inventory; } }
     public event Action<List<InventoryItem>> OnInventoryChanged = delegate { };
 
@@ -141,6 +141,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     protected abstract List<Instruction> GetSuggestedInstructionSet();
     public abstract GameObject SpawnPreviewGameObjectClone();
     protected abstract void Animate();
+    protected virtual void VisualizeInventory() { }
 
     // ********** ABSTRACT METHODS : END  **********
 
@@ -158,7 +159,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             SetXzToTransformPosition();
             InitDefaultValues();
         }
-        
+
         if (isClient && hasAuthority)
             CmdTellServerToSendOwnerInstructions(); // Client has network timing issue, so the client asks for the updated list
 
@@ -333,7 +334,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         if (Owner != null)
             RobotPanel.instance.Refresh(this);
     }
-    
+
     [Client]
     private void OnCurrentInstructionIndexHook(int newValue)
     {
@@ -657,7 +658,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         }
 
         OnInventoryChanged(inventory);
-
+        VisualizeInventory();
         RpcSyncInventory(InventoryItem.Serialize(inventory));
 
         return notAdded;
@@ -688,6 +689,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     {
         inventory = InventoryItem.Deserialize(serializedItemCounts);
         OnInventoryChanged(inventory);
+        VisualizeInventory();
     }
 
     [Command]
