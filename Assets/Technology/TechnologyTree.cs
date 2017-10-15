@@ -41,7 +41,6 @@ public class TechnologyTree : NetworkBehaviour
         this.player = player;
     }
 
-    [Server]
     public void StopContinueResearch()
     {
         WorldTickController.instance.OnTick -= ContinueResearch;
