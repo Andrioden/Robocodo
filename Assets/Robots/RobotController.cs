@@ -80,7 +80,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     private int mainLoopIterationCount;
     public int MainLoopIterationCount { get { return mainLoopIterationCount; } }
 
-    private List<InventoryItem> inventory = new List<InventoryItem>();
+    protected List<InventoryItem> inventory = new List<InventoryItem>();
     public List<InventoryItem> Inventory { get { return inventory; } }
     public event Action OnInventoryChanged = delegate { };
 
@@ -141,6 +141,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     protected abstract List<Instruction> GetSuggestedInstructionSet();
     public abstract GameObject SpawnPreviewGameObjectClone();
     protected abstract void Animate();
+    protected virtual void VisualizeInventory() { }
 
     // ********** ABSTRACT METHODS : END  **********
 
@@ -158,7 +159,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             SetXzToTransformPosition();
             InitDefaultValues();
         }
-        
+
         if (isClient && hasAuthority)
             CmdTellServerToSendOwnerInstructions(); // Client has network timing issue, so the client asks for the updated list
 
@@ -186,7 +187,6 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             StopTicking();
             if (isServer)
                 modules.ForEach(module => module.Uninstall());
-
             //SetFeedback("DESTROYED!", true, true); // Consider showing in some cases
         }
     }
@@ -223,6 +223,9 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     {
         if (IsHomeByTransform() && !isAlreadyHome)
         {
+            if (IsExecutingMovement())
+                return;
+
             isAlreadyHome = true;
             DisableMeshGOAfterDelay(0.2f);
             Owner.City.EnterGarage(this);
@@ -237,6 +240,17 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             EnableMeshGOAfterDelay(0);
         else if (IsHomeByTransform() && isAlreadyHome && MouseManager.instance.CurrentlySelectedObject != this && !isStarted)
             DisableMeshGOAfterDelay(0);
+    }
+
+    private bool IsExecutingMovement()
+    {
+        if (isStarted && instructions[currentInstructionIndex].GetType() == typeof(Instruction_Move))
+        {
+            var moveInstruction = (Instruction_Move)instructions[currentInstructionIndex];
+            return moveInstruction.direction != MoveDirection.Home;
+        }
+        else
+            return false;
     }
 
     private void EnableMeshGOAfterDelay(float delay)
@@ -336,7 +350,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         if (Owner != null && didValueChange)
             RobotPanel.instance.Refresh(this);
     }
-    
+
     [Client]
     private void OnCurrentInstructionIndexHook(int newValue)
     {
@@ -660,7 +674,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
         }
 
         OnInventoryChanged();
-
+        VisualizeInventory();
         RpcSyncInventory(InventoryItem.Serialize(inventory));
 
         return notAdded;
@@ -691,6 +705,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
     {
         inventory = InventoryItem.Deserialize(serializedItemCounts);
         OnInventoryChanged();
+        VisualizeInventory();
     }
 
     [Command]
@@ -778,7 +793,8 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
             if (Owner != null)
                 Owner.ShowPopupForOwner("DESTROYED!", transform.position, TextPopup.ColorType.NEGATIVE);
 
-            NetworkServer.Destroy(gameObject);
+            isDestroyedWithDelay = true;
+            WorldController.instance.DestroyNetworkObjectCoroutine(gameObject, 2);
         }
     }
 

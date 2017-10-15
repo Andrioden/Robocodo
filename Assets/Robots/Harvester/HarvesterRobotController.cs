@@ -14,6 +14,8 @@ public class HarvesterRobotController : RobotController
     public ParticleSystem rightToolParticleSystem;
     public Sprite sprite;
     public override Sprite Sprite() { return sprite; }
+    public GameObject leftInventoryMesh;
+    public GameObject rightInventoryMesh;
 
     //Sounds
     public AudioClip harvestSound;
@@ -70,7 +72,7 @@ public class HarvesterRobotController : RobotController
             if (LastExecutedInstruction.GetType() == typeof(Instruction_Harvest))
                 PlayHarvestEffects();
         }
-        else if(energy <= 0)
+        else if (energy <= 0)
             StartCoroutine(PlayDeactivateAnimation(1f));
     }
 
@@ -98,4 +100,22 @@ public class HarvesterRobotController : RobotController
             light.enabled = false;
     }
 
+    protected override void VisualizeInventory()
+    {
+        if (inventory.Count == 0)
+        {
+            leftInventoryMesh.SetActive(false);
+            rightInventoryMesh.SetActive(false);
+        }
+        else if (inventory.Count == Settings_InventoryCapacity())
+        {
+            leftInventoryMesh.SetActive(true);
+            rightInventoryMesh.SetActive(true);
+        }
+        else if (inventory.Count >= (Settings_InventoryCapacity() / 2) && inventory.Count < Settings_InventoryCapacity())
+        {
+            leftInventoryMesh.SetActive(false);
+            rightInventoryMesh.SetActive(true);
+        }
+    }
 }

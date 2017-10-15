@@ -2,23 +2,26 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CollisionHandler : MonoBehaviour
+public class RobotExplosionSpawner : MonoBehaviour
 {
     public GameObject explotionPrefab;
     public GameObject rubblePrefab;
-
     private RobotController robotController;
     private GameObject rubble;
+    private bool explosionSpawned = false;
 
     void Start()
     {
         robotController = GetComponent<RobotController>();
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void Update()
     {
-        if (robotController.isDestroyedWithDelay)
+        if (robotController.isDestroyedWithDelay && !explosionSpawned)
+        {
+            explosionSpawned = true;
             Invoke("SpawnExplosion", 0.2f);
+        }
     }
 
     void SpawnExplosion()

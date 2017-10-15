@@ -74,6 +74,7 @@ GameObject:
   - component: {fileID: 114571258546177904}
   - component: {fileID: 82640126425550292}
   - component: {fileID: 54205654929133468}
+  - component: {fileID: 114116224776688620}
   m_Layer: 0
   m_Name: StorageRobot
   m_TagString: Robot
@@ -531,6 +532,20 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!114 &114116224776688620
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1322633384899872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d653c8e875660f344b62a0c7df1cd151, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explotionPrefab: {fileID: 100008, guid: 7b346dd5b9c872e4f811ddc8000908a1, type: 2}
+  rubblePrefab: {fileID: 1981010827281794, guid: ac7e7ff7cf35d9048a996725e3439a85,
+    type: 2}
 --- !u!114 &114183143168863378
 MonoBehaviour:
   m_ObjectHideFlags: 1

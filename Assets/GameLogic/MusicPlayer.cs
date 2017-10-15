@@ -15,6 +15,13 @@ public class MusicPlayer : MonoBehaviour
 
     private void Start()
     {
+        if (!Settings.Sound_EnableMusic)
+        {
+            audioSource.enabled = false;
+            enabled = false;
+            return;
+        }
+
         songs.Shuffle();
         originalVolume = audioSource.volume;
     }
