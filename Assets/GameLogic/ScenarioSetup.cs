@@ -72,9 +72,9 @@ public static class ScenarioSetup
     {
         InfectionManager.instance.AddBigInfectionAwayFromCities(wc.worldBuilder.GetCityOrReservedCoordinates());
 
-        AddCopper(player.City, 200);
-        AddIron(player.City, 200);
-        AddFood(player.City, 200);
+        AddCopper(player.City, 1000);
+        AddIron(player.City, 1000);
+        AddFood(player.City, 1000);
 
         IsAllTechUnlocked = true; // Unable to add this directly because the TechTree is created after this code runs
     }
