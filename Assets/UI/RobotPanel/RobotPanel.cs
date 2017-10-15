@@ -31,6 +31,10 @@ public class RobotPanel : MonoBehaviour
     public Button salvageButton;
     private Image salvageButtonImage;
 
+    public Button clearCodeButton;
+    public Button copyCodeButton;
+    public Button pasteCodeButton;
+
     public Text codeInputLabel;
     public InputField codeInputField;
     public GameObject codeInputPanel;
@@ -170,6 +174,21 @@ public class RobotPanel : MonoBehaviour
             else
                 EnableSetupModePanel();
         }
+    }
+
+    private void ClearCode()
+    {
+        codeInputField.text = string.Empty;
+    }
+
+    public void CopyCode()
+    {
+        GUIUtility.systemCopyBuffer = codeInputField.text;
+    }
+
+    public void PasteCode()
+    {
+        codeInputField.text = GUIUtility.systemCopyBuffer;
     }
 
     private void LoadRobot(RobotController robot)
@@ -414,8 +433,32 @@ public class RobotPanel : MonoBehaviour
         moduleMenuButton.onClick.AddListener(ToggleShowModuleMenu);
         moduleMenuButton.GetComponentInChildren<Text>().text = "ADD MODULES";
 
+        SetupClearCopyPasteButtons(true);
+
         inventoryPanel.SetActive(false);
         codeRunningPanel.SetActive(false);
+    }
+
+    private void SetupClearCopyPasteButtons(bool isSetupMode)
+    {
+        copyCodeButton.onClick.RemoveAllListeners();
+        copyCodeButton.onClick.AddListener(CopyCode);
+
+        if (isSetupMode)
+        {
+            clearCodeButton.gameObject.SetActive(true);
+            clearCodeButton.onClick.RemoveAllListeners();
+            clearCodeButton.onClick.AddListener(ClearCode);
+
+            pasteCodeButton.gameObject.SetActive(true);
+            pasteCodeButton.onClick.RemoveAllListeners();
+            pasteCodeButton.onClick.AddListener(PasteCode);
+        }
+        else
+        {
+            clearCodeButton.gameObject.SetActive(false);
+            pasteCodeButton.gameObject.SetActive(false);
+        }
     }
 
     private void ToggleShowModuleMenu()
@@ -454,6 +497,8 @@ public class RobotPanel : MonoBehaviour
 
         closeButton.onClick.RemoveAllListeners();
         closeButton.onClick.AddListener(Close);
+
+        SetupClearCopyPasteButtons(false);
 
         codeInputPanel.SetActive(false);
         possibleInstructionsPanel.SetActive(false);
