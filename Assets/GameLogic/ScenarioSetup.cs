@@ -284,6 +284,8 @@ public static class ScenarioSetup
     {
         InfectionManager.instance.AddBigInfectionAwayFromCities(wc.worldBuilder.GetCityOrReservedCoordinates());
 
+        AddFood(player.City, 20);
+
         AddRobot(WorldController.instance.harvesterRobotPrefab, player.City.X + 1, player.City.Z + 3, player, conn, new List<Instruction>()
         {
             new Instruction_LoopStart(3),

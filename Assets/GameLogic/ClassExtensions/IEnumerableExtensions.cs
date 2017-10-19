@@ -18,4 +18,17 @@ public static class IEnumerableExtensions
         return source.ToList().TakeRandom();
     }
 
+    public static IEnumerable<int> FindAllIndexes<T>(this IEnumerable<T> source, Func<T, bool> predicate)
+    {
+        int index = 0;
+        foreach (T element in source)
+        {
+            if (predicate(element))
+            {
+                yield return index;
+            }
+            index++;
+        }
+    }
+
 }

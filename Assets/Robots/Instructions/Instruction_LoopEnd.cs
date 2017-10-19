@@ -20,7 +20,7 @@ public class Instruction_LoopEnd : Instruction
     public override bool Execute(RobotController robot)
     {
         this.robot = robot;
-        SetNextInstructionToMatchingLoopStartIfNotCompleted();
+        SetNextInstructionToPairedLoopStartIfNotCompleted();
         return true;
     }
 
@@ -42,33 +42,47 @@ public class Instruction_LoopEnd : Instruction
         return instruction == Format;
     }
 
-    private void SetNextInstructionToMatchingLoopStartIfNotCompleted()
+    private void SetNextInstructionToPairedLoopStartIfNotCompleted()
+    {
+        int loopStartIndex = FindLoopEndPairedStartIndex(robot.Instructions, robot.nextInstructionIndex);
+
+        if (loopStartIndex == -1)
+            robot.SetFeedback("COULD NOT FIND MATCHING LOOP START", false, false);
+        else
+        {
+            Instruction_LoopStart loopStartInstruction = (Instruction_LoopStart)robot.Instructions[loopStartIndex];
+            if (loopStartInstruction.IsIterationsCompleted())
+                return;
+            else
+            {
+                loopStartInstruction.IterateCounterIfNeeded();
+                robot.NotifyInstructionsChanged();
+                robot.nextInstructionIndex = loopStartIndex - 1;
+                return;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Returns the LOOP START index for the given LOOP END index
+    /// </summary>
+    public static int FindLoopEndPairedStartIndex(List<Instruction> instructions, int loopEndIndex)
     {
         int skippingLoopStarts = 0;
-        for (int i = robot.nextInstructionIndex - 1; i >= 0; i--)
+        for (int i = loopEndIndex - 1; i >= 0; i--)
         {
-            if (robot.Instructions[i].GetType() == typeof(Instruction_LoopEnd))
+            if (instructions[i].GetType() == typeof(Instruction_LoopEnd))
                 skippingLoopStarts++;
-            else if (robot.Instructions[i].GetType() == typeof(Instruction_LoopStart))
+            else if (instructions[i].GetType() == typeof(Instruction_LoopStart))
             {
                 if (skippingLoopStarts == 0)
-                {
-                    Instruction_LoopStart loopStartInstruction = (Instruction_LoopStart)robot.Instructions[i];
-                    if (loopStartInstruction.IsIterationsCompleted())
-                        return;
-                    else
-                    {
-                        loopStartInstruction.IterateCounterIfNeeded();
-                        robot.NotifyInstructionsChanged();
-                        robot.nextInstructionIndex = i - 1;
-                        return;
-                    }
-                }
+                    return i;
                 else
                     skippingLoopStarts--;
             }
         }
 
-        robot.SetFeedback("COULD NOT FIND MATCHING LOOP START", false, false);
+        return -1;
     }
+
 }

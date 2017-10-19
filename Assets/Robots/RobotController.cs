@@ -520,7 +520,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
                 else
                 {
                     _nonConsumeTickCounter = 0;
-                    SetFeedback("INSTRUCTION PROCESSING TOOK TO MANY TICKS", false, true);
+                    SetFeedback("INSTRUCTION PROCESSING ERROR 1", false, true);
                 }
             }
         }
@@ -600,7 +600,7 @@ public abstract class RobotController : Unit, IAttackable, ISelectable, IHasInve
                 Instruction_LoopStart loopStartInstruction = (Instruction_LoopStart)Instructions[i];
                 loopEndSkippingUntilDone++;
 
-                Instructions[i] = new Instruction_LoopStart(loopStartInstruction.Iterations);
+                Instructions[i] = new Instruction_LoopStart(loopStartInstruction.iterations);
                 NotifyInstructionsChanged();
             }
             else if (Instructions[i].GetType() == typeof(Instruction_LoopEnd))

@@ -17,8 +17,7 @@ public class Instruction_LoopStart : Instruction
     public static readonly string Format = "LOOP START";
 
     private RobotController robot;
-    private int iterations;
-    public int Iterations { get { return iterations; } }
+    public int iterations;
     private int currentIteration = 1;
 
     public Instruction_LoopStart(int iterations = 0)
@@ -88,4 +87,27 @@ public class Instruction_LoopStart : Instruction
         else
             currentIteration++;
     }
+
+    /// <summary>
+    /// Returns the LOOP END index for the given LOOP START index
+    /// </summary>
+    public static int FindLoopStartPairedEndIndex(List<Instruction> instructions, int loopStartIndex)
+    {
+        int skippingLoopEnds = 0;
+        for (int i = loopStartIndex + 1; i < instructions.Count; i++)
+        {
+            if (instructions[i].GetType() == typeof(Instruction_LoopStart))
+                skippingLoopEnds++;
+            else if (instructions[i].GetType() == typeof(Instruction_LoopEnd))
+            {
+                if (skippingLoopEnds == 0)
+                    return i;
+                else
+                    skippingLoopEnds--;
+            }
+        }
+
+        return -1;
+    }
+
 }

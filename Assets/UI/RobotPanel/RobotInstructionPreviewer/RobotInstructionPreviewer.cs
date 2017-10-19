@@ -69,8 +69,37 @@ public class RobotInstructionPreviewer : MonoBehaviour
 
     public void UpdateInstructions(List<Instruction> instructions)
     {
-        previewRobotController.SetInstructions(InstructionsHelper.Clone(instructions)); // Cloned
+        List<Instruction> clonedInstructions = InstructionsHelper.Clone(instructions);
+        OptimalizeLoopedInstructionsForPreview(clonedInstructions);
+        previewRobotController.SetInstructions(clonedInstructions);
+
         previewRobotController.PreviewReset();
+    }
+
+    private void OptimalizeLoopedInstructionsForPreview(List<Instruction> instructions, int startIndex = 0)
+    {
+        // Find endless loops
+        int endlessLoopStartIndex = instructions.FindIndex(startIndex, i => i.GetType() == typeof(Instruction_LoopStart) && ((Instruction_LoopStart)i).iterations == 0);
+        if (endlessLoopStartIndex == -1)
+            return;
+
+        int endlessLoopEndIndex = Instruction_LoopStart.FindLoopStartPairedEndIndex(instructions, endlessLoopStartIndex);
+        if (endlessLoopEndIndex == -1) // Remove everything after a unpaired LOOP START as that cant be trusted
+        {
+            instructions.RemoveRange(endlessLoopStartIndex + 1, instructions.Count - endlessLoopStartIndex - 1);
+            return;
+        }
+
+        bool hasEndlessMovement = instructions.Skip(endlessLoopStartIndex).Take(endlessLoopEndIndex - endlessLoopStartIndex).Any(i => i.GetType() == typeof(Instruction_Move));
+        if (!hasEndlessMovement) // Limit for loop to 1 loop only if it has no MOVE. We want to fully preview movement to show player that the robots runs wild
+            ((Instruction_LoopStart)instructions[endlessLoopStartIndex]).iterations = 1;
+
+        // Recusively remove inner loops as well
+        OptimalizeLoopedInstructionsForPreview(instructions, endlessLoopStartIndex + 1);
+
+        // Finally remove everything after the first/outmost endless loop as it will never be run
+        if (startIndex == 0)
+            instructions.RemoveRange(endlessLoopEndIndex + 1, instructions.Count - endlessLoopEndIndex - 1);
     }
 
     public void DrawPreviewAfterDelay(float secondsDelay)
