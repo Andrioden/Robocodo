@@ -51,5 +51,5 @@
     public static bool Debug_EnableAiLogging = false;
     public static bool Debug_PlayerAsAI = false;
 
-    public static bool Sound_EnableMusic = false;
+    public static bool Sound_EnableMusic = true;
 }
